@@ -15,7 +15,7 @@ const SideBar = () => {
                 </li>
                 <li className='h-16'>
                     <Link className='w-full flex h-full items-center text-center hover:bg-[#D9D9D9]' href={""}>
-                        <i className="fa-solid w-full fa-compass"></i>
+                        <i className="fa-solid w-full fa-magnifying-glass"></i>
                     </Link>
                 </li>
                 <li className='h-16'>
@@ -38,6 +38,9 @@ const SideBar = () => {
                         <i className="fa-regular w-full fa-square-plus"></i>
                     </Link>
                 </li>
+                <li className='h-16'>
+
+                </li>
             </ul>
             <Link className='w-full basis-1/4 flex h-16 text-3xl items-center text-center hover:bg-[#D9D9D9]' href={""}>
                 <i className="fa-solid w-full fa-gear"></i>
@@ -46,4 +49,4 @@ const SideBar = () => {
     )
 }
 
-export default SideBar
+export default SideBar;
