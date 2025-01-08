@@ -1,10 +1,9 @@
-import Image from "next/image";
-import SideBar from "./components/SideBar";
+import SideBar from "@/components/global/SideBar";
 
 export default function Home() {
   return (
     <div className="flex">
-      <SideBar></SideBar>
+      <SideBar />
       <div className="text-3xl">unify</div>
     </div>
 
