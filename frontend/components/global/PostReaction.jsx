@@ -4,7 +4,7 @@ const Reaction = ({ iconClass, quantity = 0 }) => {
 
     return (
         <div className='flex items-center mr-2'>
-            <i class={iconClass}></i>
+            <i className={iconClass}></i>
             <p className='ml-1'>{quantity}</p>
         </div>
     )

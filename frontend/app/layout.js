@@ -3,7 +3,6 @@ import "./globals.css";
 // import "./lib/fontawesome"
 import Head from "next/head";
 import '@fortawesome/fontawesome-free/css/all.min.css';
-import SideBar from "./components/SideBar";
 
 
 
