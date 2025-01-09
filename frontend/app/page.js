@@ -4,7 +4,7 @@ export default function Home() {
   return (
     <div className="flex">
       <SideBar />
-      <div className="text-3xl">unify</div>
+      <div className="text-3xl">ANH BA</div>
     </div>
 
   );
