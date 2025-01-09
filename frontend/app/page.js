@@ -1,10 +1,18 @@
-import SideBar from "@/components/global/SideBar";
 
-export default function Home() {
+import Image from "next/image";
+import SideBar from "@/components/global/SideBar";
+import Post from "@/components/global/Post";
+
+export default function Home({ children }) {
   return (
     <div className="flex">
-      <SideBar />
-      <div className="text-3xl">UNIFY</div>
+      <aside>
+        <SideBar></SideBar>
+      </aside>
+      <main className="w-full">
+        {children}
+        <Post></Post>
+      </main>
     </div>
 
   );

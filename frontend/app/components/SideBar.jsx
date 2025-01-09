@@ -5,7 +5,7 @@ import Link from 'next/link'
 
 const SideBar = () => {
     return (
-        <div className='border-r flex flex-col border-black h-screen w-32'>
+        <div className='border-r flex flex-col border-black h-screen w-28'>
             <Image src={`/images/unify_icon_lightmode.svg`} alt='UNIFY logo' width={100} height={100} className='mx-auto basis-1/4'></Image>
             <ul className='text-3xl w-full basis-1/2'>
                 <li className='h-16'>
