@@ -7,11 +7,12 @@ export default function Home({ children }) {
   return (
     <div className="flex">
       <aside>
-        <SideBar></SideBar>
+        page
+        <SideBar />
       </aside>
       <main className="w-full">
         {children}
-        <Post></Post>
+        <Post />
       </main>
     </div>
 
