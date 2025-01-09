@@ -7,7 +7,6 @@ export default function Home({ children }) {
   return (
     <div className="flex">
       <aside>
-        page
         <SideBar />
       </aside>
       <main className="w-full">
