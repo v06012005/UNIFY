@@ -1,6 +1,7 @@
+
 import Image from "next/image";
-import SideBar from "./components/SideBar";
-import Post from "./components/Post";
+import SideBar from "@/components/global/SideBar";
+import Post from "@/components/global/Post";
 
 export default function Home({ children }) {
   return (
