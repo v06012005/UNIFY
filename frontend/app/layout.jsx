@@ -3,6 +3,7 @@ import "./globals.css";
 // import "./lib/fontawesome"
 import Head from "next/head";
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import SideBar from "@/components/global/SideBar";
 
 
 
@@ -22,6 +23,9 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+
+  const isSidebarVisible = true;
+
   return (
     <html lang="en">
       <Head>
@@ -31,9 +35,16 @@ export default function RootLayout({ children }) {
         />
       </Head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} flex antialiased`}
       >
-        {children}
+        {isSidebarVisible && (
+          <aside className="w-28">
+            <SideBar></SideBar>
+          </aside>
+        )}
+        <main className="w-full">
+          {children}
+        </main>
       </body>
     </html>
   );
