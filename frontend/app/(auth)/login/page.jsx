@@ -15,7 +15,7 @@ const LoginPage = () => {
                     </div>
                     <Input placeholder={'Username, phone or email'} className={`w-[400px] h-12`} />
                     <Input placeholder={'Password'} className={`w-[400px] h-12`} />
-                    <span>Forgot password?</span>
+                    <Link href={"/forgotpassword"}>Forgot password?</Link>
                     <div className={`flex items-center gap-2 m-auto`}>
                         <div className={`w-10 h-[1px] bg-[#767676]`}></div>
                         <span className={`text-[#767676] mb-1`}>or</span>
