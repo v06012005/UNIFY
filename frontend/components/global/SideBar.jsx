@@ -17,10 +17,13 @@ const SideBar = () => {
             <Image src={`/images/unify_icon_lightmode.svg`} alt='UNIFY logo' width={100} height={100} className='mx-auto basis-1/4'></Image>
             <ul className='text-3xl w-full basis-1/2'>
                 <li className='h-16'>
-                    <NavButton iconClass={"fa-solid fa-house"}></NavButton>
+                    <NavButton href='/' iconClass={"fa-solid fa-house"}></NavButton>
                 </li>
                 <li className='h-16'>
-                    <NavButton iconClass={"fa-solid fa-magnifying-glass"}></NavButton>
+                    <NavButton href='/' iconClass={"fa-solid fa-magnifying-glass"}></NavButton>
+                </li>
+                <li className='h-16'>
+                    <NavButton href='/' iconClass={"fa-solid fa-compass"}></NavButton>
                 </li>
                 <li className='h-16'>
                     <NavButton iconClass={"fa-solid fa-film"}></NavButton>
@@ -34,10 +37,10 @@ const SideBar = () => {
                 <li className='h-16'>
                     <NavButton iconClass={"fa-regular fa-square-plus"}></NavButton>
                 </li>
+                <li className='h-16'>
+                    <NavButton iconClass={"fa-solid w-full fa-gear"}></NavButton>
+                </li>
             </ul>
-            <Link className='w-full basis-1/4 flex h-16 text-3xl items-end pb-8 text-center' href={""}>
-                <i className="fa-solid w-full fa-gear"></i>
-            </Link>
         </div>
     )
 }

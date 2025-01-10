@@ -73,6 +73,7 @@ body {
 
     --radius: 0.5rem
   }
+
   .dark {
 
     --background: 0 0% 3.9%;
@@ -129,7 +130,20 @@ body {
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+  /* Hides scrollbar in WebKit browsers */
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  /* Hides scrollbar in IE and Edge */
+  scrollbar-width: none;
+  /* Hides scrollbar in Firefox */
 }
