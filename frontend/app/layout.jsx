@@ -2,9 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 // import "./lib/fontawesome"
 import Head from "next/head";
-import '@fortawesome/fontawesome-free/css/all.min.css';
-
-
+import "@fortawesome/fontawesome-free/css/all.min.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,7 +20,6 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
-
   return (
     <html lang="en">
       <Head>
