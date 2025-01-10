@@ -32,11 +32,9 @@ export default function RootLayout({ children }) {
         />
       </Head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} flex antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} flex w-full antialiased`}
       >
-        <main className="w-full">
-          {children}
-        </main>
+        {children}
       </body>
     </html>
   );
