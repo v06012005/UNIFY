@@ -2,6 +2,7 @@ import Post from "@/components/global/Post";
 import avatar from '@/public/images/test1.png'
 import Image from 'next/image'
 import fullLogo from '@/public/images/unify_1.svg';
+import RootLayout from "./(pages)/layout";
 
 const SearchBar = () => {
   return (
@@ -31,7 +32,8 @@ const User = () => {
 
 export default function Home() {
   return (
-    <div className="flex">
+   <RootLayout>
+     <div className="flex">
       <div className="basis-3/4 border py-8 h-screen overflow-y-scroll no-scrollbar">
         <div className="w-3/4 flex flex-col mx-auto">
           <Post></Post>
@@ -60,6 +62,7 @@ export default function Home() {
         </div>
       </div>
     </div>
+   </RootLayout>
 
   );
 }
