@@ -1,10 +1,9 @@
+import Post from "@/components/global/Post";
+import Home from "@/app/page";
+
 const Page = () => {
   return (
-    <div>
-        <Post></Post>
-          <Post></Post>
-          <Post></Post>
-    </div>
+    <Home />
   );
 }
 
