@@ -15,7 +15,7 @@ const PostReaction = () => {
         <div className='flex text-xl'>
             <Reaction iconClass={`fa-regular fa-heart`} quantity={'47K'}></Reaction>
             <Reaction iconClass={`fa-solid fa-comment`} quantity={'47K'}></Reaction>
-            <Reaction iconClass={`fa-solid fa-share`} quantity={'47K'}></Reaction>
+            <Reaction iconClass={`fa-solid fa-paper-plane`} quantity={'47K'}></Reaction>
         </div>
     )
 }
