@@ -13,7 +13,7 @@ const NavButton = ({ iconClass, href = "" }) => {
 
 const SideBar = () => {
     return (
-        <div className='flex flex-col h-screen fixed left-0 top-0'>
+        <div className='flex flex-col border h-screen fixed left-0 top-0'>
             <Image src={`/images/unify_icon_lightmode.svg`} alt='UNIFY logo' width={100} height={100} className='mx-auto'></Image>
             <ul className='text-3xl w-full'>
                 <li className='h-16'>

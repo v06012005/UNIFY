@@ -32,37 +32,37 @@ const User = () => {
 
 export default function Home() {
   return (
-   <RootLayout>
-     <div className="flex">
-      <div className="basis-3/4 border py-8 h-screen overflow-y-scroll no-scrollbar">
-        <div className="w-3/4 flex flex-col mx-auto">
-          <Post></Post>
-          <Post></Post>
-          <Post></Post>
-        </div>
-      </div>
-      <div className="basis-1/4 border py-8 h-screen sticky top-0">
-        <div className="w-3/4 flex flex-col mx-auto">
-          <User />
-          <hr className="my-4" />
-          <div>
-            <p className="font-bold text-xl mb-4">Your Friends</p>
-            <User />
-            <User />
-            <User />
-            <User />
-            <User />
-          </div>
-          <hr className="my-4" />
-          <div>
-            <Image src={fullLogo} alt="Unify Logo" className="w-1/2" />
-            <p className="mt-2 text-gray-500">&copy; UNIFY FROM WORKAHOLICS
-            </p>
+    <RootLayout>
+      <div className="flex">
+        <div className="basis-3/4 border-r py-8 h-screen overflow-y-scroll no-scrollbar">
+          <div className="w-3/4 flex flex-col mx-auto">
+            <Post></Post>
+            <Post></Post>
+            <Post></Post>
           </div>
         </div>
+        <div className="basis-1/4 border py-8 h-screen sticky top-0">
+          <div className="w-3/4 flex flex-col mx-auto">
+            <User />
+            <hr className="my-4" />
+            <div>
+              <p className="font-bold text-xl mb-4">Your Friends</p>
+              <User />
+              <User />
+              <User />
+              <User />
+              <User />
+            </div>
+            <hr className="my-4" />
+            <div>
+              <Image src={fullLogo} alt="Unify Logo" className="w-1/2" />
+              <p className="mt-2 text-gray-500">&copy; UNIFY FROM WORKAHOLICS
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-   </RootLayout>
+    </RootLayout>
 
   );
 }
