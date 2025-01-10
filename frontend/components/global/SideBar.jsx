@@ -5,7 +5,7 @@ import Link from 'next/link'
 
 const NavButton = ({ iconClass, href = "" }) => {
     return (
-        <Link className='w-full flex h-full items-center text-center hover:bg-[#D9D9D9]' href={href}>
+        <Link className='w-full flex h-full items-center text-center transition delay-100 ease-in-out duration-100 hover:bg-[#D9D9D9]' href={href}>
             <i className={`${iconClass} w-full`}></i>
         </Link>
     )
@@ -14,8 +14,8 @@ const NavButton = ({ iconClass, href = "" }) => {
 const SideBar = () => {
     return (
         <div className='flex flex-col h-screen fixed left-0 top-0'>
-            <Image src={`/images/unify_icon_lightmode.svg`} alt='UNIFY logo' width={100} height={100} className='mx-auto basis-1/4'></Image>
-            <ul className='text-3xl w-full basis-1/2'>
+            <Image src={`/images/unify_icon_lightmode.svg`} alt='UNIFY logo' width={100} height={100} className='mx-auto'></Image>
+            <ul className='text-3xl w-full'>
                 <li className='h-16'>
                     <NavButton href='/' iconClass={"fa-solid fa-house"}></NavButton>
                 </li>

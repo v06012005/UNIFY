@@ -7,7 +7,7 @@ const RootLayout = ({ children }) => {
         <aside className="w-28">
           <SideBar />
         </aside>
-        <main> {children}</main>
+        <main>{children}</main>
       </div>
     </>
   );
