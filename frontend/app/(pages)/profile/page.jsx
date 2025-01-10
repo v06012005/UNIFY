@@ -49,25 +49,28 @@ const Page = () => {
               height={200}
             /> */}
             <div className="relative">
-  <Image
-    src={`/images/avt.jpg`}
-    alt="Avatar"
-    className="mx-auto rounded-full border-2 border-gray-300"
-    width={200}
-    height={200}
-  />
-  <div className="absolute bottom-0 right-1 mb-2 mr-2">
-    <label htmlFor="file-upload" className="cursor-pointer bg-gray-600 text-white rounded-full p-2 hover:bg-gray-700 transition" >
-      <i className="fa-solid fa-camera text-2xl"></i>
-    </label>
-    <input
-      id="file-upload"
-      type="file"
-      className="hidden"
-      onChange={(e) => handleFileChange(e)} 
-    />
-  </div>
-</div>
+              <Image
+                src={`/images/avt.jpg`}
+                alt="Avatar"
+                className="mx-auto rounded-full border-2 border-gray-300"
+                width={200}
+                height={200}
+              />
+              <div className="absolute bottom-0 right-1 mb-2 mr-2">
+                <label
+                  htmlFor="file-upload"
+                  className="cursor-pointer bg-gray-600 text-white rounded-full p-2 hover:bg-gray-700 transition"
+                >
+                  <i className="fa-solid fa-camera text-2xl"></i>
+                </label>
+                <input
+                  id="file-upload"
+                  type="file"
+                  className="hidden"
+                  onChange={(e) => handleFileChange(e)}
+                />
+              </div>
+            </div>
 
             <div className="p-2">
               <div className="flex justify-between ml-10">

@@ -31,7 +31,13 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} flex w-full antialiased`}
       >
+<<<<<<< HEAD
         {children}
+=======
+
+          {children}
+
+>>>>>>> 7486bed (initial code for profile)
       </body>
     </html>
   );
