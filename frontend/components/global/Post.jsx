@@ -1,9 +1,12 @@
+"use client";
+
 import React from 'react'
 import Image from 'next/image'
 import dummy from '@/public/images/dummy.png'
 import avatar from '@/public/images/test1.png'
 import PostReaction from './PostReaction'
 import Link from 'next/link'
+import { useState } from 'react'
 
 const User = () => {
     return (
@@ -20,12 +23,26 @@ const Hashtag = ({ content = "", to = "" }) => {
     )
 }
 
+const Caption = ({ text, maxLength = 100 }) => {
+    const [isExpanded, setIsExpanded] = useState(false);
+
+    const toggleExpanded = () => setIsExpanded(!isExpanded);
+    return (
+        <>
+            <div className='mb-2 leading-snug text-wrap'>
+                {isExpanded ? text : `${text.slice(0, maxLength)}...`}
+                <button onClick={toggleExpanded} className="text-gray-500 font-semibold ml-2">{isExpanded ? "Less" : "More"}</button>
+            </div>
+        </>
+    )
+}
+
 const Post = () => {
     return (
         <div className='aspect-video mb-8 pb-8 border-b border-black'>
             <User></User>
-            <p className='mb-2 leading-snug text-wrap'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sed quibusdam, ex maiores amet alias dolor minima magnam quis totam molestias consectetur laudantium possimus et asperiores? Dignissimos minima animi omnis sed! Lorem ipsum dolor sit amet consectetur, adipisicing elit. Saepe, id repellat minus labore esse eligendi maiores asperiores? Architecto dolorem veritatis, totam nam, molestiae quo quis asperiores qui nostrum animi possimus?</p>
             <Image src={dummy} alt='Dummy' className='w-full mb-2 rounded-lg' width={600} height={400} />
+            <Caption text={`Lorem ipsum dolor sit amet consectetur adipisicing elit. Sed quibusdam, ex maiores amet alias dolor minima magnam quis totam molestias consectetur laudantium possimus et asperiores? Dignissimos minima animi omnis sed! Lorem ipsum dolor sit amet consectetur, adipisicing elit. Saepe, id repellat minus labore esse eligendi maiores asperiores? Architecto dolorem veritatis, totam nam, molestiae quo quis asperiores qui nostrum animi possimus?`} />
             <PostReaction></PostReaction>
             <div className='mt-2 flex flex-wrap'>
                 <Hashtag content='#myhashtag'></Hashtag>
