@@ -40,14 +40,7 @@ const Page = () => {
           </div>
         </div>
         <div className="h-screen basis-3/4 overflow-y-auto">
-          <div className="flex p-2 mr-20">
-            {/* <Image
-              src={`/images/avt.jpg`}
-              alt="Avatar"
-              className="mx-auto rounded-full border-2 border-gray-300 "
-              width={200}
-              height={200}
-            /> */}
+          <div className="flex p-5 mr-20">
             <div className="relative">
               <Image
                 src={`/images/avt.jpg`}
