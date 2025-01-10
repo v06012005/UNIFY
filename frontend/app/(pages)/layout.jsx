@@ -3,11 +3,11 @@ import SideBar from "../../components/global/SideBar";
 const RootLayout = ({ children }) => {
   return (
     <>
-      <div className="flex">
+      <div className="flex w-full">
         <aside className="w-28">
           <SideBar />
         </aside>
-        <main>{children}</main>
+        <main className="w-full">{children}</main>
       </div>
     </>
   );
