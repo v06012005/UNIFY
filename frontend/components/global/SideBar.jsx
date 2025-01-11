@@ -26,7 +26,7 @@ const SideBar = () => {
                     <NavButton href='/explore' iconClass={"fa-solid fa-compass"}></NavButton>
                 </li>
                 <li className='h-16'>
-                    <NavButton href='/' iconClass={"fa-solid fa-film"}></NavButton>
+                    <NavButton href='/reels' iconClass={"fa-solid fa-film"}></NavButton>
                 </li>
                 <li className='h-16'>
                     <NavButton href='/messages' iconClass={"fa-brands fa-facebook-messenger"}></NavButton>
