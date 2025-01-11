@@ -9,7 +9,7 @@ const Page = () => {
       <div className={"grid grid-cols-4 gap-2"}>
         <div
           className={
-            "w-96 h-96 bg-black p-3 group/item hover:bg-opacity-90 cursor-pointer"
+            "w-72 h-72 bg-black p-3 group/item hover:bg-opacity-90 cursor-pointer"
           }
         >
           <Image
@@ -36,7 +36,7 @@ const Page = () => {
         </div>
         <div
           className={
-            "w-96 h-96 bg-black p-3 group/item hover:bg-opacity-90 cursor-pointer"
+            "w-72 h-72 bg-black p-3 group/item hover:bg-opacity-90 cursor-pointer"
           }
         >
           <Image
@@ -63,7 +63,7 @@ const Page = () => {
         </div>
         <div
           className={
-            "w-96 h-96 bg-black p-3 group/item hover:bg-opacity-90 cursor-pointer"
+            "w-72 h-72 bg-black p-3 group/item hover:bg-opacity-90 cursor-pointer"
           }
         >
           <Image
@@ -90,7 +90,7 @@ const Page = () => {
         </div>
         <div
           className={
-            "w-96 h-96 bg-black p-3 group/item hover:bg-opacity-90 cursor-pointer"
+            "w-72 h-72 bg-black p-3 group/item hover:bg-opacity-90 cursor-pointer"
           }
         >
           <Image
@@ -117,7 +117,7 @@ const Page = () => {
         </div>
         <div
           className={
-            "w-96 h-96 bg-black p-3 group/item hover:bg-opacity-90 cursor-pointer"
+            "w-72 h-72 bg-black p-3 group/item hover:bg-opacity-90 cursor-pointer"
           }
         >
           <Image
@@ -144,7 +144,7 @@ const Page = () => {
         </div>
         <div
           className={
-            "w-96 h-96 bg-black p-3 group/item hover:bg-opacity-90 cursor-pointer"
+            "w-72 h-72 bg-black p-3 group/item hover:bg-opacity-90 cursor-pointer"
           }
         >
           <Image
@@ -171,7 +171,7 @@ const Page = () => {
         </div>
         <div
           className={
-            "w-96 h-96 bg-black p-3 group/item hover:bg-opacity-90 cursor-pointer"
+            "w-72 h-72 bg-black p-3 group/item hover:bg-opacity-90 cursor-pointer"
           }
         >
           <Image
@@ -198,7 +198,7 @@ const Page = () => {
         </div>
         <div
           className={
-            "w-96 h-96 bg-black p-3 group/item hover:bg-opacity-90 cursor-pointer"
+            "w-72 h-72 bg-black p-3 group/item hover:bg-opacity-90 cursor-pointer"
           }
         >
           <Image
@@ -225,7 +225,7 @@ const Page = () => {
         </div>
         <div
           className={
-            "w-96 h-96 bg-black p-3 group/item hover:bg-opacity-90 cursor-pointer"
+            "w-72 h-72 bg-black p-3 group/item hover:bg-opacity-90 cursor-pointer"
           }
         >
           <Image
