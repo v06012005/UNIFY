@@ -7,7 +7,7 @@ export default function Picture() {
   return (
     <div
       className={
-        "w-72 h-72 bg-black p-3 group/item hover:bg-opacity-90 cursor-pointer"
+        "w-72 h-72 bg-black p-3 group/item hover:bg-opacity-95 cursor-pointer"
       }
     >
       <Image

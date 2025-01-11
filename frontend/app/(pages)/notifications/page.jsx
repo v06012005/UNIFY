@@ -1,12 +1,14 @@
+import Image from "next/image";
+
 const Page = () => {
   return (
     <div className={"h-screen w-full flex flex-col"}>
       <div className={"grid gap-5 place-content-center"}>
-        <div className={"border-b-2 border-gray-300 w-full"}>
-            ádasd
-        </div>
-        
-        
+        {/* Start */}
+        <div className={"border-b-2 border-gray-300 w-full"}>ádasd</div>
+        <div className={"border-b-2 border-gray-300 w-full"}>ádasd</div>
+        <div className={"border-b-2 border-gray-300 w-full"}>ádasd</div>
+        {/* End */}
       </div>
     </div>
   );
