@@ -132,115 +132,88 @@ const Page = () => {
                   alt="Avatar"
                   className="rounded-full w-14 h-14"
                 />
-                <div className="ml-5">
-                  <h4 className="text-lg font-medium truncate w-60">
-                    Lê Tấn Vinh
-                  </h4>
-                  <p className="text-lg text-gray-700 truncate w-40">TanVinh</p>
-                </div>
               </div>
-              <div className="flex  w-1/3 justify-end text-2xl">
-                <button className="mr-2 p-2 rounded-md hover:bg-gray-200 transition ease-in-out duration-200">
-                  <i className="fa-solid fa-phone "></i>
-                </button>
-                <button className="mr-2 p-2 rounded-md hover:bg-gray-200 transition ease-in-out duration-200">
-                  <i className="fa-solid fa-video"></i>
-                </button>
+              <div className="ml-3">
+                <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
+                  So I started to walk into the water. I won't lie to you boys,
+                  I was terrified
+                </h2>
+                <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
+                  I don't know if it was divine intervention
+                </h2>
+                <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
+                  was divine intervention
+                </h2>
               </div>
             </div>
-            <hr className=" border-1 border-gray-800" />
-            <div className="h-[540] overflow-y-auto">
-              <h2 className="text-center m-3">23:48, 20/01/2025</h2>
-              <div className="m-4 flex">
-                <div className="">
-                  <Image
-                    src={avatar}
-                    alt="Avatar"
-                    className="rounded-full w-14 h-14"
-                  />
-                </div>
-                <div className="ml-3">
-                  <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
-                    So I started to walk into the water. I won't lie to you boys,
-                    I was terrified
-                  </h2>
-                  <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
-                    I don't know if it was divine intervention
-                  </h2>
-                  <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
-                    was divine intervention
-                  </h2>
-                </div>
+            <div className="m-4 flex justify-end">
+              <div className="ml-3">
+                <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
+                  So I started to walk into the water. I won't lie to you boys,
+                  I was terrified
+                </h2>
+                <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
+                  I don't know if it was divine intervention
+                </h2>
+                <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
+                  was divine intervention
+                </h2>
               </div>
-              <div className="m-4 flex justify-end">
-                <div className="ml-3">
-                  <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
-                    So I started to walk into the water. I won't lie to you boys,
-                    I was terrified
-                  </h2>
-                  <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
-                    I don't know if it was divine intervention
-                  </h2>
-                  <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
-                    was divine intervention
-                  </h2>
-                </div>
+            </div>
+            <div className="m-4 flex">
+              <div className="">
+                <Image
+                  src={avatar}
+                  alt="Avatar"
+                  className="rounded-full w-14 h-14"
+                />
               </div>
-              <div className="m-4 flex">
-                <div className="">
-                  <Image
-                    src={avatar}
-                    alt="Avatar"
-                    className="rounded-full w-14 h-14"
-                  />
-                </div>
-                <div className="ml-3">
-                  <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
-                    So I started to walk into the water. I won't lie to you boys,
-                    I was terrified
-                  </h2>
-                  <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
-                    I don't know if it was divine intervention
-                  </h2>
-                  <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
-                    was divine intervention
-                  </h2>
-                </div>
+              <div className="ml-3">
+                <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
+                  So I started to walk into the water. I won't lie to you boys,
+                  I was terrified
+                </h2>
+                <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
+                  I don't know if it was divine intervention
+                </h2>
+                <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
+                  was divine intervention
+                </h2>
               </div>
-              <div className="m-4 flex">
-                <div className="">
-                  <Image
-                    src={avatar}
-                    alt="Avatar"
-                    className="rounded-full w-14 h-14"
-                  />
-                </div>
-                <div className="ml-3">
-                  <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
-                    So I started to walk into the water. I won't lie to you boys,
-                    I was terrified
-                  </h2>
-                  <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
-                    I don't know if it was divine intervention
-                  </h2>
-                  <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
-                    was divine intervention
-                  </h2>
-                </div>
+            </div>
+            <div className="m-4 flex">
+              <div className="">
+                <Image
+                  src={avatar}
+                  alt="Avatar"
+                  className="rounded-full w-14 h-14"
+                />
               </div>
-              <div className="m-4 flex justify-end">
-                <div className="ml-3">
-                  <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
-                    So I started to walk into the water. I won't lie to you boys,
-                    I was terrified
-                  </h2>
-                  <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
-                    I don't know if it was divine intervention
-                  </h2>
-                  <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
-                    was divine intervention
-                  </h2>
-                </div>
+              <div className="ml-3">
+                <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
+                  So I started to walk into the water. I won't lie to you boys,
+                  I was terrified
+                </h2>
+                <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
+                  I don't know if it was divine intervention
+                </h2>
+                <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
+                  was divine intervention
+                </h2>
+              </div>
+            </div>
+            <div className="m-4 flex justify-end">
+              <div className="ml-3">
+                <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
+                  So I started to walk into the water. I won't lie to you boys,
+                  I was terrified
+                </h2>
+                <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
+                  I don't know if it was divine intervention
+                </h2>
+                <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
+                  was divine intervention
+                </h2>
               </div>
             </div>
           </div>
