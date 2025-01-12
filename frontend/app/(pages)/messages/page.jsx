@@ -92,7 +92,7 @@ const Page = () => {
             ))}
           </div>
         </div>
-        <div className="ml-5 basis-2/3 mr-5  ">
+        <div className="ml-5 h-screen basis-2/3 mr-5  ">
           <div className="flex p-4 w-full">
             <div className="flex grow">
               <Image
@@ -123,7 +123,7 @@ const Page = () => {
             </div>
           </div>
           <hr className=" border-1 border-gray-800" />
-          <div className="h-[540] overflow-y-auto">
+          <div className="h-3/4 overflow-y-scroll">
             <h2 className="text-center m-3">23:48, 20/01/2025</h2>
             <div className="m-4 flex">
               <div className="">
@@ -218,7 +218,8 @@ const Page = () => {
             </div>
           </div>
 
-          <div className="flex items-center bg-gray-800 text-white p-3 rounded-2xl w-full justify-center">
+
+          <div className="flex items-center mt-3 bg-gray-800 text-white p-3 rounded-3xl w-full justify-center">
             <Image
               src={avatar2}
               alt="Avatar"
