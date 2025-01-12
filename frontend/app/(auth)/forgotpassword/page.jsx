@@ -1,7 +1,6 @@
 import Logo from "@/public/images/unify_1.svg";
 import Image from "next/image";
-import { Input } from "@/components/ui/input";
-import GoogleLogo from "@/public/images/GoogleLogo.png";
+import { Input } from "@/components/ui/input";b
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
