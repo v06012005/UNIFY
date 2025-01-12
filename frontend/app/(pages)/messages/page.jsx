@@ -218,8 +218,7 @@ const Page = () => {
             </div>
           </div>
 
-
-          <div className="flex items-center bg-gray-800 text-white p-3 rounded-3xl w-full justify-center">
+          <div className="flex items-center bg-gray-800 text-white p-3 rounded-2xl w-full justify-center">
             <Image
               src={avatar2}
               alt="Avatar"
