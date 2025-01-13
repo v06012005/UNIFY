@@ -4,6 +4,7 @@ import React from "react";
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+
 const NavButton = ({ iconClass, href = "", content = "" }) => {
   return (
     <Link className="flex h-full items-center text-center" href={href}>
@@ -242,11 +243,7 @@ const Page = () => {
     Save
   </button>
 </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  );
+
 };
 
 export default Page;

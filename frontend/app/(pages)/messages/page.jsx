@@ -92,7 +92,7 @@ const Page = () => {
             ))}
           </div>
         </div>
-        <div className="ml-5 basis-2/3 mr-5  ">
+        <div className="ml-5 h-screen basis-2/3 mr-5  ">
           <div className="flex p-4 w-full">
             <div className="flex grow">
               <Image
@@ -108,17 +108,23 @@ const Page = () => {
               </div>
             </div>
             <div className="flex  w-1/3 justify-end text-2xl">
-              <button className="mr-2 p-2 rounded-md hover:bg-gray-200 transition ease-in-out duration-200">
+              <button
+                title="Call"
+                className="mr-2 p-2 rounded-md hover:bg-gray-200 transition ease-in-out duration-200"
+              >
                 <i className="fa-solid fa-phone "></i>
               </button>
-              <button className="mr-2 p-2 rounded-md hover:bg-gray-200 transition ease-in-out duration-200">
+              <button
+                title="Video Call"
+                className="mr-2 p-2 rounded-md hover:bg-gray-200 transition ease-in-out duration-200"
+              >
                 <i className="fa-solid fa-video"></i>
               </button>
             </div>
           </div>
           <hr className=" border-1 border-gray-800" />
-          <h2 className="text-center m-3">23:48, 20/01/2025</h2>
-          <div className="h-[520] overflow-y-auto">
+          <div className="h-3/4 overflow-y-scroll">
+            <h2 className="text-center m-3">23:48, 20/01/2025</h2>
             <div className="m-4 flex">
               <div className="">
                 <Image
@@ -212,7 +218,8 @@ const Page = () => {
             </div>
           </div>
 
-          <div className="flex items-center bg-gray-800 text-white p-3 rounded-3xl w-full justify-center">
+
+          <div className="flex items-center mt-3 bg-gray-800 text-white p-3 rounded-3xl w-full justify-center">
             <Image
               src={avatar2}
               alt="Avatar"
@@ -226,8 +233,8 @@ const Page = () => {
             />
           </div>
         </div>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 };
 

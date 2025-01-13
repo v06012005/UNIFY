@@ -5,28 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1dc806c8-9b06-409a-84de-1db3bd7b8131" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/(auth)/layout.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/(auth)/login/page.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/ui/button.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/ui/input.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/utils.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/public/images/GoogleLogo.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/public/images/unify_1.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/public/images/unify_2.1.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/public/images/unify_icon.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/public/images/unify_icon_2.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/components/SideBar.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/globals.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/lib/fontawesome.js" beforeDir="false" afterPath="$PROJECT_DIR$/lib/fontawesome.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/page.js" beforeDir="false" afterPath="$PROJECT_DIR$/app/page.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/global/SideBar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/global/SideBar.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tailwind.config.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/tailwind.config.mjs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,7 +27,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "Rebasing login__page__branch",
+    "git-widget-placeholder": "fix__env",
     "ignore.virus.scanning.warn.message": "true",
     "last_opened_file_path": "D:/Unify/UNIFY/frontend/public/images",
     "node.js.detected.package.eslint": "true",
@@ -65,6 +45,7 @@
       <recent name="D:\Unify\UNIFY\frontend\public\images" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Unify\UNIFY\frontend\pages" />
       <recent name="D:\Unify\UNIFY\frontend\components\global" />
       <recent name="D:\Unify\UNIFY\frontend\lib" />
     </key>
@@ -100,6 +81,8 @@
       <workItem from="1736311447454" duration="13000" />
       <workItem from="1736311473121" duration="6880000" />
       <workItem from="1736319812344" duration="3643000" />
+      <workItem from="1736598302799" duration="2566000" />
+      <workItem from="1736668548398" duration="6611000" />
     </task>
     <servers />
   </component>
