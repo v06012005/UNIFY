@@ -4,15 +4,6 @@ import React from "react";
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import Router from "next/router";
-
-// const goBack = () => {
-//   if (window.history.length > 1) {
-//     Router.back();
-//   } else {
-//     Router.push("/");
-//   }
-// };
 
 const NavButton = ({ iconClass, href = "", content = "" }) => {
   return (
@@ -280,9 +271,7 @@ const Page = () => {
                                   href="/unfollow"
                                   iconClass={"fa-solid fa-x"}
                                 />
-                                <p className="text-base ">
-                                  Unfollow
-                                </p>
+                                <p className="text-base ">Unfollow</p>
                               </div>
                             </div>
                           </li>
