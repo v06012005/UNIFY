@@ -4,18 +4,15 @@ import React from "react";
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-const NavButton = ({ iconClass, href = "" }) => {
+const NavButton = ({ iconClass, href = "", content = "" }) => {
   return (
-    <Link
-      className="flex h-full items-center text-center transition delay-100 ease-in-out duration-100 hover:bg-[#D9D9D9]"
-      href={href}
-    >
-      <i className={`${iconClass} w-full`}></i>
+    <Link className="flex h-full items-center text-center" href={href}>
+      <i className={`${iconClass}`}></i>
+      <span className="ml-5">{content}</span>
     </Link>
   );
 };
 const Page = () => {
-  const [activeTab, setActiveTab] = useState("post");
   return (
     <div className="w-full">
       <div className="flex">
@@ -26,16 +23,10 @@ const Page = () => {
               <p className="mt-3 text-gray-500">Your information</p>
               <li className="h-16 flex items-center">
                 <div className="flex items-center p-2 rounded-lg hover:bg-gray-200 active:bg-gray-400 bg-gray-400 transition-colors w-full">
-                  <NavButton href="/" iconClass="fa-solid fa-address-card" />
-                  <span className="ml-4">Edit Profile</span>
+                <NavButton href="/profile" iconClass="fa-solid fa-address-card" content="Edit Profile" />
                 </div>
               </li>
-              <li className="h-5 flex items-center">
-                <div className="flex items-center p-2 rounded-lg hover:bg-gray-200 active:bg-gray-400 transition-colors w-full">
-                  <NavButton href="/" iconClass="fa-solid fa-bell" />
-                  <span className="ml-4">Notification</span>
-                </div>
-              </li>
+              
             </ul>
           </div>
         </div>
@@ -246,6 +237,11 @@ const Page = () => {
   </div>
 </div>
 
+<div className="m-5 flex justify-end">
+  <button className="px-10 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-xl">
+    Save
+  </button>
+</div>
           </form>
         </div>
       </div>
