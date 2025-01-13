@@ -4,7 +4,7 @@ import "./globals.css";
 import Head from "next/head";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import AuthProvider from "@/components/provider/AuthProvider";
-
+import { ModalProvider } from "@/components/provider/ModalProvider";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -34,7 +34,9 @@ export default async function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} flex w-full antialiased`}
       >
         <AuthProvider>
-          {children}
+          <ModalProvider>
+            {children}
+          </ModalProvider>
         </AuthProvider>
       </body>
     </html>

@@ -1,8 +1,12 @@
+"use client";
+
 import avatar from "@/public/images/test1.png";
 import Image from "next/image";
 import { PhotoIcon, UserCircleIcon } from "@heroicons/react/24/solid";
-import SimpleTextEditor from "@/components/global/SimpleTextEditor";
+import ModalDialog from "@/components/global/ModalDialog";
 import ToggleButton from "@/components/global/ToggleButton";
+import { useModal } from "@/components/provider/ModalProvider";
+import { ExclamationTriangleIcon } from '@heroicons/react/24/outline'
 
 const User = () => {
   return (
@@ -17,6 +21,13 @@ const User = () => {
 };
 
 const Page = () => {
+  const { openModal } = useModal();
+
+  function handleClick() {
+    alert("this is a function")
+  }
+
+
   return (
     <div className="h-screen">
       <div className="flex flex-col h-full px-4">
@@ -62,11 +73,12 @@ const Page = () => {
               </div>
               <div className="mt-6 flex items-center justify-end gap-x-6">
                 <button
-                  type="button"
+                  type="button" onClick={openModal}
                   className="text-sm/6 font-semibold text-gray-900"
                 >
                   Cancel
                 </button>
+                <ModalDialog icon={<ExclamationTriangleIcon className="w-6 h-6 text-red-500" />} buttonText="Discard" handleClick={handleClick} title={"Discard this post"} description={"If you leave, your edits will be deleted. Are you sure that you want to discard this post?"} />
                 <button
                   type="submit"
                   className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
