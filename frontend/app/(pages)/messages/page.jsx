@@ -218,7 +218,6 @@ const Page = () => {
             </div>
           </div>
 
-
           <div className="flex items-center mt-3 bg-gray-800 text-white p-3 rounded-3xl w-full justify-center">
             <Image
               src={avatar2}
@@ -233,8 +232,8 @@ const Page = () => {
             />
           </div>
         </div>
-      </div >
-    </div >
+      </div>
+    </div>
   );
 };
 
