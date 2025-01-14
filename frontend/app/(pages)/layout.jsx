@@ -4,10 +4,10 @@ const RootLayout = ({ children }) => {
   return (
     <>
       <div className="flex w-full">
-        <aside className="flex-none w-20">
+        <aside className="w-28">
           <SideBar />
         </aside>
-        <main className="flex-initial w-full">{children}</main>
+        <main className="w-full">{children}</main>
       </div>
     </>
   );
