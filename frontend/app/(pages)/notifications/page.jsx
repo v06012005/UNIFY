@@ -2,12 +2,13 @@ import Image from "next/image";
 
 const Page = () => {
   return (
-    <div className={"h-screen w-full flex flex-col"}>
-      <div className={"grid gap-5 place-content-center"}>
+    <div className={"min-h-screen w-full flex flex-col justify-center"}>
+      <div className={"grid gap-5 place-content-center bg-black"}>
         {/* Start */}
-        <div className={"border-b-2 border-gray-300 w-full"}>ádasd</div>
-        <div className={"border-b-2 border-gray-300 w-full"}>ádasd</div>
-        <div className={"border-b-2 border-gray-300 w-full"}>ádasd</div>
+        <div>
+          <h2 className={"text-white"}>Thông báo</h2>
+          <table></table>
+        </div>
         {/* End */}
       </div>
     </div>
