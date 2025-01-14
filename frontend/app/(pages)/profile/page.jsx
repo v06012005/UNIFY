@@ -39,7 +39,9 @@ const Page = () => {
           <div className="p-3">
             <h3 className="text-3xl font-bold ">Settings</h3>
             <ul className="text-1xl ">
-              <li><p className="mt-3 text-gray-500">Your information</p></li>
+              <li>
+                <p className="mt-3 text-gray-500">Your information</p>
+              </li>
               <li className="h-16 flex items-center">
                 <div className="flex items-center p-2 rounded-lg hover:bg-gray-200 active:bg-gray-400 bg-gray-400 transition-colors w-full">
                   <NavButton
