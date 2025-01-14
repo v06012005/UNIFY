@@ -33,13 +33,9 @@ export default async function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} flex w-full antialiased`}
       >
         <AuthProvider>
-<<<<<<< HEAD
           <ModalProvider>
             {children}
           </ModalProvider>
-=======
-          <ModalProvider>{children}</ModalProvider>
->>>>>>> 5f8740f0f503ee5aa5bf707fd5e49ad6a7f5268c
         </AuthProvider>
       </body>
     </html>
