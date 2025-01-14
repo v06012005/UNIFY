@@ -3,6 +3,7 @@ import avatar from '@/public/images/test1.png'
 import Image from 'next/image'
 import fullLogo from '@/public/images/unify_1.svg';
 import RootLayout from "./(pages)/layout";
+import Link from "next/link";
 
 const SearchBar = () => {
   return (
@@ -18,15 +19,17 @@ const SearchBar = () => {
   )
 }
 
-const User = () => {
+const User = ({ href = "" }) => {
   return (
-    <div className='flex mb-4'>
-      <Image src={avatar} alt='Avatar' className='rounded-full w-14 h-14' />
-      <div className="ml-5">
-        <p className='my-auto text-lg font-bold'>@username</p>
-        <p className="my-auto">Johnny Dang</p>
+    <Link href={href}>
+      <div className='flex mb-4'>
+        <Image src={avatar} alt='Avatar' className='rounded-full w-14 h-14' />
+        <div className="ml-5">
+          <p className='my-auto text-lg font-bold'>@username</p>
+          <p className="my-auto">Johnny Dang</p>
+        </div>
       </div>
-    </div>
+    </Link>
   )
 }
 
@@ -43,15 +46,15 @@ export default function Home() {
         </div>
         <div className="basis-1/4 border py-8 h-screen sticky top-0">
           <div className="w-3/4 flex flex-col mx-auto">
-            <User />
+            <User href="/profile" />
             <hr className="my-4" />
             <div>
               <p className="font-bold text-xl mb-4">Your Friends</p>
-              <User />
-              <User />
-              <User />
-              <User />
-              <User />
+              <User href="/profile" />
+              <User href="/" />
+              <User href="/" />
+              <User href="/" />
+              <User href="/" />
             </div>
             <hr className="my-4" />
             <div>
