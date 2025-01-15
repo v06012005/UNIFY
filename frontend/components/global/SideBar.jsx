@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import React, { useState, useCallback, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import Avatar from "@/public/images/avt.jpg";
 
@@ -28,69 +28,89 @@ const NotificationButton = ({ iconClass, onClick }) => {
   );
 };
 
-const NotificationModal = ({ isNotificationOpen, onClose }) => {
-  const modalRef = useRef(null);
-
-  const handleClickOutside = (event) => {
-    if (modalRef.current && !modalRef.current.contains(event.target)) {
-      onClose();
-    }
-  };
-
-  useEffect(() => {
-    if (isNotificationOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isNotificationOpen]);
-
+const NotificationModal = ({ isNotificationOpen, modalRef }) => {
   if (!isNotificationOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex left-20 items-center">
+    <div className="fixed inset-0 left-20 bg-black bg-opacity-50 z-50 flex items-center">
       <div
         ref={modalRef}
-        className="bg-white left-2 rounded-lg shadow-lg w-128 p-6 relative"
+        className="bg-white left-2 rounded-lg shadow-lg w-128 p-6 relative mb-1"
         style={{ height: "calc(100vh - 0.3cm)" }}
       >
         <h1 className="font-extrabold text-3xl font-mono mb-4">
           Notifications
         </h1>
         <div className="grid place-content-start">
-          {[1, 2].map((_, index) => (
-            <div
-              key={index}
-              className="p-2 bg-gray-100 mb-2 rounded-lg items-center"
-            >
-              <div className="flex items-center gap-4">
-                <Image
-                  src={Avatar}
-                  width={70}
-                  height={70}
-                  alt="User"
-                  className="rounded-full"
-                />
-                <div className="flex flex-col">
-                  <div className="flex gap-2">
-                    <p>
-                      <strong className="font-black text-xl">Username</strong>{" "}
-                      đã follow bạn
-                    </p>
-                    <button className="border border-gray-300 rounded-md px-2 py-1 text-sm bg-transparent text-black">
-                      Đã follow
-                    </button>
-                  </div>
-                  <small className="text-gray-400 text-sm">
-                    30 seconds ago
-                  </small>
+          <div className="p-2 px-4 bg-gray-100 mb-2 rounded-lg items-center">
+            <div className="flex items-center gap-4">
+              <Image
+                src={Avatar}
+                width={70}
+                height={70}
+                alt="User"
+                className="rounded-full"
+              />
+              <div className="flex flex-col">
+                <div className="flex gap-2">
+                  <p>
+                    <strong className="font-black text-xl">Username</strong> đã
+                    follow bạn
+                  </p>
+                  <button className="border border-gray-300 rounded-md px-2 py-1 text-sm bg-transparent text-black">
+                    Đã follow
+                  </button>
                 </div>
+                <small className="text-gray-400 text-sm">30 seconds ago</small>
               </div>
             </div>
-          ))}
+          </div>
+          <div className="p-2 px-4 bg-gray-100 mb-2 rounded-lg items-center">
+            <div className="flex items-center gap-4">
+              <Image
+                src={Avatar}
+                width={70}
+                height={70}
+                alt="User"
+                className="rounded-full"
+              />
+              <div className="flex flex-col">
+                <div className="flex gap-2">
+                  <p>
+                    <strong className="font-black text-xl">Username</strong> đã
+                    follow bạn
+                  </p>
+                  <button className="border border-gray-300 rounded-md px-2 py-1 text-sm bg-transparent text-black">
+                    Đã follow
+                  </button>
+                </div>
+                <small className="text-gray-400 text-sm">30 seconds ago</small>
+              </div>
+            </div>
+          </div>
+          <div className="p-2 px-4 mb-2 rounded-lg items-center">
+            <div className="flex items-center gap-4">
+              <Image
+                src={Avatar}
+                width={70}
+                height={70}
+                alt="User"
+                className="rounded-full"
+              />
+              <div className="flex flex-col">
+                <div className="flex gap-2">
+                  <p>
+                    <strong className="font-black text-xl">Username</strong> đã
+                    follow bạn
+                  </p>
+                  <button className="border border-gray-300 rounded-md px-2 py-1 text-sm bg-transparent text-black">
+                    Đã follow
+                  </button>
+                </div>
+                <small className="text-gray-400 text-sm">30 seconds ago</small>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -99,9 +119,29 @@ const NotificationModal = ({ isNotificationOpen, onClose }) => {
 
 const SideBar = () => {
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const modalRef = useRef(null);
+  const buttonRef = useRef(null);
 
   const toggleNotification = useCallback(() => {
-    setIsNotificationOpen((prevState) => !prevState);
+    setIsNotificationOpen((prev) => !prev);
+  }, []);
+
+  const handleClickOutside = (event) => {
+    if (
+      modalRef.current &&
+      !modalRef.current.contains(event.target) &&
+      buttonRef.current &&
+      !buttonRef.current.contains(event.target)
+    ) {
+      setIsNotificationOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   return (
@@ -140,10 +180,14 @@ const SideBar = () => {
             ></NavButton>
           </li>
           <li className="h-16">
-            <NotificationButton
+            <button
+              ref={buttonRef}
               onClick={toggleNotification}
-              iconClass={"fa-solid fa-bell"}
-            ></NotificationButton>
+              className="w-full flex h-full items-center text-center transition delay-100 ease-in-out duration-100 hover:bg-[#D9D9D9]"
+              title={"Notifications"}
+            >
+              <i className="fa-solid fa-bell w-full"></i>
+            </button>
           </li>
           <li className="h-16">
             <NavButton
@@ -162,7 +206,7 @@ const SideBar = () => {
 
       <NotificationModal
         isNotificationOpen={isNotificationOpen}
-        onClose={() => setIsNotificationOpen(false)}
+        modalRef={modalRef}
       />
     </div>
   );
