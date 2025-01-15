@@ -7,7 +7,6 @@ import GoogleLogo from "@/public/images/GoogleLogo.png"
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {signIn} from "next-auth/react";
-import {redirect} from "next/navigation";
 
 const LoginPage = () => {
 
@@ -36,7 +35,7 @@ const LoginPage = () => {
                     </div>
                     <div className={`flex items-center gap-1 m-auto`}>
                         <span>Don't have an account yet?</span>
-                        <Link href={"/"} className={`text-[#0F00E1]`}>Sign up</Link>
+                        <Link href={"/register"} className={`text-[#0F00E1]`}>Sign up</Link>
                     </div>
                     <Button className={`text-2xl mt-3 p-5`}>Login</Button>
                 </div>
