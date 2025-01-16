@@ -2,10 +2,9 @@ spring:
   application:
     name: UNIFY
   jpa:
-    database: MSSQL
     show-sql: true
     ddl-auto: update
   datasource:
-    url: jdbc:sqlserver://localhost:1433;databaseName=Unify;encrypt =false;trustServerCertificate=false
+    url: "jdbc:sqlserver://localhost:1433;databaseName=Unify;encrypt=false;trustServerCertificate=false"
     username: sa
     password: 123456
