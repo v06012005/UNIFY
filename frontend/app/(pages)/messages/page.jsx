@@ -66,7 +66,7 @@ const Page = () => {
                 <p className="text-lg text-gray-700 truncate w-40">TanVinh</p>
               </div>
             </div>
-            <div className="flex  w-1/3 justify-end text-2xl">
+            <div className="flex w-1/3 justify-end text-2xl">
               <button
                 title="Call"
                 className="mr-2 p-2 rounded-md hover:bg-gray-200 transition ease-in-out duration-200"
