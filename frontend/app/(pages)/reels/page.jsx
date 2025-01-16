@@ -14,7 +14,7 @@ const Reels = () => {
           className="relative w-[450px] h-[700px] bg-gray-800 mx-auto rounded-2xl overflow-hidden m-5"
         >
           <div className="absolute inset-0 bg-gray-700 flex justify-center items-center">
-            <button className="absolute top-4 right-4 bg-gray-900 text-white rounded-full p-2">
+            <button className="absolute top-4 right-4 bg-gray-900 text-white rounded-full p-2" title="mute">
               <i className="fa-solid fa-volume-xmark"></i>
             </button>
             <Image src={avatar} alt="Reel Image" />
