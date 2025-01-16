@@ -4,21 +4,24 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import Avatar from "@/public/images/avt.jpg";
+import clsx from "clsx";
 
-const NavButton = React.memo(({ iconClass, href = "" }) => (
-  <Link
-    href={href}
-    className="w-full flex h-full items-center text-center transition delay-100 ease-in-out duration-100 hover:bg-[#D9D9D9]"
-  >
-    <i className={`${iconClass} w-full`}></i>
-  </Link>
-));
+const NavButton = React.memo(function NavButton({ iconClass, href = "", title = "" }) {
+
+  return (
+    <Link title={title}
+      href={href}
+      className={`w-full flex h-full items-center text-center transition delay-100 ease-in-out duration-100 hover:bg-[#D9D9D9]`}
+    >
+      <i className={`${iconClass} w-full`}></i>
+    </Link>
+  )
+});
 
 const NotificationItem = React.memo(({ isSeen = false }) => (
   <div
-    className={`p-2 px-4 rounded-lg items-center ${
-      isSeen ? "" : "bg-gray-100"
-    }`}
+    className={`p-2 px-4 rounded-lg items-center ${isSeen ? "" : "bg-gray-100"
+      }`}
   >
     <div className="flex items-center gap-4">
       <Image
@@ -122,19 +125,19 @@ const SideBar = () => {
         />
         <ul className="text-3xl flex flex-col justify-center grow w-full">
           <li className="h-16">
-            <NavButton href="/" iconClass={"fa-solid fa-house"} />
+            <NavButton title="Home" href="/" iconClass={"fa-solid fa-house"} />
           </li>
           <li className="h-16">
-            <NavButton href="/" iconClass={"fa-solid fa-magnifying-glass"} />
+            <NavButton title="Search" href="/" iconClass={"fa-solid fa-magnifying-glass"} />
           </li>
           <li className="h-16">
-            <NavButton href="/explore" iconClass={"fa-solid fa-compass"} />
+            <NavButton title="Explore" href="/explore" iconClass={"fa-solid fa-compass"} />
           </li>
           <li className="h-16">
-            <NavButton href="/reels" iconClass={"fa-solid fa-film"} />
+            <NavButton title="Reels" href="/reels" iconClass={"fa-solid fa-film"} />
           </li>
           <li className="h-16">
-            <NavButton
+            <NavButton title="Messages"
               href="/messages"
               iconClass={"fa-brands fa-facebook-messenger"}
             />
@@ -150,10 +153,10 @@ const SideBar = () => {
             </button>
           </li>
           <li className="h-16">
-            <NavButton href="/posts" iconClass={"fa-regular fa-square-plus"} />
+            <NavButton title="Create post" href="/posts" iconClass={"fa-regular fa-square-plus"} />
           </li>
         </ul>
-        <Link
+        <Link title="Settings"
           className="w-20 flex h-20 text-3xl items-center text-center transition delay-100 ease-in-out duration-100 hover:bg-[#D9D9D9]"
           href=""
         >
