@@ -2,6 +2,7 @@ import Image from "next/image";
 import avatar from "@/public/images/testreel.jpg";
 import avatar2 from "@/public/images/testAvt.jpg";
 import { Input } from "@/components/ui/input";
+import Link from "next/link";
 
 const Page = () => {
   return (
@@ -66,19 +67,19 @@ const Page = () => {
                 <p className="text-lg text-gray-700 truncate w-40">TanVinh</p>
               </div>
             </div>
-            <div className="flex  w-1/3 justify-end text-2xl">
-              <button
+            <div className="flex w-1/3 justify-end text-2xl">
+              <Link href="/call"
                 title="Call"
                 className="mr-2 p-2 rounded-md hover:bg-gray-200 transition ease-in-out duration-200"
               >
                 <i className="fa-solid fa-phone "></i>
-              </button>
-              <button
+              </Link>
+              <Link href="/videocall"
                 title="Video Call"
                 className="mr-2 p-2 rounded-md hover:bg-gray-200 transition ease-in-out duration-200"
               >
                 <i className="fa-solid fa-video"></i>
-              </button>
+              </Link>
             </div>
           </div>
           <hr className=" border-1 border-gray-800" />
