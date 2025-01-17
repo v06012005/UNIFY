@@ -4,6 +4,7 @@ import React from "react";
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import dummy from "@/public/images/dummy.png";
 
 const NavButton = ({ iconClass, href = "", content = "" }) => {
   return (
@@ -48,10 +49,10 @@ const Page = () => {
 
           <div className="grid grid-cols-4 gap-4">
             <div className="relative bg-white rounded-lg shadow-lg overflow-hidden">
-              <img
-                src="https://via.placeholder.com/300x400"
+              <Image
+                src={dummy}
                 alt="Reel"
-                className="w-40 h-60 object-cover"
+                className="w-full h-60 object-cover"
               />
               <div className="p-4">
                 <h3 className="font-bold text-lg mb-2">Reel Title</h3>

@@ -2,6 +2,8 @@ import Image from "next/image";
 import avatar from "@/public/images/testreel.jpg";
 import avatar2 from "@/public/images/testAvt.jpg";
 import { Input } from "@/components/ui/input";
+import Link from "next/link";
+
 const Page = () => {
   return (
     <div className="w-full">
@@ -21,48 +23,6 @@ const Page = () => {
                 placeholder={"Search..."}
                 className={`w-[400px] h-12 border-gray-950 font-bold`}
               />
-            </div>
-            <div className="w-full flex mt-3 space-x-6 overflow-x-auto">
-              <div className="place-items-center text-center">
-                <Image
-                  src={avatar}
-                  alt="Avatar"
-                  className="rounded-full w-16 h-16"
-                />
-                <p className="truncate w-16">Le Tan Vinh</p>
-              </div>
-              <div className="place-items-center text-center">
-                <Image
-                  src={avatar}
-                  alt="Avatar"
-                  className="rounded-full w-16 h-16"
-                />
-                <p className="truncate w-16">Nguyen Huu Trung</p>
-              </div>
-              <div className="place-items-center text-center">
-                <Image
-                  src={avatar}
-                  alt="Avatar"
-                  className="rounded-full w-16 h-16"
-                />
-                <p className="truncate w-16">Huynh Thi Thao Vy</p>
-              </div>
-              <div className="place-items-center text-center">
-                <Image
-                  src={avatar}
-                  alt="Avatar"
-                  className="rounded-full w-16 h-16"
-                />
-                <p className="truncate w-16">Le Minh Dang</p>
-              </div>
-              <div className="place-items-center text-center">
-                <Image
-                  src={avatar}
-                  alt="Avatar"
-                  className="rounded-full w-16 h-16"
-                />
-                <p className="truncate w-16">Nguyen An Ninh</p>
-              </div>
             </div>
           </div>
 
@@ -107,19 +67,19 @@ const Page = () => {
                 <p className="text-lg text-gray-700 truncate w-40">TanVinh</p>
               </div>
             </div>
-            <div className="flex  w-1/3 justify-end text-2xl">
-              <button
+            <div className="flex w-1/3 justify-end text-2xl">
+              <Link href="/call"
                 title="Call"
                 className="mr-2 p-2 rounded-md hover:bg-gray-200 transition ease-in-out duration-200"
               >
                 <i className="fa-solid fa-phone "></i>
-              </button>
-              <button
+              </Link>
+              <Link href="/videocall"
                 title="Video Call"
                 className="mr-2 p-2 rounded-md hover:bg-gray-200 transition ease-in-out duration-200"
               >
                 <i className="fa-solid fa-video"></i>
-              </button>
+              </Link>
             </div>
           </div>
           <hr className=" border-1 border-gray-800" />
@@ -218,8 +178,7 @@ const Page = () => {
             </div>
           </div>
 
-
-          <div className="flex items-center mt-3 bg-gray-800 text-white p-3 rounded-3xl w-full justify-center">
+          <div className="flex items-center mt-3 bg-gray-800 text-white p-3 rounded-2xl w-full justify-center">
             <Image
               src={avatar2}
               alt="Avatar"
@@ -233,8 +192,8 @@ const Page = () => {
             />
           </div>
         </div>
-      </div >
-    </div >
+      </div>
+    </div>
   );
 };
 
