@@ -195,7 +195,7 @@ const Page = () => {
                   <li className="flex items-center">
                     <div className="flex items-center py-2 px-5 rounded-lg hover:bg-gray-400 bg-gray-200 transition-colors w-full">
                       <NavButton
-                        href="/profile/archive"
+                        href="/settings/archive"
                         iconClass="fa-regular fa-bookmark mr-5"
                         content="View Archive"
                       />
@@ -286,66 +286,62 @@ const Page = () => {
               </div>
             </div>
           </div>
-
-          <div className="p-4">
-            <div className="flex justify-around border-b-2 border-gray-300">
-              <button
-                className={`py-2 px-4 font-bold flex items-center ${
-                  activeTab === "post"
-                    ? "text-blue-500 border-b-4 border-blue-500"
-                    : "text-gray-500"
+        </div>
+        <div className="p-4">
+          <div className="flex justify-around border-b-2 border-gray-300">
+            <button
+              className={`py-2 px-4 font-bold flex items-center ${activeTab === "post"
+                ? "text-blue-500 border-b-4 border-blue-500"
+                : "text-gray-500"
                 }`}
-                onClick={() => setActiveTab("post")}
-              >
-                <NavButton href="/" iconClass="fa-solid fa-pen" />
-                <span className="ml-2">POST</span>
-              </button>
+              onClick={() => setActiveTab("post")}
+            >
+              <NavButton href="/" iconClass="fa-solid fa-pen" />
+              <span className="ml-2">POST</span>
+            </button>
 
-              <button
-                className={`py-2 px-4 font-bold flex items-center ${
-                  activeTab === "saved"
-                    ? "text-blue-500 border-b-4 border-blue-500"
-                    : "text-gray-500"
+            <button
+              className={`py-2 px-4 font-bold flex items-center ${activeTab === "saved"
+                ? "text-blue-500 border-b-4 border-blue-500"
+                : "text-gray-500"
                 }`}
-                onClick={() => setActiveTab("saved")}
-              >
-                <NavButton href="/" iconClass="fa-solid fa-bookmark" />
-                <span className="ml-2">SAVED</span>
-              </button>
+              onClick={() => setActiveTab("saved")}
+            >
+              <NavButton href="/" iconClass="fa-solid fa-bookmark" />
+              <span className="ml-2">SAVED</span>
+            </button>
 
-              <button
-                className={`py-2 px-4 font-bold flex items-center ${
-                  activeTab === "tagged"
-                    ? "text-blue-500 border-b-4 border-blue-500"
-                    : "text-gray-500"
+            <button
+              className={`py-2 px-4 font-bold flex items-center ${activeTab === "tagged"
+                ? "text-blue-500 border-b-4 border-blue-500"
+                : "text-gray-500"
                 }`}
-                onClick={() => setActiveTab("tagged")}
-              >
-                <NavButton href="/" iconClass="fa-solid fa-tag" />
-                <span className="ml-2">TAGGED</span>
-              </button>
-            </div>
+              onClick={() => setActiveTab("tagged")}
+            >
+              <NavButton href="/" iconClass="fa-solid fa-tag" />
+              <span className="ml-2">TAGGED</span>
+            </button>
+          </div>
 
-            <div className="mt-4">
-              {activeTab === "post" && (
-                <div>
-                  <h3 className="text-xl font-bold">Your Posts</h3>
-                  <p>Here are your posts...</p>
-                </div>
-              )}
-              {activeTab === "saved" && (
-                <div>
-                  <h3 className="text-xl font-bold">Saved Items</h3>
-                  <p>Here are your saved items...</p>
-                </div>
-              )}
-              {activeTab === "tagged" && (
-                <div>
-                  <h3 className="text-xl font-bold">Tagged Posts</h3>
-                  <p>Here are the posts you're tagged in...</p>
-                </div>
-              )}
-            </div>
+          <div className="mt-4">
+            {activeTab === "post" && (
+              <div>
+                <h3 className="text-xl font-bold">Your Posts</h3>
+                <p>Here are your posts...</p>
+              </div>
+            )}
+            {activeTab === "saved" && (
+              <div>
+                <h3 className="text-xl font-bold">Saved Items</h3>
+                <p>Here are your saved items...</p>
+              </div>
+            )}
+            {activeTab === "tagged" && (
+              <div>
+                <h3 className="text-xl font-bold">Tagged Posts</h3>
+                <p>Here are the posts you're tagged in...</p>
+              </div>
+            )}
           </div>
         </div>
       </div>

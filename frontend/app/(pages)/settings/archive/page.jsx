@@ -18,24 +18,7 @@ const Page = () => {
   return (
     <div className="w-full">
       <div className="flex">
-        <div className="flex basis-1/4 flex-col border-r w-[300px] h-screen overflow-y-auto">
-          <div className="p-3">
-            <h3 className="text-3xl font-bold ">Settings</h3>
-            <ul className="text-1xl ">
-              <p className="mt-3 text-gray-500">Your information</p>
-              <li className="h-16 flex items-center">
-                <div className="flex items-center p-2 rounded-lg hover:bg-gray-200 active:bg-gray-400 bg-gray-400 transition-colors w-full">
-                  <NavButton
-                    href="/profile"
-                    iconClass="fa-solid fa-address-card mr-5"
-                    content="Edit Profile"
-                  />
-                </div>
-              </li>
-            </ul>
-          </div>
-        </div>
-        <div className="h-screen basis-3/4 overflow-y-auto p-4 bg-gray-100">
+        <div className="h-screen overflow-y-auto p-4 bg-gray-100">
           <h3 className="text-3xl font-bold mb-3">Archive</h3>
           <div className="mb-4">
             <input
