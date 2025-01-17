@@ -4,7 +4,7 @@ import React from "react";
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import dummy from '@/public/images/dummy.png'
+import dummy from "@/public/images/dummy.png";
 
 const NavButton = ({ iconClass, href = "", content = "" }) => {
   return (
@@ -15,8 +15,6 @@ const NavButton = ({ iconClass, href = "", content = "" }) => {
   );
 };
 const Page = () => {
-  const [activeTab, setActiveTab] = useState("post");
-
   return (
     <div className="w-full">
       <div className="flex">
