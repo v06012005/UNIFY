@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import Avatar from "@/public/images/avt.jpg";
-import clsx from "clsx";
+import avatar from '@/public/images/test1.png'
 
 const NavButton = React.memo(function NavButton({ iconClass, href = "", title = "" }) {
 
@@ -154,6 +154,14 @@ const SideBar = () => {
           </li>
           <li className="h-16">
             <NavButton title="Create post" href="/posts" iconClass={"fa-regular fa-square-plus"} />
+          </li>
+          <li className="h-16">
+            <Link title="Your profile"
+              href="/profile"
+              className={`w-full flex h-full items-center`}
+            >
+              <Image src={avatar} alt="User profile image" className="h-10 w-10 mx-auto rounded-full" />
+            </Link>
           </li>
         </ul>
         <Link title="Settings"
