@@ -15,8 +15,6 @@ const NavButton = ({ iconClass, href = "", content = "" }) => {
   );
 };
 const Page = () => {
-  const [activeTab, setActiveTab] = useState("post");
-
   return (
     <div className="w-full">
       <div className="flex">
