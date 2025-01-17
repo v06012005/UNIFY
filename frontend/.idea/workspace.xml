@@ -5,10 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1dc806c8-9b06-409a-84de-1db3bd7b8131" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(pages)/layout.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(pages)/layout.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/global/SideBar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/global/SideBar.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tailwind.config.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/tailwind.config.mjs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/global/SearchHorizontalToggle.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/global/SearchHorizontalToggle.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -95,7 +92,7 @@
       <workItem from="1736598302799" duration="2566000" />
       <workItem from="1736668548398" duration="6611000" />
       <workItem from="1736766584478" duration="5615000" />
-      <workItem from="1737104061842" duration="12421000" />
+      <workItem from="1737104061842" duration="12731000" />
     </task>
     <servers />
   </component>
