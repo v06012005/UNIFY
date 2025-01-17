@@ -166,7 +166,7 @@ const SideBar = () => {
         </ul>
         <Link title="Settings"
           className="w-20 flex h-20 text-3xl items-center text-center transition delay-100 ease-in-out duration-100 hover:bg-[#D9D9D9]"
-          href=""
+          href="/settings/edit-profile"
         >
           <i className="fa-solid w-full fa-gear"></i>
         </Link>
