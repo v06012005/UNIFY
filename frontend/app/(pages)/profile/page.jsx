@@ -285,70 +285,86 @@ const Page = () => {
                 <p className="ml-2">Follow</p>
               </div>
             </div>
-          </div>
-</div>
-          <div className="p-4">
-            <div className="flex justify-around border-b-2 border-gray-300">
-              <button
-                className={`py-2 px-4 font-bold flex items-center ${
-                  activeTab === "post"
-                    ? "text-blue-500 border-b-4 border-blue-500"
-                    : "text-gray-500"
-                }`}
-                onClick={() => setActiveTab("post")}
-              >
-                <NavButton href="/" iconClass="fa-solid fa-pen" />
-                <span className="ml-2">POST</span>
-              </button>
-
-              <button
-                className={`py-2 px-4 font-bold flex items-center ${
-                  activeTab === "saved"
-                    ? "text-blue-500 border-b-4 border-blue-500"
-                    : "text-gray-500"
-                }`}
-                onClick={() => setActiveTab("saved")}
-              >
-                <NavButton href="/" iconClass="fa-solid fa-bookmark" />
-                <span className="ml-2">SAVED</span>
-              </button>
-
-              <button
-                className={`py-2 px-4 font-bold flex items-center ${
-                  activeTab === "tagged"
-                    ? "text-blue-500 border-b-4 border-blue-500"
-                    : "text-gray-500"
-                }`}
-                onClick={() => setActiveTab("tagged")}
-              >
-                <NavButton href="/" iconClass="fa-solid fa-tag" />
-                <span className="ml-2">TAGGED</span>
-              </button>
-            </div>
-
-            <div className="mt-4">
-              {activeTab === "post" && (
-                <div>
-                  <h3 className="text-xl font-bold">Your Posts</h3>
-                  <p>Here are your posts...</p>
-                </div>
-              )}
-              {activeTab === "saved" && (
-                <div>
-                  <h3 className="text-xl font-bold">Saved Items</h3>
-                  <p>Here are your saved items...</p>
-                </div>
-              )}
-              {activeTab === "tagged" && (
-                <div>
-                  <h3 className="text-xl font-bold">Tagged Posts</h3>
-                  <p>Here are the posts you're tagged in...</p>
-                </div>
-              )}
+            <div className="min-w-[150px] flex-shrink-0 p-2 mb-2 flex flex-col items-center bg-white rounded-lg shadow hover:shadow-lg transition-shadow">
+              <Image
+                src={`/images/avt.jpg`}
+                alt="Avatar"
+                className="rounded-full border-4 border-gray-300"
+                width={80}
+                height={80}
+              />
+              <p className="mt-2 text-gray-700 font-semibold text-sm text-center">
+                John Doe
+              </p>
+              <div className="flex items-center mt-2 py-1 rounded-md bg-gray-500 hover:bg-gray-400 transition-colors text-white w-full justify-center cursor-pointer">
+                <NavButton href="/follow" iconClass={"fa-solid fa-user-plus"} />
+                <p className="ml-2">Follow</p>
+              </div>
             </div>
           </div>
         </div>
+        <div className="p-4">
+          <div className="flex justify-around border-b-2 border-gray-300">
+            <button
+              className={`py-2 px-4 font-bold flex items-center ${
+                activeTab === "post"
+                  ? "text-blue-500 border-b-4 border-blue-500"
+                  : "text-gray-500"
+              }`}
+              onClick={() => setActiveTab("post")}
+            >
+              <NavButton href="/" iconClass="fa-solid fa-pen" />
+              <span className="ml-2">POST</span>
+            </button>
+
+            <button
+              className={`py-2 px-4 font-bold flex items-center ${
+                activeTab === "saved"
+                  ? "text-blue-500 border-b-4 border-blue-500"
+                  : "text-gray-500"
+              }`}
+              onClick={() => setActiveTab("saved")}
+            >
+              <NavButton href="/" iconClass="fa-solid fa-bookmark" />
+              <span className="ml-2">SAVED</span>
+            </button>
+
+            <button
+              className={`py-2 px-4 font-bold flex items-center ${
+                activeTab === "tagged"
+                  ? "text-blue-500 border-b-4 border-blue-500"
+                  : "text-gray-500"
+              }`}
+              onClick={() => setActiveTab("tagged")}
+            >
+              <NavButton href="/" iconClass="fa-solid fa-tag" />
+              <span className="ml-2">TAGGED</span>
+            </button>
+          </div>
+
+          <div className="mt-4">
+            {activeTab === "post" && (
+              <div>
+                <h3 className="text-xl font-bold">Your Posts</h3>
+                <p>Here are your posts...</p>
+              </div>
+            )}
+            {activeTab === "saved" && (
+              <div>
+                <h3 className="text-xl font-bold">Saved Items</h3>
+                <p>Here are your saved items...</p>
+              </div>
+            )}
+            {activeTab === "tagged" && (
+              <div>
+                <h3 className="text-xl font-bold">Tagged Posts</h3>
+                <p>Here are the posts you're tagged in...</p>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
+    </div>
   );
 };
 
