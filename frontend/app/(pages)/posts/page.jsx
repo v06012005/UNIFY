@@ -78,7 +78,11 @@ const Page = () => {
                 >
                   Cancel
                 </button>
-                <ModalDialog icon={<ExclamationTriangleIcon className="w-6 h-6 text-red-500" />} buttonText="Discard" handleClick={handleClick} title={"Discard this post"} description={"If you leave, your edits will be deleted. Are you sure that you want to discard this post?"} />
+                <ModalDialog icon={<ExclamationTriangleIcon className="w-6 h-6 text-red-500" />} buttonText="Discard" handleClick={handleClick} title={"Discard this post"}>
+                  <p className="mt-4 text-sm text-gray-600">
+                    If you leave, your edits will be deleted. Are you sure that you want to discard this post?
+                  </p>
+                </ModalDialog>
                 <button
                   type="submit"
                   className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"

@@ -37,11 +37,11 @@ const Caption = ({ text, maxLength = 100 }) => {
     )
 }
 
-const Post = () => {
+const Post = ({ imageSrc = dummy }) => {
     return (
-        <div className='aspect-video mb-8 pb-8 border-b border-black'>
+        <div className='aspect-video w-3/4 mb-8 mx-auto pb-8 border-b border-black'>
             <User></User>
-            <Image src={dummy} alt='Dummy' className='w-full mb-2 rounded-lg' width={600} height={400} />
+            <Image src={imageSrc} alt='Dummy' className='w-full max-h-svh mb-2 object-cover mx-auto rounded-lg' width={500} height={400} />
             <Caption text={`Lorem ipsum dolor sit amet consectetur adipisicing elit. Sed quibusdam, ex maiores amet alias dolor minima magnam quis totam molestias consectetur laudantium possimus et asperiores? Dignissimos minima animi omnis sed! Lorem ipsum dolor sit amet consectetur, adipisicing elit. Saepe, id repellat minus labore esse eligendi maiores asperiores? Architecto dolorem veritatis, totam nam, molestiae quo quis asperiores qui nostrum animi possimus?`} />
             <PostReaction></PostReaction>
             <div className='mt-2 flex flex-wrap'>

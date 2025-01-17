@@ -33,9 +33,9 @@ const Page = () => {
     setIsFriend(!isFriend);
   };
   return (
-    <div className="w-full">
+    <div className=" w-[80%] mx-auto">
       <div className="h-screen overflow-y-auto">
-        <div className="flex p-5 mr-20">
+        <div className="flex p-5 mx-20">
           <div className="relative">
             <Image
               src={`/images/avt.jpg`}
@@ -60,9 +60,9 @@ const Page = () => {
             </div>
           </div>
 
-          <div className="p-2">
+          <div className="p-2 ml-10">
             <div className="flex justify-between ml-10">
-              <div className="flex flex-col items-center w-200 mt-2 mr-10">
+              <div className="flex flex-col items-center w-200 mt-2 mx-10">
                 <h3 className="text-2xl ">huynhdiz</h3>
                 <p
                   className="mt-5 text-gray-500 font-bold cursor-pointer"
@@ -117,7 +117,7 @@ const Page = () => {
                 )}
               </div>
 
-              <div className="flex flex-col ml-10 items-center w-200">
+              <div className="flex flex-col mx-10 items-center w-200">
                 <ul>
                   <li className="flex items-center">
                     <div className="flex items-center py-2 px-5 rounded-lg hover:bg-gray-400 bg-gray-200 transition-colors w-full">
@@ -190,12 +190,12 @@ const Page = () => {
                 )}
               </div>
 
-              <div className="flex flex-col ml-10 items-center w-200">
+              <div className="flex flex-col mx-10 items-center w-200">
                 <ul>
                   <li className="flex items-center">
                     <div className="flex items-center py-2 px-5 rounded-lg hover:bg-gray-400 bg-gray-200 transition-colors w-full">
                       <NavButton
-                        href="/profile/archive"
+                        href="/settings/archive"
                         iconClass="fa-regular fa-bookmark mr-5"
                         content="View Archive"
                       />
@@ -281,36 +281,12 @@ const Page = () => {
                 John Doe
               </p>
               <div className="flex items-center mt-2 py-1 rounded-md bg-gray-500 hover:bg-gray-400 transition-colors text-white w-full justify-center cursor-pointer">
-                <NavButton
-                  href="/follow"
-                  iconClass={"fa-solid fa-user-plus"}
-                />
-                <p className="ml-2">Follow</p>
-              </div>
-            </div>
-
-            <div className="min-w-[150px] flex-shrink-0 p-2 mb-2 flex flex-col items-center bg-white rounded-lg shadow hover:shadow-lg transition-shadow">
-              <Image
-                src={`/images/avt.jpg`}
-                alt="Avatar"
-                className="rounded-full border-4 border-gray-300"
-                width={80}
-                height={80}
-              />
-              <p className="mt-2 text-gray-700 font-semibold text-sm text-center">
-                John Doe
-              </p>
-              <div className="flex items-center mt-2 py-1 rounded-md bg-gray-500 hover:bg-gray-400 transition-colors text-white w-full justify-center cursor-pointer">
-                <NavButton
-                  href="/follow"
-                  iconClass={"fa-solid fa-user-plus"}
-                />
+                <NavButton href="/follow" iconClass={"fa-solid fa-user-plus"} />
                 <p className="ml-2">Follow</p>
               </div>
             </div>
           </div>
         </div>
-
         <div className="p-4">
           <div className="flex justify-around border-b-2 border-gray-300">
             <button
@@ -369,7 +345,6 @@ const Page = () => {
           </div>
         </div>
       </div>
-
     </div>
   );
 };
