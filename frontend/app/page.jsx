@@ -39,9 +39,9 @@ export default function Home() {
       <div className="flex">
         <div className="basis-3/4 border-r py-8 h-screen overflow-y-scroll no-scrollbar">
           <div className="w-3/4 flex flex-col mx-auto">
-            <Post></Post>
-            <Post></Post>
-            <Post></Post>
+            <Post imageSrc={"/images/vertical.jpg"}></Post>
+            <Post imageSrc={"/images/testreel.jpg"}></Post>
+            <Post imageSrc={"/images/test1.png"}></Post>
           </div>
         </div>
         <div className="basis-1/4 border py-8 h-screen sticky top-0">
