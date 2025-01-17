@@ -33,31 +33,7 @@ const Page = () => {
     setIsFriend(!isFriend);
   };
   return (
-<<<<<<< HEAD
-    <div className="w-full">
-<<<<<<< HEAD
-      <div className="flex">
-        <div className="flex basis-1/4 flex-col border-r w-[300px] h-screen overflow-y-auto">
-          <div className="p-3">
-            <h3 className="text-3xl font-bold ">Settings</h3>
-            <ul className="text-1xl ">
-              <li>
-                <p className="mt-3 text-gray-500">Your information</p>
-              </li>
-              <li className="h-16 flex items-center">
-                <div className="flex items-center p-2 rounded-lg hover:bg-gray-200 active:bg-gray-400 bg-gray-400 transition-colors w-full">
-                  <NavButton
-                    href="/profile"
-                    iconClass="fa-solid fa-address-card mr-5"
-                    content="Edit Profile"
-                  />
-                </div>
-              </li>
-            </ul>
-=======
-=======
     <div className=" w-[80%] mx-auto">
->>>>>>> main
       <div className="h-screen overflow-y-auto">
         <div className="flex p-5 mx-20">
           <div className="relative">
@@ -287,7 +263,6 @@ const Page = () => {
                 )}
               </div>
             </div>
->>>>>>> 5e9bf98218fae6beca7360386d96c9fb920ece7e
           </div>
         </div>
         <div className="bg-gray-100 mt-2 ml-3 mr-5 rounded-lg shadow-md p-2 flex-grow">
@@ -311,7 +286,6 @@ const Page = () => {
               </div>
             </div>
 
-<<<<<<< HEAD
             <div className="p-2">
               <div className="flex justify-between ml-10">
                 <div className="flex flex-col items-center w-200 mt-2 mr-10">
@@ -517,51 +491,6 @@ const Page = () => {
               </div>
             </div>
           </div>
-          <div className="bg-gray-100 mt-2 ml-3 mr-5 rounded-lg shadow-md p-2 flex-grow">
-            <p className="text-lg text-gray-700 mb-2">People you may know</p>
-
-            <div className="flex gap-4 overflow-x-scroll scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
-              <div className="min-w-[150px] flex-shrink-0 p-2 mb-2 flex flex-col items-center bg-white rounded-lg shadow hover:shadow-lg transition-shadow">
-                <Image
-                  src={`/images/avt.jpg`}
-                  alt="Avatar"
-                  className="rounded-full border-4 border-gray-300"
-                  width={80}
-                  height={80}
-                />
-                <p className="mt-2 text-gray-700 font-semibold text-sm text-center">
-                  John Doe
-                </p>
-                <div className="flex items-center mt-2 py-1 rounded-md bg-gray-500 hover:bg-gray-400 transition-colors text-white w-full justify-center cursor-pointer">
-                  <NavButton
-                    href="/follow"
-                    iconClass={"fa-solid fa-user-plus"}
-                  />
-                  <p className="ml-2">Follow</p>
-                </div>
-              </div>
-
-              <div className="min-w-[150px] flex-shrink-0 p-2 mb-2 flex flex-col items-center bg-white rounded-lg shadow hover:shadow-lg transition-shadow">
-                <Image
-                  src={`/images/avt.jpg`}
-                  alt="Avatar"
-                  className="rounded-full border-4 border-gray-300"
-                  width={80}
-                  height={80}
-                />
-                <p className="mt-2 text-gray-700 font-semibold text-sm text-center">
-                  John Doe
-                </p>
-                <div className="flex items-center mt-2 py-1 rounded-md bg-gray-500 hover:bg-gray-400 transition-colors text-white w-full justify-center cursor-pointer">
-                  <NavButton
-                    href="/follow"
-                    iconClass={"fa-solid fa-user-plus"}
-                  />
-                  <p className="ml-2">Follow</p>
-                </div>
-              </div>
-            </div>
-          </div>
 
           <div className="p-4">
             <div className="flex justify-around border-b-2 border-gray-300">
@@ -621,85 +550,7 @@ const Page = () => {
                   <p>Here are the posts you're tagged in...</p>
                 </div>
               )}
-=======
-            <div className="min-w-[150px] flex-shrink-0 p-2 mb-2 flex flex-col items-center bg-white rounded-lg shadow hover:shadow-lg transition-shadow">
-              <Image
-                src={`/images/avt.jpg`}
-                alt="Avatar"
-                className="rounded-full border-4 border-gray-300"
-                width={80}
-                height={80}
-              />
-              <p className="mt-2 text-gray-700 font-semibold text-sm text-center">
-                John Doe
-              </p>
-              <div className="flex items-center mt-2 py-1 rounded-md bg-gray-500 hover:bg-gray-400 transition-colors text-white w-full justify-center cursor-pointer">
-                <NavButton href="/follow" iconClass={"fa-solid fa-user-plus"} />
-                <p className="ml-2">Follow</p>
-              </div>
->>>>>>> 5e9bf98218fae6beca7360386d96c9fb920ece7e
             </div>
-          </div>
-        </div>
-
-        <div className="p-4">
-          <div className="flex justify-around border-b-2 border-gray-300">
-            <button
-              className={`py-2 px-4 font-bold flex items-center ${
-                activeTab === "post"
-                  ? "text-blue-500 border-b-4 border-blue-500"
-                  : "text-gray-500"
-              }`}
-              onClick={() => setActiveTab("post")}
-            >
-              <NavButton href="/" iconClass="fa-solid fa-pen" />
-              <span className="ml-2">POST</span>
-            </button>
-
-            <button
-              className={`py-2 px-4 font-bold flex items-center ${
-                activeTab === "saved"
-                  ? "text-blue-500 border-b-4 border-blue-500"
-                  : "text-gray-500"
-              }`}
-              onClick={() => setActiveTab("saved")}
-            >
-              <NavButton href="/" iconClass="fa-solid fa-bookmark" />
-              <span className="ml-2">SAVED</span>
-            </button>
-
-            <button
-              className={`py-2 px-4 font-bold flex items-center ${
-                activeTab === "tagged"
-                  ? "text-blue-500 border-b-4 border-blue-500"
-                  : "text-gray-500"
-              }`}
-              onClick={() => setActiveTab("tagged")}
-            >
-              <NavButton href="/" iconClass="fa-solid fa-tag" />
-              <span className="ml-2">TAGGED</span>
-            </button>
-          </div>
-
-          <div className="mt-4">
-            {activeTab === "post" && (
-              <div>
-                <h3 className="text-xl font-bold">Your Posts</h3>
-                <p>Here are your posts...</p>
-              </div>
-            )}
-            {activeTab === "saved" && (
-              <div>
-                <h3 className="text-xl font-bold">Saved Items</h3>
-                <p>Here are your saved items...</p>
-              </div>
-            )}
-            {activeTab === "tagged" && (
-              <div>
-                <h3 className="text-xl font-bold">Tagged Posts</h3>
-                <p>Here are the posts you're tagged in...</p>
-              </div>
-            )}
           </div>
         </div>
       </div>
