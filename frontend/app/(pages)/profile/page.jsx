@@ -286,7 +286,7 @@ const Page = () => {
               </div>
             </div>
           </div>
-
+</div>
           <div className="p-4">
             <div className="flex justify-around border-b-2 border-gray-300">
               <button
@@ -349,7 +349,6 @@ const Page = () => {
           </div>
         </div>
       </div>
-    </div>
   );
 };
 
