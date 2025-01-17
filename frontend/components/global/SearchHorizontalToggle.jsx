@@ -84,12 +84,14 @@ const SearchHorizontalToggle = ({children, isOpen, searchComponentRef}) => {
         {
             id: 1,
             username: 'user123',
+            avatar: avartar,
             profile: 'Nguyễn Văn A',
             followers: 12
         },
         {
             id: 2,
             username: 'user123',
+            avatar: avartar,
             profile: 'Nguyễn Văn A',
             followers: 12
         }
@@ -117,8 +119,14 @@ const SearchHorizontalToggle = ({children, isOpen, searchComponentRef}) => {
                     </div>
                     <hr/>
                     <div className={`mb-3 mt-8 mx-5 grid gap-7`}>
-                        <UserHistorySearch avatar={avartar} username={'user123'} profile={"Nguyễn Văn A"} followers={12}/>
-                        <UserHistorySearch avatar={avartar} username={'user123'} profile={"Nguyễn Văn A"} followers={12}/>
+                        {
+                            userSearchHistories.map(userSearch => <UserHistorySearch key={userSearch.id}
+                                                                                          avatar={userSearch.avatar}
+                                                                                          username={userSearch.username}
+                                                                                          profile={userSearch.profile}
+                                                                                          followers={userSearch.followers}
+                            />)
+                        }
                         <TextSearchHistory text={'nguyenvana'}/>
                     </div>
                 </div>
