@@ -8,6 +8,23 @@ export default {
   ],
   theme: {
   	extend: {
+		keyframes: {
+			fadeScale: {
+				'20%': { opacity: '0', },
+				'100%': { opacity: '1', },
+			},
+			fadeOut: {
+				'80%': { opacity: '0.8', },
+				'10%': { opacity: '0.6', },
+			}
+		},
+		animation: {
+			fadeScale: 'fadeScale 5s ease-in-out',
+			fadeOut: 'fadeOut 5s ease-in-out',
+		},
+		boxShadow: {
+			'right-left': '10px 0px 15px 2px rgba(0, 0, 0, 0.3)'
+		},
   		colors: {
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
@@ -54,7 +71,7 @@ export default {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
-  		}
+  		},
   	}
   },
   plugins: [require("tailwindcss-animate")],
