@@ -10,7 +10,7 @@ export const FollowNotification = React.memo(({ isSeen = false }) => (
       isSeen ? "" : "bg-gray-100"
     }`}
   >
-    <div className="flex items-center gap-4">
+    <div className="flex items-center gap-3">
       <Image
         src={Avatar}
         width={70}
@@ -21,10 +21,10 @@ export const FollowNotification = React.memo(({ isSeen = false }) => (
       <div className={"flex flex-col"}>
         <div className={"flex gap-2"}>
           <p>
-            <strong className={"font-extrabold text-lg"}>Username</strong> đã follow
-            bạn
+            <strong className={"font-extrabold text-lg"}>Username</strong> has
+            started following you.
           </p>
-          <button className="border border-gray-300 rounded-md px-2 py-1 text-sm bg-transparent text-black">
+          <button className="border border-gray-300 rounded-md px-2 py-1 text-sm bg-transparent text-black w-24 h-9">
             Đã follow
           </button>
         </div>
