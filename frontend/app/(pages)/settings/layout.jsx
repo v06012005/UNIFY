@@ -32,11 +32,18 @@ const layout = ({ children }) => {
                     <h3 className="text-3xl font-bold mb-5">Settings</h3>
                     <Title content='Your account' />
                     <ul className="text-1xl ">
-                        <li className="h-10 flex items-center">
+                        <li className="h-10 mb-3 flex items-center">
                             <NavButton
                                 href="/settings/edit-profile"
                                 iconClass="fa-solid fa-address-card"
                                 content="Edit Profile"
+                            />
+                        </li>
+                        <li className="h-10 mb-3 flex items-center">
+                            <NavButton
+                                href="/settings/archive"
+                                iconClass="fa-solid fa-address-card"
+                                content="View Archive"
                             />
                         </li>
                     </ul>
