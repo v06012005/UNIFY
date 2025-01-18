@@ -22,11 +22,11 @@ const NotificationModal = ({ isNotificationOpen, modalRef }) => {
     <div className="fixed inset-0 left-20 bg-black bg-opacity-50 z-50 flex items-center">
       <div
         ref={modalRef}
-        className="bg-white left-2 rounded-lg shadow-lg w-128 p-6 relative"
+        className="bg-white left-2 rounded-lg shadow-lg max-w-128 p-6 relative"
         style={{ height: "calc(100vh - 0.37cm)" }}
       >
         <h1 className="font-extrabold text-3xl mb-4">Notifications</h1>
-        <div className="grid place-content-start gap-1 max-h-[85vh] overflow-y-auto">
+        <div className="grid place-content-start gap-1 max-h-[85vh] overflow-y-auto max-w-[29rem]">
           {sortedNotifications.map((notification, index) => (
             <React.Fragment key={notification.id}>
               {notification.type === "follow" ? (
