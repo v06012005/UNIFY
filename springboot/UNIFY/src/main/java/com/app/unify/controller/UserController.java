@@ -4,10 +4,7 @@ import com.app.unify.dto.UserCreateRequest;
 import com.app.unify.entity.User;
 import com.app.unify.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -16,6 +13,8 @@ public class UserController {
 
     @Autowired
     UserService userService;
+
+    @GetMapping("/{id}")
 
     @PostMapping
     public User createUser(@RequestBody UserCreateRequest request){

@@ -44,7 +44,7 @@ public class JwtUtil {
         SignedJWT signed = SignedJWT.parse(token);
         JWSVerifier verifier = new MACVerifier(SECRET_KEY);
         Date expirationTime  = signed.getJWTClaimsSet().getExpirationTime();
-        return !signed.verify(verifier) || !expirationTime.after(new Date());
+        return signed.verify(verifier) && expirationTime.after(new Date());
     }
 
 }
