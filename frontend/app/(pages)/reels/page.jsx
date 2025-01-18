@@ -1,27 +1,57 @@
 "use client";
 
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 
 import avatar2 from "@/public/images/testAvt.jpg";
+import { useModal } from "@/components/provider/ModalProvider";
+import ModalDialog from "@/components/global/ModalDialog";
+import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 
 const Reels = () => {
-  const reels = Array(10).fill(0);
+  const reels = Array(1).fill(0);
   const [isMuted, setIsMuted] = useState(false);
   const [isCommentOpen, setIsCommentOpen] = useState(false);
+
+  const [isLiked, setIsLiked] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [isFollow, setIsFollow] = useState(false);
 
   const toggleMute = () => {
     setIsMuted((prev) => !prev);
   };
+
+  const { openModal } = useModal();
 
   const toggleComment = () => {
     setIsCommentOpen((prev) => !prev);
   };
 
   const closeComment = (e) => {
-    // Kiểm tra xem click có phải bên ngoài modal không
     if (e.target.id === "overlay") {
       setIsCommentOpen(false);
+    }
+  };
+
+  const handleLike = () => {
+    setIsLiked((prev) => !prev);
+  };
+
+  const handleSave = () => {
+    setIsSaved((prev) => !prev);
+  };
+  const folloWing = () => {
+    setIsFollow((prev) => !prev);
+  };
+
+  const togglePopup = () => {
+    setIsPopupOpen((prev) => !prev);
+  };
+
+  const closeMore = (a) => {
+    if (a.target.id === "overmore") {
+      setIsPopupOpen(false);
     }
   };
 
@@ -30,14 +60,14 @@ const Reels = () => {
       {reels.map((_, index) => (
         <div
           key={index}
-          className={`relative w-[450px] h-[700px] bg-gray-800 mx-auto rounded-2xl overflow-hidden m-5 transition-all duration-300 ${
-            isCommentOpen ? "translate-x-[-450px]" : "" // Đẩy sang trái khi mở comment
+          className={`relative w-[450px] h-[700px] bg-gray-800 mx-auto rounded-2xl overflow-hidden m-5 transition-all duration-500 ${
+            isCommentOpen ? "translate-x-[-150px]" : ""
           }`}
         >
           <div className="absolute inset-0 bg-gray-700 flex justify-center items-center">
             <button
               onClick={toggleMute}
-              className="absolute top-4 right-4 z-10 bg-gray-600/50 text-white rounded-full p-2 backdrop-blur-3xl hover:bg-gray-600/70 transition focus:ring focus:ring-gray-400"
+              className="absolute top-2 right-2 z-10  text-white rounded-full p-2 transition "
               aria-label={isMuted ? "Unmute Video" : "Mute Video"}
             >
               <i
@@ -49,12 +79,11 @@ const Reels = () => {
 
             <video
               autoPlay
-              controls
               muted={isMuted}
               loop
               className="w-full h-full object-cover relative z-0"
             >
-              <source src="/videos/video.mp4" type="video/mp4" />
+              <source src="/videos/koniseg.mp4" type="video/mp4" />
             </video>
           </div>
 
@@ -66,86 +95,138 @@ const Reels = () => {
             ></Image>
             <div className="flex items-center space-x-2">
               <span className="font-medium">TanVinh</span>
-              <button className="bg-gray-600 text-sm px-2 py-1 rounded-md hover:bg-gray-500 focus:ring focus:ring-gray-400">
-                Follow
+              <button
+                className="backdrop-blur-3xl text-sm p-4 py-1 rounded-2xl font-sans font-bold"
+                onClick={folloWing}
+              >
+                {isFollow ? "Following" : "Follow"}{" "}
               </button>
             </div>
           </div>
 
-          <div className="absolute top-1/2 right-4 transform -translate-y-1/2 flex flex-col items-center space-y-4 text-white text-2xl">
+          <div className="absolute top-1/2 right-4 transform -translate-y-1/2 flex flex-col items-center space-y-7 text-white text-2xl">
             <div className="flex flex-col items-center">
-              <i className="fa-regular fa-heart hover:opacity-50 focus:opacity-50 transition"></i>
+              <i
+                className={`fa-${
+                  isLiked ? "solid" : "regular"
+                } fa-heart hover:opacity-50 focus:opacity-50 transition cursor-pointer`}
+                onClick={handleLike}
+              ></i>
               <span className="text-sm">47k</span>
             </div>
 
             <div className="flex flex-col items-center">
               <i
                 className="fa-regular fa-comment hover:opacity-50 focus:opacity-50 transition cursor-pointer"
-                onClick={toggleComment} // Mở khung comment khi click vào icon comment
+                onClick={toggleComment}
               ></i>
               <span className="text-sm">47k</span>
             </div>
 
             <div className="flex flex-col items-center">
-              <i className="fa-regular fa-paper-plane hover:opacity-50 focus:opacity-50 transition"></i>
+              <i
+                onClick={openModal}
+                className="fa-regular fa-paper-plane hover:opacity-50 focus:opacity-50 transition"
+              ></i>
+            </div>
+            <div className="flex flex-col items-center">
+              <i
+                className={`fa-${
+                  isSaved ? "solid" : "regular"
+                } fa-bookmark hover:opacity-50 focus:opacity-50 transition cursor-pointer`}
+                onClick={handleSave}
+              ></i>
             </div>
 
             <div className="flex flex-col items-center">
-              <i className="fa-regular fa-bookmark hover:opacity-50 focus:opacity-50 transition"></i>
-            </div>
-
-            <div className="flex flex-col items-center">
-              <i className="fa-solid fa-ellipsis hover:opacity-50 focus:opacity-50 transition"></i>
+              <i
+                className="fa-solid fa-ellipsis hover:opacity-50 focus:opacity-50 transition cursor-pointer"
+                onClick={togglePopup}
+              ></i>
+              {isPopupOpen && (
+                <div
+                  id="overmore"
+                  className="w-44 absolute top-56 right-10 transform -translate-y-1/2 backdrop-blur-xl p-4 rounded-lg shadow-lg text-white"
+                  onClick={closeMore}
+                >
+                  <ul className=" text-sm">
+                    <li className="cursor-pointer  hover:bg-zinc-800  font-bold  text-left p-2 rounded-sm">
+                      Copy link
+                    </li>
+                    <li className="cursor-pointer  hover:bg-zinc-800   font-bold  text-left p-2 rounded-sm">
+                      About this account
+                    </li>
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
         </div>
       ))}
 
-      {/* Overlay và Modal Comment */}
       {isCommentOpen && (
         <div
           id="overlay"
-          className="fixed top-0 left-0 w-full h-full bg-opacity-50 z-20"
+          className="fixed top-0 left-0 w-full h-full bg-opacity-50 z-20  "
           onClick={closeComment}
         >
           <div
-            className="fixed top-0 right-0 h-full w-[450px] bg-gray-800 z-30 transition-all duration-300"
+            className="fixed top-0 right-0 h-full w-1/3 bg-white transition-all duration-300"
             style={{
               transform: isCommentOpen ? "translateX(0)" : "translateX(100%)",
             }}
           >
-            <div className="h-full flex flex-col p-4">
-              <div className="flex items-center justify-between text-white mb-4">
-                <h2 className="text-xl font-semibold">Comments</h2>
-                <button
-                  onClick={toggleComment} // Đóng khung comment
-                  className="text-red-500"
-                >
-                  Close
-                </button>
+            <div className="h-full flex flex-col p-4 border border-l ">
+              <div className="flex items-center justify-between text-black mb-4">
+                <h2 className="text-2xl text-center font-bold">Comments</h2>
               </div>
-              <div className="flex-grow overflow-auto text-white">
-                <div className="space-y-4">
-                  <div className="flex flex-col space-y-2">
-                    <div className="font-medium">User1</div>
-                    <div>This is a comment</div>
+              <div className="flex-grow overflow-auto text-black pl-8">
+                <div className="flex items-center mt-9">
+                  <Image
+                    src={avatar2}
+                    alt="User avarta"
+                    className="rounded-full w-12 h-12"
+                  />
+                  <div className="ml-4">
+                    <h4 className="text-lg font-bold truncate w-20">TanVinh</h4>
+                    <p className="text-sm  truncate w-60">Tôi là CON BÒ</p>
                   </div>
-                  <div className="flex flex-col space-y-2">
-                    <div className="font-medium">User2</div>
-                    <div>Another comment here</div>
+                </div>
+                <div className="flex items-center mt-9">
+                  <Image
+                    src={avatar2}
+                    alt="User avarta"
+                    className="rounded-full w-12 h-12"
+                  />
+                  <div className="ml-4">
+                    <h4 className="text-lg font-bold truncate w-20">TanVinh</h4>
+                    <p className="text-sm  truncate w-60">Tôi là CON BÒ</p>
                   </div>
-                  {/**/}
+                </div>
+                <div className="flex items-center mt-9">
+                  <Image
+                    src={avatar2}
+                    alt="User avarta"
+                    className="rounded-full w-12 h-12"
+                  />
+                  <div className="ml-4">
+                    <h4 className="text-lg font-bold truncate w-20">TanVinh</h4>
+                    <p className="text-sm  truncate w-60">Tôi là CON BÒ</p>
+                  </div>
                 </div>
               </div>
-              <div className="mt-4 flex">
+              <div className="flex items-center mt-3  text-white p-3 rounded-2xl w-full justify-center">
+                <Image
+                  src={avatar2}
+                  alt="Avatar"
+                  className="rounded-full w-10 h-10 mr-2"
+                />
+
                 <input
                   type="text"
-                  className="w-full p-2 bg-gray-600 text-white rounded-md"
                   placeholder="Add a comment..."
+                  className="bg-gray-700 text-white placeholder-gray-400 flex-grow py-2 px-4 rounded-2xl focus:outline-none"
                 />
-                <button className="bg-blue-500 text-white px-4 py-2 rounded-md ml-2">
-                  Post
-                </button>
               </div>
             </div>
           </div>

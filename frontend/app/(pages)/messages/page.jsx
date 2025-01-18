@@ -68,13 +68,15 @@ const Page = () => {
               </div>
             </div>
             <div className="flex w-1/3 justify-end text-2xl">
-              <Link href="/call"
+              <Link
+                href="/call"
                 title="Call"
                 className="mr-2 p-2 rounded-md hover:bg-gray-200 transition ease-in-out duration-200"
               >
                 <i className="fa-solid fa-phone "></i>
               </Link>
-              <Link href="/videocall"
+              <Link
+                href="/videocall"
                 title="Video Call"
                 className="mr-2 p-2 rounded-md hover:bg-gray-200 transition ease-in-out duration-200"
               >
