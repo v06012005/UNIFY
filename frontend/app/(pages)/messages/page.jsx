@@ -6,7 +6,7 @@ import Link from "next/link";
 
 const Page = () => {
   return (
-    <div className="w-full">
+    <div className="ml-auto">
       <div className="flex w-full">
         <div className="h-screen basis-1/3 flex flex-col">
           <div className="bg-white shadow-md px-9 py-4 sticky top-0 z-10">
@@ -68,13 +68,15 @@ const Page = () => {
               </div>
             </div>
             <div className="flex w-1/3 justify-end text-2xl">
-              <Link href="/call"
+              <Link
+                href="/call"
                 title="Call"
                 className="mr-2 p-2 rounded-md hover:bg-gray-200 transition ease-in-out duration-200"
               >
                 <i className="fa-solid fa-phone "></i>
               </Link>
-              <Link href="/videocall"
+              <Link
+                href="/videocall"
                 title="Video Call"
                 className="mr-2 p-2 rounded-md hover:bg-gray-200 transition ease-in-out duration-200"
               >
