@@ -22,10 +22,10 @@ const RootLayout = ({ children }) => {
       </HeroUIProvider>
 =======
       <div className="flex w-full">
-        <aside className="w-20 flex-none fixed">
+        <aside className="w-20 z-50 flex-none fixed">
               <SideBar/>
         </aside>
-        <main className="w-full flex-initial">{children}</main>
+        <main className="w-full flex-initial z-10">{children}</main>
       </div>
 >>>>>>> e240531 (add search)
     </>
