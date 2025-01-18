@@ -4,7 +4,7 @@ import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/re
 import { useModal } from '../provider/ModalProvider'
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline'
 
-export default function ModalDialog({ icon = ExclamationTriangleIcon, title = "Modal Title", description = "Modal Description", handleClick, buttonText = "Confirm" }) {
+export default function ModalDialog({ icon = ExclamationTriangleIcon, buttonClass = "text-white bg-red-500 hover:bg-red-600", title = "Modal Title", handleClick, buttonText = "Confirm", children }) {
     const { isOpen, closeModal } = useModal() // Access modal state and control functions
 
     return (
@@ -16,9 +16,9 @@ export default function ModalDialog({ icon = ExclamationTriangleIcon, title = "M
                         {icon}
                         <DialogTitle className="ml-3 text-lg font-semibold">{title}</DialogTitle>
                     </div>
-                    <p className="mt-4 text-sm text-gray-600">
-                        {description}
-                    </p>
+                    <div>
+                        {children}
+                    </div>
                     <div className="mt-6 flex justify-end space-x-2">
                         <button
                             onClick={closeModal}
@@ -28,7 +28,7 @@ export default function ModalDialog({ icon = ExclamationTriangleIcon, title = "M
                         </button>
                         <button
                             onClick={handleClick}
-                            className="px-4 py-2 text-sm font-medium text-white bg-red-500 rounded hover:bg-red-600"
+                            className={`px-4 py-2 text-sm font-medium rounded ${buttonClass}`}
                         >
                             {buttonText}
                         </button>
