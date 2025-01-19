@@ -63,7 +63,7 @@ const UserManagementPage = () => {
       <div className="mt-5">
         <div className={`overflow-auto max-h-[525px] shadow-md rounded-lg`}>
           <table className="min-w-full bg-white table-auto">
-            <thead className="shadow-inner">
+            <thead className="shadow-inner sticky top-0 bg-white">
               <tr>
                 <th className="py-3 px-5 text-left w-[7%]"></th>
                 <th className="py-3 px-5 text-left w-[25%]">Name</th>
