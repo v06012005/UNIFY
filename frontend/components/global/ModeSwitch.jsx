@@ -42,7 +42,7 @@ export const SunIcon = (props) => {
     );
 };
 
-export default function ModeSwitch() {
+export default function ModeSwitch({ text = "Dark Mode", className = "" }) {
     const [mounted, setMounted] = useState(false)
     const { theme, setTheme } = useTheme()
 
@@ -53,8 +53,8 @@ export default function ModeSwitch() {
     if (!mounted) return null
 
     return (
-        <div className="flex items-center justify-between">
-            <p>Dark mode</p>
+        <div className={`flex items-center justify-between ${className}`}>
+            <p>{text}</p>
             <Switch className=""
                 defaultSelected
                 color="success"
