@@ -9,9 +9,9 @@ const Page = () => {
     <div className="ml-auto">
       <div className="flex w-full">
         <div className="h-screen basis-1/3 flex flex-col">
-          <div className="bg-white shadow-md px-9 py-4 sticky top-0 z-10">
+          <div className="dark:bg-black shadow-md px-9 py-4 sticky top-0 z-10">
             <div className="flex justify-between items-center mb-4">
-              <h1 className="text-4xl font-medium">Message</h1>
+              <h1 className="text-4xl font-bold dark:text-white ">Message</h1>
               <Image
                 src={avatar}
                 alt="Avatar"
@@ -21,12 +21,12 @@ const Page = () => {
             <div className="mb-4">
               <Input
                 placeholder={"Search..."}
-                className={`w-[400px] h-12 border-gray-950 font-bold`}
+                className={`w-[400px] h-12 dark:border-white font-bold`}
               />
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto px-9 py-4 bg-gray-100">
+          <div className="flex-1 overflow-y-auto px-9 py-4 dark:bg-black">
             {[...Array(10)].map((_, index) => (
               <div
                 key={index}
@@ -56,7 +56,7 @@ const Page = () => {
           <div className="flex p-4 w-full">
             <div className="flex grow">
               <Image
-                src={avatar}
+                src={avatar2}
                 alt="Avatar"
                 className="rounded-full w-14 h-14"
               />
@@ -64,33 +64,33 @@ const Page = () => {
                 <h4 className="text-lg font-medium truncate w-60">
                   Lê Tấn Vinh
                 </h4>
-                <p className="text-lg text-gray-700 truncate w-40">TanVinh</p>
+                <p className="text-lg text-gray-500 truncate w-40">TanVinh</p>
               </div>
             </div>
             <div className="flex w-1/3 justify-end text-2xl">
               <Link
                 href="/call"
                 title="Call"
-                className="mr-2 p-2 rounded-md hover:bg-gray-200 transition ease-in-out duration-200"
+                className="mr-2 p-2 rounded-md dark:hover:bg-gray-700 hover:bg-gray-300 transition ease-in-out duration-200"
               >
                 <i className="fa-solid fa-phone "></i>
               </Link>
               <Link
                 href="/videocall"
                 title="Video Call"
-                className="mr-2 p-2 rounded-md hover:bg-gray-200 transition ease-in-out duration-200"
+                className="mr-2 p-2 rounded-md  dark:hover:bg-gray-700 hover:bg-gray-300  transition ease-in-out duration-200"
               >
                 <i className="fa-solid fa-video"></i>
               </Link>
             </div>
           </div>
-          <hr className=" border-1 border-gray-800" />
+          <hr className=" border-1 dark:border-gray-300" />
           <div className="h-3/4 overflow-y-scroll">
             <h2 className="text-center m-3">23:48, 20/01/2025</h2>
             <div className="m-4 flex">
               <div className="">
                 <Image
-                  src={avatar}
+                  src={avatar2}
                   alt="Avatar"
                   className="rounded-full w-14 h-14"
                 />
@@ -125,7 +125,7 @@ const Page = () => {
             <div className="m-4 flex">
               <div className="">
                 <Image
-                  src={avatar}
+                  src={avatar2}
                   alt="Avatar"
                   className="rounded-full w-14 h-14"
                 />
@@ -146,7 +146,7 @@ const Page = () => {
             <div className="m-4 flex">
               <div className="">
                 <Image
-                  src={avatar}
+                  src={avatar2}
                   alt="Avatar"
                   className="rounded-full w-14 h-14"
                 />
@@ -182,7 +182,7 @@ const Page = () => {
 
           <div className="flex items-center mt-3 bg-gray-800 text-white p-3 rounded-2xl w-full justify-center">
             <Image
-              src={avatar2}
+              src={avatar}
               alt="Avatar"
               className="rounded-full w-10 h-10 mr-4"
             />

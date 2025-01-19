@@ -2,11 +2,18 @@
 
 import Image from "next/image";
 import React, { useState, useRef } from "react";
-
+import { Input } from "@/components/ui/input";
 import avatar2 from "@/public/images/testAvt.jpg";
 import { useModal } from "@/components/provider/ModalProvider";
-import ModalDialog from "@/components/global/ModalDialog";
-import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  useDisclosure,
+} from "@heroui/react";
 
 const Reels = () => {
   const reels = Array(1).fill(0);
@@ -17,7 +24,7 @@ const Reels = () => {
   const [isSaved, setIsSaved] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isFollow, setIsFollow] = useState(false);
-
+  const [selectedAvatar, setSelectedAvatar] = useState(null);
   const toggleMute = () => {
     setIsMuted((prev) => !prev);
   };
@@ -53,6 +60,16 @@ const Reels = () => {
     if (a.target.id === "overmore") {
       setIsPopupOpen(false);
     }
+  };
+
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
+  const handleOpen = () => {
+    onOpen();
+  };
+
+  const handleAvatarClick = (index) => {
+    setSelectedAvatar(index === selectedAvatar ? null : index);
   };
 
   return (
@@ -104,12 +121,14 @@ const Reels = () => {
             </div>
           </div>
 
-          <div className="absolute top-1/2 right-4 transform -translate-y-1/2 flex flex-col items-center space-y-7 text-white text-2xl">
+          <div className="absolute top-2/3 right-4 transform -translate-y-1/2 flex flex-col items-center space-y-7 text-white text-2xl">
             <div className="flex flex-col items-center">
               <i
                 className={`fa-${
                   isLiked ? "solid" : "regular"
-                } fa-heart hover:opacity-50 focus:opacity-50 transition cursor-pointer`}
+                } fa-heart hover:opacity-50 focus:opacity-50 transition cursor-pointer ${
+                  isLiked ? "text-red-500" : "text-white"
+                }`}
                 onClick={handleLike}
               ></i>
               <span className="text-sm">47k</span>
@@ -125,10 +144,62 @@ const Reels = () => {
 
             <div className="flex flex-col items-center">
               <i
-                onClick={openModal}
+                onClick={handleOpen}
                 className="fa-regular fa-paper-plane hover:opacity-50 focus:opacity-50 transition"
               ></i>
             </div>
+            <Modal
+              isDismissable={false}
+              scrollBehavior={"inside"}
+              size="2xl"
+              isKeyboardDismissDisabled={true}
+              isOpen={isOpen}
+              onOpenChange={onOpenChange}
+            >
+              <ModalContent>
+                {(onClose) => (
+                  <>
+                    <ModalHeader className="flex flex-cols">
+                      <h1 className="font-bold text-2xl">Share</h1>
+                    </ModalHeader>
+                    <hr className="bg-gray-200"></hr>
+                    <ModalBody>
+                      <div className="mt-4">
+                        <Input
+                          placeholder={"Search..."}
+                          className={`w-full h-11 dark:border-white font-bold`}
+                        />
+                      </div>
+                      <div className="flex p-3 justify-around">
+                        {[1, 2, 3, 4].map((_, index) => (
+                          <div className="text-center" key={index}>
+                            <Image
+                              src={avatar2}
+                              alt={`avtshare-${index}`}
+                              className={`rounded-full w-20 h-20 cursor-pointer ${
+                                selectedAvatar === index
+                                  ? "ring-4 dark:ring-white"
+                                  : ""
+                              }`}
+                              onClick={() => handleAvatarClick(index)}
+                            />
+                            <p className="mt-2 font-bold text-lg truncate w-20">
+                              Tan Vinh
+                            </p>
+                            {selectedAvatar === index && (
+                              <button className="mt-2 px-4 py-2 bg-blue-500 text-white rounded">
+                                Send
+                              </button>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </ModalBody>
+                    <ModalFooter></ModalFooter>
+                  </>
+                )}
+              </ModalContent>
+            </Modal>
             <div className="flex flex-col items-center">
               <i
                 className={`fa-${
@@ -171,16 +242,16 @@ const Reels = () => {
           onClick={closeComment}
         >
           <div
-            className="fixed top-0 right-0 h-full w-1/3 bg-white transition-all duration-300"
+            className="fixed top-0 right-0 h-full w-1/3 dark:bg-black transition-all duration-300"
             style={{
               transform: isCommentOpen ? "translateX(0)" : "translateX(100%)",
             }}
           >
             <div className="h-full flex flex-col p-4 border border-l ">
-              <div className="flex items-center justify-between text-black mb-4">
+              <div className="flex items-center justify-between dark:text-white mb-4">
                 <h2 className="text-2xl text-center font-bold">Comments</h2>
               </div>
-              <div className="flex-grow overflow-auto text-black pl-8">
+              <div className="flex-grow overflow-auto dark:text-white pl-8">
                 <div className="flex items-center mt-9">
                   <Image
                     src={avatar2}
@@ -189,7 +260,7 @@ const Reels = () => {
                   />
                   <div className="ml-4">
                     <h4 className="text-lg font-bold truncate w-20">TanVinh</h4>
-                    <p className="text-sm  truncate w-60">Tôi là CON BÒ</p>
+                    <p className="text-sm  truncate w-60">Good</p>
                   </div>
                 </div>
                 <div className="flex items-center mt-9">
@@ -200,7 +271,7 @@ const Reels = () => {
                   />
                   <div className="ml-4">
                     <h4 className="text-lg font-bold truncate w-20">TanVinh</h4>
-                    <p className="text-sm  truncate w-60">Tôi là CON BÒ</p>
+                    <p className="text-sm  truncate w-60">Good</p>
                   </div>
                 </div>
                 <div className="flex items-center mt-9">
@@ -211,7 +282,7 @@ const Reels = () => {
                   />
                   <div className="ml-4">
                     <h4 className="text-lg font-bold truncate w-20">TanVinh</h4>
-                    <p className="text-sm  truncate w-60">Tôi là CON BÒ</p>
+                    <p className="text-sm  truncate w-60">Good</p>
                   </div>
                 </div>
               </div>
