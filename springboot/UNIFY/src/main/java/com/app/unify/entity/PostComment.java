@@ -8,13 +8,13 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "Avatars")
+@Table(name = "PostComments")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Avatar {
+public class PostComment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -22,13 +22,23 @@ public class Avatar {
     UUID id;
 
     @Column(nullable = false)
-    String url;
-
-    @Column(name = "changed_date", nullable = false)
-    LocalDateTime changedDate;
+    String content;
 
     @ManyToOne
+    @MapsId("id")
+    @JoinColumn(name = "post_id", nullable = false)
+    Post post;
+
+    @ManyToOne
+    @MapsId("id")
     @JoinColumn(name = "user_id", nullable = false)
     User user;
+
+    @Column(name = "commented_at", nullable = false)
+    LocalDateTime commentedAt;
+
+    @Column(name = "parent_id")
+    PostComment parentId;
+
 
 }

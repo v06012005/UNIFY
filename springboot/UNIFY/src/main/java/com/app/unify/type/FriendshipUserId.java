@@ -1,10 +1,12 @@
-package com.app.unify.entity;
+package com.app.unify.type;
 
 import jakarta.persistence.Embeddable;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.io.Serializable;
 import java.util.Objects;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -12,10 +14,10 @@ import java.util.Objects;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Embeddable
-public class FriendshipUserId {
+public class FriendshipUserId implements Serializable {
 
-    String friendshipId;
-    String userId;
+    UUID friendshipId;
+    UUID userId;
 
     @Override
     public boolean equals(Object o) {

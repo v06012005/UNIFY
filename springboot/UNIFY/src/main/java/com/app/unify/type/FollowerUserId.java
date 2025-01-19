@@ -1,10 +1,12 @@
-package com.app.unify.entity;
+package com.app.unify.type;
 
 import jakarta.persistence.Embeddable;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.io.Serializable;
 import java.util.Objects;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -12,10 +14,10 @@ import java.util.Objects;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Embeddable
-public class FollowerUserId {
+public class FollowerUserId implements Serializable {
 
-    String followerId;
-    String followingId;
+    UUID followerId;
+    UUID followingId;
 
     @Override
     public boolean equals(Object o) {

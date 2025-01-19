@@ -3,14 +3,16 @@ package com.app.unify.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
+import java.util.UUID;
 
 
 @Entity
-@Table(name = "users")
+@Table(name = "Users")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
 @NoArgsConstructor
@@ -19,8 +21,9 @@ import java.util.Set;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    String id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name="id", insertable = false, updatable = false, nullable = false)
+    UUID id;
 
     @Column(name = "first_name", nullable = false)
     String firstName;
@@ -48,21 +51,31 @@ public class User {
 
     @Column(nullable = false)
     LocalDate birthDay;
-
-    @Column(nullable = false)
     String location;
-
-    @Column(nullable = false)
     String education;
-
     @Column(name = "work_at")
     String workAt;
 
     @OneToMany(mappedBy = "user")
     Set<Avatar> avatars;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "userFollower")
     Set<Follower> followers;
+
+    @OneToMany(mappedBy = "userFollowing")
+    Set<Follower> following;
+
+    @OneToMany(mappedBy = "friend")
+    Set<Friendship> friendshipsInitiated;
+
+    @OneToMany(mappedBy = "user")
+    Set<Friendship> friendshipsReceived;
+
+    @OneToMany(mappedBy = "user")
+    Set<PostComment> postComments;
+
+    @OneToMany(mappedBy = "user")
+    Set<LikedPost> likedPosts;
 
 
 }

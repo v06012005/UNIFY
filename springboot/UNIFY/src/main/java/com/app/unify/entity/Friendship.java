@@ -1,14 +1,15 @@
 package com.app.unify.entity;
 
+import com.app.unify.type.FriendshipStatus;
+import com.app.unify.type.FriendshipUserId;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 
 @Entity
-@Table(name = "friendships")
+@Table(name = "Friendships")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
 @NoArgsConstructor
@@ -20,11 +21,13 @@ public class Friendship {
     FriendshipUserId id;
 
     @ManyToOne
-    @JoinColumn(name = "friendship_id", referencedColumnName = "id")
-    User friendshipId;
+    @MapsId("id")
+    @JoinColumn(name = "friendship_id", nullable = false)
+    User friend;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @MapsId("id")
+    @JoinColumn(name = "user_id")
     User user;
 
     @Enumerated(EnumType.STRING)
@@ -37,7 +40,5 @@ public class Friendship {
     @Column(name = "update_at")
     LocalDateTime updateAt;
 
-    @OneToMany(mappedBy = "friendship")
-    Set<User> users;
 
 }

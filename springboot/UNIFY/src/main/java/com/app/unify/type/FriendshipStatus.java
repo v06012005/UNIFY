@@ -1,4 +1,4 @@
-package com.app.unify.entity;
+package com.app.unify.type;
 
 public enum FriendshipStatus {
     PENDING,
