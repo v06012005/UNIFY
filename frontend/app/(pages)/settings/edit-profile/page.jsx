@@ -17,7 +17,7 @@ const Page = () => {
     <div className="w-full">
       <div className="h-screen overflow-y-auto">
         <form>
-          <div className="flex m-5 bg-gray-200 rounded-xl items-center pr-5">
+          <div className="flex m-5 bg-gray-200 dark:bg-gray-800 rounded-xl items-center pr-5">
             <div className="flex-shrink-0 p-2">
               <Image
                 src={`/images/avt.jpg`}
@@ -47,7 +47,7 @@ const Page = () => {
           <div className="m-5">
             <label
               htmlFor="input-field"
-              className="block text-lg font-medium text-gray-700 mb-2"
+              className="block text-lg font-medium text-gray-700 dark:text-white mb-2"
             >
               Biography
             </label>
@@ -55,7 +55,7 @@ const Page = () => {
               id="input-field"
               type="text"
               placeholder="Enter your biography"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-500 focus:outline-none hover:border-gray-500 hover:shadow-md transition"
+              className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-1 focus:ring-gray-500 focus:outline-none hover:border-gray-500 hover:shadow-md transition"
             />
           </div>
 
@@ -63,7 +63,7 @@ const Page = () => {
             <div className="flex-1">
               <label
                 htmlFor="first-name"
-                className="block text-lg font-medium text-gray-700 mb-2"
+                className="block text-lg font-medium text-gray-700 dark:text-white mb-2"
               >
                 First Name
               </label>
@@ -71,14 +71,14 @@ const Page = () => {
                 id="first-name"
                 type="text"
                 placeholder="Enter your first name"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
+                className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
               />
             </div>
 
             <div className="flex-1">
               <label
                 htmlFor="last-name"
-                className="block text-lg font-medium text-gray-700 mb-2"
+                className="block text-lg font-medium text-gray-700 dark:text-white mb-2"
               >
                 Last Name
               </label>
@@ -86,14 +86,14 @@ const Page = () => {
                 id="last-name"
                 type="text"
                 placeholder="Enter your last name"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
+                className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
               />
             </div>
 
             <div className="flex-1">
               <label
                 htmlFor="username"
-                className="block text-lg font-medium text-gray-700 mb-2"
+                className="block text-lg font-medium text-gray-700 dark:text-white mb-2"
               >
                 Username
               </label>
@@ -101,7 +101,7 @@ const Page = () => {
                 id="username"
                 type="text"
                 placeholder="Enter your username"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
+                className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
               />
             </div>
           </div>
@@ -110,7 +110,7 @@ const Page = () => {
             <div className="flex-1">
               <label
                 htmlFor="email"
-                className="block text-lg font-medium text-gray-700 mb-2"
+                className="block text-lg font-medium text-gray-700 dark:text-white mb-2"
               >
                 Email
               </label>
@@ -118,14 +118,14 @@ const Page = () => {
                 id="email"
                 type="email"
                 placeholder="Enter your email"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
+                className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
               />
             </div>
 
             <div className="flex-1">
               <label
                 htmlFor="phone"
-                className="block text-lg font-medium text-gray-700 mb-2"
+                className="block text-lg font-medium text-gray-700 dark:text-white mb-2"
               >
                 Phone
               </label>
@@ -133,44 +133,42 @@ const Page = () => {
                 id="phone"
                 type="tel"
                 placeholder="Enter your phone number"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
+                className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
               />
             </div>
           </div>
 
           <div className="m-5 flex gap-4 items-start">
-            {/* Gender */}
             <div className="flex flex-col gap-4 basis-1/2">
-              <label className="text-lg font-medium text-gray-700">
+              <label className="text-lg font-medium text-gray-700 dark:text-white">
                 Gender:
               </label>
               <div className="flex items-center gap-4">
-                <label htmlFor="female" className="flex items-center gap-1">
+                <label htmlFor="female" className="flex items-center gap-1 dark:text-gray-400 mr-10">
                   <input
                     id="female"
                     type="radio"
                     name="gender"
                     value="female"
-                    className="focus:ring-2 focus:ring-gray-500"
+                    className="focus:ring-2 focus:ring-gray-500 size-5 mr-3"
                   />
                   Female
                 </label>
-                <label htmlFor="male" className="flex items-center gap-1">
+                <label htmlFor="male" className="flex items-center gap-1 dark:text-gray-400">
                   <input
                     id="male"
                     type="radio"
                     name="gender"
                     value="male"
-                    className="focus:ring-2 focus:ring-gray-500"
+                    className="focus:ring-2 focus:ring-gray-500 size-5 mr-3"
                   />
                   Male
                 </label>
               </div>
             </div>
 
-            {/* Birthday */}
             <div className="flex flex-col gap-4 basis-1/2">
-              <label className="text-lg font-medium text-gray-700">
+              <label className="text-lg font-medium text-gray-700 dark:text-white">
                 Birthday:
               </label>
               <div className="flex items-center gap-4">
@@ -179,54 +177,52 @@ const Page = () => {
                   placeholder="Day"
                   min="1"
                   max="31"
-                  className="w-30 px-2 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none"
+                  className="w-30 px-2 py-1 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none"
                 />
                 <input
                   type="number"
                   placeholder="Month"
                   min="1"
                   max="12"
-                  className="w-30 px-2 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none"
+                  className="w-30 px-2 py-1 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none"
                 />
                 <input
                   type="number"
                   placeholder="Year"
                   min="1900"
                   max="2100"
-                  className="w-30 px-2 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none"
+                  className="w-30 px-2 py-1 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none"
                 />
               </div>
             </div>
           </div>
 
           <div className="m-5 flex gap-4 items-start">
-            {/* Location */}
             <div className="flex flex-col gap-2 basis-1/2">
-              <label className="text-lg font-medium text-gray-700">
+              <label className="text-lg font-medium text-gray-700 dark:text-white">
                 Location:
               </label>
               <input
                 type="text"
                 placeholder="Enter your location"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none"
+                className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none"
               />
             </div>
 
-            {/* Education */}
             <div className="flex flex-col gap-2 basis-1/2">
-              <label className="text-lg font-medium text-gray-700">
+              <label className="text-lg font-medium text-gray-700 dark:text-white">
                 Education:
               </label>
               <input
                 type="text"
                 placeholder="Enter your education"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none"
+                className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none"
               />
             </div>
           </div>
 
           <div className="m-5 flex justify-end">
-            <button className="px-10 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-xl">
+            <button className="px-10 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 dark:bg-gray-500 dark:hover:bg-gray-600 transition focus:outline-none focus:ring-2 focus:ring-blue-500 text-xl">
               Save
             </button>
           </div>
