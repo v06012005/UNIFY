@@ -1,5 +1,5 @@
 import {Input} from "@/components/ui/input";
-import avartar from "@/public/images/GoogleLogo.png";
+import avartar from "@/public/images/avatar.png";
 import {Search} from "lucide-react";
 import UserHistorySearch from "@/components/global/UserHistorySearch";
 import TextSearchHistory from "@/components/global/TextSearchHistory";
@@ -33,13 +33,13 @@ const SearchHorizontalToggle = ({children, isOpen, searchComponentRef}) => {
                 </div>
                 <div
                     ref={searchComponentRef}
-                    className={`absolute rounded-r-lg z-50 overflow-hidden ${isOpen && 'animate-fadeScale shadow-right-left'} ${!isOpen && 'animate-fadeOut'}  h-screen bg-white left-full transition-all ease-in-out duration-300`}
+                    className={`absolute dark:bg-black rounded-r-lg z-50 overflow-hidden ${isOpen && 'animate-fadeScale shadow-right-left'} ${!isOpen && 'animate-fadeOut'}  h-screen bg-white left-full transition-all ease-in-out duration-300`}
                     style={{width: !isOpen ? 0 : 400}}>
                     <div className={`mx-4 my-4`}>
                         <h1 className={`text-2xl font-bold`}>Search</h1>
                         <div className={`relative`}>
                             <Input type={`search`}
-                                   className={`mt-3 relative border-black text-black placeholder-black pl-10`}
+                                   className={`mt-3 relative border-black text-black dark:text-white placeholder-black pl-10 dark:border-gray-300`}
                                    placeholder={"Search"}/>
                             <Search className={`absolute top-1/2 -translate-y-1/2 left-2`} color={`gray`}/>
                         </div>

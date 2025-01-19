@@ -5,7 +5,7 @@ import {X} from "lucide-react";
 const UserHistorySearch = ({avatar, username, profile, followers}) => {
     return (
         <div className={`w-full h-12 flex items-center gap-3`}>
-            <Image src={avatar} alt={"img"} width={40} height={40} className={`rounded-full`}/>
+            <Image src={avatar} alt={"img"} width={60} height={60} className={`rounded-full`}/>
             <div className={`grid`}>
                 <span className={`text-sm font-bold`}>{username}</span>
                 <span className={`text-sm`}>{profile}</span>
