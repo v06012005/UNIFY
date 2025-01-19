@@ -1,7 +1,8 @@
-import ToggleButton from '@/components/global/ToggleButton'
+
 import React from 'react'
 import ModeSwitch from '@/components/global/ModeSwitch'
-import SelectMenu from '@/components/global/Select'
+import SelectMenu from '@/components/global/LanguageSelect'
+
 
 const languages = [
     {

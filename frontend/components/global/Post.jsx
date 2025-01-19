@@ -10,6 +10,8 @@ import LikeButton from './LikeButton';
 import CommentButton from './CommentButton';
 import ShareButton from './ShareButton';
 import TextArea from './TextArea';
+import { Textarea } from '@heroui/react';
+import CommentForm from './CommentForm';
 
 const User = () => {
     return (
@@ -47,7 +49,7 @@ const Post = ({ imageSrc = dummy }) => {
             <Image src={imageSrc} alt='Dummy' className='w-full max-h-svh mb-2 object-cover mx-auto rounded-lg' width={500} height={400} />
             <Caption text={`Lorem ipsum dolor sit amet consectetur adipisicing elit. Sed quibusdam, ex maiores amet alias dolor minima magnam quis totam molestias consectetur laudantium possimus et asperiores? Dignissimos minima animi omnis sed! Lorem ipsum dolor sit amet consectetur, adipisicing elit. Saepe, id repellat minus labore esse eligendi maiores asperiores? Architecto dolorem veritatis, totam nam, molestiae quo quis asperiores qui nostrum animi possimus?`} />
             <div className='flex text-xl'>
-                <LikeButton />
+                <LikeButton className='!text-xl' />
                 <CommentButton />
                 <ShareButton />
             </div>
@@ -65,16 +67,9 @@ const Post = ({ imageSrc = dummy }) => {
                 <Hashtag content='#myhashtag'></Hashtag>
             </div>
             <div className='mt-2'>
-                <button className='text-black hover:text-gray-500 text-md'>View all comments</button>
+                <button className='text-black hover:text-gray-500 text-md dark:text-gray-400 dark:hover:text-white'>View all comments</button>
             </div>
-            <form action="#">
-                <div className="mt-2">
-                    {/* <div className="flex items-center rounded-md bg-white pl-3 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2">
-                        <input type="text" name="comment" id="comment" className="block text-wrap min-w-0 grow py-1.5 pl-1 pr-3 text-base text-gray-90 placeholder:text-gray-400 focus:outline focus:outline-0 sm:text-sm/6" placeholder="Add a comment" />
-                    </div> */}
-                    <TextArea />
-                </div>
-            </form>
+            <CommentForm />
         </div>
     )
 }
