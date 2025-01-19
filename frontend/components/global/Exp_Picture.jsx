@@ -1,12 +1,14 @@
 "use client";
+
 import { useState } from "react";
 import Image from "next/image";
 import iconImg from "@/public/imgs.svg";
 import iconHeart from "@/public/heart.svg";
 import iconComment from "@/public/comment.svg";
 import testImg from "@/public/images/testAvt.jpg";
-import avatar from "@/public/images/avt.jpg"
+import avatar from "@/public/images/avt.jpg";
 import Link from "next/link";
+// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export default function Picture() {
   const [isModalVisible, setModalVisible] = useState(false);
@@ -20,8 +22,14 @@ export default function Picture() {
       <div
         onClick={toggleModal}
         className={
-          "w-72 h-72 bg-black p-3 group/item hover:bg-opacity-95 cursor-pointer"
+          "w-72 h-72 p-3 group/item hover:bg-opacity-95 cursor-pointer"
         }
+        style={{
+          backgroundImage: `url(${testImg.src})`,
+          backgroundPosition: "center",
+          backgroundSize: "100%",
+          backgroundRepeat: "no-repeat",
+        }}
       >
         <Image
           src={iconImg}
@@ -53,42 +61,50 @@ export default function Picture() {
           }
         >
           <div className="bg-white shadow-lg h-[710px] flex">
-            <div alt="img">
+            <div className="border-r" alt="img">
               <Image src={testImg} className={"w-[568px]"} alt="PostImage" />
             </div>
             <div
-              className={"w-[500] flex flex-col justify-between"}
+              className={
+                "w-[500] flex flex-col justify-between dark:bg-black dark:text-white"
+              }
               alt="cmtlikeshare"
             >
-              <div className={"h-[60px] p-3 border-b flex items-center justify-between"}>
-                <div className={"flex items-center gap-2"}>
+              <div
+                className={
+                  "h-[60px] p-3 border-b border-l rounded-lg flex items-center justify-between"
+                }
+              >
+                <div className={"flex items-center gap-3"}>
                   <Image
-                  src={avatar}
-                  className={"size-10 text-lg rounded-full"}
-                  alt=""
+                    src={avatar}
+                    className={"size-10 text-lg rounded-full"}
+                    alt=""
                   />
                   <b>Username</b>
-                  <p className="text-black text-xl">
-                  •
-                  </p>
-                  <Link href="#" className={"font-bold text-blue-600"}>Follow</Link>
+                  <p className="text-xl">•</p>
+                  <Link href="#" className={"font-bold text-blue-600"}>
+                    Follow
+                  </Link>
                 </div>
-                <div>...</div>
+                <div className="flex">
+                  <i class="fas fa-ellipsis-h"></i>
+                </div>
               </div>
-              <div className={"p-3 h-[510px]"}>
+              <div className={"p-3 h-[510px] border-l"}>
                 Khung bình luận của bài viết
               </div>
-              <div className={"h-[83px] p-3 border-t "}>
+              <div className={"h-[83px] p-3 border-t border-l"}>
                 Khung tương tác của bài viết
               </div>
-              <div className={"h-[56px] p-3 border-t"}>
+              <div className={"h-[56px] p-3 border-t border-l"}>
                 Khung comment của người dùng
               </div>
             </div>
           </div>
           <button
             onClick={toggleModal}
-            className="absolute top-3 right-3 text-4xl text-gray-200 hover:text-black"
+            className="absolute top-3 right-3 text-4xl text-gray-200 hover:text-gray-700"
           >
             &times;
           </button>
