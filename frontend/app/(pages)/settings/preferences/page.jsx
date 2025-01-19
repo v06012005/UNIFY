@@ -3,6 +3,7 @@ import React from 'react'
 import ModeSwitch from '@/components/global/ModeSwitch'
 import SelectMenu from '@/components/global/LanguageSelect'
 
+
 const languages = [
     {
         id: 1,
