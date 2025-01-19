@@ -73,7 +73,7 @@ const Page = () => {
 
                 {isFriend && (
                   <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                    <div className="bg-white rounded-lg w-[36%] p-6">
+                    <div className="bg-white dark:bg-gray-800 dark:text-white rounded-lg w-[36%] p-6">
                       <div className="flex justify-between mb-4 text-2xl">
                         <h2 className="text-lg font-bold">Friend</h2>
                         <button
@@ -86,10 +86,10 @@ const Page = () => {
                       <input
                         type="text"
                         placeholder="Search ..."
-                        className="w-full border rounded-full px-4 py-1 mb-4"
+                        className="w-full border rounded-full px-4 py-1 mb-4 dark:bg-black dark:border-gray-600"
                       />
                       <ul>
-                        <li className="flex items-center justify-between py-2 border-b">
+                        <li className="flex items-center justify-between py-2 border-b border-gray-500">
                           <div className="flex items-center">
                             <Image
                               src={`/images/avt.jpg`}
@@ -102,7 +102,7 @@ const Page = () => {
                           </div>
 
                           <div className="flex items-center space-x-2 ">
-                            <div className="flex items-center space-x-2 border px-3 py-1 rounded-lg hover:bg-gray-100 cursor-pointer ">
+                            <div className="flex items-center space-x-2 border px-3 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-500 dark:bg-gray-700 cursor-pointer ">
                               <NavButton
                                 href="/message"
                                 iconClass={"fa-brands fa-facebook-messenger"}
@@ -120,7 +120,7 @@ const Page = () => {
               <div className="flex flex-col mx-10 items-center w-200">
                 <ul>
                   <li className="flex items-center">
-                    <div className="flex items-center py-2 px-5 rounded-lg hover:bg-gray-400 bg-gray-200 transition-colors w-full">
+                    <div className="flex items-center py-2 px-5 rounded-lg hover:bg-gray-400 bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors w-full">
                       <NavButton
                         href="/settings/edit-profile"
                         iconClass="fa-regular fa-address-card mr-5"
@@ -138,7 +138,7 @@ const Page = () => {
 
                 {isFollower && (
                   <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                    <div className="bg-white rounded-lg w-[36%] p-6">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg w-[36%] p-6">
                       <div className="flex justify-between mb-4 text-2xl">
                         <h2 className="text-lg font-bold">Follower</h2>
                         <button
@@ -151,10 +151,10 @@ const Page = () => {
                       <input
                         type="text"
                         placeholder="Search ..."
-                        className="w-full border rounded-full px-4 py-1 mb-4"
+                        className="w-full border rounded-full px-4 py-1 mb-4 dark:bg-black dark:border-gray-600"
                       />
                       <ul>
-                        <li className="flex items-center justify-between py-2 border-b">
+                        <li className="flex items-center justify-between py-2 border-b border-gray-500">
                           <div className="flex items-center">
                             <Image
                               src={`/images/avt.jpg`}
@@ -167,7 +167,7 @@ const Page = () => {
                           </div>
 
                           <div className="flex items-center space-x-2 ">
-                            <div className="flex items-center space-x-2 border px-3 py-1 rounded-lg hover:bg-gray-100 cursor-pointer ">
+                            <div className="flex items-center space-x-2 border px-3 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-500 dark:bg-gray-700 cursor-pointer ">
                               <NavButton
                                 href="/message"
                                 iconClass={"fa-brands fa-facebook-messenger"}
@@ -175,7 +175,7 @@ const Page = () => {
                               <p className="text-base ">Message</p>
                             </div>
 
-                            <div className="flex items-center space-x-2 border px-3 py-1 rounded-lg hover:bg-gray-100 cursor-pointer">
+                            <div className="flex items-center space-x-2 border px-3 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-500 dark:bg-gray-700 cursor-pointer">
                               <NavButton
                                 href="/follow"
                                 iconClass={"fa-solid fa-user-plus"}
@@ -193,7 +193,7 @@ const Page = () => {
               <div className="flex flex-col mx-10 items-center w-200">
                 <ul>
                   <li className="flex items-center">
-                    <div className="flex items-center py-2 px-5 rounded-lg hover:bg-gray-400 bg-gray-200 transition-colors w-full">
+                    <div className="flex items-center py-2 px-5 rounded-lg hover:bg-gray-400 bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors w-full">
                       <NavButton
                         href="/settings/archive"
                         iconClass="fa-regular fa-bookmark mr-5"
@@ -210,10 +210,10 @@ const Page = () => {
                 </p>
 
                 {isFollowing && (
-                  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                    <div className="bg-white rounded-lg w-[36%] p-6">
+                  <div className="fixed inset-0 bg-black  bg-opacity-50 flex items-center justify-center">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg w-[36%] p-6">
                       <div className="flex justify-between mb-4 text-2xl">
-                        <h2 className="text-lg font-bold">Following</h2>
+                        <h2 className="text-lg font-bold dark:text-white">Following</h2>
                         <button
                           className="text-gray-500 hover:text-black "
                           onClick={toggleFollowing}
@@ -224,10 +224,10 @@ const Page = () => {
                       <input
                         type="text"
                         placeholder="Search ..."
-                        className="w-full border rounded-full px-4 py-1 mb-4"
+                        className="w-full border rounded-full px-4 py-1 mb-4 dark:bg-black dark:border-gray-600"
                       />
                       <ul>
-                        <li className="flex items-center justify-between py-2 border-b">
+                        <li className="flex items-center justify-between py-2 border-b border-gray-500">
                           <div className="flex items-center">
                             <Image
                               src={`/images/avt.jpg`}
@@ -240,7 +240,7 @@ const Page = () => {
                           </div>
 
                           <div className="flex items-center space-x-2 ">
-                            <div className="flex items-center space-x-2 border px-3 py-1 rounded-lg hover:bg-gray-100 cursor-pointer ">
+                            <div className="flex items-center space-x-2 border px-3 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-500 dark:bg-gray-700 cursor-pointer ">
                               <NavButton
                                 href="/message"
                                 iconClass={"fa-brands fa-facebook-messenger"}
@@ -248,7 +248,7 @@ const Page = () => {
                               <p className="text-base ">Message</p>
                             </div>
 
-                            <div className="flex items-center space-x-2 border px-3 py-1 rounded-lg hover:bg-gray-100 cursor-pointer">
+                            <div className="flex items-center space-x-2 border px-3 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-500 dark:bg-gray-700 cursor-pointer">
                               <NavButton
                                 href="/unfollow"
                                 iconClass={"fa-solid fa-x"}
@@ -265,11 +265,11 @@ const Page = () => {
             </div>
           </div>
         </div>
-        <div className="bg-gray-100 mt-2 ml-3 mr-5 rounded-lg shadow-md p-2 flex-grow">
-          <p className="text-lg text-gray-700 mb-2">People you may know</p>
+        <div className="bg-gray-100 dark:bg-gray-800  mt-2 ml-3 mr-5 rounded-lg shadow-md p-2 flex-grow">
+          <p className="text-lg text-gray-700 dark:text-white mb-2">People you may know</p>
 
           <div className="flex gap-4 overflow-x-scroll scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
-            <div className="min-w-[150px] flex-shrink-0 p-2 mb-2 flex flex-col items-center bg-white rounded-lg shadow hover:shadow-lg transition-shadow">
+            <div className="min-w-[150px] flex-shrink-0 p-2 mb-2 flex flex-col items-center bg-white dark:bg-gray-600 rounded-lg shadow hover:shadow-lg transition-shadow">
               <Image
                 src={`/images/avt.jpg`}
                 alt="Avatar"
@@ -277,10 +277,10 @@ const Page = () => {
                 width={80}
                 height={80}
               />
-              <p className="mt-2 text-gray-700 font-semibold text-sm text-center">
+              <p className="mt-2 text-gray-700 dark:text-white font-semibold text-sm text-center">
                 John Doe
               </p>
-              <div className="flex items-center mt-2 py-1 rounded-md bg-gray-500 hover:bg-gray-400 transition-colors text-white w-full justify-center cursor-pointer">
+              <div className="flex items-center mt-2 py-1 rounded-md bg-gray-500 hover:bg-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors text-white w-full justify-center cursor-pointer">
                 <NavButton href="/follow" iconClass={"fa-solid fa-user-plus"} />
                 <p className="ml-2">Follow</p>
               </div>
@@ -347,7 +347,10 @@ const Page = () => {
         
       </div>
     </div>
+    
   );
+  
 };
+
 
 export default Page;

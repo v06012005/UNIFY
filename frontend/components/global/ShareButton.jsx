@@ -14,10 +14,7 @@ const ShareButton = () => {
 
     return (
         <>
-            <div className='flex items-center mr-4'>
-                <i onClick={onOpen} className={`fa-regular fa-paper-plane cursor-pointer`}></i>
-                <p className='ml-1'>47K</p>
-            </div >
+            <Button onPress={onOpen} className="bg-transparent dark:text-white text-xl"><i className="fa-regular fa-paper-plane"></i>47K</Button>
             <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
                 <ModalContent>
                     {(onClose) => (

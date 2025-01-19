@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
+import { Button } from '@heroui/react';
 
-const LikeButton = () => {
+const LikeButton = ({ className = "" }) => {
     const [liked, setLiked] = useState(false);
 
     const handleClick = () => {
@@ -8,10 +9,8 @@ const LikeButton = () => {
     }
 
     return (
-        <div className='flex items-center mr-4'>
-            <i onClick={handleClick} className={`${liked ? "fa-solid text-red-500" : "fa-regular"} fa-heart cursor-pointer transition ease-in-out duration-300`}></i>
-            <p className='ml-1'>47K</p>
-        </div>
+
+        <Button onPress={handleClick} className={`bg-transparent dark:text-white ${className}`}><i className={`${liked ? "fa-solid text-red-500" : "fa-regular"} fa-heart transition ease-in-out duration-300`}></i>47K</Button>
     )
 }
 
