@@ -9,8 +9,8 @@ const NavButton = ({ iconClass, href = "", content = "" }) => {
     const pathname = usePathname();
 
     return (
-        <Link className={clsx("flex h-full items-center text-center py-2 px-4 rounded-lg hover:bg-gray-400 bg-gray-200 transition-colors w-full",
-            { "bg-gray-500 text-white hover:text-black": pathname === href })} href={href}>
+        <Link className={clsx("flex h-full items-center text-center py-2 px-4 rounded-lg dark:hover:bg-gray-500 dark:bg-black hover:bg-gray-400 bg-gray-200 transition-colors w-full",
+            { "!bg-gray-500 text-white hover:text-black dark:hover:text-white": pathname === href })} href={href}>
             <i className={`${iconClass} mr-3`}></i>
             <span className="">{content}</span>
         </Link>
@@ -59,7 +59,7 @@ const layout = ({ children }) => {
                     </ul>
                 </div>
             </div>
-            <div className="h-screen basis-3/4">
+            <div className="h-screen basis-3/4 dark:text-white dark:bg-black">
                 {children}
             </div>
         </div>
