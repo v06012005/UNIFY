@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 
 @Entity
@@ -56,5 +57,12 @@ public class User {
 
     @Column(name = "work_at")
     String workAt;
+
+    @OneToMany(mappedBy = "user")
+    Set<Avatar> avatars;
+
+    @OneToMany(mappedBy = "user")
+    Set<Follower> followers;
+
 
 }
