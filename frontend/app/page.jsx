@@ -4,6 +4,7 @@ import Image from 'next/image'
 import fullLogo from '@/public/images/unify_1.svg';
 import RootLayout from "./(pages)/layout";
 import Link from "next/link";
+import FullUnifyLogo from "@/components/global/FullUnifyLogo";
 
 const SearchBar = () => {
   return (
@@ -62,7 +63,7 @@ export default function Home() {
             </div>
             <hr className="my-4" />
             <div>
-              <Image src={fullLogo} alt="Unify Logo" className="w-1/2" />
+              <FullUnifyLogo />
               <p className="mt-2 text-gray-500">&copy; UNIFY FROM WORKAHOLICS
               </p>
             </div>
