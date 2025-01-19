@@ -63,7 +63,7 @@ export default function Home() {
             </div>
             <hr className="my-4" />
             <div>
-              <FullUnifyLogo />
+              <FullUnifyLogo className="w-1/2" />
               <p className="mt-2 text-gray-500">&copy; UNIFY FROM WORKAHOLICS
               </p>
             </div>
