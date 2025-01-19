@@ -2,11 +2,12 @@
 
 import avatar from "@/public/images/test1.png";
 import Image from "next/image";
-import { PhotoIcon, UserCircleIcon } from "@heroicons/react/24/solid";
+import { PhotoIcon } from "@heroicons/react/24/solid";
 import ModalDialog from "@/components/global/ModalDialog";
-import ToggleButton from "@/components/global/ToggleButton";
 import { useModal } from "@/components/provider/ModalProvider";
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline'
+import { Select, SelectItem, Textarea } from "@heroui/react";
+import PostSwitch from "@/components/global/PostSwitch";
 
 const User = () => {
   return (
@@ -32,7 +33,7 @@ const Page = () => {
     <div className="h-screen">
       <div className="flex flex-col h-full px-4">
         <div className="grid grid-cols-2">
-          <h1 className="font-bold text-4xl border rounded-md w-fit p-2 my-4 mx-3 bg-black text-white">
+          <h1 className="font-bold text-4xl border rounded-md w-fit p-2 my-4 mx-3 bg-black text-white dark:text-black dark:bg-white">
             POST
           </h1>
           <User />
@@ -43,20 +44,20 @@ const Page = () => {
             <div className="h-full">
               <label
                 htmlFor="cover-photo"
-                className="block text-sm/6 font-medium text-gray-900"
+                className="block text-sm/6 font-medium text-gray-900 dark:text-white"
               >
                 Photos or/and videos
               </label>
-              <div className="mt-2 h-5/6 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+              <div className="mt-2 h-5/6 flex justify-center rounded-lg border border-dashed dark:border-gray-200 border-gray-900/25 px-6 py-10">
                 <div className="text-center">
                   <PhotoIcon
                     aria-hidden="true"
-                    className="mx-auto size-12 text-gray-300"
+                    className="mx-auto size-12 text-gray-300 dark:text-white"
                   />
-                  <div className="mt-4 flex text-sm/6 text-gray-600">
+                  <div className="mt-4 flex text-sm/6 text-gray-600 dark:text-white">
                     <label
                       htmlFor="file-upload"
-                      className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 hover:text-indigo-500"
+                      className="relative cursor-pointer rounded-md bg-white dark:bg-black font-semibold text-indigo-600 hover:text-indigo-500"
                     >
                       <span>Upload photos or/and videos here</span>
                       <input
@@ -68,13 +69,13 @@ const Page = () => {
                       />
                     </label>
                   </div>
-                  <p className="text-xs/5 text-gray-600">PHOTOS AND VIDEOS</p>
+                  <p className="text-xs/5 text-gray-600 dark:text-gray-100">PHOTOS AND VIDEOS</p>
                 </div>
               </div>
               <div className="mt-6 flex items-center justify-end gap-x-6">
                 <button
                   type="button" onClick={openModal}
-                  className="text-sm/6 font-semibold text-gray-900"
+                  className="text-sm/6 font-semibold text-gray-900 dark:text-white"
                 >
                   Cancel
                 </button>
@@ -94,45 +95,29 @@ const Page = () => {
           </div>
           <div className="basis-1/2 border-l p-3 overflow-y-scroll no-scrollbar">
             <div>
-              <p className="text-sm/6 font-medium text-gray-900">
+              <p className="text-sm/6 font-medium text-gray-900 dark:text-white">
                 Write Your Caption
               </p>
-              <textarea
-                name="caption"
-                style={{ resize: "none" }}
-                id="caption"
-                placeholder="Write your caption here..."
-                className="w-full p-2 border rounded-md mt-2"
-                cols="30"
-                rows="9"
-              ></textarea>
+              <Textarea
+                placeholder="Write your caption here" minRows={9} variant="underlined"
+              />
             </div>
             <div>
-              <p className="text-sm/6 font-medium text-gray-900 mb-2">
+              <p className="text-sm/6 mt-3 font-medium text-gray-900 mb-2 dark:text-white">
                 Who can see your post?
               </p>
-              <select
-                className="border w-full pl-3 py-2 rounded-md"
-                name="audience"
-                id="audience"
-              >
-                <option value="public">Public</option>
-                <option value="private">Private</option>
-              </select>
+              <Select defaultSelectedKeys={["public"]} className="w-full" label="" variant="underlined">
+                <SelectItem key={"public"} startContent={<i className="fa-solid fa-earth-asia"></i>}>Public</SelectItem>
+                <SelectItem key={"private"} startContent={<i className="fa-solid fa-lock"></i>}>Private</SelectItem>
+              </Select>
             </div>
             <div>
-              <p className="text-sm/6 font-medium text-gray-900 my-2">
+              <p className="text-sm/6 font-medium text-gray-900 my-2 dark:text-white">
                 Advanced Settings
               </p>
               <div>
-                <ToggleButton
-                  className="text-md"
-                  description={`Hide like and comment counts on this post`}
-                />
-                <ToggleButton
-                  className="text-md"
-                  description={`Turn off commenting`}
-                />
+                <PostSwitch className="mb-3" title={"Hide like and comment counts on this post"} subtitle="Control your privacy by hiding the like and comment counts on this post, keeping the focus on the content rather than the numbers." />
+                <PostSwitch title={"Turn off commenting"} subtitle="Disable comments on this post to maintain control over interactions and focus solely on the content." />
               </div>
             </div>
           </div>
