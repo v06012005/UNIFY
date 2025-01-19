@@ -20,7 +20,7 @@ const UserSidebar = () => {
             <div className="flex flex-col border h-screen fixed left-20 top-0 z-50 w-52">
                 <ul className="text-3xl flex flex-col justify-center grow w-full">
                     <li className="h-16">
-                        <NavButton title="User Management" href="/manage/users" iconClass={"fa-solid fa-users-gear"} text="List" />
+                        <NavButton title="User Management" href="/manage/users" iconClass={"fa-solid fa-users-gear"} alt="List" />
                     </li>
                     <li className="h-16">
                         <NavButton title="Post Management" href="/manage/posts" iconClass={"fa-solid fa-newspaper"} />
