@@ -6,6 +6,7 @@ import Image from "next/image";
 import Avatar from "@/public/images/avt.jpg";
 import avatar from '@/public/images/test1.png'
 import SearchHorizontalToggle from "@/components/global/SearchHorizontalToggle";
+import UnifyLogoIcon from "./UnifyLogoIcon";
 
 const NavButton = React.memo(function NavButton({ iconClass, href = "", title = "" }) {
 
@@ -137,13 +138,7 @@ const SideBar = () => {
         <SearchHorizontalToggle isOpen={openSearch} searchComponentRef={searchComponentRef}>
             <div className="relative flex flex-row">
                 <div className="flex flex-col border h-screen fixed left-0 top-0 z-50">
-                    <Image
-                        src={`/images/unify_icon_lightmode.svg`}
-                        alt="UNIFY logo"
-                        width={100}
-                        height={100}
-                        className="mx-auto flex-none h-20 w-20"
-                    />
+                    <UnifyLogoIcon />
                     <ul className="text-3xl flex flex-col justify-center grow w-full">
                         <li className="h-16">
                             <NavButton title="Home" href="/" iconClass={"fa-solid fa-house"} />

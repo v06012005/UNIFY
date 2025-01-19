@@ -65,7 +65,7 @@ const Post = ({ imageSrc = dummy }) => {
                 <Hashtag content='#myhashtag'></Hashtag>
             </div>
             <div className='mt-2'>
-                <button className='text-black hover:text-gray-500 text-md'>View all comments</button>
+                <button className='text-black hover:text-gray-500 text-md dark:text-gray-400 dark:hover:text-white'>View all comments</button>
             </div>
             <form action="#">
                 <div className="mt-2">
