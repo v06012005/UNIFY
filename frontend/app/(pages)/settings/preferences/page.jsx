@@ -1,6 +1,7 @@
 import ToggleButton from '@/components/global/ToggleButton'
 import React from 'react'
-import SelectMenu from '@/components/global/SelectMenu'
+import ModeSwitch from '@/components/global/ModeSwitch'
+import SelectMenu from '@/components/global/Select'
 
 const languages = [
     {
@@ -20,15 +21,15 @@ const page = () => {
             <div className='my-5'>
                 <p className='text-xl font-bold'>App theme</p>
                 <p className='text-gray-500'>Set how your app should look like with your prefered theme.</p>
-                <div className='my-2'>
-                    <ToggleButton description={"Dark Mode"} />
+                <div className='my-2 border rounded-md p-2'>
+                    <ModeSwitch />
                 </div>
             </div>
             <div className='my-5'>
                 <p className='text-xl font-bold'>Prefered language</p>
                 <p className='text-gray-500'>See all texts, messages, titles in your prefered language.</p>
-                <div className='my-2'>
-                    <SelectMenu options={languages} />
+                <div className='my-2 w-full'>
+                    <SelectMenu />
                 </div>
             </div>
         </div>
