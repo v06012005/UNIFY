@@ -91,7 +91,6 @@ const Slider = ({ srcs = [] }) => {
           <PostVideo src={srcs[currentIndex].url} />
         </>
       )}
-
       <div
         onClick={next}
         className="hidden group-hover:flex absolute top-1/2 right-[-10px] -translate-x-0 -translate-y-1/2 bg-gray-400 w-7 h-7 rounded-full cursor-pointer"
