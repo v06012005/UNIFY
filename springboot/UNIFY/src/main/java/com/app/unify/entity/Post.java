@@ -19,9 +19,8 @@ import java.util.UUID;
 public class Post {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name="id", insertable = false, updatable = false, nullable = false)
-    UUID id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    String id;
 
     String captions;
 
@@ -44,7 +43,7 @@ public class Post {
     Boolean isLikeVisible;
 
     @OneToMany(mappedBy = "post")
-    Set<PostComment> postComments;
+    Set<PostComment> comments;
 
     @OneToMany(mappedBy = "post")
     Set<Media> media;

@@ -17,9 +17,8 @@ import java.util.UUID;
 public class Media {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name="id", insertable = false, updatable = false, nullable = false)
-    UUID id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    String id;
 
     @ManyToOne
     @MapsId("id")

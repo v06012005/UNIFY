@@ -17,9 +17,8 @@ import java.util.UUID;
 public class Avatar {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name="id", insertable = false, updatable = false, nullable = false)
-    UUID id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    String id;
 
     @Column(nullable = false)
     String url;

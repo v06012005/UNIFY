@@ -20,11 +20,11 @@ public class Follower {
     FollowerUserId id;
 
     @ManyToOne
-    @JoinColumn(name = "follower_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "follower_id", referencedColumnName = "id", insertable = false, updatable = false, nullable = false)
     User userFollower;
 
     @ManyToOne
-    @JoinColumn(name = "following_id",referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "following_id", referencedColumnName = "id", insertable = false, updatable = false, nullable = false)
     User userFollowing;
 
     @Column(name = "create_at", nullable = false)

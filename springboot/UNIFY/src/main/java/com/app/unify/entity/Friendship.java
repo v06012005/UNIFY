@@ -21,13 +21,11 @@ public class Friendship {
     FriendshipUserId id;
 
     @ManyToOne
-    @MapsId("id")
-    @JoinColumn(name = "friendship_id", nullable = false)
+    @JoinColumn(name = "friendship_id", referencedColumnName = "id", insertable = false, updatable = false, nullable = false)
     User friend;
 
     @ManyToOne
-    @MapsId("id")
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", referencedColumnName = "id", insertable = false, updatable = false, nullable = false)
     User user;
 
     @Enumerated(EnumType.STRING)

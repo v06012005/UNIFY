@@ -17,11 +17,10 @@ import java.util.UUID;
 public class PostComment {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name="id", insertable = false, updatable = false, nullable = false)
-    UUID id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    String id;
 
-    @Column(nullable = false)
+    @Column(name = "content", nullable = false)
     String content;
 
     @ManyToOne
@@ -37,8 +36,8 @@ public class PostComment {
     @Column(name = "commented_at", nullable = false)
     LocalDateTime commentedAt;
 
-    @Column(name = "parent_id")
+    @ManyToOne
+    @JoinColumn(name = "parent_id")
     PostComment parentId;
-
 
 }
