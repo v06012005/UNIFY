@@ -82,7 +82,7 @@ const Slider = ({ srcs = [] }) => {
             <div onClick={prev} className='hidden group-hover:flex absolute top-1/2 left-[-10px] -translate-x-0 -translate-y-1/2 bg-gray-400 w-7 h-7 rounded-full cursor-pointer'><i className="fa-solid fa-angle-left m-auto"></i></div>
             <div className='flex justify-center'>
                 {srcs.map((src, index) => (
-                    <div key={index} onClick={() => goTo(index)} className={`text-xs mx-[2px] cursor-pointer ${currentIndex === index ? "text-white" : "text-gray-500"}`}><i className="fa-solid fa-circle fa-xs"></i></div>
+                    <div key={index} onClick={() => goTo(index)} className={`text-xs mx-[2px] cursor-pointer ${currentIndex === index ? "dark:text-white" : "text-gray-500"}`}><i className="fa-solid fa-circle fa-xs "></i></div>
                 ))}
             </div>
         </div>
