@@ -5,9 +5,13 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
-const NavButton = ({ iconClass, href = "", content = "" }) => {
+const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   return (
-    <Link className="flex h-full items-center text-center" href={href}>
+    <Link
+      className="flex h-full items-center text-center"
+      href={href}
+      onClick={onClick}
+    >
       <i className={`${iconClass}`}></i>
       <span className="">{content}</span>
     </Link>
@@ -32,8 +36,13 @@ const Page = () => {
   const toggleFriend = () => {
     setIsFriend(!isFriend);
   };
+  const [isFollow, setIsFollow] = useState(false);
+
+  const toggleFollow = () => {
+    setIsFollow((prev) => !prev);
+  };
   return (
-    <div className=" w-[80%] mx-auto">
+    <div className=" w-[82%] mx-auto">
       <div className="h-screen overflow-y-auto">
         <div className="flex p-5 mx-20">
           <div className="relative">
@@ -65,7 +74,7 @@ const Page = () => {
               <div className="flex flex-col items-center w-200 mt-2 mx-10">
                 <h3 className="text-2xl ">huynhdiz</h3>
                 <p
-                  className="mt-5 text-gray-500 font-bold cursor-pointer"
+                  className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer"
                   onClick={toggleFriend}
                 >
                   0 Friend
@@ -102,13 +111,16 @@ const Page = () => {
                           </div>
 
                           <div className="flex items-center space-x-2 ">
-                            <div className="flex items-center space-x-2 border px-3 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-500 dark:bg-gray-700 cursor-pointer ">
-                              <NavButton
-                                href="/message"
-                                iconClass={"fa-brands fa-facebook-messenger"}
-                              />
-                              <p className="text-base ">Message</p>
-                            </div>
+                            <Link href="/messages">
+                              <div className="flex items-center space-x-2 border px-3 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-500 dark:bg-gray-700 cursor-pointer ">
+                                <NavButton
+                                  iconClass={
+                                    "fa-brands fa-facebook-messenger mr-2"
+                                  }
+                                  content="Message"
+                                />
+                              </div>
+                            </Link>
                           </div>
                         </li>
                       </ul>
@@ -119,18 +131,20 @@ const Page = () => {
 
               <div className="flex flex-col mx-10 items-center w-200">
                 <ul>
-                  <li className="flex items-center">
-                    <div className="flex items-center py-2 px-5 rounded-lg hover:bg-gray-400 bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors w-full">
-                      <NavButton
-                        href="/settings/edit-profile"
+                  <Link
+                    className="flex items-center"
+                    href="/settings/edit-profile"
+                  >
+                    <div className="flex items-center font-bold py-2 px-5 rounded-lg hover:bg-gray-400 bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors w-full">
+                      <NavButton  href="/settings/edit-profile"
                         iconClass="fa-regular fa-address-card mr-5"
                         content="Edit Profile"
                       />
                     </div>
-                  </li>
+                  </Link>
                 </ul>
                 <p
-                  className="mt-5 text-gray-500 font-bold cursor-pointer"
+                  className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer"
                   onClick={toggleFollower}
                 >
                   0 Follower
@@ -167,20 +181,27 @@ const Page = () => {
                           </div>
 
                           <div className="flex items-center space-x-2 ">
-                            <div className="flex items-center space-x-2 border px-3 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-500 dark:bg-gray-700 cursor-pointer ">
-                              <NavButton
-                                href="/message"
-                                iconClass={"fa-brands fa-facebook-messenger"}
-                              />
-                              <p className="text-base ">Message</p>
-                            </div>
+                            <Link href="/messages">
+                              <div className="flex items-center space-x-2 border px-3 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-500 dark:bg-gray-700 cursor-pointer ">
+                                <NavButton
+                                  iconClass={
+                                    "fa-brands fa-facebook-messenger mr-2"
+                                  }
+                                  content="Message"
+                                />
+                              </div>
+                            </Link>
 
                             <div className="flex items-center space-x-2 border px-3 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-500 dark:bg-gray-700 cursor-pointer">
                               <NavButton
-                                href="/follow"
-                                iconClass={"fa-solid fa-user-plus"}
+                                iconClass={
+                                  isFollow
+                                    ? "fa-solid fa-check mr-2"
+                                    : "fa-solid fa-x mr-2"
+                                }
+                                content={isFollow ? "Unfollow" : "Follow"}
+                                onClick={toggleFollow}
                               />
-                              <p className="text-base ">Follow</p>
                             </div>
                           </div>
                         </li>
@@ -192,18 +213,17 @@ const Page = () => {
 
               <div className="flex flex-col mx-10 items-center w-200">
                 <ul>
-                  <li className="flex items-center">
-                    <div className="flex items-center py-2 px-5 rounded-lg hover:bg-gray-400 bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors w-full">
-                      <NavButton
-                        href="/settings/archive"
+                  <Link className="flex items-center" href="/settings/archive">
+                    <div className="flex items-center font-bold py-2 px-5 rounded-lg hover:bg-gray-400 bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors w-full">
+                      <NavButton href="/settings/archive"
                         iconClass="fa-regular fa-bookmark mr-5"
                         content="View Archive"
                       />
                     </div>
-                  </li>
+                  </Link>
                 </ul>
                 <p
-                  className="mt-5 text-gray-500 font-bold cursor-pointer"
+                  className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer"
                   onClick={toggleFollowing}
                 >
                   Following 0 user
@@ -213,7 +233,9 @@ const Page = () => {
                   <div className="fixed inset-0 bg-black  bg-opacity-50 flex items-center justify-center">
                     <div className="bg-white dark:bg-gray-800 rounded-lg w-[36%] p-6">
                       <div className="flex justify-between mb-4 text-2xl">
-                        <h2 className="text-lg font-bold dark:text-white">Following</h2>
+                        <h2 className="text-lg font-bold dark:text-white">
+                          Following
+                        </h2>
                         <button
                           className="text-gray-500 hover:text-black "
                           onClick={toggleFollowing}
@@ -240,20 +262,27 @@ const Page = () => {
                           </div>
 
                           <div className="flex items-center space-x-2 ">
-                            <div className="flex items-center space-x-2 border px-3 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-500 dark:bg-gray-700 cursor-pointer ">
-                              <NavButton
-                                href="/message"
-                                iconClass={"fa-brands fa-facebook-messenger"}
-                              />
-                              <p className="text-base ">Message</p>
-                            </div>
+                            <Link href="/messages">
+                              <div className="flex items-center space-x-2 border px-3 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-500 dark:bg-gray-700 cursor-pointer ">
+                                <NavButton href="/messages"
+                                  iconClass={
+                                    "fa-brands fa-facebook-messenger mr-2"
+                                  }
+                                  content="Message"
+                                />
+                              </div>
+                            </Link>
 
                             <div className="flex items-center space-x-2 border px-3 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-500 dark:bg-gray-700 cursor-pointer">
                               <NavButton
-                                href="/unfollow"
-                                iconClass={"fa-solid fa-x"}
+                                iconClass={
+                                  isFollow
+                                    ? "fa-solid fa-check mr-2"
+                                    : "fa-solid fa-x mr-2"
+                                }
+                                content={isFollow ? "Unfollow" : "Follow"}
+                                onClick={toggleFollow}
                               />
-                              <p className="text-base ">Unfollow</p>
                             </div>
                           </div>
                         </li>
@@ -266,7 +295,9 @@ const Page = () => {
           </div>
         </div>
         <div className="bg-gray-100 dark:bg-gray-800  mt-2 ml-3 mr-5 rounded-lg shadow-md p-2 flex-grow">
-          <p className="text-lg text-gray-700 dark:text-white mb-2">People you may know</p>
+          <p className="text-lg text-gray-700 dark:text-white mb-2">
+            People you may know
+          </p>
 
           <div className="flex gap-4 overflow-x-scroll scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
             <div className="min-w-[150px] flex-shrink-0 p-2 mb-2 flex flex-col items-center bg-white dark:bg-gray-600 rounded-lg shadow hover:shadow-lg transition-shadow">
@@ -290,10 +321,11 @@ const Page = () => {
         <div className="p-4">
           <div className="flex justify-around border-b-2 border-gray-300">
             <button
-              className={`py-2 px-4 font-bold flex items-center ${activeTab === "post"
-                ? "text-blue-500 border-b-4 border-blue-500"
-                : "text-gray-500"
-                }`}
+              className={`py-2 px-4 font-bold flex items-center ${
+                activeTab === "post"
+                  ? "text-blue-500 border-b-4 border-blue-500"
+                  : "text-gray-500 dark:text-gray-200"
+              }`}
               onClick={() => setActiveTab("post")}
             >
               <NavButton href="/" iconClass="fa-solid fa-pen" />
@@ -301,10 +333,11 @@ const Page = () => {
             </button>
 
             <button
-              className={`py-2 px-4 font-bold flex items-center ${activeTab === "saved"
-                ? "text-blue-500 border-b-4 border-blue-500"
-                : "text-gray-500"
-                }`}
+              className={`py-2 px-4 font-bold flex items-center ${
+                activeTab === "saved"
+                  ? "text-blue-500 border-b-4 border-blue-500"
+                  : "text-gray-500 dark:text-gray-200"
+              }`}
               onClick={() => setActiveTab("saved")}
             >
               <NavButton href="/" iconClass="fa-solid fa-bookmark" />
@@ -312,10 +345,11 @@ const Page = () => {
             </button>
 
             <button
-              className={`py-2 px-4 font-bold flex items-center ${activeTab === "tagged"
-                ? "text-blue-500 border-b-4 border-blue-500"
-                : "text-gray-500"
-                }`}
+              className={`py-2 px-4 font-bold flex items-center ${
+                activeTab === "tagged"
+                  ? "text-blue-500 border-b-4 border-blue-500"
+                  : "text-gray-500 dark:text-gray-200"
+              }`}
               onClick={() => setActiveTab("tagged")}
             >
               <NavButton href="/" iconClass="fa-solid fa-tag" />
@@ -344,13 +378,9 @@ const Page = () => {
             )}
           </div>
         </div>
-        
       </div>
     </div>
-    
   );
-  
 };
-
 
 export default Page;

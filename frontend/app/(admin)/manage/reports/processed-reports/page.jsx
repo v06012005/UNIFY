@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import filterIcon from "@/public/images/filter.png";
+import filterLightIcon from "@/public/images/filter-lightmode.png";
+import filterDarkIcon from "@/public/images/filter_darkmode.png";
 
 const dummyReports = Array.from({ length: 50 }, (_, index) => ({
   id: index + 1, 
@@ -112,7 +113,7 @@ const ProcessedReportList = () => {
       </div>
 
       <div className="mt-5">
-        <div className="overflow-auto max-h-[525px] shadow-md rounded-lg">
+      <div className={`overflow-auto max-h-[70vh] shadow-md rounded-lg`}>
           <table className="min-w-full bg-white dark:bg-gray-800 table-auto">
             <thead className="shadow-inner sticky top-0 bg-gray-200 dark:bg-gray-600">
               <tr>
@@ -145,7 +146,7 @@ const ProcessedReportList = () => {
         </div>
       </div>
 
-      <div className="mt-7 flex items-center gap-3">
+      <div className="mt-7 flex justify-center items-center gap-3 w-full">
         <button
           className={`px-3 py-1 rounded-md ${
             currentPage === 1
