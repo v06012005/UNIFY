@@ -56,6 +56,12 @@ export default function Home() {
             {/* <User href="/profile" /> */}
             <div className="flex justify-center">
               <Link
+                className="border hover:bg-red-500 transition ease-in-out duration-100 hover:text-white rounded w-20 text-center py-2 mx-2"
+                href={"/manage/users/list"}
+              >
+                Admin
+              </Link>
+              <Link
                 className="border hover:bg-blue-500 transition ease-in-out duration-100 hover:text-white rounded w-20 text-center py-2 mx-2"
                 href={"/login"}
               >
