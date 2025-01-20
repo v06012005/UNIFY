@@ -1,4 +1,7 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { Input } from "@/components/ui/input";
+import avatar2 from "@/public/images/testAvt.jpg";
+import Image from 'next/image';
 import {
     Modal,
     ModalContent,
@@ -11,42 +14,54 @@ import {
 
 const ShareButton = () => {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const [selectedAvatar, setSelectedAvatar] = useState(null);
+    const handleAvatarClick = (index) => {
+        setSelectedAvatar(index === selectedAvatar ? null : index);
+    };
 
     return (
         <>
             <Button onPress={onOpen} className="bg-transparent dark:text-white text-xl"><i className="fa-regular fa-paper-plane"></i>47K</Button>
-            <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+            <Modal isOpen={isOpen} onOpenChange={onOpenChange} size='2xl'>
                 <ModalContent>
                     {(onClose) => (
                         <>
-                            <ModalHeader className="flex flex-col gap-1">Modal Title</ModalHeader>
+                            <ModalHeader className="flex flex-cols">
+                                <h1 className="font-bold text-2xl">Share</h1>
+                            </ModalHeader>
+                            <hr className="bg-gray-200"></hr>
                             <ModalBody>
-                                <p>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam pulvinar risus non
-                                    risus hendrerit venenatis. Pellentesque sit amet hendrerit risus, sed porttitor
-                                    quam.
-                                </p>
-                                <p>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam pulvinar risus non
-                                    risus hendrerit venenatis. Pellentesque sit amet hendrerit risus, sed porttitor
-                                    quam.
-                                </p>
-                                <p>
-                                    Magna exercitation reprehenderit magna aute tempor cupidatat consequat elit dolor
-                                    adipisicing. Mollit dolor eiusmod sunt ex incididunt cillum quis. Velit duis sit
-                                    officia eiusmod Lorem aliqua enim laboris do dolor eiusmod. Et mollit incididunt
-                                    nisi consectetur esse laborum eiusmod pariatur proident Lorem eiusmod et. Culpa
-                                    deserunt nostrud ad veniam.
-                                </p>
+                                <div className="mt-4">
+                                    <Input
+                                        placeholder={"Search..."}
+                                        className={`w-full h-11 dark:border-white font-bold`}
+                                    />
+                                </div>
+                                <div className="flex p-3 justify-around">
+                                    {[1, 2, 3, 4].map((_, index) => (
+                                        <div className="text-center" key={index}>
+                                            <Image
+                                                src={avatar2}
+                                                alt={`avtshare-${index}`}
+                                                className={`rounded-full w-20 h-20 cursor-pointer ${selectedAvatar === index
+                                                    ? "ring-4 dark:ring-white"
+                                                    : ""
+                                                    }`}
+                                                onClick={() => handleAvatarClick(index)}
+                                            />
+                                            <p className="mt-2 font-bold text-lg truncate w-20">
+                                                Tan Vinh
+                                            </p>
+                                            {selectedAvatar === index && (
+                                                <button className="mt-2 px-4 py-2 bg-blue-500 text-white rounded">
+                                                    Send
+                                                </button>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
                             </ModalBody>
-                            <ModalFooter>
-                                <Button color="danger" variant="light" onPress={onClose}>
-                                    Close
-                                </Button>
-                                <Button color="primary" onPress={onClose}>
-                                    Action
-                                </Button>
-                            </ModalFooter>
+                            <ModalFooter></ModalFooter>
                         </>
                     )}
                 </ModalContent>

@@ -2,7 +2,10 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Avatar from "@/public/images/testAvt.jpg";
-import filterIcon from "@/public/images/filter.png"
+import filterLightIcon from "@/public/images/filter-lightmode.png";
+import filterDarkIcon from "@/public/images/filter_darkmode.png";
+import { useTheme } from "next-themes";
+
 const dummyUsers = Array.from({ length: 50 }, (_, index) => ({
   id: index + 1,
   name: `User ${index + 1}`,
@@ -11,6 +14,8 @@ const dummyUsers = Array.from({ length: 50 }, (_, index) => ({
 }));
 
 const UserManagementPage = () => {
+  const { theme, setTheme } = useTheme();
+
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [search, setSearch] = useState("");
@@ -40,7 +45,7 @@ const UserManagementPage = () => {
     <div className="py-5 px-7 h-screen w-[78rem]">
       <div className="w-full flex justify-between items-center">
         <h1 className="text-2xl font-black">User Management</h1>
-        <button className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-black">
+        <button className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-300 hover:text-gray-800">
           Add User
         </button>
       </div>
@@ -54,27 +59,29 @@ const UserManagementPage = () => {
           onChange={(e) => setSearch(e.target.value)}
         />
         <Image
-        src={filterIcon}
-        alt="filter"
-        className={"size-7 justify-self-center mr-3 hover:cursor-pointer"}
+          src={theme === "dark" ? filterDarkIcon : filterLightIcon}
+          alt="filter"
+          className={"size-7 justify-self-center mr-3 hover:cursor-pointer"}
         />
       </div>
 
       <div className="mt-5">
-        <div className={`overflow-auto max-h-[525px] shadow-md rounded-lg`}>
+        <div className={`overflow-auto max-h-[70vh] shadow-md rounded-lg`}>
           <table className="min-w-full bg-white table-auto">
-            <thead className="shadow-inner sticky top-0 bg-white">
-
-              <tr>
+            <thead className="shadow-inner sticky top-0 bg-white dark:bg-black dark:shadow-white dark:shadow-inner">
+              <tr className="">
                 <th className="py-3 px-5 text-left w-[7%]"></th>
                 <th className="py-3 px-5 text-left w-[25%]">Name</th>
                 <th className="py-3 px-5 text-left w-[43%]">Email</th>
                 <th className="py-3 px-5 text-center w-1/6">Actions</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white divide-y divide-gray-200 dark:bg-black">
               {currentItems.map((user) => (
-                <tr key={user.id} className="hover:bg-gray-100">
+                <tr
+                  key={user.id}
+                  className="hover:bg-gray-100 dark:hover:text-black"
+                >
                   <td className="py-3 px-5">
                     <Image
                       src={user.avatar}
@@ -100,12 +107,12 @@ const UserManagementPage = () => {
       </div>
 
       {/* Pagination */}
-      <div className="mt-7 flex items-center gap-3">
+      <div className="mt-7 flex justify-center items-center gap-3 w-full">
         <button
           className={`px-3 py-1 rounded-md ${
             currentPage === 1
               ? "border hover:cursor-not-allowed"
-              : "bg-gray-600 text-white hover:bg-black"
+              : "bg-gray-600 text-white hover:bg- dark:bg-gray-800 dark:hover:bg-gray-500"
           }`}
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
@@ -117,8 +124,8 @@ const UserManagementPage = () => {
             key={index}
             className={`px-3 py-1 rounded-md ${
               currentPage === index + 1
-                ? "bg-black text-white"
-                : "bg-gray-300 hover:bg-gray-400"
+                ? "bg-gray-300 dark:bg-gray-500"
+                : "hover:bg-gray-100 dark:hover:bg-gray-200 dark:hover:text-black"
             }`}
             onClick={() => setCurrentPage(index + 1)}
           >
@@ -129,7 +136,7 @@ const UserManagementPage = () => {
           className={`px-3 py-1 rounded-md ${
             currentPage === totalPages
               ? "border hover:cursor-not-allowed"
-              : "bg-gray-600 text-white hover:bg-black"
+              : "bg-gray-600 text-white hover:bg- dark:bg-gray-800 dark:hover:bg-gray-500"
           }`}
           onClick={() =>
             setCurrentPage((prev) => Math.min(prev + 1, totalPages))
