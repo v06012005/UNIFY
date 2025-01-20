@@ -30,9 +30,14 @@ const User = ({ href = "" }) => {
 
 const Hashtag = ({ content = "", to = "" }) => {
     return (
-        <Link href={to} className='text-lg text-sky-500 mr-4 hover:underline hover:decoration-sky-500'>{content}</Link>
-    )
-}
+        <Link
+            href={to}
+            className="text-lg text-sky-500 mr-4 hover:underline hover:decoration-sky-500"
+        >
+            {content}
+        </Link>
+    );
+};
 
 const Caption = ({ text, maxLength = 100 }) => {
     const [isExpanded, setIsExpanded] = useState(false);
@@ -49,7 +54,7 @@ const Caption = ({ text, maxLength = 100 }) => {
 }
 
 const Slider = ({ srcs = [] }) => {
-    const [currentIndex, setCurrentIndex] = useState(0);
+    const [currentIndex, setCurSrentIndex] = useState(0);
 
     const prev = () => {
         const isFirst = currentIndex === 0;
@@ -122,4 +127,4 @@ const Post = ({ srcs }) => {
     )
 }
 
-export default Post
+export default Post;
