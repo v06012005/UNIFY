@@ -14,7 +14,7 @@ const dummyUsers = Array.from({ length: 50 }, (_, index) => ({
 }));
 
 const UserManagementPage = () => {
-  const { theme, setTheme } = useTheme();
+  const { theme } = useTheme();
 
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
@@ -42,77 +42,73 @@ const UserManagementPage = () => {
   const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
 
   return (
-    <div className="py-5 px-7 h-screen w-[78rem]">
-      <div className="w-full flex justify-between items-center">
-        <h1 className="text-2xl font-black">User Management</h1>
-        <button className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-300 hover:text-gray-800">
-          Add User
-        </button>
-      </div>
-
-      <div className="mt-5 flex items-center gap-4">
-        <input
-          type="text"
-          className="border border-gray-300 px-4 py-2 rounded-md w-full"
-          placeholder="Search users..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <Image
-          src={theme === "dark" ? filterDarkIcon : filterLightIcon}
-          alt="filter"
-          className={"size-7 justify-self-center mr-3 hover:cursor-pointer"}
-        />
-      </div>
-
-      <div className="mt-5">
-        <div className={`overflow-auto max-h-[70vh] shadow-md rounded-lg`}>
-          <table className="min-w-full bg-white table-auto">
-            <thead className="shadow-inner sticky top-0 bg-white dark:bg-black dark:shadow-white dark:shadow-inner">
-              <tr className="">
-                <th className="py-3 px-5 text-left w-[7%]"></th>
-                <th className="py-3 px-5 text-left w-[25%]">Name</th>
-                <th className="py-3 px-5 text-left w-[43%]">Email</th>
-                <th className="py-3 px-5 text-center w-1/6">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200 dark:bg-black">
-              {currentItems.map((user) => (
-                <tr
-                  key={user.id}
-                  className="hover:bg-gray-100 dark:hover:text-black"
-                >
-                  <td className="py-3 px-5">
-                    <Image
-                      src={user.avatar}
-                      alt={user.name}
-                      className="w-12 h-12 rounded-full"
-                    />
-                  </td>
-                  <td className="py-3 px-5">{user.name}</td>
-                  <td className="py-3 px-5">{user.email}</td>
-                  <td className="py-3 px-5 text-center">
-                    <button className="border border-green-500 text-green-500 px-3 py-1 rounded-md hover:bg-green-500 hover:text-white mr-2">
-                      Edit
-                    </button>
-                    <button className="border border-red-500 text-red-500 px-3 py-1 rounded-md hover:bg-red-500 hover:text-white">
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+    <div className="py-10 px-6 h-screen w-[78rem]">
+      {/* Header */}
+      <div className="max-w-7xl mx-auto mb-10 flex justify-between items-center">
+        <h1 className="text-4xl font-bold">User Management</h1>
+        <div className="flex items-center gap-3">
+          <input
+            type="text"
+            className="bg-white border border-gray-500 text-white px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-white dark:bg-black"
+            placeholder="Search users..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <Image
+            src={theme === "dark" ? filterDarkIcon : filterLightIcon}
+            alt="filter"
+            className={"size-6 cursor-pointer"}
+          />
         </div>
       </div>
 
+      {/* Table */}
+      <div className="overflow-auto max-h-[70vh] shadow-lg rounded-lg border border-gray-500">
+        <table className="min-w-full">
+          <thead className="sticky top-0 bg-white border-b border-gray-500 dark:bg-black">
+            <tr>
+              <th className="py-3 px-5 text-left w-[7%]">Avatar</th>
+              <th className="py-3 px-5 text-left w-[25%]">Username</th>
+              <th className="py-3 px-5 text-left w-[43%]">Email</th>
+              <th className="py-3 px-5 text-center w-[25%]">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {currentItems.map((user) => (
+              <tr
+                key={user.id}
+                className="hover:bg-gray-800 transition-colors border-b border-gray-700"
+              >
+                <td className="py-3 px-5">
+                  <Image
+                    src={user.avatar}
+                    alt={user.name}
+                    className="w-12 h-12 rounded-full"
+                  />
+                </td>
+                <td className="py-3 px-5">{user.name}</td>
+                <td className="py-3 px-5">{user.email}</td>
+                <td className="py-3 px-5 text-center">
+                  <button className="border border-white px-3 py-1 rounded-md hover:bg-white hover:text-black mr-2">
+                    Edit
+                  </button>
+                  <button className="border border-white px-3 py-1 rounded-md hover:bg-white hover:text-black">
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
       {/* Pagination */}
-      <div className="mt-7 flex justify-center items-center gap-3 w-full">
+      <div className="mt-7 flex justify-center items-center gap-3">
         <button
-          className={`px-3 py-1 rounded-md ${
+          className={`px-3 py-1 rounded-md border border-gray-500 ${
             currentPage === 1
-              ? "border hover:cursor-not-allowed"
-              : "bg-gray-600 text-white hover:bg- dark:bg-gray-800 dark:hover:bg-gray-500"
+              ? "cursor-not-allowed opacity-50"
+              : "hover:bg-white hover:text-black"
           }`}
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
@@ -122,10 +118,10 @@ const UserManagementPage = () => {
         {[...Array(totalPages)].map((_, index) => (
           <button
             key={index}
-            className={`px-3 py-1 rounded-md ${
+            className={`px-3 py-1 rounded-md border border-gray-500 ${
               currentPage === index + 1
-                ? "bg-gray-300 dark:bg-gray-500"
-                : "hover:bg-gray-100 dark:hover:bg-gray-200 dark:hover:text-black"
+                ? "bg-gray-500"
+                : "hover:bg-white hover:text-black"
             }`}
             onClick={() => setCurrentPage(index + 1)}
           >
@@ -133,10 +129,10 @@ const UserManagementPage = () => {
           </button>
         ))}
         <button
-          className={`px-3 py-1 rounded-md ${
+          className={`px-3 py-1 rounded-md border border-gray-500 ${
             currentPage === totalPages
-              ? "border hover:cursor-not-allowed"
-              : "bg-gray-600 text-white hover:bg- dark:bg-gray-800 dark:hover:bg-gray-500"
+              ? "cursor-not-allowed opacity-50"
+              : "hover:bg-white hover:text-black"
           }`}
           onClick={() =>
             setCurrentPage((prev) => Math.min(prev + 1, totalPages))
