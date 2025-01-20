@@ -42,7 +42,7 @@ const layout = ({ children }) => {
                         <li className="h-10 mb-3 flex items-center">
                             <NavButton
                                 href="/settings/archive"
-                                iconClass="fa-solid fa-address-card"
+                                iconClass="fa-solid fa-box-archive"
                                 content="View Archive"
                             />
                         </li>

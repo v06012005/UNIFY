@@ -61,7 +61,7 @@ const AdminSidebar = () => {
                                 </li>
                             </ul>
                         </AccordionItem>
-                        <AccordionItem className='dark:bg-gray-700' key="5" title="Notifications" startContent={<i className="fa-solid fa-bell"></i>}>
+                        {/* <AccordionItem className='dark:bg-gray-700' key="5" title="Notifications" startContent={<i className="fa-solid fa-bell"></i>}>
                             <ul>
                                 <li>
                                     <NavButton iconClass="fa-solid fa-clock-rotate-left" text="All Notifications" href="/manage/notifications/list" />
@@ -70,7 +70,7 @@ const AdminSidebar = () => {
                                     <NavButton iconClass="fa-solid fa-arrow-up-from-bracket" text="Push A Notification" href="/manage/notifications/add" />
                                 </li>
                             </ul>
-                        </AccordionItem>
+                        </AccordionItem> */}
                         <AccordionItem className='dark:bg-gray-700' key="6" title="Quick Settings" startContent={<i className="fa-solid fa-gear"></i>}>
                             <ul>
                                 <li className='pl-4'>
