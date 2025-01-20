@@ -10,7 +10,7 @@ import {
 import CommentCard from "./CommentCard";
 import CommentForm from "./CommentForm";
 
-export default function CommentButton() {
+export default function CommentButton({ children, className = "" }) {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
     const handleOpen = () => {
@@ -19,7 +19,7 @@ export default function CommentButton() {
 
     return (
         <>
-            <Button onPress={handleOpen} className="bg-transparent dark:text-white text-xl"><i className="fa-regular fa-comment"></i>47K</Button>
+            <Button onPress={handleOpen} className={`bg-transparent dark:text-white ${className}`}>{children}</Button>
             <Modal isDismissable={true} scrollBehavior={"inside"} backdrop="blur" size="3xl"
                 isKeyboardDismissDisabled={true} isOpen={isOpen} onOpenChange={onOpenChange}>
                 <ModalContent>

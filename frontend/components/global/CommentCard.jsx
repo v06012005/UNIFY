@@ -56,7 +56,7 @@ export default function CommentCard() {
                 <CardFooter className="flex flex-row items-center justify-end">
                     <LikeButton className="!text-sm" />
                     <Button size="sm" className="bg-transparent"><i className="fa-solid fa-reply"></i>Reply</Button>
-                    <Button onPress={handleClick} size="sm" className="bg-transparent"><i class="fa-solid fa-comments"></i>Show Replies</Button>
+                    <Button onPress={handleClick} size="sm" className="bg-transparent"><i className="fa-solid fa-comments"></i>Show Replies</Button>
                     <Button size="sm" className="bg-transparent" startContent={<i className="fa-solid fa-ellipsis"></i>}>More</Button>
                 </CardFooter>
             </Card>
