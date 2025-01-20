@@ -2,12 +2,8 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-<<<<<<< HEAD
 import filterLightIcon from "@/public/images/filter-lightmode.png";
 import filterDarkIcon from "@/public/images/filter_darkmode.png";
-=======
-import filterIcon from "@/public/images/filter-lightmode.png";
->>>>>>> 2cc3cd2380967d269baafcbff5c3804a23ac6977
 
 const dummyReports = Array.from({ length: 50 }, (_, index) => ({
   id: index + 1,
