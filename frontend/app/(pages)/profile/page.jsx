@@ -136,7 +136,8 @@ const Page = () => {
                     href="/settings/edit-profile"
                   >
                     <div className="flex items-center font-bold py-2 px-5 rounded-lg hover:bg-gray-400 bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors w-full">
-                      <NavButton  href="/settings/edit-profile"
+                      <NavButton
+                        href="/settings/edit-profile"
                         iconClass="fa-regular fa-address-card mr-5"
                         content="Edit Profile"
                       />
@@ -215,7 +216,8 @@ const Page = () => {
                 <ul>
                   <Link className="flex items-center" href="/settings/archive">
                     <div className="flex items-center font-bold py-2 px-5 rounded-lg hover:bg-gray-400 bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors w-full">
-                      <NavButton href="/settings/archive"
+                      <NavButton
+                        href="/settings/archive"
                         iconClass="fa-regular fa-bookmark mr-5"
                         content="View Archive"
                       />
@@ -264,7 +266,8 @@ const Page = () => {
                           <div className="flex items-center space-x-2 ">
                             <Link href="/messages">
                               <div className="flex items-center space-x-2 border px-3 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-500 dark:bg-gray-700 cursor-pointer ">
-                                <NavButton href="/messages"
+                                <NavButton
+                                  href="/messages"
                                   iconClass={
                                     "fa-brands fa-facebook-messenger mr-2"
                                   }
