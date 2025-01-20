@@ -54,7 +54,7 @@ const Caption = ({ text, maxLength = 100 }) => {
 }
 
 const Slider = ({ srcs = [] }) => {
-    const [currentIndex, setCurSrentIndex] = useState(0);
+    const [currentIndex, setCurrentIndex] = useState(0);
 
     const prev = () => {
         const isFirst = currentIndex === 0;

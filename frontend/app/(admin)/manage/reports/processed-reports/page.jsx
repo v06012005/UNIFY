@@ -2,14 +2,14 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import filterIcon from "@/public/images/filter.png";
+import filterIcon from "@/public/images/filter-lightmode.png";
 
 const dummyReports = Array.from({ length: 50 }, (_, index) => ({
-  id: index + 1, 
-  post: `PostId ${index + 1}`, 
+  id: index + 1,
+  post: `PostId ${index + 1}`,
   author: `Author ${Math.ceil(Math.random() * 50)}`,
-  reporter: `Reporter ${index + 1}`, 
-  reportDate: `${String((index % 12) + 1).padStart(2, "0")}/${String((index % 31) + 1).padStart(2, "0")}/2025`, 
+  reporter: `Reporter ${index + 1}`,
+  reportDate: `${String((index % 12) + 1).padStart(2, "0")}/${String((index % 31) + 1).padStart(2, "0")}/2025`,
 
 }));
 
@@ -29,17 +29,17 @@ const ProcessedReportList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [isDescendingByPost, setIsDescendingByPost] = useState(true); 
-  const [isDescendingByReportDate, setIsDescendingByReportDate] = useState(true); 
+  const [isDescendingByPost, setIsDescendingByPost] = useState(true);
+  const [isDescendingByReportDate, setIsDescendingByReportDate] = useState(true);
   const toggleFilter = () => {
     setIsFilterOpen(!isFilterOpen);
   };
 
   const togglePostOrder = () => {
-    setIsDescendingByPost((prevState) => !prevState); 
+    setIsDescendingByPost((prevState) => !prevState);
   };
   const toggleReportDateOrder = () => {
-    setIsDescendingByReportDate((prevState) => !prevState); 
+    setIsDescendingByReportDate((prevState) => !prevState);
   };
   useEffect(() => {
     setReports(dummyReports);
@@ -67,7 +67,7 @@ const ProcessedReportList = () => {
         <div className="border border-red-500 text-red-500 px-3 py-1 rounded-md hover:bg-red-500 hover:text-white">
           <NavButton
             iconClass="fa-regular fa-trash-can mr-2"
-            content="Delete all" 
+            content="Delete all"
           />
         </div>
       </div>
@@ -80,34 +80,32 @@ const ProcessedReportList = () => {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-       <NavButton 
-  iconClass="fa-solid fa-filter text-3xl dark:text-gray-400 " 
-  onClick={toggleFilter}
-/>
-{isFilterOpen && (
-        <div className="absolute mt-40 right-2 w-90 bg-gray-300 dark:bg-gray-700 text-white  shadow-lg rounded-md z-50">
-          <ul className="py-2 px-2">
-            <div className="hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg mb-2 px-2 ">
-            <NavButton
-              iconClass={`fa-solid ${
-                isDescendingByPost ? "fa-arrow-down-a-z" : "fa-arrow-up-a-z"
-              } mr-3 my-3`}
-              content={isDescendingByPost ? "Descending by Post" : "Ascending by Post"}
-              onClick={togglePostOrder} 
-            />
-            </div>
-            <div className="hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg px-2">
-            <NavButton
-              iconClass={`fa-solid ${
-                isDescendingByReportDate ? "fa-arrow-down-wide-short" : "fa-arrow-up-wide-short"
-              } mr-3 my-3`}
-              content={isDescendingByReportDate ? "Descending by Report date" : "Ascending by Report date"}
-              onClick={toggleReportDateOrder} 
-            />
-            </div>
-          </ul>
-        </div>
-      )}
+        <NavButton
+          iconClass="fa-solid fa-filter text-3xl dark:text-gray-400 "
+          onClick={toggleFilter}
+        />
+        {isFilterOpen && (
+          <div className="absolute mt-40 right-2 w-90 bg-gray-300 dark:bg-gray-700 text-white  shadow-lg rounded-md z-50">
+            <ul className="py-2 px-2">
+              <div className="hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg mb-2 px-2 ">
+                <NavButton
+                  iconClass={`fa-solid ${isDescendingByPost ? "fa-arrow-down-a-z" : "fa-arrow-up-a-z"
+                    } mr-3 my-3`}
+                  content={isDescendingByPost ? "Descending by Post" : "Ascending by Post"}
+                  onClick={togglePostOrder}
+                />
+              </div>
+              <div className="hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg px-2">
+                <NavButton
+                  iconClass={`fa-solid ${isDescendingByReportDate ? "fa-arrow-down-wide-short" : "fa-arrow-up-wide-short"
+                    } mr-3 my-3`}
+                  content={isDescendingByReportDate ? "Descending by Report date" : "Ascending by Report date"}
+                  onClick={toggleReportDateOrder}
+                />
+              </div>
+            </ul>
+          </div>
+        )}
 
       </div>
 
@@ -133,7 +131,7 @@ const ProcessedReportList = () => {
                   <td className="py-3 px-3">{report.reporter}</td>
                   <td className="py-3 px-3">{report.reportDate}</td>
                   <td className="py-2 text-center flex justify-center gap-2">
-                    
+
                     <button className="border border-red-500 text-red-500 px-3 py-1 rounded-md hover:bg-red-500 hover:text-white">
                       Delete
                     </button>
@@ -147,11 +145,10 @@ const ProcessedReportList = () => {
 
       <div className="mt-7 flex items-center gap-3">
         <button
-          className={`px-3 py-1 rounded-md ${
-            currentPage === 1
+          className={`px-3 py-1 rounded-md ${currentPage === 1
               ? "border hover:cursor-not-allowed"
               : "bg-gray-600 text-white hover:bg-black dark:hover:bg-gray-800"
-          }`}
+            }`}
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
         >
@@ -160,22 +157,20 @@ const ProcessedReportList = () => {
         {[...Array(totalPages)].map((_, index) => (
           <button
             key={index}
-            className={`px-3 py-1 rounded-md ${
-              currentPage === index + 1
+            className={`px-3 py-1 rounded-md ${currentPage === index + 1
                 ? "bg-black text-white dark:bg-gray-700"
                 : "bg-gray-300 hover:bg-gray-400 dark:bg-gray-500 dark:hover:bg-gray-400"
-            }`}
+              }`}
             onClick={() => setCurrentPage(index + 1)}
           >
             {index + 1}
           </button>
         ))}
         <button
-          className={`px-3 py-1 rounded-md ${
-            currentPage === totalPages
+          className={`px-3 py-1 rounded-md ${currentPage === totalPages
               ? "border hover:cursor-not-allowed "
               : "bg-gray-600 text-white hover:bg-black dark:hover:bg-gray-800"
-          }`}
+            }`}
           onClick={() =>
             setCurrentPage((prev) => Math.min(prev + 1, totalPages))
           }
