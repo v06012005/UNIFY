@@ -26,6 +26,37 @@ const SearchBar = () => {
   );
 };
 
+const srcs = [
+  {
+    type: "image",
+    url: "https://images.unsplash.com/photo-1737157998574-2a75f0c52a09?q=80&w=1924&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+  },
+  {
+    type: "image",
+    url: "https://images.unsplash.com/photo-1726442107682-f15bdd971aab?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+  },
+  {
+    type: "image",
+    url: "https://images.unsplash.com/photo-1737204310662-4d4a541ce471?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+  },
+  {
+    type: "image",
+    url: "https://images.unsplash.com/photo-1623216977599-64ec40663f64?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+  },
+  {
+    type: "image",
+    url: "https://images.unsplash.com/photo-1736994390641-d19a77126c22?q=80&w=1858&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+  },
+  {
+    type: "video",
+    url: "/videos/koniseg.mp4"
+  },
+  {
+    type: "video",
+    url: "/videos/video.mp4"
+  }
+]
+
 const User = ({ href = "" }) => {
   return (
     <Link href={href}>
@@ -46,9 +77,9 @@ export default function Home() {
       <div className="flex">
         <div className="basis-3/4 border-r py-8 h-screen overflow-y-scroll no-scrollbar">
           <div className="w-3/4 flex flex-col mx-auto">
-            <Post imageSrc={"/images/vertical.jpg"}></Post>
-            <Post imageSrc={"/images/testreel.jpg"}></Post>
-            <Post imageSrc={"/images/test1.png"}></Post>
+            <Post srcs={srcs}></Post>
+            <Post srcs={srcs}></Post>
+            <Post srcs={srcs}></Post>
           </div>
         </div>
         <div className="basis-1/4 border py-8 h-screen sticky top-0">
