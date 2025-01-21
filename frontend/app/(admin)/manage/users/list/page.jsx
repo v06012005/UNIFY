@@ -67,8 +67,8 @@ const UserManagementPage = () => {
         <table className="min-w-full">
           <thead className="sticky top-0 bg-white border-b border-gray-500 dark:bg-black">
             <tr>
-              <th className="py-3 px-5 text-left w-[7%]">Avatar</th>
-              <th className="py-3 px-5 text-left w-[25%]">Username</th>
+              <th className="py-3 px-5 text-left w-[8%]"></th>
+              <th className="py-3 px-5 text-left w-[24%]">Username</th>
               <th className="py-3 px-5 text-left w-[43%]">Email</th>
               <th className="py-3 px-5 text-center w-[25%]">Actions</th>
             </tr>
@@ -77,22 +77,22 @@ const UserManagementPage = () => {
             {currentItems.map((user) => (
               <tr
                 key={user.id}
-                className="hover:bg-gray-800 transition-colors border-b border-gray-700"
+                className="hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors border-b border-gray-700"
               >
                 <td className="py-3 px-5">
                   <Image
                     src={user.avatar}
                     alt={user.name}
-                    className="w-12 h-12 rounded-full"
+                    className="size-12 rounded-full"
                   />
                 </td>
                 <td className="py-3 px-5">{user.name}</td>
                 <td className="py-3 px-5">{user.email}</td>
                 <td className="py-3 px-5 text-center">
-                  <button className="border border-white px-3 py-1 rounded-md hover:bg-white hover:text-black mr-2">
+                  <button className="border border-green-500 text-green-500 px-3 py-1 rounded-md hover:bg-green-500 hover:text-white mr-2">
                     Edit
                   </button>
-                  <button className="border border-white px-3 py-1 rounded-md hover:bg-white hover:text-black">
+                  <button className="border border-red-500 text-red-500 px-3 py-1 rounded-md hover:bg-red-500 hover:text-white">
                     Delete
                   </button>
                 </td>
