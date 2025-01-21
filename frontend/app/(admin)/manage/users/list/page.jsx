@@ -14,7 +14,6 @@ const dummyUsers = Array.from({ length: 50 }, (_, index) => ({
 }));
 
 const UserManagementPage = () => {
-
   const { theme, setTheme } = useTheme();
 
   const [users, setUsers] = useState([]);
@@ -42,8 +41,8 @@ const UserManagementPage = () => {
 
   const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
 
-  return (    <div className="py-10 px-6 h-screen w-[78rem]">
-      {/* Header */}
+  return (
+    <div className="py-10 px-6 h-screen w-[78rem]">
       <div className="max-w-7xl mx-auto mb-10 flex justify-between items-center">
         <h1 className="text-4xl font-bold">User Management</h1>
         <div className="flex items-center gap-3">
@@ -62,7 +61,6 @@ const UserManagementPage = () => {
         </div>
       </div>
 
-      {/* Table */}
       <div className="overflow-auto max-h-[70vh] shadow-lg rounded-lg border border-gray-500">
         <table className="min-w-full">
           <thead className="sticky top-0 bg-white border-b border-gray-500 dark:bg-black">
@@ -102,15 +100,12 @@ const UserManagementPage = () => {
         </table>
       </div>
 
-      {/* Pagination */}
       <div className="mt-7 flex justify-center items-center gap-3">
-
         <button
           className={`px-3 py-1 rounded-md border border-gray-500 ${
             currentPage === 1
               ? "cursor-not-allowed opacity-50"
               : "hover:bg-white hover:text-black"
-
           }`}
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
@@ -124,7 +119,6 @@ const UserManagementPage = () => {
               currentPage === index + 1
                 ? "bg-gray-500"
                 : "hover:bg-white hover:text-black"
-
             }`}
             onClick={() => setCurrentPage(index + 1)}
           >
@@ -136,7 +130,6 @@ const UserManagementPage = () => {
             currentPage === totalPages
               ? "cursor-not-allowed opacity-50"
               : "hover:bg-white hover:text-black"
-
           }`}
           onClick={() =>
             setCurrentPage((prev) => Math.min(prev + 1, totalPages))
