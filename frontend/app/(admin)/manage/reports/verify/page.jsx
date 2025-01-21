@@ -97,8 +97,9 @@ const VerifyReportList = () => {
             <ul className="py-2 px-2">
               <div className="hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg mb-2 px-2 ">
                 <NavButton
-                  iconClass={`fa-solid ${isDescendingByPost ? "fa-arrow-down-a-z" : "fa-arrow-up-a-z"
-                    } mr-3 my-3`}
+                  iconClass={`fa-solid ${
+                    isDescendingByPost ? "fa-arrow-down-a-z" : "fa-arrow-up-a-z"
+                  } mr-3 my-3`}
                   content={
                     isDescendingByPost
                       ? "Descending by Post"
@@ -109,10 +110,11 @@ const VerifyReportList = () => {
               </div>
               <div className="hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg px-2">
                 <NavButton
-                  iconClass={`fa-solid ${isDescendingByReportDate
-                    ? "fa-arrow-down-wide-short"
-                    : "fa-arrow-up-wide-short"
-                    } mr-3 my-3`}
+                  iconClass={`fa-solid ${
+                    isDescendingByReportDate
+                      ? "fa-arrow-down-wide-short"
+                      : "fa-arrow-up-wide-short"
+                  } mr-3 my-3`}
                   content={
                     isDescendingByReportDate
                       ? "Descending by Report date"
@@ -170,10 +172,11 @@ const VerifyReportList = () => {
 
       <div className="mt-7 flex items-center justify-center gap-3">
         <button
-          className={`px-3 py-1 rounded-md ${currentPage === 1
-            ? "border hover:cursor-not-allowed"
-            : "bg-gray-600 text-white hover:bg-black dark:hover:bg-gray-800"
-            }`}
+          className={`px-3 py-1 rounded-md ${
+            currentPage === 1
+              ? "border hover:cursor-not-allowed"
+              : "bg-gray-600 text-white hover:bg-black dark:hover:bg-gray-800"
+          }`}
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
         >
@@ -182,20 +185,22 @@ const VerifyReportList = () => {
         {[...Array(totalPages)].map((_, index) => (
           <button
             key={index}
-            className={`px-3 py-1 rounded-md ${currentPage === index + 1
-              ? "bg-black text-white dark:bg-gray-700"
-              : "bg-gray-300 hover:bg-gray-400 dark:bg-gray-500 dark:hover:bg-gray-400"
-              }`}
+            className={`px-3 py-1 rounded-md ${
+              currentPage === index + 1
+                ? "bg-black text-white dark:bg-gray-700"
+                : "bg-gray-300 hover:bg-gray-400 dark:bg-gray-500 dark:hover:bg-gray-400"
+            }`}
             onClick={() => setCurrentPage(index + 1)}
           >
             {index + 1}
           </button>
         ))}
         <button
-          className={`px-3 py-1 rounded-md ${currentPage === totalPages
-            ? "border hover:cursor-not-allowed "
-            : "bg-gray-600 text-white hover:bg-black dark:hover:bg-gray-800"
-            }`}
+          className={`px-3 py-1 rounded-md ${
+            currentPage === totalPages
+              ? "border hover:cursor-not-allowed "
+              : "bg-gray-600 text-white hover:bg-black dark:hover:bg-gray-800"
+          }`}
           onClick={() =>
             setCurrentPage((prev) => Math.min(prev + 1, totalPages))
           }

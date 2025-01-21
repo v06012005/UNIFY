@@ -1,20 +1,20 @@
 "use client";
 
-import React, { useEffect, useState } from 'react'
-import Image from 'next/image'
-import light from '@/public/images/unify_icon.svg';
-import dark from '@/public/images/unify_icon_2.svg';
-import { useTheme } from 'next-themes';
+import React, { useEffect, useState } from "react";
+import Image from "next/image";
+import light from "@/public/images/unify_icon.svg";
+import dark from "@/public/images/unify_icon_2.svg";
+import { useTheme } from "next-themes";
 
 const UnifyLogoIcon = () => {
-  const [mounted, setMounted] = useState(false)
-  const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false);
+  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
-    setMounted(true)
-  }, [])
+    setMounted(true);
+  }, []);
 
-  if (!mounted) return null
+  if (!mounted) return null;
 
   return (
     <Image
@@ -24,7 +24,7 @@ const UnifyLogoIcon = () => {
       height={100}
       className="mx-auto flex-none h-20 w-20"
     />
-  )
-}
+  );
+};
 
-export default UnifyLogoIcon
+export default UnifyLogoIcon;

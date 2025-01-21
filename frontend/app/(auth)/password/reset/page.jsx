@@ -22,7 +22,7 @@ const ForgotPasswordPage = () => {
             placeholder={"Username, phone or email"}
             className={`w-[400px] h-12`}
           />
-              <div className={`flex items-center gap-1 m-auto`}>
+          <div className={`flex items-center gap-1 m-auto`}>
             <span>Remembered your password.</span>
             <Link href={"/login"} className={`text-[#0F00E1]`}>
               Go back

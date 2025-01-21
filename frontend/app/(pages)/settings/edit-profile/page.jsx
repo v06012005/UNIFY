@@ -144,7 +144,10 @@ const Page = () => {
                 Gender:
               </label>
               <div className="flex items-center gap-4">
-                <label htmlFor="female" className="flex items-center gap-1 dark:text-gray-400 mr-10">
+                <label
+                  htmlFor="female"
+                  className="flex items-center gap-1 dark:text-gray-400 mr-10"
+                >
                   <input
                     id="female"
                     type="radio"
@@ -154,7 +157,10 @@ const Page = () => {
                   />
                   Female
                 </label>
-                <label htmlFor="male" className="flex items-center gap-1 dark:text-gray-400">
+                <label
+                  htmlFor="male"
+                  className="flex items-center gap-1 dark:text-gray-400"
+                >
                   <input
                     id="male"
                     type="radio"
@@ -220,7 +226,7 @@ const Page = () => {
               />
             </div>
           </div>
-          
+
           <div className="m-5 flex justify-end">
             <button className="px-10 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 dark:bg-gray-500 dark:hover:bg-gray-600 transition focus:outline-none focus:ring-2 focus:ring-blue-500 text-xl">
               Save
@@ -228,7 +234,6 @@ const Page = () => {
           </div>
         </form>
       </div>
-
     </div>
   );
 };
