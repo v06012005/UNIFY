@@ -56,9 +56,9 @@ const AdminSidebar = () => {
                                 <li>
                                     <NavButton iconClass="fa-solid fa-user" text="User Stats" href="/statistics/users" />
                                 </li>
-                                <li>
+                                {/* <li>
                                     <NavButton iconClass="fa-solid fa-newspaper" text="Post Stats" href="/statistics/posts" />
-                                </li>
+                                </li> */}
                             </ul>
                         </AccordionItem>
                         {/* <AccordionItem className='dark:bg-gray-700' key="5" title="Notifications" startContent={<i className="fa-solid fa-bell"></i>}>
