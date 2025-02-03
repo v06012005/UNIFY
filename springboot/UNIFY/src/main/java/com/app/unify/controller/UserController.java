@@ -8,13 +8,16 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("users")
+@RequestMapping("/users")
 public class UserController {
 
     @Autowired
     UserService userService;
 
     @GetMapping("/{id}")
+    public User getUser(@PathVariable String id){
+        return userService.findById(id);
+    }
 
     @PostMapping
     public User createUser(@RequestBody UserCreateRequest request){

@@ -2,10 +2,13 @@ package com.app.unify.service;
 
 import com.app.unify.dto.UserCreateRequest;
 import com.app.unify.entity.User;
+import com.app.unify.exceptions.UserNotFoundException;
 import com.app.unify.repositories.UserRepository;
 import com.app.unify.utils.EncryptPasswordUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -30,5 +33,10 @@ public class UserService {
                         .workAt(request.getWorkAt())
                         .build();
         return userRepository.save(user);
+    }
+
+    public User findById(String id){
+        return userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found !"));
     }
 }
