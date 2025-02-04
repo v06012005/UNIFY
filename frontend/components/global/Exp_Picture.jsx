@@ -8,6 +8,11 @@ import iconComment from "@/public/comment.svg";
 import testImg from "@/public/images/testAvt.jpg";
 import avatar from "@/public/images/avt.jpg";
 import Link from "next/link";
+import HeartButton from "../ui/heart-button";
+import CommentButton from "../ui/comment-button";
+import ShareButton from "../ui/share-button";
+import BookmarkButton from "../ui/bookmark-button";
+import CommentBox from "./CommentBox";
 // import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export default function Picture() {
@@ -68,11 +73,10 @@ export default function Picture() {
               className={
                 "w-[500] flex flex-col justify-between dark:bg-black dark:text-white"
               }
-              alt="cmtlikeshare"
             >
               <div
                 className={
-                  "h-[60px] p-3 border-b border-l rounded-lg flex items-center justify-between"
+                  "h-[60px] py-3 px-4 border-b border-l rounded-lg flex items-center justify-between"
                 }
               >
                 <div className={"flex items-center gap-3"}>
@@ -87,18 +91,444 @@ export default function Picture() {
                     Follow
                   </Link>
                 </div>
-                <div className="flex">
+                <div className="flex hover:opacity-75 hover:cursor-pointer">
                   <i class="fas fa-ellipsis-h"></i>
                 </div>
               </div>
-              <div className={"p-3 h-[510px] border-l"}>
-                Khung bình luận của bài viết
+              <div
+                className={
+                  "p-4 h-[510px] border-l flex flex-col gap-4 overflow-auto"
+                }
+                alt="commentBox"
+              >
+                <div className={"flex items-center"}>
+                  <Image
+                    src={avatar}
+                    className={"size-10 text-lg rounded-full"}
+                    alt=""
+                  />
+                  <div className="grid grid-rows-2 ml-4">
+                    <div className="flex gap-1">
+                      <h6 className="font-bold">@tagname</h6>
+                      <p>comment</p>
+                    </div>
+                    <div className="flex gap-3 items-end">
+                      <small className="text-gray-400">6d</small>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">
+                          15 likes
+                        </small>
+                      </Link>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">Reply</small>
+                      </Link>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">
+                          See translation
+                        </small>
+                      </Link>
+                      <Link href={"#"} className="opacity-75 hover:opacity-100">
+                        <small>
+                          <i class="fas fa-ellipsis-h"></i>
+                        </small>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+                <div className={"flex items-center"}>
+                  <Image
+                    src={avatar}
+                    className={"size-10 text-lg rounded-full"}
+                    alt=""
+                  />
+                  <div className="grid grid-rows-2 ml-4">
+                    <div className="flex gap-1">
+                      <h6 className="font-bold">@tagname</h6>
+                      <p>comment</p>
+                    </div>
+                    <div className="flex gap-3 items-end">
+                      <small className="text-gray-400">6d</small>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">
+                          15 likes
+                        </small>
+                      </Link>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">Reply</small>
+                      </Link>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">
+                          See translation
+                        </small>
+                      </Link>
+                      <Link href={"#"} className="opacity-75 hover:opacity-100">
+                        <small>
+                          <i class="fas fa-ellipsis-h"></i>
+                        </small>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+                <div className={"flex items-center"}>
+                  <Image
+                    src={avatar}
+                    className={"size-10 text-lg rounded-full"}
+                    alt=""
+                  />
+                  <div className="grid grid-rows-2 ml-4">
+                    <div className="flex gap-1">
+                      <h6 className="font-bold">@tagname</h6>
+                      <p>comment</p>
+                    </div>
+                    <div className="flex gap-3 items-end">
+                      <small className="text-gray-400">6d</small>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">
+                          15 likes
+                        </small>
+                      </Link>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">Reply</small>
+                      </Link>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">
+                          See translation
+                        </small>
+                      </Link>
+                      <Link href={"#"} className="opacity-75 hover:opacity-100">
+                        <small>
+                          <i class="fas fa-ellipsis-h"></i>
+                        </small>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+                <div className={"flex items-center"}>
+                  <Image
+                    src={avatar}
+                    className={"size-10 text-lg rounded-full"}
+                    alt=""
+                  />
+                  <div className="grid grid-rows-2 ml-4">
+                    <div className="flex gap-1">
+                      <h6 className="font-bold">@tagname</h6>
+                      <p>comment</p>
+                    </div>
+                    <div className="flex gap-3 items-end">
+                      <small className="text-gray-400">6d</small>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">
+                          15 likes
+                        </small>
+                      </Link>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">Reply</small>
+                      </Link>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">
+                          See translation
+                        </small>
+                      </Link>
+                      <Link href={"#"} className="opacity-75 hover:opacity-100">
+                        <small>
+                          <i class="fas fa-ellipsis-h"></i>
+                        </small>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+                <div className={"flex items-center"}>
+                  <Image
+                    src={avatar}
+                    className={"size-10 text-lg rounded-full"}
+                    alt=""
+                  />
+                  <div className="grid grid-rows-2 ml-4">
+                    <div className="flex gap-1">
+                      <h6 className="font-bold">@tagname</h6>
+                      <p>comment</p>
+                    </div>
+                    <div className="flex gap-3 items-end">
+                      <small className="text-gray-400">6d</small>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">
+                          15 likes
+                        </small>
+                      </Link>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">Reply</small>
+                      </Link>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">
+                          See translation
+                        </small>
+                      </Link>
+                      <Link href={"#"} className="opacity-75 hover:opacity-100">
+                        <small>
+                          <i class="fas fa-ellipsis-h"></i>
+                        </small>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+                <div className={"flex items-center"}>
+                  <Image
+                    src={avatar}
+                    className={"size-10 text-lg rounded-full"}
+                    alt=""
+                  />
+                  <div className="grid grid-rows-2 ml-4">
+                    <div className="flex gap-1">
+                      <h6 className="font-bold">@tagname</h6>
+                      <p>comment</p>
+                    </div>
+                    <div className="flex gap-3 items-end">
+                      <small className="text-gray-400">6d</small>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">
+                          15 likes
+                        </small>
+                      </Link>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">Reply</small>
+                      </Link>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">
+                          See translation
+                        </small>
+                      </Link>
+                      <Link href={"#"} className="opacity-75 hover:opacity-100">
+                        <small>
+                          <i class="fas fa-ellipsis-h"></i>
+                        </small>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+                <div className={"flex items-center"}>
+                  <Image
+                    src={avatar}
+                    className={"size-10 text-lg rounded-full"}
+                    alt=""
+                  />
+                  <div className="grid grid-rows-2 ml-4">
+                    <div className="flex gap-1">
+                      <h6 className="font-bold">@tagname</h6>
+                      <p>comment</p>
+                    </div>
+                    <div className="flex gap-3 items-end">
+                      <small className="text-gray-400">6d</small>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">
+                          15 likes
+                        </small>
+                      </Link>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">Reply</small>
+                      </Link>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">
+                          See translation
+                        </small>
+                      </Link>
+                      <Link href={"#"} className="opacity-75 hover:opacity-100">
+                        <small>
+                          <i class="fas fa-ellipsis-h"></i>
+                        </small>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+                <div className={"flex items-center"}>
+                  <Image
+                    src={avatar}
+                    className={"size-10 text-lg rounded-full"}
+                    alt=""
+                  />
+                  <div className="grid grid-rows-2 ml-4">
+                    <div className="flex gap-1">
+                      <h6 className="font-bold">@tagname</h6>
+                      <p>comment</p>
+                    </div>
+                    <div className="flex gap-3 items-end">
+                      <small className="text-gray-400">6d</small>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">
+                          15 likes
+                        </small>
+                      </Link>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">Reply</small>
+                      </Link>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">
+                          See translation
+                        </small>
+                      </Link>
+                      <Link href={"#"} className="opacity-75 hover:opacity-100">
+                        <small>
+                          <i class="fas fa-ellipsis-h"></i>
+                        </small>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+                <div className={"flex items-center"}>
+                  <Image
+                    src={avatar}
+                    className={"size-10 text-lg rounded-full"}
+                    alt=""
+                  />
+                  <div className="grid grid-rows-2 ml-4">
+                    <div className="flex gap-1">
+                      <h6 className="font-bold">@tagname</h6>
+                      <p>comment</p>
+                    </div>
+                    <div className="flex gap-3 items-end">
+                      <small className="text-gray-400">6d</small>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">
+                          15 likes
+                        </small>
+                      </Link>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">Reply</small>
+                      </Link>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">
+                          See translation
+                        </small>
+                      </Link>
+                      <Link href={"#"} className="opacity-75 hover:opacity-100">
+                        <small>
+                          <i class="fas fa-ellipsis-h"></i>
+                        </small>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+                <div className={"flex items-center"}>
+                  <Image
+                    src={avatar}
+                    className={"size-10 text-lg rounded-full"}
+                    alt=""
+                  />
+                  <div className="grid grid-rows-2 ml-4">
+                    <div className="flex gap-1">
+                      <h6 className="font-bold">@tagname</h6>
+                      <p>comment</p>
+                    </div>
+                    <div className="flex gap-3 items-end">
+                      <small className="text-gray-400">6d</small>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">
+                          15 likes
+                        </small>
+                      </Link>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">Reply</small>
+                      </Link>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">
+                          See translation
+                        </small>
+                      </Link>
+                      <Link href={"#"} className="opacity-75 hover:opacity-100">
+                        <small>
+                          <i class="fas fa-ellipsis-h"></i>
+                        </small>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+                <div className={"flex items-center"}>
+                  <Image
+                    src={avatar}
+                    className={"size-10 text-lg rounded-full"}
+                    alt=""
+                  />
+                  <div className="grid grid-rows-2 ml-4">
+                    <div className="flex gap-1">
+                      <h6 className="font-bold">@tagname</h6>
+                      <p>comment</p>
+                    </div>
+                    <div className="flex gap-3 items-end">
+                      <small className="text-gray-400">6d</small>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">
+                          15 likes
+                        </small>
+                      </Link>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">Reply</small>
+                      </Link>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">
+                          See translation
+                        </small>
+                      </Link>
+                      <Link href={"#"} className="opacity-75 hover:opacity-100">
+                        <small>
+                          <i class="fas fa-ellipsis-h"></i>
+                        </small>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+                <div className={"flex items-center"}>
+                  <Image
+                    src={avatar}
+                    className={"size-10 text-lg rounded-full"}
+                    alt=""
+                  />
+                  <div className="grid grid-rows-2 ml-4">
+                    <div className="flex gap-1">
+                      <h6 className="font-bold">@tagname</h6>
+                      <p>comment</p>
+                    </div>
+                    <div className="flex gap-3 items-end">
+                      <small className="text-gray-400">6d</small>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">
+                          15 likes
+                        </small>
+                      </Link>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">Reply</small>
+                      </Link>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">
+                          See translation
+                        </small>
+                      </Link>
+                      <Link href={"#"} className="opacity-75 hover:opacity-100">
+                        <small>
+                          <i class="fas fa-ellipsis-h"></i>
+                        </small>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className={"h-[83px] p-3 border-t border-l"}>
-                Khung tương tác của bài viết
+              <div
+                className={"h-[98px] pt-1 pb-3 px-2 border-t border-l"}
+                alt="actionBox"
+              >
+                <div className="flex justify-between">
+                  <div className="flex gap-1">
+                    <HeartButton className="!text-[22px] p-1" />
+                    <CommentButton className="!text-[22px] p-1" />
+                    <ShareButton className="!text-[22px] p-1" />
+                  </div>
+                  <BookmarkButton className="!text-[22px] p-1" />
+                </div>
+                <div className="pl-2 flex flex-col">
+                  <strong>1000 likes</strong>
+                  <small className="text-gray-400">2 days ago</small>
+                </div>
               </div>
-              <div className={"h-[56px] p-3 border-t border-l"}>
-                Khung comment của người dùng
+              <div className={"h-[56px] border-t border-l pt-1 px-3"}>
+                <CommentBox/>
               </div>
             </div>
           </div>
