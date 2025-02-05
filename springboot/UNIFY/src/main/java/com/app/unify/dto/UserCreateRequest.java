@@ -21,5 +21,6 @@ public class UserCreateRequest {
     String location;
     String education;
     String workAt;
+    Integer status;
 
 }

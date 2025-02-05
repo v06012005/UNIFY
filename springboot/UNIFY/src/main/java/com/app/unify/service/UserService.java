@@ -31,6 +31,7 @@ public class UserService {
                         .location(request.getLocation())
                         .education(request.getEducation())
                         .workAt(request.getWorkAt())
+                        .status(request.getStatus())
                         .build();
         return userRepository.save(user);
     }
