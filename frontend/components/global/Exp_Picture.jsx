@@ -154,6 +154,7 @@ export default function Picture() {
                       </div>
                     </div>
                   )}
+
                 </div>
               </div>
               <div
@@ -590,6 +591,7 @@ export default function Picture() {
               </div>
               <div className={"h-[56px] border-t border-l pt-1 px-3"}>
                 <CommentBox />
+
               </div>
             </div>
           </div>
