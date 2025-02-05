@@ -129,7 +129,7 @@ const VerifyReportList = () => {
       </div>
 
       <div className="mt-5">
-        <div className="overflow-auto max-h-[525px] shadow-md rounded-lg">
+        <div className={`overflow-auto max-h-[70vh] shadow-md rounded-lg`}>
           <table className="min-w-full bg-white dark:bg-gray-800 table-auto">
             <thead className="shadow-inner sticky top-0 bg-gray-200 dark:bg-gray-600">
               <tr>
@@ -170,7 +170,7 @@ const VerifyReportList = () => {
         </div>
       </div>
 
-      <div className="mt-7 flex items-center gap-3">
+      <div className="mt-7 flex justify-center items-center gap-3 w-full">
         <button
           className={`px-3 py-1 rounded-md ${
             currentPage === 1
