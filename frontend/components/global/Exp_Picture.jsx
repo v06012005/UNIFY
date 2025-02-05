@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import iconImg from "@/public/imgs.svg";
 import iconHeart from "@/public/heart.svg";
@@ -17,10 +17,32 @@ import CommentBox from "./CommentBox";
 
 export default function Picture() {
   const [isModalVisible, setModalVisible] = useState(false);
+  const [isPopupVisible, setPopupVisible] = useState(false);
+  const popupRef = useRef(null);
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
+
+  const togglePopup = () => {
+    setPopupVisible((prev) => !prev);
+  };
+
+  useEffect(() => {
+    const handleClickOver = (event) => {
+      if (
+        isPopupVisible &&
+        popupRef.current &&
+        !popupRef.current.contains(event.target)
+      ) {
+        setPopupVisible(false);
+      }
+    };
+    document.addEventListener("click", handleClickOver);
+    return () => {
+      document.removeEventListener("click", handleClickOver);
+    };
+  }, [isPopupVisible]);
 
   return (
     <>
@@ -91,8 +113,47 @@ export default function Picture() {
                     Follow
                   </Link>
                 </div>
-                <div className="flex hover:opacity-75 hover:cursor-pointer">
-                  <i class="fas fa-ellipsis-h"></i>
+                <div className="flex">
+                  <i
+                    class="fas fa-ellipsis-h hover:opacity-75 hover:cursor-pointer transition"
+                    onClick={togglePopup}
+                  ></i>
+                  {isPopupVisible && (
+                    <div
+                      ref={popupRef}
+                      className={`${isPopupVisible == (false) ? "animate-fadeOutCenter" : "animate-fadeInCenter"} fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 transform`}
+                      onClick={() => setPopupVisible(false)}
+                    >
+                      <div
+                        className="w-[400px] bg-zinc-800 py-1 rounded-3xl"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <ul className="text-sm">
+                          <li className="cursor-pointer font-bold text-red-500 text-center py-3 border-b border-gray-600 last:border-0">
+                            Report
+                          </li>
+                          <li className="cursor-pointer font-bold text-white text-center py-3 border-b border-gray-600 last:border-0">
+                            Go to post
+                          </li>
+                          <li className="cursor-pointer font-bold text-white text-center py-3 border-b border-gray-600 last:border-0">
+                            Share to...
+                          </li>
+                          <li className="cursor-pointer font-bold text-white text-center py-3 border-b border-gray-600 last:border-0">
+                            Copy link
+                          </li>
+                          <li className="cursor-pointer font-bold text-white text-center py-3 border-b border-gray-600 last:border-0">
+                            Embed
+                          </li>
+                          <li className="cursor-pointer font-bold text-white text-center py-3 border-b border-gray-600 last:border-0">
+                            About this account
+                          </li>
+                          <li className="cursor-pointer font-bold text-white text-center py-3 border-b border-gray-600 last:border-0">
+                            Cancel
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
               <div
@@ -528,7 +589,7 @@ export default function Picture() {
                 </div>
               </div>
               <div className={"h-[56px] border-t border-l pt-1 px-3"}>
-                <CommentBox/>
+                <CommentBox />
               </div>
             </div>
           </div>
