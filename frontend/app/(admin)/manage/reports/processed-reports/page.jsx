@@ -165,10 +165,11 @@ const ProcessedReportList = () => {
 
       <div className="mt-7 flex justify-center items-center gap-3 w-full">
         <button
-          className={`px-3 py-1 rounded-md ${currentPage === 1
+          className={`px-3 py-1 rounded-md ${
+            currentPage === 1
               ? "border hover:cursor-not-allowed"
               : "bg-gray-600 text-white hover:bg-black dark:hover:bg-gray-800"
-            }`}
+          }`}
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
         >
@@ -177,20 +178,22 @@ const ProcessedReportList = () => {
         {[...Array(totalPages)].map((_, index) => (
           <button
             key={index}
-            className={`px-3 py-1 rounded-md ${currentPage === index + 1
+            className={`px-3 py-1 rounded-md ${
+              currentPage === index + 1
                 ? "bg-black text-white dark:bg-gray-700"
                 : "bg-gray-300 hover:bg-gray-400 dark:bg-gray-500 dark:hover:bg-gray-400"
-              }`}
+            }`}
             onClick={() => setCurrentPage(index + 1)}
           >
             {index + 1}
           </button>
         ))}
         <button
-          className={`px-3 py-1 rounded-md ${currentPage === totalPages
+          className={`px-3 py-1 rounded-md ${
+            currentPage === totalPages
               ? "border hover:cursor-not-allowed "
               : "bg-gray-600 text-white hover:bg-black dark:hover:bg-gray-800"
-            }`}
+          }`}
           onClick={() =>
             setCurrentPage((prev) => Math.min(prev + 1, totalPages))
           }

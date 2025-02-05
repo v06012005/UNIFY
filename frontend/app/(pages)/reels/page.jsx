@@ -255,7 +255,7 @@ const Reels = () => {
                 <div className="flex items-center mt-9">
                   <Image
                     src={avatar2}
-                    alt="User avarta"
+                    alt="User avatar"
                     className="rounded-full w-12 h-12"
                   />
                   <div className="ml-4">
@@ -266,7 +266,7 @@ const Reels = () => {
                 <div className="flex items-center mt-9">
                   <Image
                     src={avatar2}
-                    alt="User avarta"
+                    alt="User avatar"
                     className="rounded-full w-12 h-12"
                   />
                   <div className="ml-4">
@@ -277,7 +277,7 @@ const Reels = () => {
                 <div className="flex items-center mt-9">
                   <Image
                     src={avatar2}
-                    alt="User avarta"
+                    alt="User avatar"
                     className="rounded-full w-12 h-12"
                   />
                   <div className="ml-4">

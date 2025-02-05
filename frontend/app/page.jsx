@@ -29,33 +29,33 @@ const SearchBar = () => {
 const srcs = [
   {
     type: "image",
-    url: "https://images.unsplash.com/photo-1737157998574-2a75f0c52a09?q=80&w=1924&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    url: "https://images.unsplash.com/photo-1737157998574-2a75f0c52a09?q=80&w=1924&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
   {
     type: "image",
-    url: "https://images.unsplash.com/photo-1726442107682-f15bdd971aab?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    url: "https://images.unsplash.com/photo-1726442107682-f15bdd971aab?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
   {
     type: "image",
-    url: "https://images.unsplash.com/photo-1737204310662-4d4a541ce471?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    url: "https://images.unsplash.com/photo-1737204310662-4d4a541ce471?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
   {
     type: "image",
-    url: "https://images.unsplash.com/photo-1623216977599-64ec40663f64?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    url: "https://images.unsplash.com/photo-1623216977599-64ec40663f64?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
   {
     type: "image",
-    url: "https://images.unsplash.com/photo-1736994390641-d19a77126c22?q=80&w=1858&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    url: "https://images.unsplash.com/photo-1736994390641-d19a77126c22?q=80&w=1858&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
   {
     type: "video",
-    url: "/videos/koniseg.mp4"
+    url: "/videos/koniseg.mp4",
   },
   {
     type: "video",
-    url: "/videos/video.mp4"
-  }
-]
+    url: "/videos/video.mp4",
+  },
+];
 
 const User = ({ href = "" }) => {
   return (

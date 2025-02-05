@@ -1,17 +1,26 @@
-import React, { useState } from 'react'
-import { Button } from '@heroui/react';
+import React, { useState } from "react";
+import { Button } from "@heroui/react";
 
 const LikeButton = ({ className = "" }) => {
-    const [liked, setLiked] = useState(false);
+  const [liked, setLiked] = useState(false);
 
-    const handleClick = () => {
-        setLiked(!liked)
-    }
+  const handleClick = () => {
+    setLiked(!liked);
+  };
 
-    return (
+  return (
+    <Button
+      onPress={handleClick}
+      className={`bg-transparent dark:text-white ${className}`}
+    >
+      <i
+        className={`${
+          liked ? "fa-solid text-red-500" : "fa-regular"
+        } fa-heart transition ease-in-out duration-300`}
+      ></i>
+      47K
+    </Button>
+  );
+};
 
-        <Button onPress={handleClick} className={`bg-transparent dark:text-white ${className}`}><i className={`${liked ? "fa-solid text-red-500" : "fa-regular"} fa-heart transition ease-in-out duration-300`}></i>47K</Button>
-    )
-}
-
-export default LikeButton
+export default LikeButton;

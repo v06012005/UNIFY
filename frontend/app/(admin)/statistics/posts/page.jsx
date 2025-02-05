@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Avatar from "@/public/images/testAvt.jpg";
-import filterIcon from "@/public/images/filter-lightmode.png"
+import filterIcon from "@/public/images/filter-lightmode.png";
 const dummyUsers = Array.from({ length: 50 }, (_, index) => ({
   id: index + 1,
   name: `User ${index + 1}`,
@@ -64,7 +64,6 @@ const UserManagementPage = () => {
         <div className={`overflow-auto max-h-[525px] shadow-md rounded-lg`}>
           <table className="min-w-full bg-white table-auto">
             <thead className="shadow-inner sticky top-0 bg-white">
-
               <tr>
                 <th className="py-3 px-5 text-left w-[7%]"></th>
                 <th className="py-3 px-5 text-left w-[25%]">Name</th>
@@ -102,10 +101,11 @@ const UserManagementPage = () => {
       {/* Pagination */}
       <div className="mt-7 flex items-center gap-3">
         <button
-          className={`px-3 py-1 rounded-md ${currentPage === 1
+          className={`px-3 py-1 rounded-md ${
+            currentPage === 1
               ? "border hover:cursor-not-allowed"
               : "bg-gray-600 text-white hover:bg-black"
-            }`}
+          }`}
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
         >
@@ -114,20 +114,22 @@ const UserManagementPage = () => {
         {[...Array(totalPages)].map((_, index) => (
           <button
             key={index}
-            className={`px-3 py-1 rounded-md ${currentPage === index + 1
+            className={`px-3 py-1 rounded-md ${
+              currentPage === index + 1
                 ? "bg-black text-white"
                 : "bg-gray-300 hover:bg-gray-400"
-              }`}
+            }`}
             onClick={() => setCurrentPage(index + 1)}
           >
             {index + 1}
           </button>
         ))}
         <button
-          className={`px-3 py-1 rounded-md ${currentPage === totalPages
+          className={`px-3 py-1 rounded-md ${
+            currentPage === totalPages
               ? "border hover:cursor-not-allowed"
               : "bg-gray-600 text-white hover:bg-black"
-            }`}
+          }`}
           onClick={() =>
             setCurrentPage((prev) => Math.min(prev + 1, totalPages))
           }

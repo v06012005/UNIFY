@@ -54,13 +54,12 @@ const UserStatisticsPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-6 dark:bg-black">
-      {/* Page Header */}
       <div className="max-w-7xl mx-auto mb-10">
-        <h1 className="text-4xl font-bold text-gray-800 dark:text-white">User Statistics</h1>
-        
+        <h1 className="text-4xl font-bold text-gray-800 dark:text-white">
+          User Statistics
+        </h1>
       </div>
 
-      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-7xl mx-auto mb-10">
         <div className="bg-white shadow-lg rounded-lg p-6 border-l-4 border-blue-500">
           <h2 className="text-lg font-semibold text-gray-600">Total Users</h2>
@@ -83,7 +82,6 @@ const UserStatisticsPage = () => {
         </div>
       </div>
 
-      {/* Chart Section */}
       <div className="bg-white shadow-lg rounded-lg p-6 max-w-7xl mx-auto mb-10">
         <h2 className="text-xl font-semibold text-gray-600 mb-5">
           User Growth
@@ -91,7 +89,6 @@ const UserStatisticsPage = () => {
         <Chart options={options} series={series} type="line" height={350} />
       </div>
 
-      {/* Recent Users Table */}
       <div className="bg-white shadow-lg rounded-lg p-6 max-w-7xl mx-auto">
         <h2 className="text-xl font-semibold text-gray-600 mb-5">
           Recent Users

@@ -7,7 +7,7 @@ import Avatar from "@/public/images/avt.jpg";
 export const FollowNotification = React.memo(({ isSeen = false }) => (
   <div
     className={`p-2 px-4 rounded-lg items-center ${
-      isSeen ? "" : "bg-gray-100"
+      isSeen ? "" : "bg-gray-100 dark:bg-gray-800"
     }`}
   >
     <div className="flex items-center gap-3">
@@ -24,7 +24,7 @@ export const FollowNotification = React.memo(({ isSeen = false }) => (
             <strong className={"font-extrabold text-lg"}>Username</strong> has
             started following you.
           </p>
-          <button className="border border-gray-300 rounded-md px-2 py-1 text-sm bg-transparent text-black w-24 h-9">
+          <button className="border border-gray-300 dark:text-white rounded-md px-2 py-1 text-sm bg-transparent text-black w-[40%] h-[100%] self-center">
             Đã follow
           </button>
         </div>
