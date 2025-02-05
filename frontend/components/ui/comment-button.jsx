@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { Button } from "@heroui/react";
 
-const HeartButton = ({ className = "" }) => {
-  const [liked, setLiked] = useState(false);
+const CommentButton = ({ className = "" }) => {
+  const [comment, setComment] = useState(false);
 
   const handleClick = () => {
-    setLiked(!liked);
+    setComment(!comment);
+
   };
 
   return (
@@ -20,4 +21,5 @@ const HeartButton = ({ className = "" }) => {
   );
 };
 
-export default HeartButton;
+export default CommentButton;
+

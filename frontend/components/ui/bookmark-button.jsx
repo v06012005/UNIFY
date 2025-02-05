@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { Button } from "@heroui/react";
 
-const HeartButton = ({ className = "" }) => {
-  const [liked, setLiked] = useState(false);
+const BookmarkButton = ({ className = "" }) => {
+  const [marked, setMarked] = useState(false);
 
   const handleClick = () => {
-    setLiked(!liked);
+    setMarked(!marked);
+
   };
 
   return (
@@ -14,11 +15,13 @@ const HeartButton = ({ className = "" }) => {
       className={`bg-transparent dark:text-white min-w-10 ${className}`}
     >
       <i
-        className={`${liked ? "fa-solid text-yellow-400" : "fa-regular"}
+        className={`${marked ? "fa-solid text-yellow-400" : "fa-regular"}
+
          fa-bookmark transition ease-in-out duration-300`}
       ></i>
     </Button>
   );
 };
 
-export default HeartButton;
+export default BookmarkButton;
+
