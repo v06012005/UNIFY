@@ -1,6 +1,6 @@
 "use client";
 
-import Logo from "@/public/images/unify_1.svg";
+import UnifyLogoIcon from "@/components/global/UnifyLogoIcon_Auth";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import GoogleLogo from "@/public/images/GoogleLogo.png";
@@ -20,13 +20,7 @@ const LoginPage = () => {
       <div align={"center"}>
         <div className={`grid gap-5`}>
           <div>
-            <Image
-              src={Logo}
-              alt={"Logo"}
-              width={200}
-              height={200}
-              className={`mr-7`}
-            />
+            <UnifyLogoIcon/>
           </div>
           <Input
             placeholder={"Username, phone or email"}

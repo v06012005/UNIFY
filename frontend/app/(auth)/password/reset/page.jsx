@@ -1,37 +1,34 @@
-import Logo from "@/public/images/unify_1.svg";
-import Image from "next/image";
+"use client";
+
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import UnifyLogoIcon from "@/components/global/UnifyLogoIcon_Auth";
+import { useTheme } from "next-themes";
 
 const ForgotPasswordPage = () => {
+  const { theme, setTheme } = useTheme();
   return (
-    <div className={`w-full h-screen grid place-content-center`}>
-      <div align={"center"}>
-        <div className={`grid gap-5`}>
-          <div>
-            <Image
-              src={Logo}
-              alt={"Logo"}
-              width={200}
-              height={200}
-              className={`mr-7`}
-            />
-          </div>
-          <Input
-            placeholder={"Username, phone or email"}
-            className={`w-[400px] h-12`}
-          />
-          <div className={`flex items-center gap-1 m-auto`}>
-            <span>Remembered your password.</span>
-            <Link href={"/login"} className={`text-[#0F00E1]`}>
-              Go back
-            </Link>
-          </div>
-          <Button className={`text-2xl mt-3 p-5`}>Send OTP</Button>
-        </div>
+    <>
+      <div>
+        <UnifyLogoIcon />
       </div>
-    </div>
+      <Input
+        placeholder={"Username, phone or email"}
+        className={`w-[400px] h-12`}
+      />
+      <div className={`flex items-center gap-1 m-auto`}>
+        <span>Remembered your password.</span>
+        <Link href={"/login"} className={`text-[#0F00E1]`}>
+          Back to login
+        </Link>
+      </div>
+      <Link
+        className={`border rounded-2xl bg-black text-white dark:bg-white dark:text-black font-bold text-2xl mt-3 p-2`}
+        href={"/password/reset/otp-verification"}
+      >
+        Send OTP
+      </Link>
+    </>
   );
 };
 
