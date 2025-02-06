@@ -26,7 +26,6 @@ export default function Picture() {
 
   const togglePopup = () => {
     setPopupVisible(!isPopupVisible);
-
   };
 
   useEffect(() => {
@@ -127,7 +126,6 @@ export default function Picture() {
                           ? "animate-fadeInCenter"
                           : "animate-fadeOutCenter"
                       } fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 transform`}
-
                       onClick={() => setPopupVisible(false)}
                     >
                       <div
