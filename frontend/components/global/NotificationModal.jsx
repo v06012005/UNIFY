@@ -37,7 +37,7 @@ const NotificationModal = ({ isNotificationOpen, modalRef }) => {
   };
 
   return (
-    <div className="fixed inset-0 left-20 bg-black bg-opacity-50 z-40 flex justify-start">
+    <div className="fixed left-20 bg-black bg-opacity-50 z-40 flex justify-start">
       <div
         ref={modalRef}
         className={`bg-white dark:bg-black text-black dark:text-white shadow-lg max-w-md h-screen overflow-hidden ${
