@@ -1,6 +1,6 @@
 "use client";
 
-import UnifyLogoIcon from "@/components/global/UnifyLogoIcon_mode";
+import UnifyLogoIcon from "@/components/global/UnifyLogoIcon_Auth";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import GoogleLogo from "@/public/images/GoogleLogo.png";

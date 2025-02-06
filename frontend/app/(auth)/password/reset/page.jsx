@@ -2,7 +2,7 @@
 
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import UnifyLogoIcon from "@/components/global/UnifyLogoIcon_mode";
+import UnifyLogoIcon from "@/components/global/UnifyLogoIcon_Auth";
 import { useTheme } from "next-themes";
 
 const ForgotPasswordPage = () => {
