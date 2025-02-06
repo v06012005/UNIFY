@@ -14,27 +14,50 @@ const NotificationModal = ({ isNotificationOpen, modalRef }) => {
     timestamp: Date.now() - index * 1000 * 60 * 5,
   }));
 
+  // Sắp xếp thông báo theo thời gian
   const sortedNotifications = notifications.sort(
     (a, b) => b.timestamp - a.timestamp
   );
 
+  // Render notifications
+  const renderNotification = (notification) => {
+    switch (notification.type) {
+      case "follow":
+        return (
+          <FollowNotification
+            key={notification.id}
+            isSeen={notification.isSeen}
+          />
+        );
+      case "tag":
+        return (
+          <TagNotification key={notification.id} isSeen={notification.isSeen} />
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
-    <div className="fixed inset-0 left-20 bg-black bg-opacity-50 z-50 flex items-center">
+    <div className="fixed inset-0 left-20 bg-black bg-opacity-50 z-40 flex justify-start">
       <div
         ref={modalRef}
-        className="bg-white left-2 rounded-lg shadow-lg max-w-128 p-6 relative"
-        style={{ height: "calc(100vh - 0.37cm)" }}
+        className={`bg-white dark:bg-black text-black dark:text-white shadow-lg max-w-md p-5 h-screen overflow-hidden ${
+          isNotificationOpen
+            ? "animate-fadeScale" // Sử dụng fadeScale khi mở modal
+            : "animate-fadeOut" // Sử dụng fadeOut khi đóng modal
+        } transition-all ease-in-out duration-300`}
+        style={{ width: isNotificationOpen ? 448 : 0 }}
       >
-        <h1 className="font-extrabold text-3xl mb-4">Notifications</h1>
-        <div className="grid place-content-start gap-1 max-h-[85vh] overflow-y-auto max-w-[29rem]">
+        <h1 className="font-bold text-2xl mb-4">Notifications</h1>
+
+        <div className="overflow-y-auto space-y-1 pr-2 max-h-full h-[94%]">
           {sortedNotifications.map((notification, index) => (
             <React.Fragment key={notification.id}>
-              {notification.type === "follow" ? (
-                <FollowNotification isSeen={notification.isSeen} />
-              ) : (
-                <TagNotification isSeen={notification.isSeen} />
+              {renderNotification(notification)}
+              {index < sortedNotifications.length - 1 && (
+                <hr className="border-t border-gray-300 dark:border-gray-600" />
               )}
-              {index < sortedNotifications.length - 1 && <hr />}
             </React.Fragment>
           ))}
         </div>

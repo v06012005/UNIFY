@@ -3,9 +3,9 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import Avatar from "@/public/images/avt.jpg";
 import avatar from "@/public/images/test1.png";
 import SearchHorizontalToggle from "@/components/global/SearchHorizontalToggle";
+import NotificationModal from "@/components/global/NotificationModal";
 import UnifyLogoIcon from "./UnifyLogoIcon";
 
 const NavButton = React.memo(function NavButton({
@@ -14,7 +14,7 @@ const NavButton = React.memo(function NavButton({
   title = "",
 }) {
   return (
-    <Link   
+    <Link
       title={title}
       href={href}
       className={`w-full dark:hover:text-black dark:hover:bg-gray-200 flex h-full items-center text-center transition delay-100 ease-in-out duration-100 hover:bg-[#D9D9D9]`}
@@ -23,75 +23,6 @@ const NavButton = React.memo(function NavButton({
     </Link>
   );
 });
-
-const NotificationItem = React.memo(({ isSeen = false }) => (
-  <div
-    className={`p-2 px-4 rounded-lg items-center ${
-      isSeen ? "" : "bg-gray-100"
-    }`}
-  >
-    <div className="flex items-center gap-4">
-      <Image
-        src={Avatar}
-        width={70}
-        height={70}
-        alt="User"
-        className="rounded-full"
-      />
-      <div className={"flex flex-col"}>
-        <div className={"flex gap-2"}>
-          <p>
-            <strong className={"font-black text-lg"}>Username</strong> đã follow
-            bạn
-          </p>
-          <button
-            className={
-              "border border-gray-300 rounded-md px-2 py-1 text-sm bg-transparent text-black"
-            }
-          >
-            Đã follow
-          </button>
-        </div>
-        <small className={"text-gray-400 text-sm"}>30 seconds ago</small>
-      </div>
-    </div>
-  </div>
-));
-
-const NotificationModal = ({ isNotificationOpen, modalRef }) => {
-  if (!isNotificationOpen) return null;
-
-  const notifications = Array.from({ length: 6 }, (_, index) => ({
-    id: index + 1,
-    isSeen: index > 3,
-  }));
-
-  return (
-    <div
-      className={
-        "fixed inset-0 left-20 bg-black bg-opacity-50 z-50 flex items-center"
-      }
-    >
-      <div
-        ref={modalRef}
-        className={"bg-white left-2 rounded-lg shadow-lg w-128 p-6 relative"}
-        style={{ height: "calc(100vh - 0.37cm)" }}
-      >
-        <h1 className="font-extrabold text-3xl font-mono mb-4">
-          Notifications
-        </h1>
-        <div className="grid place-content-start gap-1">
-          {notifications.map((notification, index) => (
-            <React.Fragment key={notification.id}>
-              <NotificationItem isSeen={notification.isSeen} />
-              {index < notifications.length - 1 && <hr />}
-            </React.Fragment>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-};
 
 const SideBar = () => {
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);

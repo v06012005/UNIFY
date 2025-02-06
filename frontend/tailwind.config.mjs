@@ -19,10 +19,20 @@ export default {
           "80%": { opacity: "0.8" },
           "10%": { opacity: "0.6" },
         },
+        fadeInCenter: {
+          '0%': { opacity: '0', transform: 'scale(0.1) translateX(-50%, -50%) translateY(-50%, -50%)' },
+          '100%': { opacity: '1', transform: 'scale(1) translateX(-50%, -50%) translateY(-50%, -50%)' },
+        },
+        fadeOutCenter: {
+          '100%': { opacity: '1', transform: 'scale(1) translateX(-50%, -50%) translateY(-50%, -50%)' },
+          '0%': { opacity: '0', transform: 'scale(0.1) translateX(-50%, -50%) translateY(-50%, -50%)' },
+        },
       },
       animation: {
         fadeScale: "fadeScale 5s ease-in-out",
         fadeOut: "fadeOut 5s ease-in-out",
+        fadeInCenter: "fadeInCenter 0.3s ease-in-out",
+        fadeOutCenter: "fadeOutCenter 0.3s ease-in-out"
       },
       boxShadow: {
         "right-left": "10px 0px 15px 2px rgba(0, 0, 0, 0.3)",
@@ -76,5 +86,5 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate"), heroui()],
+  plugins:[require("tailwindcss-animate"), heroui(), require('tailwind-scrollbar-hide')],
 };

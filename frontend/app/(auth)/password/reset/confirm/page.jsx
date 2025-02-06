@@ -21,11 +21,11 @@ const ConfirmPage = () => {
               className={`mr-7`}
             />
           </div>
+          <Input placeholder={"New Password"} className={`w-[400px] h-12`} />
           <Input
-            placeholder={"New Password"}
+            placeholder={"Confirm Password"}
             className={`w-[400px] h-12`}
           />
-          <Input placeholder={"Confirm Password"} className={`w-[400px] h-12`} />
           <div className={`flex items-center gap-1 m-auto`}>
             <span>Remembered your password.</span>
             <Link href={"/login"} className={`text-[#0F00E1]`}>

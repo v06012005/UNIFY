@@ -5,7 +5,7 @@ import Image from "next/image";
 import { PhotoIcon } from "@heroicons/react/24/solid";
 import ModalDialog from "@/components/global/ModalDialog";
 import { useModal } from "@/components/provider/ModalProvider";
-import { ExclamationTriangleIcon } from '@heroicons/react/24/outline'
+import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { Select, SelectItem, Textarea } from "@heroui/react";
 import PostSwitch from "@/components/global/PostSwitch";
 
@@ -25,9 +25,8 @@ const Page = () => {
   const { openModal } = useModal();
 
   function handleClick() {
-    alert("this is a function")
+    alert("this is a function");
   }
-
 
   return (
     <div className="h-screen">
@@ -69,19 +68,30 @@ const Page = () => {
                       />
                     </label>
                   </div>
-                  <p className="text-xs/5 text-gray-600 dark:text-gray-100">PHOTOS AND VIDEOS</p>
+                  <p className="text-xs/5 text-gray-600 dark:text-gray-100">
+                    PHOTOS AND VIDEOS
+                  </p>
                 </div>
               </div>
               <div className="mt-6 flex items-center justify-end gap-x-6">
                 <button
-                  type="button" onClick={openModal}
+                  type="button"
+                  onClick={openModal}
                   className="text-sm/6 font-semibold text-gray-900 dark:text-white"
                 >
                   Cancel
                 </button>
-                <ModalDialog icon={<ExclamationTriangleIcon className="w-6 h-6 text-red-500" />} buttonText="Discard" handleClick={handleClick} title={"Discard this post"}>
+                <ModalDialog
+                  icon={
+                    <ExclamationTriangleIcon className="w-6 h-6 text-red-500" />
+                  }
+                  buttonText="Discard"
+                  handleClick={handleClick}
+                  title={"Discard this post"}
+                >
                   <p className="mt-4 text-sm text-gray-600">
-                    If you leave, your edits will be deleted. Are you sure that you want to discard this post?
+                    If you leave, your edits will be deleted. Are you sure that
+                    you want to discard this post?
                   </p>
                 </ModalDialog>
                 <button
@@ -99,16 +109,33 @@ const Page = () => {
                 Write Your Caption
               </p>
               <Textarea
-                placeholder="Write your caption here" minRows={9} variant="underlined"
+                placeholder="Write your caption here"
+                minRows={9}
+                variant="underlined"
               />
             </div>
             <div>
               <p className="text-sm/6 mt-3 font-medium text-gray-900 mb-2 dark:text-white">
                 Who can see your post?
               </p>
-              <Select defaultSelectedKeys={["public"]} className="w-full" label="" variant="underlined">
-                <SelectItem key={"public"} startContent={<i className="fa-solid fa-earth-asia"></i>}>Public</SelectItem>
-                <SelectItem key={"private"} startContent={<i className="fa-solid fa-lock"></i>}>Private</SelectItem>
+              <Select
+                defaultSelectedKeys={["public"]}
+                className="w-full"
+                label=""
+                variant="underlined"
+              >
+                <SelectItem
+                  key={"public"}
+                  startContent={<i className="fa-solid fa-earth-asia"></i>}
+                >
+                  Public
+                </SelectItem>
+                <SelectItem
+                  key={"private"}
+                  startContent={<i className="fa-solid fa-lock"></i>}
+                >
+                  Private
+                </SelectItem>
               </Select>
             </div>
             <div>
@@ -116,8 +143,15 @@ const Page = () => {
                 Advanced Settings
               </p>
               <div>
-                <PostSwitch className="mb-3" title={"Hide like and comment counts on this post"} subtitle="Control your privacy by hiding the like and comment counts on this post, keeping the focus on the content rather than the numbers." />
-                <PostSwitch title={"Turn off commenting"} subtitle="Disable comments on this post to maintain control over interactions and focus solely on the content." />
+                <PostSwitch
+                  className="mb-3"
+                  title={"Hide like and comment counts on this post"}
+                  subtitle="Control your privacy by hiding the like and comment counts on this post, keeping the focus on the content rather than the numbers."
+                />
+                <PostSwitch
+                  title={"Turn off commenting"}
+                  subtitle="Disable comments on this post to maintain control over interactions and focus solely on the content."
+                />
               </div>
             </div>
           </div>
