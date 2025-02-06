@@ -3,12 +3,12 @@ package com.app.unify.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.hibernate.annotations.GenericGenerator;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 
 @Entity
@@ -31,7 +31,7 @@ public class User {
     String lastName;
 
     @Column(name = "user_name", nullable = false)
-    String userName;
+    String username;
 
     @Column(nullable = false)
     String phone;
@@ -79,6 +79,12 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     Set<LikedPost> likedPosts;
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+    Set<Role> roles;
 
 
 }

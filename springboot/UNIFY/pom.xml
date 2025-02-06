@@ -79,11 +79,9 @@
 			<version>9.47</version>
 		</dependency>
 		<dependency>
-    <groupId>com.google.guava</groupId>
-    <artifactId>guava</artifactId>
-    <version>32.0.0-jre</version>
-</dependency>
-
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

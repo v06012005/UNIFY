@@ -1,23 +1,32 @@
 package com.app.unify.service;
 
 import com.app.unify.dto.UserCreateRequest;
+import com.app.unify.entity.Role;
 import com.app.unify.entity.User;
 import com.app.unify.exceptions.UserNotFoundException;
+import com.app.unify.repositories.RoleRepository;
 import com.app.unify.repositories.UserRepository;
 import com.app.unify.utils.EncryptPasswordUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
 
+    private UserRepository userRepository;
+    private RoleRepository roleRepository;
+
+    @Autowired
+    public UserService(UserRepository userRepository, RoleRepository roleRepository) {
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+    }
 
     public List<User> findAll(){
         return userRepository.findAll();
@@ -28,7 +37,7 @@ public class UserService {
                 .id(null)
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
-                .userName(request.getUserName())
+                .username(request.getUserName())
                 .email(request.getUserName())
                 .phone(request.getPhone())
                 .birthDay(request.getBirthDay())
@@ -39,6 +48,7 @@ public class UserService {
                 .education(request.getEducation())
                 .workAt(request.getWorkAt())
                 .status(request.getStatus())
+                .roles(Collections.singleton(roleRepository.findByName("USER").orElse(null)))
                 .build();
         return userRepository.save(user);
     }
@@ -54,7 +64,7 @@ public class UserService {
 
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
-        user.setUserName(request.getUserName());
+        user.setUsername(request.getUserName());
         user.setEmail(request.getEmail());
         user.setPhone(request.getPhone());
         user.setBirthDay(request.getBirthDay());

@@ -4,6 +4,7 @@ import com.app.unify.dto.UserCreateRequest;
 import com.app.unify.entity.User;
 import com.app.unify.service.UserService;
 
+import com.app.unify.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,12 +22,12 @@ public class UserController {
 
     @GetMapping
     public List<User> getUsers(){
+        System.out.println(new JwtUtil().generateToken("deflate"));
          return userService.findAll();
     }
 
     @GetMapping("/{id}")
     public User getUser(@PathVariable String id){
-        System.out.println(id);
         return userService.findById(id);
     }
 
@@ -45,4 +46,5 @@ public class UserController {
         userService.removeUser(id);
         return ResponseEntity.ok("Remove User Successfully !");
     }
+
 }

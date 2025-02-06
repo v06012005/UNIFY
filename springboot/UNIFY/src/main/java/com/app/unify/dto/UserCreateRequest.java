@@ -1,5 +1,6 @@
 package com.app.unify.dto;
 
+import com.app.unify.entity.Role;
 import lombok.Getter;
 
 import java.time.LocalDate;
