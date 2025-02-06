@@ -6,7 +6,6 @@ const BookmarkButton = ({ className = "" }) => {
 
   const handleClick = () => {
     setMarked(!marked);
-
   };
 
   return (
@@ -16,7 +15,6 @@ const BookmarkButton = ({ className = "" }) => {
     >
       <i
         className={`${marked ? "fa-solid text-yellow-400" : "fa-regular"}
-
          fa-bookmark transition ease-in-out duration-300`}
       ></i>
     </Button>
@@ -24,4 +22,3 @@ const BookmarkButton = ({ className = "" }) => {
 };
 
 export default BookmarkButton;
-

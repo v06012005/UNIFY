@@ -17,26 +17,25 @@ import java.time.LocalDateTime;
 @Builder
 public class Friendship {
 
-    @EmbeddedId
-    FriendshipUserId id;
+	@EmbeddedId
+	FriendshipUserId id;
 
-    @ManyToOne
-    @JoinColumn(name = "friendship_id", referencedColumnName = "id", insertable = false, updatable = false, nullable = false)
-    User friend;
+	@ManyToOne
+	@JoinColumn(name = "friendship_id", referencedColumnName = "id", insertable = false, updatable = false, nullable = false)
+	User friend;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id", insertable = false, updatable = false, nullable = false)
-    User user;
+	@ManyToOne
+	@JoinColumn(name = "user_id", referencedColumnName = "id", insertable = false, updatable = false, nullable = false)
+	User user;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "friendship_status", nullable = false)
-    FriendshipStatus friendshipStatus;
+	@Enumerated(EnumType.STRING)
+	@Column(name = "friendship_status", nullable = false)
+	FriendshipStatus friendshipStatus;
 
-    @Column(name = "create_at", nullable = false)
-    LocalDateTime createAt;
+	@Column(name = "create_at", nullable = false)
+	LocalDateTime createAt;
 
-    @Column(name = "update_at")
-    LocalDateTime updateAt;
-
+	@Column(name = "update_at")
+	LocalDateTime updateAt;
 
 }

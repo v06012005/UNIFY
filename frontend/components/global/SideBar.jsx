@@ -36,9 +36,9 @@ const SideBar = () => {
     setOpenSearch((prevState) => !prevState);
   };
 
-  const toggleNotification = useCallback(() => {
+  const toggleNotification = () => {
     setIsNotificationOpen((prev) => !prev);
-  }, []);
+  };
 
   const handleClickOutside = (event) => {
     if (
@@ -65,9 +65,6 @@ const SideBar = () => {
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
     document.addEventListener("mousedown", handleClickOutsideSearch);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
   }, []);
 
   return (

@@ -6,7 +6,6 @@ const CommentButton = ({ className = "" }) => {
 
   const handleClick = () => {
     setComment(!comment);
-
   };
 
   return (
@@ -22,4 +21,3 @@ const CommentButton = ({ className = "" }) => {
 };
 
 export default CommentButton;
-
