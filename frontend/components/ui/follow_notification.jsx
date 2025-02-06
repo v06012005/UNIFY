@@ -6,17 +6,15 @@ import Avatar from "@/public/images/avt.jpg";
 
 export const FollowNotification = React.memo(({ isSeen = false }) => (
   <div
-    className={`p-2 px-4 rounded-lg items-center ${
+    className={`p-2 px-4 rounded-lg items-center max-h-[88px] ${
       isSeen ? "" : "bg-gray-100 dark:bg-gray-800"
     }`}
   >
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-4">
       <Image
         src={Avatar}
-        width={70}
-        height={70}
         alt="User"
-        className="rounded-full"
+        className="rounded-full w-[64px] h-[64px]"
       />
       <div className={"flex flex-col"}>
         <div className={"flex gap-2"}>
