@@ -1,12 +1,14 @@
 "use client";
-import Logo from "@/public/images/unify_1.svg";
-import Image from "next/image";
+
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import Image from "next/image";
+import UnifyLogoIcon from "@/components/global/UnifyLogoIcon_mode";
+import { useTheme } from "next-themes";
 
 const OtpVerificationPage = () => {
+  const { theme, setTheme } = useTheme();
   const [otp, setOtp] = useState(Array(6).fill(""));
 
   const handleChange = (value, index) => {
@@ -27,42 +29,37 @@ const OtpVerificationPage = () => {
   };
 
   return (
-    <div className={`w-full h-screen grid place-content-center`}>
-      <div align={"center"}>
-        <div className={`grid gap-5`}>
-          <div>
-            <Image
-              src={Logo}
-              alt={"Logo"}
-              width={200}
-              height={200}
-              className={`mr-7`}
-            />
-          </div>
-          <div className="flex justify-center gap-3">
-            {otp.map((value, index) => (
-              <Input
-                key={index}
-                id={`otp-${index}`}
-                type="text"
-                value={value}
-                maxLength={1}
-                onChange={(e) => handleChange(e.target.value, index)}
-                onKeyDown={(e) => handleKeyDown(e, index)}
-                className={`w-12 h-12 text-center text-xl font-bold border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
-              />
-            ))}
-          </div>
-          <div className={`flex items-center gap-1 m-auto`}>
-            <span>Remembered your password.</span>
-            <Link href={"/login"} className={`text-[#0F00E1]`}>
-              Go back
-            </Link>
-          </div>
-          <Button className={`text-2xl mt-3 p-5`}>Verification</Button>
-        </div>
+    <>
+      <div>
+        <UnifyLogoIcon/>
       </div>
-    </div>
+      <div className="flex justify-center gap-3">
+        {otp.map((value, index) => (
+          <Input
+            key={index}
+            id={`otp-${index}`}
+            type="text"
+            value={value}
+            maxLength={1}
+            onChange={(e) => handleChange(e.target.value, index)}
+            onKeyDown={(e) => handleKeyDown(e, index)}
+            className={`w-12 h-12 text-center text-xl font-bold border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+          />
+        ))}
+      </div>
+      <div className={`flex items-center gap-1 m-auto`}>
+        <span>Remembered your password.</span>
+        <Link href={"/login"} className={`text-[#0F00E1]`}>
+          Back to login
+        </Link>
+      </div>
+      <Link
+        className={`border rounded-2xl bg-black text-white dark:bg-white dark:text-black font-bold text-2xl mt-3 p-2`}
+        href={"/password/reset/confirm"}
+      >
+        Verification
+      </Link>
+    </>
   );
 };
 
