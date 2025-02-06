@@ -6,7 +6,11 @@ import Avatar from "@/public/images/avt.jpg";
 import TagName from "@/public/images/tag.png";
 
 export const TagNotification = React.memo(({ isSeen = false }) => (
-  <div className={`p-2 px-4 rounded-lg ${isSeen ? "" : "bg-gray-100 dark:bg-gray-800"}`}>
+  <div
+    className={`p-2 px-4 rounded-lg max-h-[88px] ${
+      isSeen ? "" : "bg-gray-100 dark:bg-gray-800"
+    }`}
+  >
     <div className="flex items-center gap-4">
       <div className="relative w-16 h-16">
         <Image src={Avatar} alt="User Avatar" className="rounded-full" />

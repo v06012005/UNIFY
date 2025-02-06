@@ -5,8 +5,6 @@ import { FollowNotification } from "@/components/ui/follow_notification.jsx";
 import { TagNotification } from "@/components/ui/tag_notification";
 
 const NotificationModal = ({ isNotificationOpen, modalRef }) => {
-  if (!isNotificationOpen) return null;
-
   const notifications = Array.from({ length: 9 }, (_, index) => ({
     id: index + 1,
     type: index % 2 === 0 ? "follow" : "tag",
@@ -39,19 +37,21 @@ const NotificationModal = ({ isNotificationOpen, modalRef }) => {
   };
 
   return (
-    <div className="fixed inset-0 left-20 bg-black bg-opacity-50 z-40 flex justify-start">
+    <div className="fixed left-20 bg-black bg-opacity-50 z-40 flex justify-start">
       <div
         ref={modalRef}
-        className={`bg-white dark:bg-black text-black dark:text-white shadow-lg max-w-md p-5 h-screen overflow-hidden ${
+        className={`bg-white dark:bg-black text-black dark:text-white shadow-lg max-w-md h-screen overflow-hidden ${
           isNotificationOpen
             ? "animate-fadeScale" // Sử dụng fadeScale khi mở modal
             : "animate-fadeOut" // Sử dụng fadeOut khi đóng modal
         } transition-all ease-in-out duration-300`}
-        style={{ width: isNotificationOpen ? 448 : 0 }}
+        style={{
+          width: isNotificationOpen ? 448 : 0,
+        }}
       >
-        <h1 className="font-bold text-2xl mb-4">Notifications</h1>
+        <h1 className="font-bold text-2xl mb-4 px-5 pt-5">Notifications</h1>
 
-        <div className="overflow-y-auto space-y-1 pr-2 max-h-full h-[94%]">
+        <div className="overflow-y-auto space-y-1 pr-2 max-h-full h-[94%] pb-5 pl-5">
           {sortedNotifications.map((notification, index) => (
             <React.Fragment key={notification.id}>
               {renderNotification(notification)}
