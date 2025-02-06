@@ -1,5 +1,4 @@
 import Image from "next/image";
-
 import { X } from "lucide-react";
 
 const UserHistorySearch = ({ avatar, username, profile, followers }) => {
@@ -27,3 +26,4 @@ const UserHistorySearch = ({ avatar, username, profile, followers }) => {
 };
 
 export default UserHistorySearch;
+
