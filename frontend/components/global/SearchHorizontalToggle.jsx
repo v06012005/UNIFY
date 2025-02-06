@@ -69,3 +69,4 @@ const SearchHorizontalToggle = ({ children, isOpen, searchComponentRef }) => {
 };
 
 export default SearchHorizontalToggle;
+
