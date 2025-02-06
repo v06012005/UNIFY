@@ -1,82 +1,52 @@
 package com.app.unify.service;
 
-import com.app.unify.dto.UserCreateRequest;
-import com.app.unify.entity.Role;
+import com.app.unify.dto.UserDTO;
 import com.app.unify.entity.User;
 import com.app.unify.exceptions.UserNotFoundException;
+import com.app.unify.mapper.UserMapper;
 import com.app.unify.repositories.RoleRepository;
 import com.app.unify.repositories.UserRepository;
-import com.app.unify.utils.EncryptPasswordUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
 
 
     private UserRepository userRepository;
-    private RoleRepository roleRepository;
+    private UserMapper userMapper;
 
     @Autowired
-    public UserService(UserRepository userRepository, RoleRepository roleRepository) {
+    public UserService(UserRepository userRepository,
+                       UserMapper userMapper) {
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
+        this.userMapper = userMapper;
     }
 
-    public List<User> findAll(){
-        return userRepository.findAll();
+    public List<UserDTO> findAll(){
+        return userRepository.findAll()
+                             .stream().map(userMapper::toUserDTO)
+                             .collect(Collectors.toList());
     }
 
-    public User createUser(UserCreateRequest request) {
-        User user = User.builder()
-                .id(null)
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
-                .username(request.getUserName())
-                .email(request.getUserName())
-                .phone(request.getPhone())
-                .birthDay(request.getBirthDay())
-                .gender(request.getGender())
-                .password(EncryptPasswordUtil.encryptPassword(request.getPassword()))
-                .registeredAt(request.getRegisteredAt())
-                .location(request.getLocation())
-                .education(request.getEducation())
-                .workAt(request.getWorkAt())
-                .status(request.getStatus())
-                .roles(Collections.singleton(roleRepository.findByName("USER").orElse(null)))
-                .build();
-        return userRepository.save(user);
+    public UserDTO createUser(UserDTO userDto) {
+        User user = userRepository.save(userMapper.toUser(userDto));
+        return userMapper.toUserDTO(user);
     }
 
-    public User findById(String id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User not found !"));
+    public UserDTO findById(String id) {
+        return userMapper.toUserDTO(userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found !")));
     }
 
-    public User updateUser(UserCreateRequest request) {
-        User user = userRepository.findById(request.getId())
-                .orElseThrow(() -> new UserNotFoundException("User not found !"));
-
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setUsername(request.getUserName());
-        user.setEmail(request.getEmail());
-        user.setPhone(request.getPhone());
-        user.setBirthDay(request.getBirthDay());
-        user.setGender(request.getGender());
-        user.setPassword(EncryptPasswordUtil.encryptPassword(request.getPassword()));
-        user.setRegisteredAt(request.getRegisteredAt());
-        user.setLocation(request.getLocation());
-        user.setEducation(request.getEducation());
-        user.setWorkAt(request.getWorkAt());
-        user.setStatus(request.getStatus());
-
-        return userRepository.save(user);
+    public UserDTO updateUser(UserDTO userDto) {
+        User user = userRepository.save(userRepository.findById(userDto.getId())
+                .orElseThrow(() -> new UserNotFoundException("User not found !")));
+        return userMapper.toUserDTO(user);
     }
 
     public void removeUser(String id){

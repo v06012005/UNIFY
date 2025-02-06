@@ -1,13 +1,14 @@
 package com.app.unify.dto;
 
-import com.app.unify.entity.Role;
-import lombok.Getter;
+
+
+import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Getter
-public class UserCreateRequest {
+@Data
+public class UserDTO {
 
     String id;
     String firstName;

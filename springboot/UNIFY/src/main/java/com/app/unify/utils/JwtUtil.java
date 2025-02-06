@@ -9,9 +9,9 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.text.ParseException;
 import java.time.Instant;
@@ -47,17 +47,33 @@ public class JwtUtil {
         }
     }
 
-    public User getUsernameFromJWtToken(UserDetails userDetails) throws ParseException {
-        return userRepository.findByUsername(userDetails.getUsername())
-                             .orElseThrow(() -> new UserNotFoundException("User not found !"));
+    public boolean validToken(String token) {
+        try {
+            SignedJWT signed = SignedJWT.parse(token);
+            JWSVerifier verifier = new MACVerifier(SecurityContains.SECRET_KEY);
+            Date expirationTime  = signed.getJWTClaimsSet().getExpirationTime();
+            return signed.verify(verifier) && expirationTime.after(new Date());
+        } catch (ParseException | JOSEException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public boolean validToken(String token) throws ParseException, JOSEException {
-        SignedJWT signed = SignedJWT.parse(token);
-        JWSVerifier verifier = new MACVerifier(SecurityContains.SECRET_KEY);
-        Date expirationTime  = signed.getJWTClaimsSet().getExpirationTime();
-        return signed.verify(verifier) && expirationTime.after(new Date());
+
+    public String getTokenFromRequest(HttpServletRequest request){
+        String token = request.getHeader("Authorization");
+        if(StringUtils.hasText(token) && token.startsWith("Bearer")){
+            return token.substring(7);
+        }
+        return null;
     }
 
+    public String getUsernameFromJWtToken(String token) {
+        try {
+            SignedJWT signed = SignedJWT.parse(token);
+            return signed.getJWTClaimsSet().getSubject();
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }

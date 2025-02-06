@@ -1,7 +1,6 @@
 package com.app.unify.controller;
 
-import com.app.unify.dto.UserCreateRequest;
-import com.app.unify.entity.User;
+import com.app.unify.dto.UserDTO;
 import com.app.unify.service.UserService;
 
 import com.app.unify.utils.JwtUtil;
@@ -10,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Set;
 
 
 @RestController
@@ -21,24 +19,24 @@ public class UserController {
     UserService userService;
 
     @GetMapping
-    public List<User> getUsers(){
+    public List<UserDTO> getUsers(){
         System.out.println(new JwtUtil().generateToken("deflate"));
          return userService.findAll();
     }
 
     @GetMapping("/{id}")
-    public User getUser(@PathVariable String id){
+    public UserDTO getUser(@PathVariable String id){
         return userService.findById(id);
     }
 
     @PostMapping
-    public User createUser(@RequestBody UserCreateRequest request){
-        return userService.createUser(request);
+    public UserDTO createUser(@RequestBody UserDTO userDto){
+        return userService.createUser(userDto);
     }
 
     @PutMapping
-    public User updateUser(@RequestBody UserCreateRequest request) {
-        return userService.updateUser(request);
+    public UserDTO updateUser(@RequestBody UserDTO userDto) {
+        return userService.updateUser(userDto);
     }
 
     @DeleteMapping("/{id}")
