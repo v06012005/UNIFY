@@ -25,7 +25,8 @@ export default function Picture() {
   };
 
   const togglePopup = () => {
-    setPopupVisible((prev) => !prev);
+    setPopupVisible(!isPopupVisible);
+
   };
 
   useEffect(() => {
@@ -121,7 +122,12 @@ export default function Picture() {
                   {isPopupVisible && (
                     <div
                       ref={popupRef}
-                      className={`${isPopupVisible == (false) ? "animate-fadeOutCenter" : "animate-fadeInCenter"} fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 transform`}
+                      className={`${
+                        isPopupVisible
+                          ? "animate-fadeInCenter"
+                          : "animate-fadeOutCenter"
+                      } fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 transform`}
+
                       onClick={() => setPopupVisible(false)}
                     >
                       <div
@@ -154,7 +160,6 @@ export default function Picture() {
                       </div>
                     </div>
                   )}
-
                 </div>
               </div>
               <div
@@ -591,7 +596,6 @@ export default function Picture() {
               </div>
               <div className={"h-[56px] border-t border-l pt-1 px-3"}>
                 <CommentBox />
-
               </div>
             </div>
           </div>
