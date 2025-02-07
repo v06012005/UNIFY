@@ -4,7 +4,6 @@ import com.app.unify.dto.UserDTO;
 import com.app.unify.entity.User;
 import com.app.unify.exceptions.UserNotFoundException;
 import com.app.unify.mapper.UserMapper;
-import com.app.unify.repositories.RoleRepository;
 import com.app.unify.repositories.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;

@@ -61,7 +61,7 @@ public class AuthController {
     public ResponseEntity<String> register(@RequestBody UserDTO userDto){
         if(userRepository.existsByEmail(userDto.getEmail())){
             return new ResponseEntity<>("Email is taken !", HttpStatus.BAD_REQUEST);
-        }else if(userRepository.existsByUsername(userDto.getUserName())){
+        }else if(userRepository.existsByUsername(userDto.getUsername())){
             return new ResponseEntity<>("Username is taken !", HttpStatus.BAD_REQUEST);
         }else {
             userService.createUser(userDto);

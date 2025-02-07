@@ -20,7 +20,6 @@ public class UserController {
 
     @GetMapping
     public List<UserDTO> getUsers(){
-        System.out.println(new JwtUtil().generateToken("deflate"));
          return userService.findAll();
     }
 
