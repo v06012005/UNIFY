@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.app.unify.service.SpringMailService;
 
 @RestController
-public class EmailController {
+public class ForgotPasswordController {
 	@Autowired
 	private SpringMailService mailService;
 
