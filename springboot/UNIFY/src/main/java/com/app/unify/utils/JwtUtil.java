@@ -3,33 +3,45 @@ package com.app.unify.utils;
 import com.app.unify.entity.User;
 import com.app.unify.exceptions.UserNotFoundException;
 import com.app.unify.repositories.UserRepository;
-import com.app.unify.security.SecurityContains;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Collection;
 import java.util.Date;
+import java.util.StringJoiner;
 
 @Component
 public class JwtUtil {
 
+    @Value("${jwt.signerKey}")
+    private String singerKey;
+
+    @Autowired
     private UserRepository userRepository;
 
     public String generateToken(String email) {
+
+        User user = userRepository.findByEmail(email)
+                                  .orElseThrow(() -> new UserNotFoundException("User not found !"));
 
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS256);
         JWTClaimsSet claimsSet = new JWTClaimsSet
                                      .Builder()
                 .subject(email)
                 .issuer("unify.com")
+                .claim("scope", buildScope(user))
                 .issueTime(new Date())
                 .expirationTime(new Date(
                         Instant.now()
@@ -40,7 +52,7 @@ public class JwtUtil {
         Payload payload = new Payload(claimsSet.toJSONObject());
         JWSObject jwsObject = new JWSObject(header, payload);
         try {
-            jwsObject.sign(new MACSigner(SecurityContains.SECRET_KEY.getBytes()));
+            jwsObject.sign(new MACSigner(singerKey.getBytes()));
             return jwsObject.serialize();
         } catch (JOSEException e) {
             throw new RuntimeException(e);
@@ -50,7 +62,7 @@ public class JwtUtil {
     public boolean validToken(String token) {
         try {
             SignedJWT signed = SignedJWT.parse(token);
-            JWSVerifier verifier = new MACVerifier(SecurityContains.SECRET_KEY);
+            JWSVerifier verifier = new MACVerifier(singerKey);
             Date expirationTime  = signed.getJWTClaimsSet().getExpirationTime();
             return signed.verify(verifier) && expirationTime.after(new Date());
         } catch (ParseException | JOSEException e) {
@@ -74,6 +86,17 @@ public class JwtUtil {
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private String buildScope(User user){
+        StringJoiner joiner = new StringJoiner(" ");
+        if(!CollectionUtils.isEmpty(user.getRoles())){
+            user.getRoles()
+                    .forEach(role -> {
+                        joiner.add("ROLE_" + role.getName());
+                    });
+        }
+        return joiner.toString();
     }
 
 }

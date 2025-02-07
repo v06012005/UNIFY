@@ -6,6 +6,7 @@ import com.app.unify.service.UserService;
 import com.app.unify.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,10 +24,16 @@ public class UserController {
          return userService.findAll();
     }
 
+    @GetMapping("/my-info")
+    public UserDTO getMyInfo(){
+       return userService.getMyInfo();
+    }
+
     @GetMapping("/{id}")
     public UserDTO getUser(@PathVariable String id){
         return userService.findById(id);
     }
+
 
     @PostMapping
     public UserDTO createUser(@RequestBody UserDTO userDto){

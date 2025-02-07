@@ -2,12 +2,14 @@ package com.app.unify.dto;
 
 
 
+import com.app.unify.entity.Role;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -27,5 +29,5 @@ public class UserDTO {
     String education;
     String workAt;
     Integer status;
-
+    Set<Role> roles;
 }

@@ -52,7 +52,7 @@ public class AuthController {
                                     userLoginDto.getPassword())
                     );
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            return ResponseEntity.status(HttpStatus.OK).body(new Token(jwtUtil.generateToken(user.getEmail())));
+            return ResponseEntity.status(HttpStatus.OK).body(new Token(jwtUtil.generateToken(userLoginDto.getEmail())));
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect email or password !");
     }
