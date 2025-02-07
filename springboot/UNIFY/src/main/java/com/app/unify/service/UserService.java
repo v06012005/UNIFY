@@ -9,8 +9,6 @@ import com.app.unify.repositories.RoleRepository;
 import com.app.unify.repositories.UserRepository;
 
 import com.app.unify.utils.EncryptPasswordUtil;
-import com.nimbusds.jose.proc.SecurityContext;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,7 +20,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserService {
-
 
     private UserRepository userRepository;
     private RoleRepository roleRepository;
