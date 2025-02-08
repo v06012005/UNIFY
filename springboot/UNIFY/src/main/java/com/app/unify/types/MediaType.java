@@ -1,4 +1,4 @@
-package com.app.unify.type;
+package com.app.unify.types;
 
 public enum MediaType {
     IMAGE,

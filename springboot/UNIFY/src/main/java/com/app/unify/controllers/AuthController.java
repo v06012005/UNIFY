@@ -1,14 +1,18 @@
-package com.app.unify.controller;
+package com.app.unify.controllers;
 
-import com.app.unify.dto.UserDTO;
-import com.app.unify.dto.UserLoginDto;
-import com.app.unify.entity.User;
+import com.app.unify.dto.global.UserDTO;
+import com.app.unify.dto.request.UserLoginDto;
+import com.app.unify.dto.response.TokenResponse;
+import com.app.unify.entities.Token;
+import com.app.unify.entities.User;
 import com.app.unify.exceptions.UserNotFoundException;
+import com.app.unify.repositories.TokenRepository;
 import com.app.unify.repositories.UserRepository;
-import com.app.unify.security.Token;
-import com.app.unify.service.UserService;
+import com.app.unify.services.AuthenticationService;
+import com.app.unify.services.UserService;
 import com.app.unify.utils.EncryptPasswordUtil;
 import com.app.unify.utils.JwtUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,19 +24,27 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor
 public class AuthController {
 
     private AuthenticationManager authenticationManager;
     private UserService userService;
     private UserRepository userRepository;
     private JwtUtil jwtUtil;
+    private AuthenticationService authenticationService;
+
 
     @Autowired
-    public AuthController(UserService userService, UserRepository userRepository,AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
+    public AuthController(UserService userService,
+                          UserRepository userRepository,
+                          AuthenticationManager authenticationManager,
+                          JwtUtil jwtUtil,
+                          AuthenticationService authenticationService) {
         this.userService = userService;
         this.userRepository = userRepository;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
+        this.authenticationService = authenticationService;
     }
 
     @PostMapping("/login")
@@ -52,7 +64,10 @@ public class AuthController {
                                     userLoginDto.getPassword())
                     );
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            return ResponseEntity.status(HttpStatus.OK).body(new Token(jwtUtil.generateToken(userLoginDto.getEmail())));
+
+            String tokenGenerated = jwtUtil.generateToken(userLoginDto.getEmail());
+            authenticationService.saveUserToken(user, tokenGenerated);
+            return ResponseEntity.status(HttpStatus.OK).body(new TokenResponse(tokenGenerated));
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect email or password !");
     }

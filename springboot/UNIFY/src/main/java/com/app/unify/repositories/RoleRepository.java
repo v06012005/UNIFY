@@ -1,6 +1,6 @@
 package com.app.unify.repositories;
 
-import com.app.unify.entity.Role;
+import com.app.unify.entities.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

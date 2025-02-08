@@ -1,9 +1,6 @@
-package com.app.unify.entity;
+package com.app.unify.entities;
 
 import java.time.LocalDateTime;
-import java.util.Set;
-
-import com.app.unify.type.Audience;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

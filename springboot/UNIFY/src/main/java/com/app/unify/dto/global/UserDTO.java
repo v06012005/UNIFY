@@ -1,8 +1,8 @@
-package com.app.unify.dto;
+package com.app.unify.dto.global;
 
 
 
-import com.app.unify.entity.Role;
+import com.app.unify.entities.Role;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;

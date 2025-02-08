@@ -1,6 +1,6 @@
-package com.app.unify.entity;
+package com.app.unify.entities;
 
-import com.app.unify.type.FollowerUserId;
+import com.app.unify.types.FollowerUserId;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

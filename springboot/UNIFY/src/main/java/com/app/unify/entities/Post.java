@@ -1,13 +1,12 @@
-package com.app.unify.entity;
+package com.app.unify.entities;
 
-import com.app.unify.type.Audience;
+import com.app.unify.types.Audience;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 import java.util.Set;
-import java.util.UUID;
 
 @Entity
 @Table(name = "Posts")

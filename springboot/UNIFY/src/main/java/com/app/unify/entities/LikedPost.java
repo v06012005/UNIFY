@@ -1,4 +1,4 @@
-package com.app.unify.entity;
+package com.app.unify.entities;
 
 import jakarta.persistence.*;
 import lombok.*;

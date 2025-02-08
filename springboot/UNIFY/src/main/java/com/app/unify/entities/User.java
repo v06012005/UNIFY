@@ -1,12 +1,10 @@
-package com.app.unify.entity;
+package com.app.unify.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -30,13 +28,13 @@ public class User {
     @Column(name = "last_name", nullable = false, columnDefinition = "nvarchar(255)")
     String lastName;
 
-    @Column(name = "user_name", nullable = false)
+    @Column(name = "user_name", nullable = false, unique = true)
     String username;
 
     @Column(nullable = false)
     String phone;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     String email;
 
     @Column(nullable = false)
@@ -86,5 +84,7 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     Set<Role> roles;
 
+    @OneToMany(mappedBy = "user")
+    List<Token> tokens;
 
 }

@@ -1,10 +1,13 @@
 package com.app.unify.security;
 
+import com.app.unify.repositories.TokenRepository;
 import com.app.unify.utils.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,22 +20,31 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @Component
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 
-    @Autowired
     private JwtUtil jwtUtil;
+    private CustomUserDetailsService customUserDetailsService;
+    private TokenRepository tokenRepository;
 
     @Autowired
-    private CustomUserDetailsService customUserDetailsService;
+    public JwtAuthenticationFilter(JwtUtil jwtUtil, TokenRepository tokenRepository, CustomUserDetailsService customUserDetailsService) {
+        this.jwtUtil = jwtUtil;
+        this.tokenRepository = tokenRepository;
+        this.customUserDetailsService = customUserDetailsService;
+    }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
+    protected void doFilterInternal(@NonNull  HttpServletRequest request,
+                                    @NonNull  HttpServletResponse response,
+                                    @NonNull FilterChain filterChain)
             throws ServletException, IOException {
         String token = jwtUtil.getTokenFromRequest(request);
-        if(StringUtils.hasText(token) && jwtUtil.validToken(token)){
+        var isTokenValid = tokenRepository.findByToken(token)
+                                          .map(t -> !t.getExpired() && !t.getRevoked())
+                                          .orElse(false);
+        if(StringUtils.hasText(token) && jwtUtil.validToken(token) && isTokenValid){
             String email = jwtUtil.getUsernameFromJWtToken(token);
             UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
             UsernamePasswordAuthenticationToken

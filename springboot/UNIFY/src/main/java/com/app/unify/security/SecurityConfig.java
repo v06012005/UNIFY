@@ -1,8 +1,10 @@
 package com.app.unify.security;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -11,28 +13,34 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final String[] ACCESS_ENDPOINTS = {
        "/api/auth/**"
     };
 
-    private JwtAuthEntryPoint jwtAuthEntryPoint;
     private JwtAuthenticationFilter jwtAuthenticationFilter;
+    private CustomUserDetailsService customUserDetailsService;
+    private CustomLogoutHandler logoutHandler;
 
     @Autowired
-    public SecurityConfig(JwtAuthEntryPoint jwtAuthEntryPoint,
-                          JwtAuthenticationFilter jwtAuthenticationFilter){
-        this.jwtAuthEntryPoint = jwtAuthEntryPoint;
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
+                          CustomUserDetailsService customUserDetailsService,
+                          CustomLogoutHandler logoutHandler){
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.customUserDetailsService = customUserDetailsService;
+        this.logoutHandler = logoutHandler;
     }
 
    @Bean
@@ -42,14 +50,21 @@ public class SecurityConfig {
                .authorizeHttpRequests(authorize -> authorize
                        .requestMatchers(ACCESS_ENDPOINTS).permitAll()
                        .anyRequest().authenticated()
-               ).exceptionHandling(customizer -> customizer
-                       .authenticationEntryPoint(jwtAuthEntryPoint)
+               ).userDetailsService(customUserDetailsService)
+               .exceptionHandling(
+                       ex -> ex.accessDeniedHandler(
+                                       (request, response, accessDeniedException) -> response.setStatus(403)
+                               )
+                               .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
                ).sessionManagement(
                        session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+               ).logout(log -> log.logoutUrl("/users/logout")
+                       .addLogoutHandler(logoutHandler)
+                       .logoutSuccessHandler(
+                               ((request, response, authentication) -> SecurityContextHolder.clearContext())
+                       )
                )
-               .httpBasic(Customizer.withDefaults());
-
-       http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+               .httpBasic(Customizer.withDefaults()).addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
        return http.build();
     }

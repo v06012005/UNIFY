@@ -1,12 +1,10 @@
-package com.app.unify.controller;
+package com.app.unify.controllers;
 
-import com.app.unify.dto.UserDTO;
-import com.app.unify.service.UserService;
+import com.app.unify.dto.global.UserDTO;
+import com.app.unify.services.UserService;
 
-import com.app.unify.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

@@ -1,6 +1,6 @@
 package com.app.unify.utils;
 
-import com.app.unify.entity.User;
+import com.app.unify.entities.User;
 import com.app.unify.exceptions.UserNotFoundException;
 import com.app.unify.repositories.UserRepository;
 import com.nimbusds.jose.*;
@@ -11,6 +11,7 @@ import com.nimbusds.jwt.SignedJWT;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -18,7 +19,6 @@ import org.springframework.util.StringUtils;
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Collection;
 import java.util.Date;
 import java.util.StringJoiner;
 
@@ -72,9 +72,9 @@ public class JwtUtil {
 
 
     public String getTokenFromRequest(HttpServletRequest request){
-        String token = request.getHeader("Authorization");
-        if(StringUtils.hasText(token) && token.startsWith("Bearer")){
-            return token.substring(7);
+        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if(StringUtils.hasText(authHeader) && authHeader.startsWith("Bearer")){
+            return authHeader.substring(7);
         }
         return null;
     }

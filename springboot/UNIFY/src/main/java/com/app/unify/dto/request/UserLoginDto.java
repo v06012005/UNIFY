@@ -1,4 +1,4 @@
-package com.app.unify.dto;
+package com.app.unify.dto.request;
 
 import lombok.Data;
 

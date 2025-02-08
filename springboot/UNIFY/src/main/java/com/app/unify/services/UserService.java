@@ -1,8 +1,8 @@
-package com.app.unify.service;
+package com.app.unify.services;
 
-import com.app.unify.dto.UserDTO;
-import com.app.unify.entity.Role;
-import com.app.unify.entity.User;
+import com.app.unify.dto.global.UserDTO;
+import com.app.unify.entities.Role;
+import com.app.unify.entities.User;
 import com.app.unify.exceptions.UserNotFoundException;
 import com.app.unify.mapper.UserMapper;
 import com.app.unify.repositories.RoleRepository;
