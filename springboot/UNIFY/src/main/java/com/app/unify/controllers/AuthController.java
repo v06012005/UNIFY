@@ -12,6 +12,7 @@ import com.app.unify.services.AuthenticationService;
 import com.app.unify.services.UserService;
 import com.app.unify.utils.EncryptPasswordUtil;
 import com.app.unify.utils.JwtUtil;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -73,7 +74,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody UserDTO userDto){
+    public ResponseEntity<String> register(@RequestBody @Valid UserDTO userDto){
         if(userRepository.existsByEmail(userDto.getEmail())){
             return new ResponseEntity<>("Email is taken !", HttpStatus.BAD_REQUEST);
         }else if(userRepository.existsByUsername(userDto.getUsername())){
