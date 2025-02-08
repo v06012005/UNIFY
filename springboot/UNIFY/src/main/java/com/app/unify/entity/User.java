@@ -24,10 +24,10 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
-    @Column(name = "first_name", nullable = false)
+    @Column(name = "first_name", nullable = false, columnDefinition = "nvarchar(255)")
     String firstName;
 
-    @Column(name = "last_name", nullable = false)
+    @Column(name = "last_name", nullable = false, columnDefinition = "nvarchar(255)")
     String lastName;
 
     @Column(name = "user_name", nullable = false)
