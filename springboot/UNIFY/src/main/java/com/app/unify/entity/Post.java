@@ -3,6 +3,7 @@ package com.app.unify.entity;
 import com.app.unify.type.Audience;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.Builder.Default;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
@@ -39,10 +40,12 @@ public class Post {
     LocalDateTime postedAt;
 
     @Column(name = "is_comment_visible", nullable = false)
-    Boolean isCommentVisible;
+    @Default
+    Boolean isCommentVisible = false;
 
     @Column(name = "is_like_visible", nullable = false)
-    Boolean isLikeVisible;
+    @Default
+    Boolean isLikeVisible = false;
 
     @OneToMany(mappedBy = "post")
     Set<PostComment> comments;
