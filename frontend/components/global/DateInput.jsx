@@ -9,23 +9,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const DateSelector = ({ date, setDate }) => {
+const DateSelector = ({ date, setDate, months }) => {
   const [days, setDays] = useState(Array.from({ length: 31 }, (_, i) => i + 1));
 
-  const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
+
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 101 }, (_, i) => currentYear - i);
   const getDaysInMonth = (month, year) => {
