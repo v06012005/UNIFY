@@ -6,7 +6,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import axios from 'axios';
 
 const NavButton = ({ iconClass, href = "", content = "" }) => {
   return (
@@ -18,7 +17,7 @@ const NavButton = ({ iconClass, href = "", content = "" }) => {
 };
 
 const validationSchema = Yup.object({
-  biography: Yup.string().max(500, 'Biography should be less than 500 characters').optional(),
+  biography: Yup.string().max(100, 'Biography should be less than 100 characters').optional(),
   firstName: Yup.string().required('First name is required'),
   lastName: Yup.string().required('Last name is required'),
   username: Yup.string().required('Username is required'),
