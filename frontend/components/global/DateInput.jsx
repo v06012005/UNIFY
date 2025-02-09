@@ -9,28 +9,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const DateSelector = ({ day, month, year }) => {
-  const [date, setDate] = useState({
-    day: day,
-    month: month,
-    year: year,
-  });
-
+const DateSelector = ({ date, setDate, months }) => {
   const [days, setDays] = useState(Array.from({ length: 31 }, (_, i) => i + 1));
-  const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
+
+
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 101 }, (_, i) => currentYear - i);
   const getDaysInMonth = (month, year) => {
@@ -49,8 +31,8 @@ const DateSelector = ({ day, month, year }) => {
   useEffect(() => {
     if (date.month && date.year) {
       const monthIndex = months.indexOf(date.month);
-      console.log(getDaysInMonth(monthIndex, date.year));
       setDays(getDaysInMonth(monthIndex, date.year));
+      setDate(date);
     }
   }, [date.month, date.year]);
 

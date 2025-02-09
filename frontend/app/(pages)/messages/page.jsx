@@ -1,10 +1,13 @@
+"use client";
 import Image from "next/image";
 import avatar from "@/public/images/testreel.jpg";
 import avatar2 from "@/public/images/testAvt.jpg";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
+import { useState } from "react";
 
 const Page = () => {
+  const [message, setMessage] = useState("");
   return (
     <div className="ml-auto">
       <div className="flex w-full">
@@ -191,7 +194,14 @@ const Page = () => {
               type="text"
               placeholder="Type your message here..."
               className="bg-gray-700 text-white placeholder-gray-400 flex-grow py-2 px-4 rounded-3xl focus:outline-none"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
             />
+            {message.trim() && (
+              <button className="ml-2 p-2 bg-blue-500 hover:bg-blue-600 rounded-full text-white">
+                <i className="fas fa-paper-plane text-xl"></i>
+              </button>
+            )}
           </div>
         </div>
       </div>

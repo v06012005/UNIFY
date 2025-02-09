@@ -295,6 +295,7 @@ const Page = () => {
                 )}
               </div>
             </div>
+            <p className="ml-20 mt-10 dark:text-gray-400 text-gray-600 font-bold">“Success is a journey, not a destination.”</p>
           </div>
         </div>
         <div className="bg-gray-100 dark:bg-gray-800  mt-2 ml-3 mr-5 rounded-lg shadow-md p-2 flex-grow">
