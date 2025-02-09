@@ -1,7 +1,7 @@
-package com.app.unify.entity;
+package com.app.unify.entities;
 
-import com.app.unify.type.FriendshipStatus;
-import com.app.unify.type.FriendshipUserId;
+import com.app.unify.types.FriendshipStatus;
+import com.app.unify.types.FriendshipUserId;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

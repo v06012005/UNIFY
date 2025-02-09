@@ -1,4 +1,4 @@
-package com.app.unify.type;
+package com.app.unify.types;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -6,8 +6,6 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.io.Serializable;
-import java.util.Objects;
-import java.util.UUID;
 
 @Embeddable
 @Data

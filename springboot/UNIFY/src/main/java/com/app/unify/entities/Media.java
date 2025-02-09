@@ -1,11 +1,9 @@
-package com.app.unify.entity;
+package com.app.unify.entities;
 
-import com.app.unify.type.MediaType;
+import com.app.unify.types.MediaType;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.UUID;
 
 @Entity
 @Table(name = "Media")
