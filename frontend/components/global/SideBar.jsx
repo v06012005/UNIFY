@@ -65,6 +65,9 @@ const SideBar = () => {
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
     document.addEventListener("mousedown", handleClickOutsideSearch);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   return (
@@ -75,6 +78,10 @@ const SideBar = () => {
       <div className="relative flex flex-row">
         <div className="flex flex-col border h-screen fixed left-0 top-0 z-50">
           <UnifyLogoIcon />
+          <NotificationModal
+            isNotificationOpen={isNotificationOpen}
+            modalRef={modalRef}
+          />
           <ul className="text-3xl flex flex-col justify-center grow w-full">
             <li className="h-16">
               <NavButton
@@ -152,11 +159,6 @@ const SideBar = () => {
             <i className="fa-solid w-full fa-gear"></i>
           </Link>
         </div>
-
-        <NotificationModal
-          isNotificationOpen={isNotificationOpen}
-          modalRef={modalRef}
-        />
       </div>
     </SearchHorizontalToggle>
   );
