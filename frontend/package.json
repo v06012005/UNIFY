@@ -30,6 +30,7 @@
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
     "draft-js": "^0.11.7",
+    "formik": "^2.4.6",
     "framer-motion": "^11.18.1",
     "frontend": "file:",
     "lucide-react": "^0.469.0",
@@ -43,7 +44,8 @@
     "react-player": "^2.16.0",
     "tailwind-merge": "^2.6.0",
     "tailwind-scrollbar-hide": "^2.0.0",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "yup": "^1.6.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
