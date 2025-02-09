@@ -11,6 +11,21 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 
 const RegisterPage = () => {
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -34,12 +49,39 @@ const RegisterPage = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const fullDate = `${date.year}-${date.month}-${date.day}`;
-    console.log("Submitted Data:", { ...formData, birthDate: date });
-    console.log("Năm sinh:", fullDate);
-  }; 
+    const fullDate = `${date.year}-${String(
+      months.indexOf(date.month) + 1
+    ).padStart(2, "0")}-${String(date.day).padStart(2, "0")}`;
+    console.log("Formatted birthDate:", fullDate);
+
+    const requestData = {
+      ...formData,
+      birthDay: fullDate,
+    };
+
+    try {
+      const response = await fetch("http://localhost:8080/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestData),
+      });
+
+      const result = await response.text();
+
+      if (response.ok) {
+        alert("Registration successful!");
+      } else {
+        alert(`Error: ${result}`);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Something went wrong. Please try again.");
+    }
+  };
 
   return (
     <div className={`w-full h-screen grid place-content-center`}>
@@ -116,17 +158,17 @@ const RegisterPage = () => {
                 }
               >
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="male" id="r1" />
+                  <RadioGroupItem value="true" id="r1" />
                   <Label htmlFor="r1">Male</Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="female" id="r2" />
+                  <RadioGroupItem value="false" id="r2" />
                   <Label htmlFor="r2">Female</Label>
                 </div>
               </RadioGroup>
             </div>
 
-            <DateSelector date={date} setDate={setDate} />
+            <DateSelector date={date} setDate={setDate} months={months} />
 
             <div className="flex items-center gap-1 m-auto">
               <span>Do you have an account?</span>
