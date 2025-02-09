@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useState } from "react";
+import { useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useFormik } from 'formik';
@@ -20,7 +21,7 @@ const validationSchema = Yup.object({
   biography: Yup.string().max(100, 'Biography should be less than 100 characters').optional(),
   firstName: Yup.string().required('First name is required'),
   lastName: Yup.string().required('Last name is required'),
-  username: Yup.string().required('Username is required'),
+  userName: Yup.string().required('Username is required'),
   email: Yup.string().email('Invalid email address').required('Email is required'),
   phone: Yup.string().matches(
     /^[0-9]{10}$/,
@@ -30,7 +31,7 @@ const validationSchema = Yup.object({
   birthday: Yup.object({
     day: Yup.number().min(1, 'Invalid day').max(31, 'Invalid day').required('Day is required'),
     month: Yup.number().min(1, 'Invalid month').max(12, 'Invalid month').required('Month is required'),
-    year: Yup.number().min(1900, 'Invalid year').max(2100, 'Invalid year').required('Year is required'),
+    year: Yup.number().min(1950, 'Invalid year').max(2100, 'Invalid year').required('Year is required'),
   }),
   location: Yup.string().required('Location is required'),
   educationWork: Yup.string().required('Education/Work is required'),
@@ -42,27 +43,13 @@ const Page = () => {
   const defaultAvatar = "/images/avt.jpg"; 
   const [avatar, setAvatar] = useState(defaultAvatar);
 
-  const handleChangeAvatar = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setAvatar(reader.result); 
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleDeleteAvatar = () => {
-    setAvatar(defaultAvatar); 
-  };
-
+ 
   const formik = useFormik({
     initialValues: {
       biography: "",
       firstName: "",
       lastName: "",
-      username: "",
+      userName: "",
       email: "",
       phone: "",
       gender: "",
@@ -72,10 +59,63 @@ const Page = () => {
       avatar: null,
     },
     validationSchema: validationSchema,
-    onSubmit: (values) => {
-      console.log(values);
+    onSubmit: async (values) => {
+      try {
+        const birthDay = `${values.birthday.year}-${String(values.birthday.month).padStart(2, "0")}-${String(values.birthday.day).padStart(2, "0")}`;
+
+        const formData = {
+          ...values,
+          birthday: birthDay,
+          avatar: avatar !== defaultAvatar ? avatar : null, 
+        };
+
+        const response = await fetch("http://localhost:8080/user", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        });
+
+        if (!response.ok) {
+          throw new Error("Cập nhật thất bại! Vui lòng thử lại.");
+        }
+
+        const result = await response.json();
+        alert("Cập nhật thành công!");
+        console.log("User updated:", result);
+      } catch (error) {
+        console.error("Lỗi khi cập nhật user:", error);
+        alert("Đã xảy ra lỗi! Vui lòng thử lại sau.");
+      }
     },
   });
+
+  const fileInputRef = useRef(null);
+
+const handleChangeAvatar = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setAvatar(reader.result);
+            formik.setFieldValue("avatar", file); 
+        };
+        reader.readAsDataURL(file);
+    }
+};
+
+const handleDeleteAvatar = () => {
+    setAvatar(defaultAvatar);
+    formik.setFieldValue("avatar", null);
+
+    if (fileInputRef.current) {
+        fileInputRef.current.value = ""; 
+    }
+};
+
+
+  
 
 
   return (
@@ -100,10 +140,11 @@ const Page = () => {
       </div>
       <div className="flex-grow flex justify-end gap-4">
 
-        <label htmlFor="avatar-upload" className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition cursor-pointer">
+        <label htmlFor="avatar" className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition cursor-pointer">
           Change Avatar
           <input
-            id="avatar-upload"
+          ref={fileInputRef}
+            id="avatar"
             type="file"
             accept="image/*"
             className="hidden"
@@ -126,13 +167,14 @@ const Page = () => {
 
           <div className="m-5">
             <label
-              htmlFor="input-field"
+              htmlFor="biography"
               className="block text-lg font-medium text-gray-700 dark:text-white mb-2"
             >
               Biography
             </label>
             <input
-              id="input-field"
+              id="biography"
+              name="biography"
               type="text"
               placeholder="Enter your biography"
               {...formik.getFieldProps("biography")}
@@ -146,16 +188,17 @@ const Page = () => {
           <div className="m-5 flex gap-4">
             <div className="flex-1">
               <label
-                htmlFor="first-name"
+                htmlFor="firstName"
                 className="block text-lg font-medium text-gray-700 dark:text-white mb-2"
               >
                 First Name
               </label>
               <input
-                id="first-name"
+                id="firstName"
+                name="firstName"
                 type="text"
                 placeholder="Enter your first name"
-              {...formik.getFieldProps("first-name")}
+              {...formik.getFieldProps("firstName")}
                 className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
               />
               {formik.touched.firstName && formik.errors.firstName && (
@@ -165,13 +208,14 @@ const Page = () => {
 
             <div className="flex-1">
               <label
-                htmlFor="last-name"
+                htmlFor="lastName"
                 className="block text-lg font-medium text-gray-700 dark:text-white mb-2"
               >
                 Last Name
               </label>
               <input
-                id="last-name"
+                id="lastName"
+                name="lastName"
                 type="text"
                 placeholder="Enter your last name"
                 {...formik.getFieldProps("lastName")}
@@ -184,20 +228,21 @@ const Page = () => {
 
             <div className="flex-1">
               <label
-                htmlFor="username"
+                htmlFor="userName"
                 className="block text-lg font-medium text-gray-700 dark:text-white mb-2"
               >
                 Username
               </label>
               <input
-                id="username"
+                id="userName"
+                name="userName"
                 type="text"
                 placeholder="Enter your username"
-                {...formik.getFieldProps("username")}
+                {...formik.getFieldProps("userName")}
                 className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
               />
-               {formik.touched.username && formik.errors.username && (
-              <div className="text-red-500 text-sm">{formik.errors.username}</div>
+               {formik.touched.userName && formik.errors.userName && (
+              <div className="text-red-500 text-sm">{formik.errors.userName}</div>
             )}
             </div>
           </div>
@@ -212,6 +257,7 @@ const Page = () => {
               </label>
               <input
                 id="email"
+                name="email"
                 type="text"
                 placeholder="Enter your email"
                 {...formik.getFieldProps("email")}
@@ -231,6 +277,7 @@ const Page = () => {
               </label>
               <input
                 id="phone"
+                name="phone"
                 type="tel"
                 placeholder="Enter your phone number"
                 className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
@@ -279,24 +326,30 @@ const Page = () => {
               </label>
               <div className="flex items-center gap-4">
                 <input
+                name="day"
                   type="number"
                   placeholder="Day"
                   min="1"
                   max="31"
+            {...formik.getFieldProps("day")}
                   className="w-30 px-2 py-1 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none"
                 />
                 <input
+                name="month"
                   type="number"
                   placeholder="Month"
                   min="1"
                   max="12"
+                  {...formik.getFieldProps("month")}
                   className="w-30 px-2 py-1 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none"
                 />
                 <input
+                name="year"
                   type="number"
                   placeholder="Year"
-                  min="1900"
+                  min="1950"
                   max="2100"
+                  {...formik.getFieldProps("year")}
                   className="w-30 px-2 py-1 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none"
                 />
               </div>
@@ -309,6 +362,8 @@ const Page = () => {
                 Location:
               </label>
               <input
+              id="location"
+              name="location"
                 type="text"
                 placeholder="Enter your location"
                 className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none"
@@ -320,6 +375,8 @@ const Page = () => {
                 Education/Work:
               </label>
               <input
+              id="education"
+              name="education"
                 type="text"
                 placeholder="Enter your education"
                 className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none"
