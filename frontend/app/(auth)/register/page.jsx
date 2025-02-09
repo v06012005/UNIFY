@@ -4,7 +4,7 @@ import {Input} from "@/components/ui/input";
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import Image from "next/image";
-import Logo from "@/public/images/unify_1.svg";
+import FullUnifyLogoIcon from "@/components/global/FullUnifyLogoIcon_Auth";
 import {Button} from "@/components/ui/button";
 import DateSelector from "@/components/global/DateInput";
 import {useState} from "react";
@@ -29,7 +29,7 @@ const RegisterPage = () => {
                 <form onSubmit={(e) => submit(e)}>
                     <div className={`grid gap-5`}>
                         <div>
-                            <Image src={Logo} alt={"Logo"} width={200} height={200} className={`mr-7`}/>
+                            <FullUnifyLogoIcon className="mr-7"/>
                         </div>
                         <div className={`flex gap-2`}>
                             <div className={`basis-1/2`}>
