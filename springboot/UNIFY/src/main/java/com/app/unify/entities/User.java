@@ -73,6 +73,9 @@ public class User {
     String workAt;
 
     @OneToMany(mappedBy = "user")
+    Set<Post> posts;
+
+    @OneToMany(mappedBy = "user")
     Set<Avatar> avatars;
 
     @OneToMany(mappedBy = "userFollower")

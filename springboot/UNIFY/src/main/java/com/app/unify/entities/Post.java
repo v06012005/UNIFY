@@ -48,7 +48,6 @@ public class Post {
     Audience audience;
 
     @ManyToOne
-    @MapsId("id")
     @JoinColumn(name = "user_id",  nullable = false)
     User user;
 
