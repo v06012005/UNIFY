@@ -2,15 +2,22 @@ package com.app.unify.dto.global;
 
 
 
-import com.app.unify.entities.Role;
-import jakarta.validation.constraints.*;
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.experimental.FieldDefaults;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
+
+import com.app.unify.entities.Role;
+
+import jakarta.persistence.Column;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.experimental.FieldDefaults;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -30,9 +37,13 @@ public class UserDTO {
     @Size(min = 3, max = 30, message = "Username must be between 3 and 30 characters")
     private String username;
 
-    @NotBlank(message = "Phone number is required")
-    @Pattern(regexp = "^\\d{10}$", message = "Phone number must be 10 digits")
+    @Size(min = 0, max = 10, message = "Phone number must be at most 10 digits")
+    @Column(nullable = true)
     private String phone;
+
+ 
+
+  
 
     @NotBlank(message = "Email is required")
     @Email(message = "Email should be valid")
@@ -44,7 +55,7 @@ public class UserDTO {
 
     private LocalDateTime registeredAt = LocalDateTime.now();
 
-    @NotNull(message = "Status is required")
+ 
     private Boolean gender;
 
     @Past(message = "Birthdate must be in the past")
@@ -56,7 +67,7 @@ public class UserDTO {
 
     private String workAt;
 
-    @NotNull(message = "Status is required")
+  
     private Integer status;
 
     Set<Role> roles;
