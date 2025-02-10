@@ -3,6 +3,7 @@
 import FullUnifyLogoIcon from "@/components/global/FullUnifyLogoIcon_Auth";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import GoogleLogo from "@/public/images/GoogleLogo.png";
@@ -58,6 +59,7 @@ const LoginPage = () => {
         <div className={`grid gap-5`}>
           <div>
             <FullUnifyLogoIcon className="mr-7 w-60"/>
+
           </div>
           <Input
             name="email"

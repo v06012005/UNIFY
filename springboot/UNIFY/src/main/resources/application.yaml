@@ -29,3 +29,4 @@ jwt:
 
 var:
   allowedOrigin: "http://localhost:3000"
+

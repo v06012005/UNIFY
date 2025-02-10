@@ -83,6 +83,7 @@ const Page = () => {
       <div className="h-screen overflow-y-auto">
         <form onSubmit={formik.handleSubmit}>
         <div className="flex my-5 bg-gray-200 dark:bg-gray-800 rounded-xl items-center pr-5">
+
       <div className="flex-shrink-0 p-2">
         <div className="w-[100px] h-[100px] rounded-full border-2 border-gray-300 overflow-hidden">
           <Image
@@ -99,6 +100,30 @@ const Page = () => {
         <p className="font-bold">Huỳnh Thị Thảo Vy</p>
       </div>
       <div className="flex-grow flex justify-end gap-4">
+
+        <label htmlFor="avatar-upload" className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition cursor-pointer">
+          Change Avatar
+          <input
+            id="avatar-upload"
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleChangeAvatar}
+          />
+        </label>
+
+        <button
+          className="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition"
+          onClick={handleDeleteAvatar}
+        >
+          Delete Avatar
+        </button>
+         
+        <button className="bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition">
+          Logout
+        </button>
+      </div>
+    </div>
 
         <label htmlFor="avatar-upload" className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition cursor-pointer">
           Change Avatar
