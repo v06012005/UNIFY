@@ -35,7 +35,7 @@ const layout = ({ children }) => {
       <div className="flex basis-1/4 px-3 flex-col border-r w-[300px] h-screen overflow-y-auto">
         <div className="p-3">
           <h3 className="text-3xl font-bold mb-5">Settings</h3>
-          <Title content="Your account" />
+          <Title content="Account settings"/>
           <ul className="text-1xl ">
             <li className="h-10 mb-3 flex items-center">
               <NavButton
@@ -51,6 +51,13 @@ const layout = ({ children }) => {
                 content="View Archive"
               />
             </li>
+            <li className="h-10 mb-3 flex items-center">
+              <NavButton
+                href="/settings/update-password"
+                iconClass="fa-solid fa-key"
+                content="Change password"
+              />
+            </li>
           </ul>
           <Title content="General settings" />
           <ul className="text-1xl ">
@@ -64,7 +71,7 @@ const layout = ({ children }) => {
           </ul>
         </div>
       </div>
-      <div className="h-screen basis-3/4 dark:text-white dark:bg-black">
+      <div className="h-screen basis-3/4 dark:text-white dark:bg-black py-3 px-10">
         {children}
       </div>
     </div>

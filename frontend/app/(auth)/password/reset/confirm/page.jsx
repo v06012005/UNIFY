@@ -2,12 +2,9 @@
 
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import Image from "next/image";
 import UnifyLogoIcon from "@/components/global/UnifyLogoIcon_Auth";
-import { useTheme } from "next-themes";
 
 const ConfirmPage = () => {
-  const { theme, setTheme } = useTheme();
   return (
     <>
       <div>
