@@ -71,7 +71,7 @@ const Page = () => {
 
           <div className="p-2 ml-10">
             <div className="flex justify-between ml-10">
-              <div className="flex flex-col items-center w-200 mt-2 mx-10">
+              <div className="flex flex-col items-center w-200 mt-2 mx-8">
                 <h3 className="text-2xl ">huynhdiz</h3>
                 <p
                   className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer"

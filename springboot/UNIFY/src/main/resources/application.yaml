@@ -8,9 +8,25 @@ spring:
         ddl-auto: update
         dialect: org.hibernate.dialect.SQLServerDialect
       show-sql: true
-
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
 jwt:
   signerKey: "5c6321fb6bdf294f41ef37aifc20d0113853e3d633dc475df1a9ab36be2ba817797942e337fe3407165"
 
 var:
   allowedOrigin: "http://localhost:3000"
+
