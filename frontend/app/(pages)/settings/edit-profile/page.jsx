@@ -82,7 +82,8 @@ const Page = () => {
     <div className="w-full">
       <div className="h-screen overflow-y-auto">
         <form onSubmit={formik.handleSubmit}>
-        <div className="flex m-5 bg-gray-200 dark:bg-gray-800 rounded-xl items-center pr-5">
+        <div className="flex my-5 bg-gray-200 dark:bg-gray-800 rounded-xl items-center pr-5">
+
       <div className="flex-shrink-0 p-2">
         <div className="w-[100px] h-[100px] rounded-full border-2 border-gray-300 overflow-hidden">
           <Image
@@ -124,7 +125,31 @@ const Page = () => {
       </div>
     </div>
 
-          <div className="m-5">
+        <label htmlFor="avatar-upload" className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition cursor-pointer">
+          Change Avatar
+          <input
+            id="avatar-upload"
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleChangeAvatar}
+          />
+        </label>
+
+        <button
+          className="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition"
+          onClick={handleDeleteAvatar}
+        >
+          Delete Avatar
+        </button>
+         
+        <button className="bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition">
+          Logout
+        </button>
+      </div>
+    </div>
+
+          <div className="my-5">
             <label
               htmlFor="input-field"
               className="block text-lg font-medium text-gray-700 dark:text-white mb-2"
@@ -143,7 +168,7 @@ const Page = () => {
             )}
           </div>
 
-          <div className="m-5 flex gap-4">
+          <div className="my-5 flex gap-4">
             <div className="flex-1">
               <label
                 htmlFor="first-name"
@@ -202,7 +227,7 @@ const Page = () => {
             </div>
           </div>
 
-          <div className="m-5 flex gap-4">
+          <div className="my-5 flex gap-4">
             <div className="flex-1">
               <label
                 htmlFor="email"
@@ -238,7 +263,7 @@ const Page = () => {
             </div>
           </div>
 
-          <div className="m-5 flex gap-4 items-start">
+          <div className="my-5 flex gap-4 items-start">
             <div className="flex flex-col gap-4 basis-1/2">
               <label className="text-lg font-medium text-gray-700 dark:text-white">
                 Gender:
@@ -303,7 +328,7 @@ const Page = () => {
             </div>
           </div>
 
-          <div className="m-5 flex gap-4 items-start">
+          <div className="my-5 flex gap-4 items-start">
             <div className="flex flex-col gap-2 basis-1/2">
               <label className="text-lg font-medium text-gray-700 dark:text-white">
                 Location:

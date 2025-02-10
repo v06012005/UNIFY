@@ -1,8 +1,9 @@
 "use client";
 
+import FullUnifyLogoIcon from "@/components/global/FullUnifyLogoIcon_Auth";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Logo from "@/public/images/unify_1.svg";
+
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import GoogleLogo from "@/public/images/GoogleLogo.png";
@@ -57,13 +58,8 @@ const LoginPage = () => {
       <div align={"center"}>
         <div className={`grid gap-5`}>
           <div>
-            <Image
-              src={Logo}
-              alt={"Logo"}
-              width={200}
-              height={200}
-              className={`mr-7`}
-            />
+            <FullUnifyLogoIcon className="mr-7 w-60"/>
+
           </div>
           <Input
             name="email"

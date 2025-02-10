@@ -15,7 +15,7 @@ const languages = [
 
 const page = () => {
   return (
-    <div className="w-full py-3 px-10">
+    <div className="w-full">
       <h1 className="text-3xl font-bold mb-5">Preferences</h1>
       <div className="my-5">
         <p className="text-xl font-bold">App theme</p>
