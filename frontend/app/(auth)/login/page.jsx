@@ -35,8 +35,10 @@ const LoginPage = () => {
       const result = await response.json();
 
       if (response.ok) {
-        alert("Login successful!");
-        localStorage.setItem("token", result.token);
+        await fetch("/api/set-cookie", {
+          method: "POST",
+          body: JSON.stringify({ token: result.token }),
+        });
         router.push("/");
       } else {
         alert(result.message || "Login failed");
@@ -58,8 +60,7 @@ const LoginPage = () => {
       <div align={"center"}>
         <div className={`grid gap-5`}>
           <div>
-            <FullUnifyLogoIcon className="mr-7 w-60"/>
-
+            <FullUnifyLogoIcon className="mr-7 w-60" />
           </div>
           <Input
             name="email"
