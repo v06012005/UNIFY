@@ -1,5 +1,14 @@
 package com.app.unify.services;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+
 import com.app.unify.dto.global.UserDTO;
 import com.app.unify.entities.Role;
 import com.app.unify.entities.User;
@@ -7,16 +16,7 @@ import com.app.unify.exceptions.UserNotFoundException;
 import com.app.unify.mapper.UserMapper;
 import com.app.unify.repositories.RoleRepository;
 import com.app.unify.repositories.UserRepository;
-
 import com.app.unify.utils.EncryptPasswordUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class UserService {

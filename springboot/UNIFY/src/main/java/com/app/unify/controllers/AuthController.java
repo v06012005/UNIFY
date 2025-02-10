@@ -1,19 +1,5 @@
 package com.app.unify.controllers;
 
-import com.app.unify.dto.global.UserDTO;
-import com.app.unify.dto.request.UserLoginDto;
-import com.app.unify.dto.response.TokenResponse;
-import com.app.unify.entities.Token;
-import com.app.unify.entities.User;
-import com.app.unify.exceptions.UserNotFoundException;
-import com.app.unify.repositories.TokenRepository;
-import com.app.unify.repositories.UserRepository;
-import com.app.unify.services.AuthenticationService;
-import com.app.unify.services.UserService;
-import com.app.unify.utils.EncryptPasswordUtil;
-import com.app.unify.utils.JwtUtil;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +7,24 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.app.unify.dto.global.UserDTO;
+import com.app.unify.dto.request.UserLoginDto;
+import com.app.unify.dto.response.TokenResponse;
+import com.app.unify.entities.User;
+import com.app.unify.exceptions.UserNotFoundException;
+import com.app.unify.repositories.UserRepository;
+import com.app.unify.services.AuthenticationService;
+import com.app.unify.services.UserService;
+import com.app.unify.utils.EncryptPasswordUtil;
+import com.app.unify.utils.JwtUtil;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/auth")

@@ -29,17 +29,17 @@ public class Report {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	String id;
-	
+
 	@ManyToOne
     @MapsId("id")
     @JoinColumn(name = "user_id",  nullable = false)
     User user;
-	
+
 	@Column(name = "reported_id", nullable = false)
 	String reportedId;
-	
+
 	@Column(name = "reported_at", nullable = false)
     LocalDateTime reportedAt;
-	
+
 	Integer status;
 }

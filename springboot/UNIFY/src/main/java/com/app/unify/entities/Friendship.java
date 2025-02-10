@@ -1,12 +1,24 @@
 package com.app.unify.entities;
 
+import java.time.LocalDateTime;
+
 import com.app.unify.types.FriendshipStatus;
 import com.app.unify.types.FriendshipUserId;
-import jakarta.persistence.*;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDateTime;
+import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 @Entity
 @Table(name = "Friendships")

@@ -1,8 +1,9 @@
 package com.app.unify.mapper;
 
+import org.mapstruct.Mapper;
+
 import com.app.unify.dto.global.UserDTO;
 import com.app.unify.entities.User;
-import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
