@@ -1,10 +1,11 @@
 package com.app.unify.services;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.app.unify.entities.Token;
 import com.app.unify.entities.User;
 import com.app.unify.repositories.TokenRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 public class AuthenticationService {
@@ -25,7 +26,9 @@ public class AuthenticationService {
 
     private void revokeAllUserTokens(User user){
         var validUserTokens = tokenRepository.findAllValidTokensByUser(user.getId());
-        if(validUserTokens.isEmpty()) return;
+        if(validUserTokens.isEmpty()) {
+			return;
+		}
         validUserTokens.forEach(t -> {
                     t.setExpired(true);
                     t.setRevoked(true);
