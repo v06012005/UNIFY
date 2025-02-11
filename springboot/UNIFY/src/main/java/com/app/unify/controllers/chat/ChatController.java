@@ -24,7 +24,8 @@ public class ChatController {
             @Payload ChatMessageDTO chatMessageDTO,
             SimpMessageHeaderAccessor headerAccessor
     ){
-      headerAccessor.getSessionAttributes().put("username", chatMessageDTO.getSender());
+      headerAccessor.getSessionAttributes()
+              .put("username", chatMessageDTO.getSender());
       return chatMessageDTO;
     }
 
