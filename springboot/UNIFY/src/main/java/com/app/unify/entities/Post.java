@@ -38,7 +38,6 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
-    @Column(columnDefinition = "nvarchar(MAX)")
     String captions;
 
     Integer status;
