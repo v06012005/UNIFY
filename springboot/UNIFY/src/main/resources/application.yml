@@ -1,12 +1,15 @@
 spring:
   datasource:
-    url: "jdbc:sqlserver://localhost:1433;databaseName=Unify;encrypt=false;trustServerCertificate=false"
-    username: sa
-    password: 123456
+#    url: "jdbc:sqlserver://localhost:1433;databaseName=Unify;encrypt=false;trustServerCertificate=false"
+#    username: sa
+#    password: 123456
+     url: jdbc:postgresql://unify-app-unify.h.aivencloud.com:14334/unify?characterEncoding=UTF-8&sslmode=require
+     username: avnadmin
+     password: AVNS_5w7cmKQFtagnfWwVQrn
   jpa:
       hibernate:
         ddl-auto: update
-        dialect: org.hibernate.dialect.SQLServerDialect
+        dialect: org.hibernate.dialect.PostgreSQLDialect
       show-sql: true
   data:
    mongodb:
@@ -17,4 +20,4 @@ jwt:
   signerKey: "5c6321fb6bdf294f41ef37aifc20d0113853e3d633dc475df1a9ab36be2ba817797942e337fe3407165"
 
 var:
-  allowedOrigin: "http://localhost:3000"
+  allowedOrigin: http://localhost:3000

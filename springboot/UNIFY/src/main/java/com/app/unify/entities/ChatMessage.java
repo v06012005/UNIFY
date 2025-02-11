@@ -14,8 +14,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @Builder
 public class ChatMessage {
+
     @Id
     ObjectId id;
     String content;
     String sender;
+
 }
