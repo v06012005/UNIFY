@@ -17,18 +17,22 @@ export const verifySession = cache(async () => {
 })
 
 export const getUser = cache(async () => {
-    const session = await verifySession()
-    if (!session) return null
+    const token = (await cookies()).get('token')?.value
 
     try {
-        const response = await fetch("http://localhost:8080/users/my-info");
+        const response = await fetch("http://localhost:8080/users/my-info", {
+            method: "GET",
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
 
         if (!response.ok) {
             console.log('Failed to fetch user')
-            return null
+            return null;
         }
 
-        const user = response.json();
+        const user = await response.json();
 
         return user
     } catch (error) {

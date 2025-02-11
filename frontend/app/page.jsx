@@ -95,7 +95,7 @@ export default async function Home() {
         </div>
         <div className="basis-1/4 border py-8 h-screen sticky top-0">
           <div className="w-3/4 flex flex-col mx-auto">
-            {session.isAuth && <User href="/profile" />}
+            {session?.isAuth && <User href="/profile" />}
             <div className="flex justify-center">
               {/* <Link
                 className="border hover:bg-red-500 transition ease-in-out duration-100 hover:text-white rounded w-20 text-center py-2 mx-2"
