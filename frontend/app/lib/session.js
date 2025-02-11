@@ -14,20 +14,13 @@ export async function encrypt(payload) {
 
 export async function decrypt(session) {
     if (!session) {
-        console.log('No token found in cookies.')
         return null
     }
-
-
-    console.log('SESSION_SECRET:', secretKey);
-    console.log('Encoded Key:', encodedKey);
-
 
     try {
         const { payload } = await jwtVerify(session, encodedKey, {
             algorithms: ['HS256'],
         })
-        console.log('Decoded JWT payload:', payload)
         return payload
     } catch (error) {
         console.log('JWT verification failed:', error)

@@ -113,13 +113,13 @@ const Page = () => {
       const parsedBirthDay =
         userData.birthDay && userData.birthDay.includes("-")
           ? (() => {
-              const [year, month, day] = userData.birthDay.split("-");
-              return {
-                month: months[Number(month) - 1],
-                day: String(day).padStart(2, "0"),
-                year,
-              };
-            })()
+            const [year, month, day] = userData.birthDay.split("-");
+            return {
+              month: months[Number(month) - 1],
+              day: String(day).padStart(2, "0"),
+              year,
+            };
+          })()
           : { month: "", day: "", year: "" };
 
       formik.setValues({
@@ -153,12 +153,11 @@ const Page = () => {
       values.birthDay?.month &&
       values.birthDay?.day
     ) {
-      const formattedDate = `${
-        values.birthDay.year
-      }-${values.birthDay.month.padStart(
-        2,
-        "0"
-      )}-${values.birthDay.day.padStart(2, "0")}`;
+      const formattedDate = `${values.birthDay.year
+        }-${values.birthDay.month.padStart(
+          2,
+          "0"
+        )}-${values.birthDay.day.padStart(2, "0")}`;
       formData.append("birthDay", formattedDate);
     }
 
@@ -271,9 +270,8 @@ const Page = () => {
             <div className="ml-4">
               <p className="text-2xl">{userData?.username || "Unknown User"}</p>
               <p className="font-bold">
-                {`${userData?.firstName || ""} ${
-                  userData?.lastName || ""
-                }`.trim() || "No Name"}
+                {`${userData?.firstName || ""} ${userData?.lastName || ""
+                  }`.trim() || "No Name"}
               </p>
             </div>
 
