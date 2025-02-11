@@ -20,6 +20,7 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -55,10 +56,12 @@ public class Post {
     LocalDateTime postedAt;
 
     @Column(name = "is_comment_visible", nullable = false)
-    Boolean isCommentVisible;
+    @Default
+    Boolean isCommentVisible = false;
 
     @Column(name = "is_like_visible", nullable = false)
-    Boolean isLikeVisible;
+    @Default
+    Boolean isLikeVisible = false;
 
     @OneToMany(mappedBy = "post")
     Set<PostComment> comments;
