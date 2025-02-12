@@ -1,4 +1,4 @@
-package com.app.unify.controllers;
+package com.app.unify.controllers.auth;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
