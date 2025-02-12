@@ -40,7 +40,7 @@ public class SecurityConfig {
     private String allowedOrigin;
 
     private final String[] ACCESS_ENDPOINTS = {
-       "/api/auth/**"
+       "/api/auth/**",
     };
 
     private JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -81,7 +81,7 @@ public class SecurityConfig {
                )
                .httpBasic(Customizer.withDefaults())
                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-              .build();
+               .build();
 
 
     }
@@ -99,7 +99,7 @@ public class SecurityConfig {
                     HttpHeaders.CONTENT_TYPE
                 )
         );
-
+        configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

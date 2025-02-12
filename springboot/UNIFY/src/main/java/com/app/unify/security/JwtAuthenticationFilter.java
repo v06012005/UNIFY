@@ -31,17 +31,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private TokenRepository tokenRepository;
 
     @Autowired
-    public JwtAuthenticationFilter(JwtUtil jwtUtil, TokenRepository tokenRepository, CustomUserDetailsService customUserDetailsService) {
+    public JwtAuthenticationFilter(JwtUtil jwtUtil,
+                                   TokenRepository tokenRepository,
+                                   CustomUserDetailsService customUserDetailsService) {
         this.jwtUtil = jwtUtil;
         this.tokenRepository = tokenRepository;
         this.customUserDetailsService = customUserDetailsService;
     }
 
     @Override
-    protected void doFilterInternal(@NonNull  HttpServletRequest request,
-                                    @NonNull  HttpServletResponse response,
+    protected void doFilterInternal(@NonNull HttpServletRequest request,
+                                    @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain)
             throws ServletException, IOException {
+
+
+
         String token = jwtUtil.getTokenFromRequest(request);
         var isTokenValid = tokenRepository.findByToken(token)
                                           .map(t -> !t.getExpired() && !t.getRevoked())

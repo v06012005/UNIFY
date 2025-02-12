@@ -5,7 +5,6 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.StringJoiner;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -79,7 +78,11 @@ public class JwtUtil {
 
 
     public String getTokenFromRequest(HttpServletRequest request){
+
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (authHeader == null ){
+            return request.getParameter("token");
+        }
         if(StringUtils.hasText(authHeader) && authHeader.startsWith("Bearer")){
             return authHeader.substring(7);
         }

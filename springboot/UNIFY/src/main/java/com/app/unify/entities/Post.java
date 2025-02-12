@@ -20,6 +20,7 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -37,7 +38,6 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
-    @Column(columnDefinition = "nvarchar(MAX)")
     String captions;
 
     Integer status;
@@ -47,7 +47,6 @@ public class Post {
     Audience audience;
 
     @ManyToOne
-    @MapsId("id")
     @JoinColumn(name = "user_id",  nullable = false)
     User user;
 
@@ -55,10 +54,12 @@ public class Post {
     LocalDateTime postedAt;
 
     @Column(name = "is_comment_visible", nullable = false)
-    Boolean isCommentVisible;
+    @Default
+    Boolean isCommentVisible = false;
 
     @Column(name = "is_like_visible", nullable = false)
-    Boolean isLikeVisible;
+    @Default
+    Boolean isLikeVisible = false;
 
     @OneToMany(mappedBy = "post")
     Set<PostComment> comments;
