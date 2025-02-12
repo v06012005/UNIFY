@@ -62,9 +62,13 @@ const DateSelector = ({ date, setDate, months }) => {
         </SelectTrigger>
         <SelectContent>
           {days.map((day) => (
-            <SelectItem key={day} value={String(day)}>
-              {day}
-            </SelectItem>
+            // <SelectItem key={day} value={String(day)}>
+            //   {day}
+            // </SelectItem>
+            <SelectItem key={day} value={String(day).padStart(2, "0")}>
+  {String(day).padStart(2, "0")}
+</SelectItem>
+
           ))}
         </SelectContent>
       </Select>

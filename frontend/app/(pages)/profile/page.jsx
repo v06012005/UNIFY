@@ -1,7 +1,6 @@
 "use client";
-
 import React from "react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -17,15 +16,25 @@ const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
     </Link>
   );
 };
+
 const Page = () => {
   const [activeTab, setActiveTab] = useState("post");
-
   const [isFollowing, setIsFollowing] = useState(false);
+  const [userData, setUserData] = useState("");
+  const [selectedImage, setSelectedImage] = useState(null);
 
+  // Xử lý khi người dùng chọn file ảnh
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+
+    if (file) {
+      const imageUrl = URL.createObjectURL(file); // Tạo URL tạm thời để hiển thị ảnh
+      setSelectedImage(imageUrl);
+    }
+  };
   const toggleFollowing = () => {
     setIsFollowing(!isFollowing);
   };
-
   const [isFollower, setIsFollower] = useState(false);
 
   const toggleFollower = () => {
@@ -41,38 +50,88 @@ const Page = () => {
   const toggleFollow = () => {
     setIsFollow((prev) => !prev);
   };
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const token =
+          "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ1bmlmeS5jb20iLCJzdWIiOiJodXluaHRoaXRoYW92eS5oZy4yMDIxQGdtYWlsLmNvbSIsImV4cCI6MTczOTg2NTY0MywiaWF0IjoxNzM5MjYwODQzLCJzY29wZSI6IiJ9.u_jrIs5S8GV3Rp9BDvb8XKRD7ZvFkNVsdpbaLM212Es";
+
+        if (!token) return console.error("No token found");
+
+        const response = await fetch("http://localhost:8080/users/my-info", {
+          method: "GET",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const parsedBirthDay = data.birthDay
+            ? (() => {
+                const [year, month, day] = data.birthDay.split("-");
+                return {
+                  day: day.padStart(2, "0"),
+                  month: month.padStart(2, "0"),
+                  year,
+                };
+              })()
+            : { month: "", day: "", year: "" };
+
+          setUserData({ ...data, birthDay: parsedBirthDay });
+        } else {
+          console.error("Failed to fetch user data");
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
   return (
     <div className=" w-[82%] mx-auto">
       <div className="h-screen overflow-y-auto">
         <div className="flex p-5 mx-20">
           <div className="relative">
-            <Image
-              src={`/images/avt.jpg`}
-              alt="Avatar"
-              className="mx-auto rounded-full border-2 border-gray-300"
-              width={200}
-              height={200}
-            />
-            <div className="absolute bottom-0 right-1 mb-2 mr-2">
-              <label
-                htmlFor="file-upload"
-                className="cursor-pointer bg-gray-600 text-white rounded-full p-2 hover:bg-gray-700 transition"
-              >
-                <i className="fa-solid fa-camera text-2xl"></i>
-              </label>
-              <input
-                id="file-upload"
-                type="file"
-                className="hidden"
-                onChange={(e) => handleFileChange(e)}
-              />
+          <div className="w-[200px] h-[200px] rounded-full overflow-hidden border-2 border-gray-300">
+        <Image
+          src={selectedImage || "/images/avt.jpg"}
+          alt="Avatar"
+          width={200}
+          height={200}
+          className="w-full h-full object-cover"
+        />
+      </div>
+
+      <div className="absolute bottom-0 right-1 mb-2 mr-2">
+        <label
+          htmlFor="file-upload"
+          className="cursor-pointer bg-gray-600 text-white rounded-full p-2 hover:bg-gray-700 transition"
+        >
+          <i className="fa-solid fa-camera text-2xl"></i>
+        </label>
+        <input
+          id="file-upload"
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleFileChange}
+        />
             </div>
           </div>
 
           <div className="p-2 ml-10">
             <div className="flex justify-between ml-10">
               <div className="flex flex-col items-center w-200 mt-2 mx-10">
-                <h3 className="text-2xl ">huynhdiz</h3>
+                <h3 className="text-2xl truncate w-28">
+                  {" "}
+                  {userData.username?.trim() || "Unknown User"}
+                </h3>
                 <p
                   className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer"
                   onClick={toggleFriend}
@@ -295,7 +354,9 @@ const Page = () => {
                 )}
               </div>
             </div>
-            <p className="ml-20 mt-10 dark:text-gray-400 text-gray-600 font-bold">“Success is a journey, not a destination.”</p>
+            <p className="ml-20 mt-10 dark:text-gray-400 text-gray-600 font-bold">
+              “Success is a journey, not a destination.”
+            </p>
           </div>
         </div>
         <div className="bg-gray-100 dark:bg-gray-800  mt-2 ml-3 mr-5 rounded-lg shadow-md p-2 flex-grow">
