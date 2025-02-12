@@ -58,10 +58,10 @@ const RegisterPage = () => {
       newErrors.lastName = "Only letters are allowed";
 
     if (!formData.username.trim()) newErrors.username = "Username is required";
-    else if (!/^[A-Za-z]+$/.test(formData.username))
-      newErrors.username = "Only letters are allowed";
-    else if (formData.username.length > 50)
-      newErrors.username = "Max 50 characters";
+    else if (!/^[A-Za-z0-9]+$/.test(formData.username))
+      newErrors.username = "Special characters are not allowed";
+    else if (formData.username.length > 30)
+      newErrors.username = "Max 30 characters";
 
     if (!formData.email.trim()) newErrors.email = "Email is required";
     else if (
@@ -78,10 +78,13 @@ const RegisterPage = () => {
     else if (formData.confirmPassword !== formData.password)
       newErrors.confirmPassword = "Passwords do not match";
 
+    if (!date.day || !date.month || !date.year) {
+      newErrors.birthDay = "Please select your birth date";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -100,13 +103,11 @@ const RegisterPage = () => {
     const fullDate = `${date.year}-${String(
       months.indexOf(date.month) + 1
     ).padStart(2, "0")}-${String(date.day).padStart(2, "0")}`;
-    console.log("Formatted birthDate:", fullDate);
 
     if (!validateForm()) return;
 
     const requestData = {
       ...formData,
-
       birthDay: fullDate,
     };
 
@@ -119,16 +120,24 @@ const RegisterPage = () => {
         body: JSON.stringify(requestData),
       });
 
-      const result = await response.json();
+      const contentType = response.headers.get("content-type");
+      let result = {};
+
+      if (contentType && contentType.includes("application/json")) {
+        result = await response.json();
+      } else {
+        result = await response.text();
+      }
 
       if (response.ok) {
-        alert(" egistration successful!");
+        alert("Registration successful!");
+        setErrors({});
       } else {
-        alert(` rror: ${result.message || "Unknown error occurred"}`);
+        setErrors(result);
       }
     } catch (error) {
       console.error("Error:", error);
-      alert(" something went wrong. Please try again.");
+      setErrors({ general: "Something went wrong. Please try again." });
     }
   };
 
@@ -214,6 +223,7 @@ const RegisterPage = () => {
                 onValueChange={(value) =>
                   setFormData({ ...formData, gender: value })
                 }
+                defaultValue="true"
               >
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="true" id="r1" defaultChecked={true} />
@@ -228,6 +238,10 @@ const RegisterPage = () => {
 
             <DateSelector date={date} setDate={setDate} months={months} />
 
+            {errors.birthDay && (
+              <p className="text-red-500">{errors.birthDay}</p>
+            )}
+            {errors.general && <p className="text-red-500">{errors.general}</p>}
             <div className="flex items-center gap-1 m-auto">
               <span>Do you have an account?</span>
               <Link href="/login" className="text-[#0F00E1]">
