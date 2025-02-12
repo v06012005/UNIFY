@@ -3,7 +3,6 @@
 import FullUnifyLogoIcon from "@/components/global/FullUnifyLogoIcon_Auth";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import GoogleLogo from "@/public/images/GoogleLogo.png";
@@ -18,11 +17,33 @@ const LoginPage = () => {
     password: "",
   });
 
+  const [errors, setErrors] = useState({});
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+
+    setErrors((prevErrors) => ({ ...prevErrors, [e.target.name]: "" }));
   };
 
   const handleLogin = async () => {
+    const newErrors = {};
+
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/^[\w.-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$/.test(formData.email)) {
+      newErrors.email = "Invalid email format";
+    }
+
+    if (!formData.password.trim()) {
+      newErrors.password = "Password is required";
+    } else if (formData.password.length < 8) {
+      newErrors.password = "Invalid password";
+    }
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
     try {
       const response = await fetch("http://localhost:8080/api/auth/login", {
         method: "POST",
@@ -70,6 +91,7 @@ const LoginPage = () => {
             value={formData.email}
             onChange={handleChange}
           />
+          {errors.email && <p className="text-red-500">{errors.email}</p>}
           <Input
             name="password"
             type="password"
@@ -78,6 +100,7 @@ const LoginPage = () => {
             value={formData.password}
             onChange={handleChange}
           />
+          {errors.password && <p className="text-red-500">{errors.password}</p>}
           <Link href="/password/reset">Forgot password?</Link>
           <div className="flex items-center gap-2 m-auto">
             <div className="w-10 h-[1px] bg-[#767676]"></div>
@@ -99,6 +122,7 @@ const LoginPage = () => {
               Sign up
             </Link>
           </div>
+          {errors.server && <p className="text-red-500">{errors.server}</p>}
           <Button className="text-2xl mt-3 p-5" onClick={handleLogin}>
             Login
           </Button>
