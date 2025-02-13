@@ -11,6 +11,8 @@ import DateSelector from "@/components/global/DateInput";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
+import { useRouter } from "next/navigation";
+
 const RegisterPage = () => {
   const months = [
     "January",
@@ -35,6 +37,7 @@ const RegisterPage = () => {
     password: "",
     confirmPassword: "",
     gender: "true",
+    status: 0,
   });
 
   const [date, setDate] = useState({
@@ -80,9 +83,7 @@ const RegisterPage = () => {
 
     if (!date.day || !date.month || !date.year) {
       newErrors.birthDay = "Please select your birth date";
-    }
-
-    setErrors(newErrors);
+    } else if (date.year) setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
   const handleChange = (e) => {
@@ -99,12 +100,17 @@ const RegisterPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setServerError("");
+    if (!date.day || !date.month || !date.year) {
+      setDateError("Please select your birth date.");
+      return;
+    } else {
+      setDateError("");
+    }
 
     const fullDate = `${date.year}-${String(
       months.indexOf(date.month) + 1
     ).padStart(2, "0")}-${String(date.day).padStart(2, "0")}`;
-
-    if (!validateForm()) return;
 
     const requestData = {
       ...formData,
@@ -131,13 +137,12 @@ const RegisterPage = () => {
 
       if (response.ok) {
         alert("Registration successful!");
-        setErrors({});
       } else {
-        setErrors(result);
+        setServerError(result?.message || result || "Unknown error occurred");
       }
     } catch (error) {
       console.error("Error:", error);
-      setErrors({ general: "Something went wrong. Please try again." });
+      setServerError("Something went wrong. Please try again.");
     }
   };
 
