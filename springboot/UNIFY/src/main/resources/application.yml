@@ -3,9 +3,9 @@ spring:
 #    url: "jdbc:sqlserver://localhost:1433;databaseName=Unify;encrypt=false;trustServerCertificate=false"
 #    username: sa
 #    password: 123456
-     url: jdbc:postgresql://unify-app-unify.h.aivencloud.com:14334/unify?characterEncoding=UTF-8&sslmode=require
-     username: avnadmin
-     password: AVNS_5w7cmKQFtagnfWwVQrn
+     url: jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?characterEncoding=UTF-8
+     username: postgres.mlafrkaocppdojtsyysc
+     password: yulwsLvpq8BqQmuDoNpexrXk
   jpa:
       hibernate:
         ddl-auto: update
