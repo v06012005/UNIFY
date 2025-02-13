@@ -5,6 +5,7 @@ import fullLogo from "@/public/images/unify_1.svg";
 import RootLayout from "./(pages)/layout";
 import Link from "next/link";
 import FullUnifyLogo from "@/components/global/FullUnifyLogo";
+import { verifySession } from "./lib/dal";
 
 const SearchBar = () => {
   return (
@@ -57,7 +58,15 @@ const srcs = [
   },
 ];
 
+// const checkAuth = async () => {
+//   const session = await verifySession();
+//   if (!session) return null;
+
+//   return session;
+// }
+
 const User = ({ href = "" }) => {
+
   return (
     <Link href={href}>
       <div className="flex mb-4">
@@ -71,7 +80,9 @@ const User = ({ href = "" }) => {
   );
 };
 
-export default function Home() {
+export default async function Home() {
+  const session = await verifySession();
+
   return (
     <RootLayout>
       <div className="flex">
@@ -84,9 +95,9 @@ export default function Home() {
         </div>
         <div className="basis-1/4 border py-8 h-screen sticky top-0">
           <div className="w-3/4 flex flex-col mx-auto">
-            {/* <User href="/profile" /> */}
+            {session?.isAuth && <User href="/profile" />}
             <div className="flex justify-center">
-              <Link
+              {/* <Link
                 className="border hover:bg-red-500 transition ease-in-out duration-100 hover:text-white rounded w-20 text-center py-2 mx-2"
                 href={"/manage/users/list"}
               >
@@ -103,7 +114,7 @@ export default function Home() {
                 href={"/register"}
               >
                 Register
-              </Link>
+              </Link> */}
             </div>
             <hr className="my-4" />
             <div>

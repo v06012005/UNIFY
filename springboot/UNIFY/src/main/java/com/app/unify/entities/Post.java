@@ -38,7 +38,6 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
-    @Column(columnDefinition = "nvarchar(MAX)")
     String captions;
 
     Integer status;
@@ -48,7 +47,6 @@ public class Post {
     Audience audience;
 
     @ManyToOne
-    @MapsId("id")
     @JoinColumn(name = "user_id",  nullable = false)
     User user;
 

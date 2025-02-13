@@ -37,10 +37,10 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
-    @Column(name = "first_name", nullable = false, columnDefinition = "nvarchar(255)")
+    @Column(name = "first_name", nullable = false)
     String firstName;
 
-    @Column(name = "last_name", nullable = false, columnDefinition = "nvarchar(255)")
+    @Column(name = "last_name", nullable = false)
     String lastName;
 
     @Column(name = "user_name", nullable = false, unique = true)
@@ -71,6 +71,9 @@ public class User {
 
     @Column(name = "work_at")
     String workAt;
+
+    @OneToMany(mappedBy = "user")
+    Set<Post> posts;
 
     @OneToMany(mappedBy = "user")
     Set<Avatar> avatars;
