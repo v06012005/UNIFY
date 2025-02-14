@@ -5,7 +5,26 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1dc806c8-9b06-409a-84de-1db3bd7b8131" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/components/global/chat/Message.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/services/MessageService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.env" beforeDir="false" afterPath="$PROJECT_DIR$/.env" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(auth)/login/page.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(auth)/login/page.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(auth)/register/page.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(auth)/register/page.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(pages)/messages/page.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(pages)/messages/page.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/layout.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/layout.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/lib/dal.js" beforeDir="false" afterPath="$PROJECT_DIR$/app/lib/dal.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/provider/AppProvider.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/provider/AppProvider.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/middleware.js" beforeDir="false" afterPath="$PROJECT_DIR$/middleware.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/config/WebSocketConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/config/WebSocketConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/config/WebSocketEventListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/config/WebSocketEventListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/controllers/chat/ChatController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/controllers/chat/ChatController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/dto/global/MessageDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/dto/global/MessageDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/entities/Message.java" beforeDir="false" afterPath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/entities/Message.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/repositories/MessageRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/repositories/MessageRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/services/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/services/UserService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,7 +53,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "add__chat__app",
     "ignore.virus.scanning.warn.message": "true",
     "last_opened_file_path": "D:/Unify/UNIFY/frontend/public/images",
     "node.js.detected.package.eslint": "true",

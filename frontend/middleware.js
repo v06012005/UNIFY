@@ -23,6 +23,10 @@ export default async function middleware(req) {
         }
     }
 
+    if(session?.isAuth && publicRoutes.includes(path)) {
+        return NextResponse.redirect(new URL('/', req.nextUrl))
+    }
+
     // // 5. Redirect to /login if the user is not authenticated
     if (!isPublicRoute && !session?.isAuth) {
         return NextResponse.redirect(new URL('/login', req.nextUrl))
