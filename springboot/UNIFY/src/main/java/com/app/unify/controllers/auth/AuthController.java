@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -48,27 +49,30 @@ public class AuthController {
 
     @PostMapping("/login")
     public Object login(@RequestBody UserLoginDto userLoginDto) {
-        Authentication authentication;
-        User user = userRepository.findByEmail(userLoginDto.getEmail())
-                .orElseThrow(() -> new UserNotFoundException("User not found !"));
-        if (userLoginDto
-                .getEmail().equals(user.getEmail())
-                && EncryptPasswordUtil
-                .isMatchesPassword(user.getPassword(), userLoginDto.getPassword())
-        ) {
-          authentication =  authenticationManager
+        try {
+            User user = userRepository.findByEmail(userLoginDto.getEmail())
+                    .orElseThrow(() -> new UserNotFoundException("User not found !"));
+
+            Authentication authentication = authenticationManager
                     .authenticate(
                             new UsernamePasswordAuthenticationToken(
                                     userLoginDto.getEmail(),
                                     userLoginDto.getPassword())
                     );
+
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             String tokenGenerated = jwtUtil.generateToken(userLoginDto.getEmail());
             authenticationService.saveUserToken(user, tokenGenerated);
             return ResponseEntity.status(HttpStatus.OK).body(new TokenResponse(tokenGenerated));
+
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invlid email or password !");
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invlid email or password  !");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred, please try again later  !");
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect email or password !");
     }
 
     @PostMapping("/register")

@@ -37,8 +37,8 @@ public class UserDTO {
     @Size(min = 3, max = 30, message = "Username must be between 3 and 30 characters")
     private String username;
 
-    @Size(min = 0, max = 10, message = "Phone number must be at most 10 digits")
-    @Column(nullable = true)
+   
+   
     private String phone;
 
  
