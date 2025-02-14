@@ -1,10 +1,10 @@
 "use client";
 
 import React from "react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-
+import axios from "axios";
 const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   return (
     <Link
@@ -18,9 +18,12 @@ const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   );
 };
 const Page = () => {
+
   const [activeTab, setActiveTab] = useState("post");
 
   const [isFollowing, setIsFollowing] = useState(false);
+
+
 
   const toggleFollowing = () => {
     setIsFollowing(!isFollowing);
@@ -41,6 +44,7 @@ const Page = () => {
   const toggleFollow = () => {
     setIsFollow((prev) => !prev);
   };
+
   return (
     <div className=" w-[82%] mx-auto">
       <div className="h-screen overflow-y-auto">
@@ -72,7 +76,7 @@ const Page = () => {
           <div className="p-2 ml-10">
             <div className="flex justify-between ml-10">
               <div className="flex flex-col items-center w-200 mt-2 mx-8">
-                <h3 className="text-2xl ">huynhdiz</h3>
+                <h3 className="text-2xl ">{userData.username}</h3>
                 <p
                   className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer"
                   onClick={toggleFriend}
