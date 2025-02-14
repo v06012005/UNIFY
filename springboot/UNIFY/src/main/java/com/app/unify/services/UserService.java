@@ -62,6 +62,8 @@ public class UserService {
     public UserDTO updateUser(UserDTO userDto) {
         Role role = roleRepository.findByName("USER")
                 .orElseThrow(() -> new RuntimeException("Role not found !"));
+        userDto.setPassword(userRepository.findById(userDto.getId())
+                .orElseThrow(() -> new UserNotFoundException("User not found !")).getPassword());
         userDto.setRoles(Collections.singleton(role));
         User user = userRepository.save(userMapper.toUser(userDto));
         return userMapper.toUserDTO(user);
