@@ -89,7 +89,7 @@ public class JwtUtil {
         return null;
     }
 
-    public String getUsernameFromJWtToken(String token) {
+    public String extractUsername(String token) {
         try {
             SignedJWT signed = SignedJWT.parse(token);
             return signed.getJWTClaimsSet().getSubject();
