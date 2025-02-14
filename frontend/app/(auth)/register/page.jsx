@@ -11,6 +11,8 @@ import DateSelector from "@/components/global/DateInput";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
+import { useRouter } from "next/navigation";
+
 const RegisterPage = () => {
   const [errors, setErrors] = useState({});
   const [serverError, setServerError] = useState("");

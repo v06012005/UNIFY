@@ -1,8 +1,15 @@
 spring:
   datasource:
+ 
+#    url: "jdbc:sqlserver://localhost:1433;databaseName=Unify;encrypt=false;trustServerCertificate=false"
+#    username: sa
+#    password: 123456
+ 
+ 
      url: jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?characterEncoding=UTF-8
      username: postgres.mlafrkaocppdojtsyysc
      password: yulwsLvpq8BqQmuDoNpexrXk
+ 
   jpa:
       hibernate:
         ddl-auto: update
@@ -13,19 +20,19 @@ spring:
      uri: "mongodb+srv://mddev:mddev123321@cluster0.vd4gu.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
      database: unify_chat_app
      auto-index-creation: true
-   mail:
-     host: smtp.gmail.com
-     port: 587
-     username: ${MAIL_USERNAME}
-     password: ${MAIL_PASSWORD}
-     protocol: smtp
-     properties:
-       mail:
-         smtp:
-           auth: true
-           starttls:
-             enable: true
-             required: true
+  mail:
+   host: smtp.gmail.com
+   port: 587
+   username: ${MAIL_USERNAME}
+   password: ${MAIL_PASSWORD}
+   protocol: smtp
+   properties:
+     mail:
+       smtp:
+         auth: true
+         starttls:
+           enable: true
+           required: true
 jwt:
   signerKey: "5c6321fb6bdf294f41ef37aifc20d0113853e3d633dc475df1a9ab36be2ba817797942e337fe3407165"
 

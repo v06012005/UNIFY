@@ -36,8 +36,6 @@ const LoginPage = () => {
 
     if (!formData.password.trim()) {
       newErrors.password = "Password is required";
-    } else if (formData.password.length < 8) {
-      newErrors.password = "Invalid password";
     }
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -53,7 +51,13 @@ const LoginPage = () => {
         body: JSON.stringify(formData),
       });
 
-      const result = await response.json();
+      let result;
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        result = await response.json();
+      } else {
+        result = await response.text();
+      }
 
       if (response.ok) {
         await fetch("/api/set-cookie", {
@@ -62,11 +66,17 @@ const LoginPage = () => {
         });
         router.push("/");
       } else {
-        alert(result.message || "Login failed");
+        setErrors((prev) => ({
+          ...prev,
+          server: result.message || result || "Login failed",
+        }));
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("Something went wrong. Please try again.");
+      setErrors((prev) => ({
+        ...prev,
+        server: "Something went wrong. Please try again.",
+      }));
     }
   };
 
@@ -101,6 +111,8 @@ const LoginPage = () => {
             onChange={handleChange}
           />
           {errors.password && <p className="text-red-500">{errors.password}</p>}
+          {errors.server && <p className="text-red-500">{errors.server}</p>}
+
           <Link href="/password/reset">Forgot password?</Link>
           <div className="flex items-center gap-2 m-auto">
             <div className="w-10 h-[1px] bg-[#767676]"></div>
@@ -122,7 +134,7 @@ const LoginPage = () => {
               Sign up
             </Link>
           </div>
-          {errors.server && <p className="text-red-500">{errors.server}</p>}
+
           <Button className="text-2xl mt-3 p-5" onClick={handleLogin}>
             Login
           </Button>
