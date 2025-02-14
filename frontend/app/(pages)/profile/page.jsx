@@ -1,10 +1,13 @@
 "use client";
 
 import React from "react";
-import { useEffect, useRef, useState } from "react";
+ 
 import Link from "next/link";
 import Image from "next/image";
-import axios from "axios";
+import Cookies from 'js-cookie';
+import { jwtDecode } from 'jwt-decode';
+import { useEffect, useState } from 'react';
+ 
 const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   return (
     <Link
@@ -22,6 +25,29 @@ const Page = () => {
   const [activeTab, setActiveTab] = useState("post");
 
   const [isFollowing, setIsFollowing] = useState(false);
+  const [user, setUser] = useState({});
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('http://localhost:8080/users/my-info', {
+          method: 'GET',
+          credentials: 'include' 
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch user data');
+        }
+        
+        const data = await response.json();
+        setUser(data);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
 
 
@@ -76,7 +102,9 @@ const Page = () => {
           <div className="p-2 ml-10">
             <div className="flex justify-between ml-10">
               <div className="flex flex-col items-center w-200 mt-2 mx-8">
-                <h3 className="text-2xl ">{userData.username}</h3>
+ 
+                <h3 className="text-2xl ">{user.username}</h3>
+ 
                 <p
                   className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer"
                   onClick={toggleFriend}
