@@ -6,7 +6,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { redirect } from "next/navigation";
+import axios from "axios";
+import { axiosResult } from "@/app/api/cookie";
 
 const NavButton = ({ iconClass, href = "", content = "" }) => {
   return (
@@ -23,8 +24,15 @@ const validationSchema = Yup.object({
     .optional(),
   firstName: Yup.string().required("First name is required"),
   lastName: Yup.string().required("Last name is required"),
-  username: Yup.string().required("Username is required"),
+  username: Yup.string()
+    .required("Username is required")
+    .min(3, "Username must be at least 3 characters")
+    .max(30, "Username must be at most 30 characters"),
   email: Yup.string()
+    .matches(
+      /^[^@]+@[a-zA-Z0-9-]+\.(com)$/,
+      "Email must be in the format '@yourdomain.com'"
+    )
     .email("Invalid email address")
     .required("Email is required"),
   phone: Yup.string()
@@ -53,9 +61,21 @@ const Page = () => {
   const defaultAvatar = "/images/unify_icon_2.svg";
   const [avatar, setAvatar] = useState(defaultAvatar);
   const fileInputRef = useRef(null);
-  const [userData, setUserData] = useState(null);
-  const [userId, setUserId] = useState(null);
   const [daysInMonth, setDaysInMonth] = useState(31);
+  const [userData, setUserData] = useState({
+    id: "",
+    firstName: "",
+    lastName: "",
+    username: "",
+    email: "",
+    password: "",
+    phone: "",
+    gender: "",
+    birthDay: { day: "", month: "", year: "" },
+    location: "",
+    education: "",
+    workAt: "",
+  });
 
   const handleDateChange = (field, value) => {
     let newBirthDay = {
@@ -67,7 +87,19 @@ const Page = () => {
       const month = parseInt(newBirthDay.month, 10);
       const year = parseInt(newBirthDay.year, 10);
 
-      const days = new Date(year || 2024, month, 0).getDate();
+      if (
+        !year ||
+        year < 1900 ||
+        year > 2100 ||
+        !month ||
+        month < 1 ||
+        month > 12
+      ) {
+        console.error("Invalid month or year:", { year, month });
+        return;
+      }
+
+      const days = new Date(year, month, 0).getDate();
       setDaysInMonth(days);
 
       if (parseInt(newBirthDay.day, 10) > days) {
@@ -81,108 +113,112 @@ const Page = () => {
     });
   };
 
+  // useEffect(() => {
+  //   const fetchUserData = async () => {
+  //     let token = undefined;
+  //     try {
+  //       await axios.get("/api/get-cookie").then(function (response) {
+  //         token = response.data.token;
+  //       });
+  //       console.log(token);
+  //       const response = await fetch("http://localhost:8080/users/my-info", {
+  //         method: "GET",
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
+
+  //       if (response.ok) {
+  //         const data = await response.json();
+  //         const parsedBirthDay = data.birthDay
+  //           ? (() => {
+  //               const [year, month, day] = data.birthDay.split("-");
+  //               return {
+  //                 month: month.padStart(2, "0"),
+  //                 day: day.padStart(2, "0"),
+  //                 year,
+  //               };
+  //             })()
+  //           : { month: "", day: "", year: "" };
+
+  //         setUserData({ ...data, birthDay: parsedBirthDay });
+  //       } else {
+  //         console.error("Failed to fetch user data");
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching user data:", error);
+  //     }
+  //   };
+
+  //   fetchUserData();
+  // }, []);
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const token = localStorage.getItem("token");
-        const response = await fetch("http://localhost:8080/users/my-info", {
+        const response = await axios.get("/api/get-cookie");
+        const token = response.data.token;
+  
+        const userResponse = await fetch("http://localhost:8080/users/my-info", {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
           },
+          credentials: "include",
         });
-
-        if (response.ok) {
-          const data = await response.json();
-          setUserData(data);
-          setUserId(data.id);
-          setAvatar(data.avatar || defaultAvatar);
+  
+        if (userResponse.ok) {
+          const data = await userResponse.json();
+          const parsedBirthDay = data.birthDay
+            ? (() => {
+                const [year, month, day] = data.birthDay.split("-");
+                return { month: month.padStart(2, "0"), day: day.padStart(2, "0"), year };
+              })()
+            : { month: "", day: "", year: "" };
+  
+          setUserData({ ...data, birthDay: parsedBirthDay });
         } else {
-          console.error("Failed to fetch user data");
+          console.error("Không thể lấy dữ liệu người dùng");
         }
       } catch (error) {
-        console.error("Error fetching user data:", error);
+        console.error("Lỗi khi lấy dữ liệu người dùng:", error);
       }
     };
-
+  
     fetchUserData();
   }, []);
-
-  useEffect(() => {
-    if (userData) {
-      const parsedBirthDay =
-        userData.birthDay && userData.birthDay.includes("-")
-          ? (() => {
-            const [year, month, day] = userData.birthDay.split("-");
-            return {
-              month: months[Number(month) - 1],
-              day: String(day).padStart(2, "0"),
-              year,
-            };
-          })()
-          : { month: "", day: "", year: "" };
-
-      formik.setValues({
-        firstName: userData.firstName || "",
-        lastName: userData.lastName || "",
-        username: userData.username || "",
-        email: userData.email || "",
-        phone: userData.phone || "",
-        gender: userData.gender !== null ? userData.gender : "",
-        birthDay: parsedBirthDay,
-        location: userData.location || "",
-        education: userData.education || "",
-        workAt: userData.workAt || "",
-      });
-    }
-  }, [userData]);
+  
 
   const handleSubmit = async (values) => {
-    const token = localStorage.getItem("token");
-    const id = localStorage.getItem("id");
-
-    if (!id) {
-      alert("Error: User ID not found. Please log in again.");
-      return;
-    }
-
-    const formData = new FormData();
-
-    if (
-      values.birthDay?.year &&
-      values.birthDay?.month &&
-      values.birthDay?.day
-    ) {
-      const formattedDate = `${values.birthDay.year
-        }-${values.birthDay.month.padStart(
-          2,
-          "0"
-        )}-${values.birthDay.day.padStart(2, "0")}`;
-      formData.append("birthDay", formattedDate);
-    }
-
-    Object.keys(values).forEach((key) => {
-      if (key !== "birthDay") {
-        formData.append(key, values[key]);
-      }
-    });
-
-    console.log("Sending data:", Object.fromEntries(formData.entries()));
+    console.log("Submitting data:", JSON.stringify(values));
 
     try {
-      const response = await fetch(`http://localhost:8080/users/${id}`, {
+      const token = getCookie("token");
+      if (!token) return console.error("No token found");
+
+      const response = await fetch(`http://localhost:8080/users`, {
         method: "PUT",
         headers: {
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: formData,
+        body: JSON.stringify({
+          ...values,
+          birthDay: values.birthDay
+            ? `${values.birthDay.year}-${values.birthDay.month.padStart(
+                2,
+                "0"
+              )}-${values.birthDay.day.padStart(2, "0")}`
+            : null,
+        }),
       });
 
       if (response.ok) {
+        const updatedUser = await response.json();
+        setUserData(updatedUser);
+        formik.resetForm({ values: updatedUser });
         alert("Profile updated successfully!");
       } else {
         const result = await response.text();
-        console.error("Server Response:", result);
         alert(`Error: ${result}`);
       }
     } catch (error) {
@@ -192,23 +228,12 @@ const Page = () => {
   };
 
   const formik = useFormik({
-    initialValues: {
-      // biography: "",
-      firstName: "",
-      lastName: "",
-      username: "",
-      email: "",
-      phone: "",
-      gender: "",
-      birthDay: { month: "", day: "", year: "" },
-      location: "",
-      education: "",
-      workAt: "",
-    },
+    initialValues: userData,
+    enableReinitialize: true,
     validationSchema: validationSchema,
     onSubmit: handleSubmit,
   });
-  //Đổi avartar
+
   const handleChangeAvatar = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -220,6 +245,11 @@ const Page = () => {
 
       formik.setFieldValue("avatar", file);
     }
+
+    formik.setValues({
+      ...formik.values,
+      birthDay: newBirthDay,
+    });
   };
 
   const handleDeleteAvatar = () => {
@@ -268,10 +298,15 @@ const Page = () => {
               </div>
             </div>
             <div className="ml-4">
-              <p className="text-2xl">{userData?.username || "Unknown User"}</p>
-              <p className="font-bold">
-                {`${userData?.firstName || ""} ${userData?.lastName || ""
-                  }`.trim() || "No Name"}
+              <p className="text-2xl">
+                {userData.username?.trim() || "Unknown User"}
+              </p>
+              <p className="font-bold truncate w-60">
+                {userData.firstName || userData.lastName
+                  ? `${userData.firstName || ""} ${
+                      userData.lastName || ""
+                    }`.trim()
+                  : "No Name"}
               </p>
             </div>
 
@@ -320,7 +355,8 @@ const Page = () => {
               name="biography"
               type="text"
               placeholder="Enter your biography"
-              {...formik.getFieldProps("biography")}
+              value={formik.values.biography}
+              onChange={formik.handleChange}
               className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-1 focus:ring-gray-500 focus:outline-none hover:border-gray-500 hover:shadow-md transition"
             />
             {formik.touched.biography && formik.errors.biography && (
@@ -343,7 +379,8 @@ const Page = () => {
                 name="firstName"
                 type="text"
                 placeholder="Enter your first name"
-                {...formik.getFieldProps("firstName")}
+                value={formik.values.firstName}
+                onChange={formik.handleChange}
                 className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
               />
               {formik.touched.firstName && formik.errors.firstName && (
@@ -365,7 +402,8 @@ const Page = () => {
                 name="lastName"
                 type="text"
                 placeholder="Enter your last name"
-                {...formik.getFieldProps("lastName")}
+                value={formik.values.lastName}
+                onChange={formik.handleChange}
                 className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
               />
               {formik.touched.lastName && formik.errors.lastName && (
@@ -387,7 +425,12 @@ const Page = () => {
                 name="username"
                 type="text"
                 placeholder="Enter your username"
-                {...formik.getFieldProps("username")}
+                // value={userData.username}
+                // onChange={(e) =>
+                //   setUserData({ ...userData, username: e.target.value })
+                // }
+                value={formik.values.username}
+                onChange={formik.handleChange}
                 className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
               />
               {formik.touched.username && formik.errors.username && (
@@ -412,7 +455,8 @@ const Page = () => {
                 name="email"
                 type="text"
                 placeholder="Enter your email"
-                {...formik.getFieldProps("email")}
+                value={formik.values.email}
+                onChange={formik.handleChange}
                 className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
               />
               {formik.touched.email && formik.errors.email && (
@@ -434,7 +478,8 @@ const Page = () => {
                 name="phone"
                 type="tel"
                 placeholder="Enter your phone number"
-                {...formik.getFieldProps("phone")}
+                value={formik.values.phone}
+                onChange={formik.handleChange}
                 className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
               />
               {formik.touched.phone && formik.errors.phone && (
@@ -575,7 +620,8 @@ const Page = () => {
                 name="location"
                 type="text"
                 placeholder="Enter your location"
-                {...formik.getFieldProps("location")}
+                value={formik.values.location}
+                onChange={formik.handleChange}
                 className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none"
               />
 
@@ -595,7 +641,8 @@ const Page = () => {
                 name="education"
                 type="text"
                 placeholder="Enter your education"
-                {...formik.getFieldProps("education")}
+                value={formik.values.education}
+                onChange={formik.handleChange}
                 className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none"
               />
               {formik.touched.education && formik.errors.education && (
@@ -609,7 +656,6 @@ const Page = () => {
           <div className="m-5 flex justify-end">
             <button
               type="submit"
-              // onClick={formik.handleSubmit}
               className="px-10 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 dark:bg-gray-500 dark:hover:bg-gray-600 transition focus:outline-none focus:ring-2 focus:ring-blue-500 text-xl"
             >
               Save

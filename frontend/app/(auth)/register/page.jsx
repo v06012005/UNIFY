@@ -14,6 +14,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 const RegisterPage = () => {
+  const [errors, setErrors] = useState({});
+  const [serverError, setServerError] = useState("");
+
   const months = [
     "January",
     "February",
@@ -45,8 +48,6 @@ const RegisterPage = () => {
     month: "",
     year: "",
   });
-
-  const [errors, setErrors] = useState({});
 
   const validateForm = () => {
     let newErrors = {};
@@ -83,9 +84,29 @@ const RegisterPage = () => {
 
     if (!date.day || !date.month || !date.year) {
       newErrors.birthDay = "Please select your birth date";
-    } else if (date.year) setErrors(newErrors);
+    }
+
+    const today = new Date();
+    const birthDate = new Date(
+      `${date.year}-${months.indexOf(date.month) + 1}-${date.day}`
+    );
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birthDate.getDate())
+    ) {
+      age--;
+    }
+    if (age < 13) {
+      newErrors.birthDay = "You must be at least 13 years old";
+    }
+
+    setErrors(newErrors);
+
     return Object.keys(newErrors).length === 0;
   };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -100,13 +121,7 @@ const RegisterPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setServerError("");
-    if (!date.day || !date.month || !date.year) {
-      setDateError("Please select your birth date.");
-      return;
-    } else {
-      setDateError("");
-    }
+    if (!validateForm()) return;
 
     const fullDate = `${date.year}-${String(
       months.indexOf(date.month) + 1
@@ -244,9 +259,10 @@ const RegisterPage = () => {
             <DateSelector date={date} setDate={setDate} months={months} />
 
             {errors.birthDay && (
-              <p className="text-red-500">{errors.birthDay}</p>
+              <p className="text-red-500 text-sm">{errors.birthDay}</p>
             )}
             {errors.general && <p className="text-red-500">{errors.general}</p>}
+
             <div className="flex items-center gap-1 m-auto">
               <span>Do you have an account?</span>
               <Link href="/login" className="text-[#0F00E1]">

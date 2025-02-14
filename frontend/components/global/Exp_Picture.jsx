@@ -13,6 +13,7 @@ import CommentButton from "../ui/comment-button";
 import ShareButton from "../ui/share-button";
 import BookmarkButton from "../ui/bookmark-button";
 import CommentBox from "./CommentBox";
+import FollowButton from "../ui/follow-button";
 // import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export default function Picture() {
@@ -109,9 +110,10 @@ export default function Picture() {
                   />
                   <b>Username</b>
                   <p className="text-xl">•</p>
-                  <Link href="#" className={"font-bold text-blue-600"}>
+                  {/* <Link href="#" className={"font-bold text-blue-600"}>
                     Follow
-                  </Link>
+                  </Link> */}
+                  <FollowButton classFollow="font-bold text-md text-blue-600 border-none bg-transparent rounded-none p-0 h-fit justify-start" classFollowing="font-bold text-md border-none bg-transparent text-gray-600 rounded-none p-0 h-fit justify-start"/>
                 </div>
                 <div className="flex">
                   <i
