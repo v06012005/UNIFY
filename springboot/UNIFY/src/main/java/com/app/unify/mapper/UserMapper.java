@@ -7,8 +7,6 @@ import com.app.unify.entities.User;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
-
     UserDTO toUserDTO(User user);
     User toUser(UserDTO userDTO);
-
 }
