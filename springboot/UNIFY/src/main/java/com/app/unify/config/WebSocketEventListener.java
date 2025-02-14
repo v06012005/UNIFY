@@ -1,6 +1,6 @@
 package com.app.unify.config;
 
-import com.app.unify.dto.global.ChatMessageDTO;
+import com.app.unify.dto.global.MessageDTO;
 import com.app.unify.types.MessageType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +25,7 @@ public class WebSocketEventListener {
         String username = (String) headerAccessor.getSessionAttributes().get("username");
         if(username != null){
             log.info("User disconnected !");
-            var chatMessage = ChatMessageDTO.builder()
+            var chatMessage = MessageDTO.builder()
                     .type(MessageType.LEAVE)
                     .sender(username)
                     .build();

@@ -1,6 +1,6 @@
 package com.app.unify.controllers.chat;
 
-import com.app.unify.dto.global.ChatMessageDTO;
+import com.app.unify.dto.global.MessageDTO;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -12,16 +12,16 @@ public class ChatController {
 
     @MessageMapping("/chat.send")
     @SendTo("/topic/public")
-    public ChatMessageDTO sendMessage(
-            @Payload ChatMessageDTO chatMessageDTO
+    public MessageDTO sendMessage(
+            @Payload MessageDTO chatMessageDTO
             ){
         return chatMessageDTO;
     }
 
     @MessageMapping("/chat.join")
     @SendTo("/topic/public")
-    public ChatMessageDTO addUser(
-            @Payload ChatMessageDTO chatMessageDTO,
+    public MessageDTO addUser(
+            @Payload MessageDTO chatMessageDTO,
             SimpMessageHeaderAccessor headerAccessor
     ){
       headerAccessor.getSessionAttributes()
