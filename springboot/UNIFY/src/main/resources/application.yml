@@ -1,11 +1,15 @@
 spring:
   datasource:
+ 
 #    url: "jdbc:sqlserver://localhost:1433;databaseName=Unify;encrypt=false;trustServerCertificate=false"
 #    username: sa
 #    password: 123456
-     url: jdbc:postgresql://dpg-culjep5svqrc73cf2l5g-a.oregon-postgres.render.com:5432/unify?characterEncoding=UTF-8&sslmode=require
-     username: unify_user
-     password: 08kpxbVczIlps19HdQKH600eTMbNGUmt
+ 
+ 
+     url: jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?characterEncoding=UTF-8
+     username: postgres.mlafrkaocppdojtsyysc
+     password: yulwsLvpq8BqQmuDoNpexrXk
+ 
   jpa:
       hibernate:
         ddl-auto: update
