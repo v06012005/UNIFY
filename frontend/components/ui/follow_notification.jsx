@@ -3,6 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import Avatar from "@/public/images/avt.jpg";
+import FollowButton from "./follow-button";
 
 export const FollowNotification = React.memo(({ isSeen = false }) => (
   <div
@@ -22,9 +23,10 @@ export const FollowNotification = React.memo(({ isSeen = false }) => (
             <strong className={"font-extrabold text-lg"}>Username</strong> has
             started following you.
           </p>
-          <button className="border border-gray-300 dark:text-white rounded-md px-2 py-1 text-sm bg-transparent text-black w-[40%] h-[100%] self-center">
-            Đã follow
-          </button>
+          <FollowButton
+            classFollow="bg-red-500 text-white rounded-md px-2 py-1 w-[40%] h-[100%] self-center"
+            classFollowing="bg-transparent text-white border border-gray-300 rounded-md px-2 py-1 text-sm bg-transparent w-[40%] h-[100%] self-center"
+          />
         </div>
         <small className={"text-gray-400 text-sm"}>30 seconds ago</small>
       </div>
