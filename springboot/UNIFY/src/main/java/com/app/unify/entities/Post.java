@@ -40,11 +40,16 @@ public class Post {
 
     String captions;
 
-    Integer status;
+    // 0 -> hidden
+    // 1 -> visible
+    // 2 -> sensitive/ violent content
+    @Default
+    Integer status = 1;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    Audience audience;
+    @Default
+    Audience audience = Audience.PUBLIC;
 
     @ManyToOne
     @JoinColumn(name = "user_id",  nullable = false)
