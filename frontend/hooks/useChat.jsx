@@ -22,7 +22,10 @@ const useChat = (user, chatPartner) => {
         }
     };
 
+
+
     useEffect(() => {
+
         if (user.id && chatPartner) {
             fetchMessages();
 
@@ -30,7 +33,6 @@ const useChat = (user, chatPartner) => {
                 const socket = new SockJS(`${process.env.NEXT_PUBLIC_API_URL}/ws?token=${Cookies.get("token")}`);
                 const client = new Client({
                     webSocketFactory: () => socket,
-                    reconnectDelay: 5000,
                     onConnect: () => {
                         console.log("✅ WebSocket connected");
                         client.subscribe(`/user/queue/messages`, (message) => {

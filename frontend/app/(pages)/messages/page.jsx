@@ -4,15 +4,14 @@ import avatar from "@/public/images/testreel.jpg";
 import avatar2 from "@/public/images/testAvt.jpg";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import {useEffect, useState} from "react";
 import Message from "@/components/global/chat/Message";
-import useChat from "@/hooks/useChat";
 import {useApp} from "@/components/provider/AppProvider";
+import {useState} from "react";
 
 
 const Page = () => {
 
-  const { user } = useApp();
+  const { user, useChat } = useApp();
   const chatPartner = "58d8ce36-2c82-4d75-b71b-9d34a3370b16";
   const { chatMessages, sendMessage } = useChat(user, chatPartner);
   const [newMessage, setNewMessage] = useState("");
