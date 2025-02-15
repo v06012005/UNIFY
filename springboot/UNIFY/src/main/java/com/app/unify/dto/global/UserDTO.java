@@ -41,10 +41,6 @@ public class UserDTO {
    
     private String phone;
 
- 
-
-  
-
     @NotBlank(message = "Email is required")
     @Email(message = "Email should be valid")
     private String email;
@@ -55,7 +51,6 @@ public class UserDTO {
 
     private LocalDateTime registeredAt = LocalDateTime.now();
 
- 
     private Boolean gender;
 
     @Past(message = "Birthdate must be in the past")

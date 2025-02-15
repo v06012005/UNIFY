@@ -16,14 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -32,6 +30,7 @@ public class AuthController {
     private UserRepository userRepository;
     private JwtUtil jwtUtil;
     private AuthenticationService authenticationService;
+    private final String URI = "/api/auth";
 
 
     @Autowired
@@ -47,35 +46,33 @@ public class AuthController {
         this.authenticationService = authenticationService;
     }
 
-    @PostMapping("/login")
+    @PostMapping(URI + "/login")
     public Object login(@RequestBody UserLoginDto userLoginDto) {
-        try {
-            User user = userRepository.findByEmail(userLoginDto.getEmail())
-                    .orElseThrow(() -> new UserNotFoundException("User not found !"));
-
-            Authentication authentication = authenticationManager
+        Authentication authentication;
+        System.out.println(userLoginDto.getEmail());
+        User user = userRepository.findByEmail(userLoginDto.getEmail())
+                .orElseThrow(() -> new UserNotFoundException("User not found !"));
+        if (userLoginDto
+                .getEmail().equals(user.getEmail())
+                && EncryptPasswordUtil
+                .isMatchesPassword(user.getPassword(), userLoginDto.getPassword())
+        ) {
+          authentication =  authenticationManager
                     .authenticate(
                             new UsernamePasswordAuthenticationToken(
                                     userLoginDto.getEmail(),
                                     userLoginDto.getPassword())
                     );
-
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             String tokenGenerated = jwtUtil.generateToken(userLoginDto.getEmail());
             authenticationService.saveUserToken(user, tokenGenerated);
             return ResponseEntity.status(HttpStatus.OK).body(new TokenResponse(tokenGenerated));
-
-        } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invlid email or password !");
-        } catch (UserNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invlid email or password  !");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred, please try again later  !");
         }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect email or password !");
     }
 
-    @PostMapping("/register")
+    @PostMapping(URI + "/register")
     public ResponseEntity<String> register(@RequestBody @Valid UserDTO userDto){
         if(userRepository.existsByEmail(userDto.getEmail())){
             return new ResponseEntity<>("Email is taken !", HttpStatus.BAD_REQUEST);
@@ -85,6 +82,16 @@ public class AuthController {
             userService.createUser(userDto);
             return new ResponseEntity<>("Register successfully !", HttpStatus.CREATED);
         }
+    }
+
+    @GetMapping("/users/refresh")
+    public ResponseEntity<Object> refreshToken(){
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        var user = userRepository.findByEmail(email)
+                      .orElseThrow(() -> new UserNotFoundException("User not found !"));
+        String token  = jwtUtil.generateToken(email);
+        authenticationService.saveUserToken(user, token);
+        return ResponseEntity.status(200).body(new TokenResponse(token));
     }
 
 }

@@ -1,21 +1,29 @@
 "use client";
 
 import FullUnifyLogoIcon from "@/components/global/FullUnifyLogoIcon_Auth";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import {useEffect, useState} from "react";
+import {useRouter} from "next/navigation";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import GoogleLogo from "@/public/images/GoogleLogo.png";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { signIn } from "next-auth/react";
+import {useApp} from "@/components/provider/AppProvider";
+import {router} from "next/client";
 
 const LoginPage = () => {
-  const router = useRouter();
+
+
+  const { loginUser } = useApp();
+
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+
+
 
   const [errors, setErrors] = useState({});
 
@@ -36,6 +44,8 @@ const LoginPage = () => {
 
     if (!formData.password.trim()) {
       newErrors.password = "Password is required";
+    } else if (formData.password.length < 8) {
+      newErrors.password = "Invalid password";
     }
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -43,40 +53,10 @@ const LoginPage = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:8080/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      let result;
-      const contentType = response.headers.get("content-type");
-      if (contentType && contentType.includes("application/json")) {
-        result = await response.json();
-      } else {
-        result = await response.text();
-      }
-
-      if (response.ok) {
-        await fetch("/api/set-cookie", {
-          method: "POST",
-          body: JSON.stringify({ token: result.token }),
-        });
-        router.push("/");
-      } else {
-        setErrors((prev) => ({
-          ...prev,
-          server: result.message || result || "Login failed",
-        }));
-      }
+      await loginUser(formData.email, formData.password);
     } catch (error) {
       console.error("Error:", error);
-      setErrors((prev) => ({
-        ...prev,
-        server: "Something went wrong. Please try again.",
-      }));
+      alert("Something went wrong. Please try again.");
     }
   };
 
@@ -111,8 +91,6 @@ const LoginPage = () => {
             onChange={handleChange}
           />
           {errors.password && <p className="text-red-500">{errors.password}</p>}
-          {errors.server && <p className="text-red-500">{errors.server}</p>}
-
           <Link href="/password/reset">Forgot password?</Link>
           <div className="flex items-center gap-2 m-auto">
             <div className="w-10 h-[1px] bg-[#767676]"></div>
@@ -134,7 +112,7 @@ const LoginPage = () => {
               Sign up
             </Link>
           </div>
-
+          {errors.server && <p className="text-red-500">{errors.server}</p>}
           <Button className="text-2xl mt-3 p-5" onClick={handleLogin}>
             Login
           </Button>

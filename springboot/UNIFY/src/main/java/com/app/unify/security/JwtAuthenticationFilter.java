@@ -25,46 +25,45 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-	private JwtUtil jwtUtil;
-	private CustomUserDetailsService customUserDetailsService;
-	private TokenRepository tokenRepository;
 
-	@Autowired
-	public JwtAuthenticationFilter(JwtUtil jwtUtil, TokenRepository tokenRepository,
-			CustomUserDetailsService customUserDetailsService) {
-		this.jwtUtil = jwtUtil;
-		this.tokenRepository = tokenRepository;
-		this.customUserDetailsService = customUserDetailsService;
-	}
+    private JwtUtil jwtUtil;
+    private CustomUserDetailsService customUserDetailsService;
+    private TokenRepository tokenRepository;
 
-	@Override
-	protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
-			@NonNull FilterChain filterChain) throws ServletException, IOException {
+    @Autowired
+    public JwtAuthenticationFilter(JwtUtil jwtUtil,
+                                   TokenRepository tokenRepository,
+                                   CustomUserDetailsService customUserDetailsService) {
+        this.jwtUtil = jwtUtil;
+        this.tokenRepository = tokenRepository;
+        this.customUserDetailsService = customUserDetailsService;
+    }
 
-		String token = jwtUtil.getTokenFromRequest(request);
-		if (token == null || !StringUtils.hasText(token)) {
-			filterChain.doFilter(request, response);
-			return;
-		}
-		var isTokenValid = tokenRepository.findByToken(token).map(t -> !t.getExpired() && !t.getRevoked())
-				.orElse(false);
-		if (StringUtils.hasText(token) && jwtUtil.validToken(token) && isTokenValid
-				&& SecurityContextHolder.getContext().getAuthentication() == null) {
+    @Override
+    protected void doFilterInternal(@NonNull HttpServletRequest request,
+                                    @NonNull HttpServletResponse response,
+                                    @NonNull FilterChain filterChain)
+            throws ServletException, IOException {
 
-			String email = jwtUtil.extractUsername(token);
-			UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
 
-			UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null,
-					userDetails.getAuthorities());
 
-			authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-			SecurityContextHolder.getContext().setAuthentication(authToken);
-		}
-
-		String tokentest = request.getHeader("Authorization");
-		System.out.println("Received Token: " + tokentest);	
-
-		filterChain.doFilter(request, response);
-	}
+        String token = jwtUtil.getTokenFromRequest(request);
+        var isTokenValid = tokenRepository.findByToken(token)
+                                          .map(t -> !t.getExpired() && !t.getRevoked())
+                                          .orElse(false);
+        if(StringUtils.hasText(token) && jwtUtil.validToken(token) && isTokenValid){
+            String email = jwtUtil.getUsernameFromJWtToken(token);
+            UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
+            UsernamePasswordAuthenticationToken
+                    authenticationToken = new UsernamePasswordAuthenticationToken(
+                    userDetails,
+                    null,
+                    userDetails.getAuthorities()
+            );
+            authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        }
+        filterChain.doFilter(request, response);
+    }
 
 }
