@@ -1,8 +1,7 @@
 package com.app.unify.services;
 
-import com.app.unify.entities.Message;
-import com.app.unify.repositories.MessageRepository;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -10,7 +9,11 @@ import org.springframework.data.mongodb.core.query.Collation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
-import java.util.List;
+
+import com.app.unify.entities.Message;
+import com.app.unify.repositories.MessageRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor

@@ -8,12 +8,9 @@ import java.util.Set;
 
 import com.app.unify.entities.Role;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -37,8 +34,8 @@ public class UserDTO {
     @Size(min = 3, max = 30, message = "Username must be between 3 and 30 characters")
     private String username;
 
-   
-   
+
+
     private String phone;
 
     @NotBlank(message = "Email is required")
@@ -62,7 +59,7 @@ public class UserDTO {
 
     private String workAt;
 
-  
+
     private Integer status;
 
     Set<Role> roles;

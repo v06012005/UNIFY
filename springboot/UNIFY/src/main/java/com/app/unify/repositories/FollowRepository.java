@@ -6,8 +6,10 @@ import com.app.unify.entities.Follower;
 import com.app.unify.types.FollowerUserId;
 
 public interface FollowRepository extends JpaRepository<Follower, FollowerUserId> {
+	@Override
 	boolean existsById(FollowerUserId id);
 
+	@Override
 	void deleteById(FollowerUserId id);
 
 	long countByUserFollowingId(String followingId);

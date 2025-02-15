@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,6 +17,8 @@ import com.app.unify.mapper.UserMapper;
 import com.app.unify.repositories.RoleRepository;
 import com.app.unify.repositories.UserRepository;
 import com.app.unify.utils.EncryptPasswordUtil;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
