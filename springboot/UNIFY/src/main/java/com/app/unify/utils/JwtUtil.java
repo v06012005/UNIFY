@@ -83,13 +83,13 @@ public class JwtUtil {
         if (authHeader == null ){
             return request.getParameter("token");
         }
-        if(StringUtils.hasText(authHeader) && authHeader.startsWith("Bearer")){
+        if(StringUtils.hasText(authHeader) && authHeader.startsWith("Bearer ")){
             return authHeader.substring(7);
         }
         return null;
     }
 
-    public String getUsernameFromJWtToken(String token) {
+    public String extractUsername(String token) {
         try {
             SignedJWT signed = SignedJWT.parse(token);
             return signed.getJWTClaimsSet().getSubject();

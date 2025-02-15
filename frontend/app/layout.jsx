@@ -5,6 +5,7 @@ import Head from "next/head";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import AuthProvider from "@/components/provider/AuthProvider";
 import { ModalProvider } from "@/components/provider/ModalProvider";
+import {AppProvider} from "@/components/provider/AppProvider";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -22,7 +23,7 @@ export const metadata = {
 
 export default async function RootLayout({ children }) {
   return (
-    <html lang="en" suppressHydrationWarning={true}>
+    <html lang="en" suppressHydrationWarning>
       <Head>
         <link
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -33,7 +34,9 @@ export default async function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} flex w-full antialiased`}
       >
         <AuthProvider>
-          <ModalProvider>{children}</ModalProvider>
+            <AppProvider>
+                <ModalProvider>{children}</ModalProvider>
+            </AppProvider>
         </AuthProvider>
       </body>
     </html>

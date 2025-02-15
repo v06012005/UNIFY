@@ -1,14 +1,20 @@
 spring:
   datasource:
-#    url: "jdbc:sqlserver://localhost:1433;databaseName=Unify;encrypt=false;trustServerCertificate=false"
-#    username: sa
-#    password: 123456
-     url: jdbc:postgresql://unify-app-unify.h.aivencloud.com:14334/unify?characterEncoding=UTF-8&sslmode=require
-     username: avnadmin
-     password: AVNS_5w7cmKQFtagnfWwVQrn
+     url: jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?characterEncoding=UTF-8&prepareThreshold=0
+     username: postgres.mlafrkaocppdojtsyysc
+     password: yulwsLvpq8BqQmuDoNpexrXk
+     driver-class-name: org.postgresql.Driver
+     hikari:
+         maximum-pool-size: 5
+         minimum-idle: 5
+         connection-timeout: 25000
+         idle-timeout: 600000
+         max-lifetime: 1800000
+         pool-name: HikariConnPool
+         leak-detection-threshold: 2000
   jpa:
       hibernate:
-        ddl-auto: update
+        ddl-auto: none
         dialect: org.hibernate.dialect.PostgreSQLDialect
       show-sql: true
   data:
@@ -29,8 +35,15 @@ spring:
            starttls:
              enable: true
              required: true
+
+logging:
+  level:
+    com.zaxxer.hikari.HikariConfig: DEBUG
+    com.zaxxer.hikari: TRACE
+
 jwt:
   signerKey: "5c6321fb6bdf294f41ef37aifc20d0113853e3d633dc475df1a9ab36be2ba817797942e337fe3407165"
 
 var:
   allowedOrigin: http://localhost:3000
+

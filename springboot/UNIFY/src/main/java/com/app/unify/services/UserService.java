@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,6 +20,7 @@ import com.app.unify.repositories.UserRepository;
 import com.app.unify.utils.EncryptPasswordUtil;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private UserRepository userRepository;
@@ -56,10 +58,14 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException("User not found !")));
     }
 
-    @PreAuthorize("returnObject.username == authentication.name")
+    @PreAuthorize("#userDto.email == authentication.name")
     public UserDTO updateUser(UserDTO userDto) {
-        User user = userRepository.save(userRepository.findById(userDto.getId())
-                .orElseThrow(() -> new UserNotFoundException("User not found !")));
+        Role role = roleRepository.findByName("USER")
+                .orElseThrow(() -> new RuntimeException("Role not found !"));
+        userDto.setPassword(userRepository.findById(userDto.getId())
+                .orElseThrow(() -> new UserNotFoundException("User not found !")).getPassword());
+        userDto.setRoles(Collections.singleton(role));
+        User user = userRepository.save(userMapper.toUser(userDto));
         return userMapper.toUserDTO(user);
     }
 

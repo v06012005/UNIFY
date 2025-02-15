@@ -52,7 +52,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                           .map(t -> !t.getExpired() && !t.getRevoked())
                                           .orElse(false);
         if(StringUtils.hasText(token) && jwtUtil.validToken(token) && isTokenValid){
-            String email = jwtUtil.getUsernameFromJWtToken(token);
+            String email = jwtUtil.extractUsername(token);
             UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
             UsernamePasswordAuthenticationToken
                     authenticationToken = new UsernamePasswordAuthenticationToken(
