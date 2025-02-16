@@ -1,6 +1,7 @@
 package com.app.unify.entities;
 
 import com.app.unify.types.MediaType;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,7 +12,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -34,8 +34,8 @@ public class Media {
     String id;
 
     @ManyToOne
-    @MapsId("id")
     @JoinColumn(name = "post_id")
+    @JsonBackReference
     Post post;
 
     @Column(nullable = false)
