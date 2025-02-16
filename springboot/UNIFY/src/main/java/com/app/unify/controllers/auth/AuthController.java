@@ -22,7 +22,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -31,6 +30,7 @@ public class AuthController {
     private UserRepository userRepository;
     private JwtUtil jwtUtil;
     private AuthenticationService authenticationService;
+    private final String URI = "/api/auth";
 
 
     @Autowired
@@ -46,9 +46,10 @@ public class AuthController {
         this.authenticationService = authenticationService;
     }
 
-    @PostMapping("/login")
+    @PostMapping(URI + "/login")
     public Object login(@RequestBody UserLoginDto userLoginDto) {
         Authentication authentication;
+        System.out.println(userLoginDto.getEmail());
         User user = userRepository.findByEmail(userLoginDto.getEmail())
                 .orElseThrow(() -> new UserNotFoundException("User not found !"));
         if (userLoginDto
@@ -71,7 +72,7 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect email or password !");
     }
 
-    @PostMapping("/register")
+    @PostMapping(URI + "/register")
     public ResponseEntity<String> register(@RequestBody @Valid UserDTO userDto){
         if(userRepository.existsByEmail(userDto.getEmail())){
             return new ResponseEntity<>("Email is taken !", HttpStatus.BAD_REQUEST);
@@ -81,6 +82,16 @@ public class AuthController {
             userService.createUser(userDto);
             return new ResponseEntity<>("Register successfully !", HttpStatus.CREATED);
         }
+    }
+
+    @GetMapping("/users/refresh")
+    public ResponseEntity<Object> refreshToken(){
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        var user = userRepository.findByEmail(email)
+                      .orElseThrow(() -> new UserNotFoundException("User not found !"));
+        String token  = jwtUtil.generateToken(email);
+        authenticationService.saveUserToken(user, token);
+        return ResponseEntity.status(200).body(new TokenResponse(token));
     }
 
 }
