@@ -12,14 +12,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class InvalidDataExceptionHandler {
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Map<String, String> handleInvalidArgument(MethodArgumentNotValidException ex){
-        Map<String, String> errorMap = new HashMap<>();
-        ex.getBindingResult().getFieldErrors().forEach(err -> {
-            errorMap.put(err.getField(), err.getDefaultMessage());
-        });
-        return errorMap;
-    }
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public Map<String, String> handleInvalidArgument(MethodArgumentNotValidException ex) {
+		Map<String, String> errorMap = new HashMap<>();
+		ex.getBindingResult().getFieldErrors().forEach(err -> {
+			errorMap.put(err.getField(), err.getDefaultMessage());
+		});
+		return errorMap;
+	}
 
 }

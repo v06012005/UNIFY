@@ -11,6 +11,6 @@ import com.app.unify.entities.Message;
 
 @Repository
 public interface MessageRepository extends MongoRepository<Message, String> {
-    @Query(value = "{ $or: [ { $and: [ { sender: ?0 }, { receiver: ?1 } ] }, { $and: [ { sender: ?2 }, { receiver: ?3 } ] } ] }")
-    List<Message> findMessages(String sender1, String receiver1, String sender2, String receiver2, Sort sort);
+	@Query(value = "{ $or: [ { $and: [ { sender: ?0 }, { receiver: ?1 } ] }, { $and: [ { sender: ?2 }, { receiver: ?3 } ] } ] }")
+	List<Message> findMessages(String sender1, String receiver1, String sender2, String receiver2, Sort sort);
 }

@@ -19,10 +19,10 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class FriendshipUserId implements Serializable {
 
-    @Column(name = "friendship_id", nullable = false)
-    String friendshipId;
+	@Column(name = "friendship_id", nullable = false)
+	String friendshipId;
 
-    @Column(name = "user_id", nullable = false)
-    String userId;
+	@Column(name = "user_id", nullable = false)
+	String userId;
 
 }

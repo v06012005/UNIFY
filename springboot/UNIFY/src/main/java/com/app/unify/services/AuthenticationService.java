@@ -10,29 +10,24 @@ import com.app.unify.repositories.TokenRepository;
 @Service
 public class AuthenticationService {
 
-    @Autowired
-    private TokenRepository tokenRepository;
+	@Autowired
+	private TokenRepository tokenRepository;
 
-    public void saveUserToken(User user, String jwtToken){
-        revokeAllUserTokens(user);
-        Token token = Token.builder()
-                .user(user)
-                .token(jwtToken)
-                .expired(false)
-                .revoked(false)
-                .build();
-        tokenRepository.save(token);
-    }
+	public void saveUserToken(User user, String jwtToken) {
+		revokeAllUserTokens(user);
+		Token token = Token.builder().user(user).token(jwtToken).expired(false).revoked(false).build();
+		tokenRepository.save(token);
+	}
 
-    private void revokeAllUserTokens(User user){
-        var validUserTokens = tokenRepository.findAllValidTokensByUser(user.getId());
-        if(validUserTokens.isEmpty()) {
+	private void revokeAllUserTokens(User user) {
+		var validUserTokens = tokenRepository.findAllValidTokensByUser(user.getId());
+		if (validUserTokens.isEmpty()) {
 			return;
 		}
-        validUserTokens.forEach(t -> {
-                    t.setExpired(true);
-                    t.setRevoked(true);
-                });
-        tokenRepository.saveAll(validUserTokens);
-    }
+		validUserTokens.forEach(t -> {
+			t.setExpired(true);
+			t.setRevoked(true);
+		});
+		tokenRepository.saveAll(validUserTokens);
+	}
 }

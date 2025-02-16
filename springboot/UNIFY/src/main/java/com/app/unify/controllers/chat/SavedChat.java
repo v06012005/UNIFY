@@ -15,17 +15,15 @@ import com.app.unify.repositories.MessageRepository;
 @RequestMapping("/chats")
 public class SavedChat {
 
-    @Autowired
-    private MessageRepository chatMessageRepository;
+	@Autowired
+	private MessageRepository chatMessageRepository;
 
-    @PostMapping
-    public ResponseEntity<String> saveMessage(@RequestBody ChatMessageRequest chatMessageRequest){
-        Message chatMessage = Message.builder()
-                .content(chatMessageRequest.getContent())
-                .sender(chatMessageRequest.getSender())
-                .build();
-        chatMessageRepository.save(chatMessage);
-        return ResponseEntity.ok("Saved Message ");
-    }
+	@PostMapping
+	public ResponseEntity<String> saveMessage(@RequestBody ChatMessageRequest chatMessageRequest) {
+		Message chatMessage = Message.builder().content(chatMessageRequest.getContent())
+				.sender(chatMessageRequest.getSender()).build();
+		chatMessageRepository.save(chatMessage);
+		return ResponseEntity.ok("Saved Message ");
+	}
 
 }

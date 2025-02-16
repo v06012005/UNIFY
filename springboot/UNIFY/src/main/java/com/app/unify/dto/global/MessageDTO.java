@@ -19,12 +19,12 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MessageDTO {
 
-     String id;
-     String sender;
-     String receiver;
-     String content;
-     LocalDateTime timestamp;
-     List<String> fileUrls;
-     MessageType type;
+	String id;
+	String sender;
+	String receiver;
+	String content;
+	LocalDateTime timestamp;
+	List<String> fileUrls;
+	MessageType type;
 
 }

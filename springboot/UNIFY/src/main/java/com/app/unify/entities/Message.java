@@ -21,12 +21,12 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Message {
 
-    @Id
-    String id;
-    String sender;
-    String receiver;
-    String content;
-    LocalDateTime timestamp;
-    List<String> fileUrls;
+	@Id
+	String id;
+	String sender;
+	String receiver;
+	String content;
+	LocalDateTime timestamp;
+	List<String> fileUrls;
 
 }

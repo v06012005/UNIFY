@@ -12,11 +12,11 @@ import com.app.unify.entities.Token;
 
 @Repository
 public interface TokenRepository extends JpaRepository<Token, String> {
-    @Query("""
-          SELECT t FROM Token t INNER JOIN User u ON t.user.id = u.id WHERE u.id =:userId
-          AND (t.expired = false OR t.revoked = false)
-         """)
-    List<Token> findAllValidTokensByUser(@Param("userId") String userId);
+	@Query("""
+			 SELECT t FROM Token t INNER JOIN User u ON t.user.id = u.id WHERE u.id =:userId
+			 AND (t.expired = false OR t.revoked = false)
+			""")
+	List<Token> findAllValidTokensByUser(@Param("userId") String userId);
 
-    Optional<Token> findByToken(String token);
+	Optional<Token> findByToken(String token);
 }

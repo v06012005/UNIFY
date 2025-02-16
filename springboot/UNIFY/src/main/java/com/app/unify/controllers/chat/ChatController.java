@@ -22,30 +22,26 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ChatController {
 
-    private SimpMessagingTemplate messagingTemplate;
-    private MessageService messageService;
+	private SimpMessagingTemplate messagingTemplate;
+	private MessageService messageService;
 
-    @Autowired
-    public ChatController(SimpMessagingTemplate messagingTemplate,
-                          MessageService messageService) {
-        this.messagingTemplate = messagingTemplate;
-        this.messageService = messageService;
-    }
+	@Autowired
+	public ChatController(SimpMessagingTemplate messagingTemplate, MessageService messageService) {
+		this.messagingTemplate = messagingTemplate;
+		this.messageService = messageService;
+	}
 
-    @MessageMapping("/chat.sendMessage")
-    public void sendMessage(@Payload Message message) {
-        message.setTimestamp(LocalDateTime.now());
-        Message messageSaved =  messageService.saveMessage(message);
-        messagingTemplate.convertAndSendToUser(
-                message.getReceiver(), "/queue/messages", messageSaved
-        );
-        messagingTemplate.convertAndSendToUser(message.getSender(),"/queue/messages", messageSaved);
-    }
+	@MessageMapping("/chat.sendMessage")
+	public void sendMessage(@Payload Message message) {
+		message.setTimestamp(LocalDateTime.now());
+		Message messageSaved = messageService.saveMessage(message);
+		messagingTemplate.convertAndSendToUser(message.getReceiver(), "/queue/messages", messageSaved);
+		messagingTemplate.convertAndSendToUser(message.getSender(), "/queue/messages", messageSaved);
+	}
 
-    @GetMapping("/{user1}/{user2}")
-    public List<Message> getMessagesBetweenUsers(
-            @PathVariable String user1, @PathVariable String user2) {
-        return messageService.getMessagesBySenderAndReceiver(user1, user2);
-    }
+	@GetMapping("/{user1}/{user2}")
+	public List<Message> getMessagesBetweenUsers(@PathVariable String user1, @PathVariable String user2) {
+		return messageService.getMessagesBySenderAndReceiver(user1, user2);
+	}
 
 }

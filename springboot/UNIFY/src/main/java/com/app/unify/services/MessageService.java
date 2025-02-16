@@ -19,30 +19,27 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MessageService {
 
-    private  MongoTemplate mongoTemplate;
-    private MessageRepository messageRepository;
+	private MongoTemplate mongoTemplate;
+	private MessageRepository messageRepository;
 
-    @Autowired
-    public MessageService(MongoTemplate mongoTemplate,
-                          MessageRepository messageRepository) {
-        this.mongoTemplate = mongoTemplate;
-        this.messageRepository = messageRepository;
-    }
+	@Autowired
+	public MessageService(MongoTemplate mongoTemplate, MessageRepository messageRepository) {
+		this.mongoTemplate = mongoTemplate;
+		this.messageRepository = messageRepository;
+	}
 
-    public List<Message> getMessagesBySenderAndReceiver(String sender, String receiver) {
-        Query query = new Query();
-        query.addCriteria(new Criteria().orOperator(
-                Criteria.where("sender").is(sender).and("receiver").is(receiver),
-                Criteria.where("sender").is(receiver).and("receiver").is(sender)
-        ));
+	public List<Message> getMessagesBySenderAndReceiver(String sender, String receiver) {
+		Query query = new Query();
+		query.addCriteria(new Criteria().orOperator(Criteria.where("sender").is(sender).and("receiver").is(receiver),
+				Criteria.where("sender").is(receiver).and("receiver").is(sender)));
 
-        query.collation(Collation.of("en"));
-        query.with(Sort.by(Sort.Direction.ASC, "timestamp"));
-        return mongoTemplate.find(query, Message.class);
-    }
+		query.collation(Collation.of("en"));
+		query.with(Sort.by(Sort.Direction.ASC, "timestamp"));
+		return mongoTemplate.find(query, Message.class);
+	}
 
-    public Message saveMessage(Message message){
-       return messageRepository.save(message);
-    }
+	public Message saveMessage(Message message) {
+		return messageRepository.save(message);
+	}
 
 }
