@@ -9,20 +9,11 @@ import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { Select, SelectItem, Textarea } from "@heroui/react";
 import PostSwitch from "@/components/global/PostSwitch";
 import { useEffect, useRef, useState } from "react";
-import { getUser } from "@/app/lib/dal";
+import { getUser, saveMedia, savePost } from "@/app/lib/dal";
 import { cn } from "@/lib/utils";
 
-const User = () => {
-  const [user, setUser] = useState(null);
+const User = ({ user }) => {
 
-  useEffect(() => {
-    async function fetchUser() {
-      const currentUser = await getUser();
-      setUser(currentUser);
-    }
-
-    fetchUser();
-  })
 
   return (
     <div className="flex mb-4 w-full my-auto">
@@ -38,25 +29,117 @@ const User = () => {
 const Page = () => {
   const { openModal } = useModal();
   const fileInputRef = useRef(null);
-  const [images, setImages] = useState([]);
+  const [files, setFiles] = useState([]);
+  const [previews, setPreviews] = useState([]);
+  const [uploadedUrls, setUploadedUrls] = useState([]);
+  const [isLikeVisible, setIsLikeVisible] = useState(false);
+  const [isCommentVisible, setIsCommentVisible] = useState(false);
+  const [audience, setAudience] = useState("PUBLIC");
+  const [caption, setCaption] = useState("");
+
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    async function fetchUser() {
+      const currentUser = await getUser();
+      setUser(currentUser);
+    }
+
+    fetchUser();
+  }, [])
 
   const handleDivClick = () => {
     fileInputRef.current?.click();
   };
 
+  const handleAudienceChange = (keys) => {
+    const selectedValue = Array.from(keys)[0];
+    setAudience(selectedValue);
+  };
+
+  const handleLikeVisibility = (newValue) => {
+    setIsLikeVisible(newValue);
+  }
+
+  const handleCommentVisibility = (newValue) => {
+    setIsCommentVisible(newValue);
+  }
+
   function handleClick() {
     alert("this is a function");
   }
 
-  const handleFileChange = (event) => {
-    const files = event.target.files;
-    if (!files) return;
+  const handleFileChange = (e) => {
+    const selectedFiles = Array.from(e.target.files);
 
-    const newImages = Array.from(files).map((file) =>
-      Object.assign(file, { preview: URL.createObjectURL(file) })
-    );
+    // Allow only images and videos
+    const allowedTypes = ["image/png", "image/jpeg", "image/jpg", "image/gif", "video/mp4", "video/webm"];
+    const validFiles = selectedFiles.filter(file => allowedTypes.includes(file.type));
 
-    setImages((prevImages) => [...prevImages, ...newImages]);
+    if (validFiles.length === 0) {
+      alert("Only images (png, jpeg, jpg, gif) and videos (mp4, webm) are allowed.");
+      return;
+    }
+
+    setFiles(validFiles);
+    setPreviews(validFiles.map(file => URL.createObjectURL(file)));
+  };
+
+  const handleUpload = async () => {
+    if (files.length === 0) return alert("Select at least one file!");
+
+    const formData = new FormData();
+    files.forEach(file => formData.append("files", file));
+
+    const res = await fetch("/api/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await res.json();
+    return data;
+  };
+
+  const handleSave = async () => {
+    try {
+      const newPost = {
+        captions: caption,
+        audience: audience,
+        user: user,
+        isCommentVisible: isCommentVisible,
+        isLikeVisible: isLikeVisible,
+        postedAt: new Date().toISOString()
+      };
+
+      const post = await savePost(newPost);
+      if (!post) {
+        alert("Failed to save post.");
+        return;
+      }
+      const files = await handleUpload();
+      if (!files || files.length === 0) {
+        alert("No files uploaded.");
+        return;
+      }
+
+      const postMedia = files.files.map(file => ({
+        post: post,
+        url: file.url,
+        fileType: file.file_type,
+        size: file.size,
+        mediaType: file.media_type.toUpperCase()
+      }));
+
+      const savedMedia = await saveMedia(postMedia);
+      if (savedMedia) {
+        alert("Post added successfully!");
+      } else {
+        alert("Failed to save media.");
+      }
+    } catch (error) {
+      console.error("Error saving post:", error);
+      alert("An error occurred while saving the post.");
+    }
   };
 
   return (
@@ -66,7 +149,7 @@ const Page = () => {
           <h1 className="font-bold text-4xl border rounded-md w-fit p-2 my-4 mx-3 bg-black text-white dark:text-black dark:bg-white">
             POST
           </h1>
-          <User />
+          <User user={user} />
         </div>
 
         <div className="flex h-full border-t">
@@ -79,42 +162,44 @@ const Page = () => {
                 >
                   Photos or/and videos
                 </label>
-                <button onClick={handleDivClick} className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-green-500"><i className="fa-solid fa-arrow-up-from-bracket"></i></button>
+                {/* <button onClick={handleDivClick} className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-green-500"><i className="fa-solid fa-arrow-up-from-bracket"></i></button> */}
               </div>
-              {images.length > 0 && (
-                <div className="mt-4 grid grid-cols-4 gap-2">
-                  {images.map((image, index) => (
-                    <div key={index} className="relative w-full h-full">
-                      <Image
-                        src={image.preview}
-                        alt="Preview" width={100} height={100}
-                        className="w-full h-full object-cover rounded-md border"
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
-              <div onClick={handleDivClick} className={cn("mt-2 cursor-pointer flex justify-center rounded-lg border border-dashed dark:border-gray-200 border-gray-900/25",
-                images.length < 1 && "h-5/6 px-6 py-10",
-                images.length > 0 && "")}>
-                <div className="text-center my-auto">
-                  <PhotoIcon
-                    aria-hidden="true"
-                    className="mx-auto size-12 text-gray-300 dark:text-white"
-                  />
-                  <div className="mt-4 flex text-sm/6 text-gray-600 dark:text-white">
-                    <label
-                      htmlFor="file-upload"
-                      className="relative cursor-pointer rounded-md bg-white dark:bg-black font-semibold text-indigo-600 hover:text-indigo-500"
-                    >
-                      <span>Upload photos or/and videos here</span>
-                    </label>
+              {/* {images.length > 0 && ( */}
+              <div className={cn(
+                previews.length > 0 && "mt-4 grid grid-cols-4 gap-2",
+                previews.length < 1 && "h-full")}>
+                {previews.map((file, index) => (
+                  <div key={index} className="relative w-full h-full">
+                    <Image
+                      src={file}
+                      alt="Preview" width={100} height={100}
+                      className="w-full h-full object-cover rounded-md border"
+                    />
                   </div>
-                  <p className="text-xs/5 text-gray-600 dark:text-gray-100">
-                    PHOTOS AND VIDEOS
-                  </p>
+                ))}
+                <div onClick={handleDivClick} className={cn("mt-2 cursor-pointer flex justify-center rounded-lg border border-dashed dark:border-gray-200 border-gray-900/25",
+                  previews.length < 1 && "h-5/6 px-6 py-10",
+                  previews.length > 0 && "h-full my-auto")}>
+                  <div className="text-center my-auto">
+                    <PhotoIcon
+                      aria-hidden="true"
+                      className="mx-auto size-12 text-gray-300 dark:text-white"
+                    />
+                    <div className="mt-4 flex text-sm/6 text-gray-600 dark:text-white">
+                      <label
+                        htmlFor="file-upload"
+                        className="relative cursor-pointer rounded-md bg-white dark:bg-black font-semibold text-indigo-600 hover:text-indigo-500"
+                      >
+                        <span>Upload photos or/and videos here</span>
+                      </label>
+                    </div>
+                    <p className="text-xs/5 text-gray-600 dark:text-gray-100">
+                      PHOTOS AND VIDEOS
+                    </p>
+                  </div>
                 </div>
               </div>
+              {/* )} */}
 
               <input
                 ref={fileInputRef}
@@ -133,7 +218,7 @@ const Page = () => {
               <p className="text-sm/6 font-medium text-gray-900 dark:text-white">
                 Write Your Caption
               </p>
-              <Textarea
+              <Textarea value={caption} onChange={(e) => setCaption(e.target.value)}
                 placeholder="Write your caption here"
                 minRows={9}
                 variant="underlined"
@@ -143,20 +228,21 @@ const Page = () => {
               <p className="text-sm/6 mt-3 font-medium text-gray-900 mb-2 dark:text-white">
                 Who can see your post?
               </p>
-              <Select
-                defaultSelectedKeys={["public"]}
+              <Select onSelectionChange={handleAudienceChange}
+                defaultSelectedKeys={["PUBLIC"]}
                 className="w-full"
                 label=""
                 variant="underlined"
+                selectedKeys={[audience]}
               >
                 <SelectItem
-                  key={"public"}
+                  key={"PUBLIC"}
                   startContent={<i className="fa-solid fa-earth-asia"></i>}
                 >
                   Public
                 </SelectItem>
                 <SelectItem
-                  key={"private"}
+                  key={"PRIVATE"}
                   startContent={<i className="fa-solid fa-lock"></i>}
                 >
                   Private
@@ -168,12 +254,12 @@ const Page = () => {
                 Advanced Settings
               </p>
               <div>
-                <PostSwitch
+                <PostSwitch onToggle={handleLikeVisibility}
                   className="mb-3"
                   title={"Hide like and comment counts on this post"}
                   subtitle="Control your privacy by hiding the like and comment counts on this post, keeping the focus on the content rather than the numbers."
                 />
-                <PostSwitch
+                <PostSwitch onToggle={handleCommentVisibility}
                   title={"Turn off commenting"}
                   subtitle="Disable comments on this post to maintain control over interactions and focus solely on the content."
                 />
@@ -201,7 +287,7 @@ const Page = () => {
                 </p>
               </ModalDialog>
               <button
-                type="submit"
+                type="button" onClick={handleSave}
                 className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
                 Save

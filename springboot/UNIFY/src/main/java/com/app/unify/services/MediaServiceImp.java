@@ -1,5 +1,6 @@
 package com.app.unify.services;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -8,16 +9,21 @@ import org.springframework.stereotype.Service;
 
 import com.app.unify.dto.global.MediaDTO;
 import com.app.unify.entities.Media;
+import com.app.unify.entities.Post;
 import com.app.unify.exceptions.MediaNotFoundException;
 import com.app.unify.mapper.MediaMapper;
 import com.app.unify.repositories.MediaRepository;
+import com.app.unify.repositories.PostRepository;
 
 @Service
 public class MediaServiceImp implements MediaService {
-	
+
 	@Autowired
 	private MediaRepository mediaRepository;
-	
+
+	@Autowired
+	private PostRepository postRepository;
+
 	@Autowired
 	private MediaMapper mapper;
 
@@ -29,7 +35,8 @@ public class MediaServiceImp implements MediaService {
 
 	@Override
 	public MediaDTO update(MediaDTO mediaDTO) {
-		Media media = mediaRepository.findById(mediaDTO.getId()).orElseThrow(() -> new MediaNotFoundException("Media not found!"));
+		Media media = mediaRepository.findById(mediaDTO.getId())
+				.orElseThrow(() -> new MediaNotFoundException("Media not found!"));
 		media = mediaRepository.save(mapper.toMedia(mediaDTO));
 		return mapper.toMediaDTO(media);
 	}
@@ -48,6 +55,27 @@ public class MediaServiceImp implements MediaService {
 	@Override
 	public void deleteById(String id) {
 		mediaRepository.deleteById(id);
+	}
+
+	@Override
+	public List<MediaDTO> findByPostId(String postId) {
+		List<Media> mediaList = mediaRepository.findByPostId(postId);
+
+		return mediaList.stream().map(mapper::toMediaDTO).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<MediaDTO> saveAllByPostId(List<MediaDTO> mediaDTOs) {
+		List<Media> mediaList = new ArrayList<>();
+
+		for (MediaDTO mediaDTO : List.copyOf(mediaDTOs)) {
+			Media media = mapper.toMedia(mediaDTO);
+			mediaList.add(media);
+		}
+
+		List<Media> savedMedia = mediaRepository.saveAll(mediaList);
+
+		return savedMedia.stream().map(mapper::toMediaDTO).collect(Collectors.toList());
 	}
 
 }

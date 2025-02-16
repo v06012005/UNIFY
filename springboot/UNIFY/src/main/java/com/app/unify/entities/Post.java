@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 import com.app.unify.types.Audience;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,7 +15,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
@@ -56,7 +56,8 @@ public class Post {
     User user;
 
     @Column(name = "posted_at", nullable = false)
-    LocalDateTime postedAt;
+    @Default
+    LocalDateTime postedAt = LocalDateTime.now();
 
     @Column(name = "is_comment_visible", nullable = false)
     @Default
@@ -70,6 +71,7 @@ public class Post {
     Set<PostComment> comments;
 
     @OneToMany(mappedBy = "post")
+    @JsonManagedReference
     Set<Media> media;
 
 }

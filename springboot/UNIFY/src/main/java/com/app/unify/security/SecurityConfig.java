@@ -40,7 +40,7 @@ public class SecurityConfig {
     private String allowedOrigin;
 
     private final String[] ACCESS_ENDPOINTS = {
-       "/api/auth/**",
+       "/api/auth/**", "/send-email",
     };
 
     private JwtAuthenticationFilter jwtAuthenticationFilter;
