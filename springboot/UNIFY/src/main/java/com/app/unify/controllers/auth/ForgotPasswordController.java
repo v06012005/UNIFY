@@ -26,14 +26,16 @@ public class ForgotPasswordController {
 
 	private static final Logger logger = LoggerFactory.getLogger(ForgotPasswordController.class);
 
-	@Autowired
 	private ApacheMailService apacheMailService;
-
-	@Autowired
 	private UserRepository userRepository;
+	private OtpService otpService; // Service để lưu OTP vào cache
 
 	@Autowired
-	private OtpService otpService; // Service để lưu OTP vào cache
+	public ForgotPasswordController(ApacheMailService apacheMailService,UserRepository userRepository,OtpService otpService) {
+		this.apacheMailService = apacheMailService;
+		this.otpService = otpService;
+		this.userRepository = userRepository;
+	}
 
 	@PostMapping("/forgot-password/send-mail")
 	public ResponseEntity<ApiResponse> sendMail(@RequestBody @Validated ForgotPasswordRequest request) {
@@ -54,7 +56,7 @@ public class ForgotPasswordController {
 			return ResponseEntity.status(500).body(new ApiResponse(false, "Failed to send OTP!"));
 		}
 	}
-	
+
 	@PostMapping("/forgot-password/otp-verification")
 	public ResponseEntity<?> verifyOtp(@RequestBody Map<String, String> request) {
 	    String email = request.get("email");

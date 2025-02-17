@@ -28,7 +28,7 @@ public class OtpService {
 	public void clearExpiredOtps() {
 		otpCache.clear();
 	}
-	
+
 	public void clearOTP(String email) {
         otpCache.remove(email);
     }
