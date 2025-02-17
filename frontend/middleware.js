@@ -3,7 +3,7 @@ import { getUser, verifySession } from './app/lib/dal'
 
 // 1. Specify protected and public routes
 const protectedRoutes = ['/statistics', '/manage']
-const publicRoutes = ['/login', '/register', '/password/reset', '/password/reset/otp-verification','/password/reset/confirm' ]
+const publicRoutes = ['/login', '/register', '/password/reset', '/password/reset/otp-verification', '/password/reset/confirm']
 
 export default async function middleware(req) {
     // 2. Check if the current route is protected or public
@@ -23,7 +23,7 @@ export default async function middleware(req) {
         }
     }
 
-    if(session?.isAuth && publicRoutes.includes(path)) {
+    if (session?.isAuth && publicRoutes.includes(path)) {
         return NextResponse.redirect(new URL('/', req.nextUrl))
     }
 

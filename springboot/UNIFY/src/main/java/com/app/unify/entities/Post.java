@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 import com.app.unify.types.Audience;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -39,18 +40,24 @@ public class Post {
 
 	String captions;
 
-	Integer status;
+    // 0 -> hidden
+    // 1 -> visible
+    // 2 -> sensitive/ violent content
+    @Default
+    Integer status = 1;
 
-	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
-	Audience audience;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Default
+    Audience audience = Audience.PUBLIC;
 
 	@ManyToOne
 	@JoinColumn(name = "user_id", nullable = false)
 	User user;
 
-	@Column(name = "posted_at", nullable = false)
-	LocalDateTime postedAt;
+    @Column(name = "posted_at", nullable = false)
+    @Default
+    LocalDateTime postedAt = LocalDateTime.now();
 
 	@Column(name = "is_comment_visible", nullable = false)
 	@Default
@@ -63,7 +70,8 @@ public class Post {
 	@OneToMany(mappedBy = "post")
 	Set<PostComment> comments;
 
-	@OneToMany(mappedBy = "post")
-	Set<Media> media;
+    @OneToMany(mappedBy = "post")
+    @JsonManagedReference
+    Set<Media> media;
 
 }
