@@ -24,7 +24,7 @@ const ForgotPasswordPage = () => {
 
     try {
       const response = await fetch(
-        "http://localhost:8080/api/auth/forgot-password",
+        "http://localhost:8080/api/auth/forgot-password/send-mail",
         {
           method: "POST",
           headers: {
@@ -33,17 +33,24 @@ const ForgotPasswordPage = () => {
           body: JSON.stringify({ email }),
         }
       );
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch (error) {
+        throw new Error("Invalid server response!");
+      }
 
       if (!response.ok) {
         throw new Error(data.message || "Something went wrong!");
       }
 
-      router.push(`/password/reser/otp-verification?email=${email}`);
-    } catch (err:any) {
-      setError(err.message)
-    }finally {
-      setLoading(false)
+      router.push(`/password/reset/otp-verification?email=${email}`);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "An unexpected error occurred!"
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -53,7 +60,7 @@ const ForgotPasswordPage = () => {
         <UnifyLogoIcon />
       </div>
       <Input
-      type="email"
+        type="email"
         placeholder={"Enter your email"}
         className={`w-[400px] h-12`}
         value={email}
@@ -66,13 +73,13 @@ const ForgotPasswordPage = () => {
           Back to login
         </Link>
       </div>
-      <Link
+      <button
         className={`border rounded-2xl bg-black text-white dark:bg-white dark:text-black font-bold text-2xl mt-3 p-2`}
         onClick={handleSendOTP}
         disabled={loading}
       >
         {loading ? "Sending..." : "Send OTP"}
-      </Link>
+      </button>
     </>
   );
 };

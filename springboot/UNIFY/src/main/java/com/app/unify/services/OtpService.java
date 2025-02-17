@@ -23,9 +23,13 @@ public class OtpService {
 		return otpCache.containsKey(email) && otpCache.get(email).equals(otp);
 	}
 
-	// Xóa OTP sau 5 phút
-	@Scheduled(fixedRate = 300000) // 300,000 ms = 5 phút
+	// Xóa OTP sau 30s
+	@Scheduled(fixedRate = 30000) // 30,000 ms = 30s
 	public void clearExpiredOtps() {
 		otpCache.clear();
 	}
+	
+	public void clearOTP(String email) {
+        otpCache.remove(email);
+    }
 }

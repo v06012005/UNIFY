@@ -1,8 +1,11 @@
 package com.app.unify.controllers.auth;
 
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,7 +43,6 @@ public class ForgotPasswordController {
 			return ResponseEntity.status(404).body(new ApiResponse(false, "Email not found!"));
 		}
 
-		// Tạo OTP và lưu vào cache (Redis hoặc memory)
 		String otp = otpService.generateOtp(email);
 
 		try {
@@ -51,5 +53,18 @@ public class ForgotPasswordController {
 			logger.error("Failed to send OTP to {}: {}", email, e.getMessage());
 			return ResponseEntity.status(500).body(new ApiResponse(false, "Failed to send OTP!"));
 		}
+	}
+	
+	@PostMapping("/forgot-password/otp-verification")
+	public ResponseEntity<?> verifyOtp(@RequestBody Map<String, String> request) {
+	    String email = request.get("email");
+	    String otp = request.get("otp");
+
+	    if (otpService.validateOtp(email, otp)) {
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Invalid OTP!"));
+	    }
+
+	    otpService.clearExpiredOtps(); // Xóa OTP sau khi xác thực thành công
+	    return ResponseEntity.ok(Map.of("message", "OTP verified!"));
 	}
 }
