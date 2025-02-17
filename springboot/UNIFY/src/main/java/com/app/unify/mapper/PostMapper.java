@@ -8,5 +8,6 @@ import com.app.unify.entities.Post;
 @Mapper(componentModel = "spring")
 public interface PostMapper {
 	Post toPost(PostDTO postDTO);
+
 	PostDTO toPostDTO(Post post);
 }

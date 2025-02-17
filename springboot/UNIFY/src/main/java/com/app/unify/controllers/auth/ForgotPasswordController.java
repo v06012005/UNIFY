@@ -14,10 +14,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.unify.dto.request.ForgotPasswordRequest;
+import com.app.unify.dto.request.ResetPasswordRequest;
 import com.app.unify.dto.response.ApiResponse;
 import com.app.unify.repositories.UserRepository;
 import com.app.unify.services.ApacheMailService;
 import com.app.unify.services.OtpService; // Service mới để lưu OTP
+import com.app.unify.services.UserService;
+import com.app.unify.utils.EncryptPasswordUtil;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -28,12 +31,14 @@ public class ForgotPasswordController {
 
 	private ApacheMailService apacheMailService;
 	private UserRepository userRepository;
+	private UserService userService;
 	private OtpService otpService; // Service để lưu OTP vào cache
 
 	@Autowired
-	public ForgotPasswordController(ApacheMailService apacheMailService,UserRepository userRepository,OtpService otpService) {
+	public ForgotPasswordController(ApacheMailService apacheMailService, UserRepository userRepository, UserService userService, OtpService otpService) {
 		this.apacheMailService = apacheMailService;
 		this.otpService = otpService;
+		this.userService = userService;
 		this.userRepository = userRepository;
 	}
 
@@ -59,14 +64,36 @@ public class ForgotPasswordController {
 
 	@PostMapping("/forgot-password/otp-verification")
 	public ResponseEntity<?> verifyOtp(@RequestBody Map<String, String> request) {
-	    String email = request.get("email");
-	    String otp = request.get("otp");
+		String email = request.get("email");
+		String otp = request.get("otp");
 
-	    if (otpService.validateOtp(email, otp)) {
-	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Invalid OTP!"));
-	    }
+		if (otpService.validateOtp(email, otp)) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Invalid OTP!"));
+		}
 
-	    otpService.clearExpiredOtps(); // Xóa OTP sau khi xác thực thành công
-	    return ResponseEntity.ok(Map.of("message", "OTP verified!"));
+		otpService.clearExpiredOtps(); // Xóa OTP sau khi xác thực thành công
+		return ResponseEntity.ok(Map.of("message", "OTP verified!"));
+	}
+
+	@PostMapping("/forgot-password/reset-password")
+	public ResponseEntity<?> resetPassword(@RequestBody @Validated ResetPasswordRequest request) {
+		String email = request.getEmail();
+		String newPassword = request.getNewPassword();
+
+		if (!userRepository.existsByEmail(email)) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "Email not found!"));
+		}
+
+		if (otpService.isOtpValidated(email)) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "OTP not verified!"));
+		}
+
+		String encryptPassword = EncryptPasswordUtil.encryptPassword(newPassword);
+
+		userRepository.updatePasswordByEmail(email, encryptPassword);
+
+		otpService.clearOTP(email);
+
+		return ResponseEntity.ok(Map.of("message", "Password reset successfully!"));
 	}
 }

@@ -12,15 +12,26 @@ import com.app.unify.utils.OtpGeneratorUtil;
 public class OtpService {
 
 	private final Map<String, String> otpCache = new ConcurrentHashMap<>();
+	private final Map<String, Boolean> otpValidated = new ConcurrentHashMap<>();
 
 	public String generateOtp(String email) {
 		String otp = OtpGeneratorUtil.generatorOTP();
 		otpCache.put(email, otp);
+		otpValidated.put(email, false);
 		return otp;
 	}
 
 	public boolean validateOtp(String email, String otp) {
-		return otpCache.containsKey(email) && otpCache.get(email).equals(otp);
+//		return otpCache.containsKey(email) && otpCache.get(email).equals(otp);
+		if (otpCache.equals(otpCache.get(email))) {
+			otpValidated.put(otp, true);
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isOtpValidated(String email) {
+		return otpValidated.getOrDefault(email, false);
 	}
 
 	// Xóa OTP sau 30s
@@ -30,6 +41,7 @@ public class OtpService {
 	}
 
 	public void clearOTP(String email) {
-        otpCache.remove(email);
-    }
+		otpCache.remove(email);
+		otpValidated.remove(email);
+	}
 }
