@@ -8,6 +8,6 @@ import com.app.unify.entities.Media;
 @Mapper(componentModel = "spring")
 public interface MediaMapper {
 	Media toMedia(MediaDTO mediaDTO);
-	
+
 	MediaDTO toMediaDTO(Media media);
 }

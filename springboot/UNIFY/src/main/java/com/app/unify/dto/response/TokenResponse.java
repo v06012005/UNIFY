@@ -5,9 +5,10 @@ import lombok.Data;
 @Data
 public class TokenResponse {
 
-    String token;
-    public TokenResponse(String token){
-            this.token = token;
-        }
+	String token;
+
+	public TokenResponse(String token) {
+		this.token = token;
+	}
 
 }

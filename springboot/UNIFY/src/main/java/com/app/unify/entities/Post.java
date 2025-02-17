@@ -34,11 +34,12 @@ import lombok.experimental.FieldDefaults;
 @Builder
 public class Post {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    String id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.UUID)
+	String id;
 
-    String captions;
+	String captions;
+
 
     // 0 -> hidden
     // 1 -> visible
@@ -51,27 +52,26 @@ public class Post {
     @Default
     Audience audience = Audience.PUBLIC;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id",  nullable = false)
-    User user;
-
+	@ManyToOne
+	@JoinColumn(name = "user_id", nullable = false)
+	User user;
+  
     @Column(name = "posted_at", nullable = false)
     @Default
     LocalDateTime postedAt = LocalDateTime.now();
 
-    @Column(name = "is_comment_visible", nullable = false)
-    @Default
-    Boolean isCommentVisible = false;
+	@Column(name = "is_comment_visible", nullable = false)
+	@Default
+	Boolean isCommentVisible = false;
 
-    @Column(name = "is_like_visible", nullable = false)
-    @Default
-    Boolean isLikeVisible = false;
+	@Column(name = "is_like_visible", nullable = false)
+	@Default
+	Boolean isLikeVisible = false;
 
-    @OneToMany(mappedBy = "post")
-    Set<PostComment> comments;
+	@OneToMany(mappedBy = "post")
+	Set<PostComment> comments;
 
     @OneToMany(mappedBy = "post")
     @JsonManagedReference
     Set<Media> media;
-
 }

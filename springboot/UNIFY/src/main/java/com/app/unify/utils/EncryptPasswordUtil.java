@@ -5,14 +5,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class EncryptPasswordUtil {
 
-    static PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+	static PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
-    public static String encryptPassword(String password){
-        return passwordEncoder.encode(password);
-    }
+	public static String encryptPassword(String password) {
+		return passwordEncoder.encode(password);
+	}
 
-    public static boolean isMatchesPassword(String storePassword, String password){
-        return passwordEncoder.matches(password, storePassword);
-    }
+	public static boolean isMatchesPassword(String storePassword, String password) {
+		return passwordEncoder.matches(password, storePassword);
+	}
 
 }

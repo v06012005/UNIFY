@@ -1,29 +1,24 @@
 "use client";
 
 import FullUnifyLogoIcon from "@/components/global/FullUnifyLogoIcon_Auth";
-import {useEffect, useState} from "react";
-import {useRouter} from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import GoogleLogo from "@/public/images/GoogleLogo.png";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { signIn } from "next-auth/react";
-import {useApp} from "@/components/provider/AppProvider";
-import {router} from "next/client";
+import { useApp } from "@/components/provider/AppProvider";
+import { router } from "next/client";
 
 const LoginPage = () => {
-
-
   const { loginUser } = useApp();
-
 
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-
-
 
   const [errors, setErrors] = useState({});
 
@@ -80,6 +75,12 @@ const LoginPage = () => {
             className="w-[400px] h-12"
             value={formData.email}
             onChange={handleChange}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault(); // Ngăn Enter xuống dòng
+                handleLogin();
+              }
+            }}
           />
           {errors.email && <p className="text-red-500">{errors.email}</p>}
           <Input
@@ -89,6 +90,12 @@ const LoginPage = () => {
             className="w-[400px] h-12"
             value={formData.password}
             onChange={handleChange}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault(); // Ngăn Enter xuống dòng
+                handleLogin();
+              }
+            }}
           />
           {errors.password && <p className="text-red-500">{errors.password}</p>}
           <Link href="/password/reset">Forgot password?</Link>
@@ -113,7 +120,10 @@ const LoginPage = () => {
             </Link>
           </div>
           {errors.server && <p className="text-red-500">{errors.server}</p>}
-          <Button className="text-2xl mt-3 p-5" onClick={handleLogin}>
+          <Button
+            className="text-2xl mt-3 p-5"
+            onClick={handleLogin}
+          >
             Login
           </Button>
         </div>

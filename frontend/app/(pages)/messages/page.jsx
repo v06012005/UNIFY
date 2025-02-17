@@ -8,23 +8,17 @@ import Message from "@/components/global/chat/Message";
 import { useApp } from "@/components/provider/AppProvider";
 import { useState } from "react";
 
-
 const Page = () => {
-
   const { user, useChat } = useApp();
   const chatPartner = "3fc0aee5-b110-4788-80a8-7c571e244a13";
   const { chatMessages, sendMessage } = useChat(user, chatPartner);
   const [newMessage, setNewMessage] = useState("");
 
-
   const handleSendMessage = () => {
-
     if (newMessage.trim() === "") return;
     sendMessage(newMessage);
     setNewMessage("");
-
   };
-
 
   // const chatMessages = [
   //   {
@@ -73,8 +67,6 @@ const Page = () => {
   //     "fileUrls": []
   //   }
   // ]
-
-
 
   return (
     <div className="ml-auto">
@@ -160,7 +152,6 @@ const Page = () => {
             <h2 className="text-center m-3">23:48, 20/01/2025</h2>
 
             <Message messages={chatMessages} />
-
           </div>
 
           <div className="flex items-center mt-3 bg-gray-800 text-white p-3 rounded-2xl w-full justify-center">
@@ -176,9 +167,18 @@ const Page = () => {
               className="bg-gray-700 text-white placeholder-gray-400 flex-grow py-2 px-4 rounded-3xl focus:outline-none"
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault(); // Ngăn Enter xuống dòng
+                  handleSendMessage();
+                }
+              }}
             />
             {newMessage.trim() && (
-              <button onClick={handleSendMessage} className="ml-2 p-2 bg-blue-500 hover:bg-blue-600 rounded-full text-white">
+              <button
+                onClick={handleSendMessage}
+                className="ml-2 p-2 bg-blue-500 hover:bg-blue-600 rounded-full text-white"
+              >
                 <i className="fas fa-paper-plane text-xl"></i>
               </button>
             )}

@@ -1,14 +1,17 @@
 package com.app.unify.entities;
 
-import lombok.*;
-import lombok.experimental.FieldDefaults;
+import java.time.LocalDateTime;
+import java.util.List;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 @Document(collation = "messages")
 @Data
@@ -18,12 +21,12 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Message {
 
-    @Id
-    String id;
-    String sender;
-    String receiver;
-    String content;
-    LocalDateTime timestamp;
-    List<String> fileUrls;
+	@Id
+	String id;
+	String sender;
+	String receiver;
+	String content;
+	LocalDateTime timestamp;
+	List<String> fileUrls;
 
 }

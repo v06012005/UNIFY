@@ -29,26 +29,26 @@ import lombok.experimental.FieldDefaults;
 @Builder
 public class Media {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    String id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.UUID)
+	String id;
 
     @ManyToOne
     @JoinColumn(name = "post_id")
     @JsonBackReference
     Post post;
 
-    @Column(nullable = false)
-    String url;
+	@Column(nullable = false)
+	String url;
 
-    @Column(name = "file_type", nullable = false)
-    String fileType;
+	@Column(name = "file_type", nullable = false)
+	String fileType;
 
-    @Column(nullable = false)
-    Long size;
+	@Column(nullable = false)
+	Long size;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "media_type", nullable = false)
-    MediaType mediaType;
+	@Enumerated(EnumType.STRING)
+	@Column(name = "media_type", nullable = false)
+	MediaType mediaType;
 
 }

@@ -1,5 +1,6 @@
 package com.app.unify.controllers;
 
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,22 +24,22 @@ import com.app.unify.services.PostService;
 public class PostController {
 	@Autowired
 	private PostService postService;
-	
+
 	@PostMapping
 	public PostDTO createPost(@RequestBody PostDTO postDTO) {
 		return postService.createPost(postDTO);
 	}
-	
+
 	@GetMapping("/{id}")
 	public PostDTO getPost(@PathVariable("id") String id) {
 		return postService.getById(id);
 	}
-	
+
 	@PutMapping
 	public PostDTO updatePost(@RequestBody PostDTO postDTO) {
 		return postService.updatePost(postDTO);
 	}
-	
+
 	@DeleteMapping("/{id}")
 	public ResponseEntity<String> deletePost(@PathVariable("id") String id) {
 		postService.deletePostById(id);

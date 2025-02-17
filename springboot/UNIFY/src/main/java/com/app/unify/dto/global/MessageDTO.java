@@ -1,13 +1,16 @@
 package com.app.unify.dto.global;
 
-import com.app.unify.types.MessageType;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
+
+import com.app.unify.types.MessageType;
+
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 @Data
 @NoArgsConstructor
@@ -16,12 +19,12 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MessageDTO {
 
-     String id;
-     String sender;
-     String receiver;
-     String content;
-     LocalDateTime timestamp;
-     List<String> fileUrls;
-     MessageType type;
+	String id;
+	String sender;
+	String receiver;
+	String content;
+	LocalDateTime timestamp;
+	List<String> fileUrls;
+	MessageType type;
 
 }

@@ -3,13 +3,16 @@
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { useState } from "react";
-import Image from "next/image";
 import UnifyLogoIcon from "@/components/global/UnifyLogoIcon_Auth";
-import { useTheme } from "next-themes";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const OtpVerificationPage = () => {
-  const { theme, setTheme } = useTheme();
+  const searchParams = useSearchParams();
+  const email = searchParams.get("email");
+  const router = useRouter();
   const [otp, setOtp] = useState(Array(6).fill(""));
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (value, index) => {
     if (!/^\d?$/.test(value)) return;
@@ -28,10 +31,35 @@ const OtpVerificationPage = () => {
     }
   };
 
+  const handleVerifyOtp = async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await fetch(
+        "http://localhost:8080/api/auth/forgot-password/otp-verification",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, otp: otp.join("") }),
+        }
+      );
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "Invalid OTP!");
+
+      router.push(`/password/reset/confirm?email=${email}`)
+    } catch (err) {
+      setError(err.message || "An error occurred!");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       <div>
-        <UnifyLogoIcon/>
+        <UnifyLogoIcon />
       </div>
       <div className="flex justify-center gap-3">
         {otp.map((value, index) => (
@@ -53,12 +81,14 @@ const OtpVerificationPage = () => {
           Back to login
         </Link>
       </div>
-      <Link
-        className={`border rounded-2xl bg-black text-white dark:bg-white dark:text-black font-bold text-2xl mt-3 p-2`}
-        href={"/password/reset/confirm"}
-      >
-        Verification
-      </Link>
+      {error && <p className="text-red-500">{error}</p>}
+    <button
+      className="border rounded-2xl bg-black text-white dark:bg-white dark:text-black font-bold text-2xl mt-3 p-2"
+      onClick={handleVerifyOtp}
+      disabled={loading}
+    >
+      {loading ? "Verifying..." : "Verify OTP"}
+    </button>
     </>
   );
 };
