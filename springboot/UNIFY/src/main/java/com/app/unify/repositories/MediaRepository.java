@@ -8,5 +8,5 @@ import com.app.unify.entities.Media;
 
 public interface MediaRepository extends JpaRepository<Media, String> {
 
-	List<Media> findByPostId(String postId); 
+	List<Media> findByPostId(String postId);
 }

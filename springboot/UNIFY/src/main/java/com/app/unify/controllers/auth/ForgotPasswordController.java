@@ -35,7 +35,8 @@ public class ForgotPasswordController {
 	private OtpService otpService; // Service để lưu OTP vào cache
 
 	@Autowired
-	public ForgotPasswordController(ApacheMailService apacheMailService, UserRepository userRepository, UserService userService, OtpService otpService) {
+	public ForgotPasswordController(ApacheMailService apacheMailService, UserRepository userRepository,
+			UserService userService, OtpService otpService) {
 		this.apacheMailService = apacheMailService;
 		this.otpService = otpService;
 		this.userService = userService;

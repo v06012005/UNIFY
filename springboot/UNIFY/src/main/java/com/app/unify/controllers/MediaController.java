@@ -22,7 +22,7 @@ public class MediaController {
 //	public MediaDTO save(MediaDTO mediaDTO) {
 //		return mediaService.create(mediaDTO);
 //	}
-  
+
 	@PostMapping
 	public List<MediaDTO> saveAll(@RequestBody List<MediaDTO> mediaDTOs) {
 		return mediaService.saveAllByPostId(mediaDTOs);
