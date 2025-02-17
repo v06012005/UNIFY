@@ -18,12 +18,11 @@ import com.app.unify.services.MediaService;
 public class MediaController {
 	@Autowired
 	private MediaService mediaService;
-
 //	@PostMapping
 //	public MediaDTO save(MediaDTO mediaDTO) {
 //		return mediaService.create(mediaDTO);
 //	}
-
+  
 	@PostMapping
 	public List<MediaDTO> saveAll(@RequestBody List<MediaDTO> mediaDTOs) {
 		return mediaService.saveAllByPostId(mediaDTOs);

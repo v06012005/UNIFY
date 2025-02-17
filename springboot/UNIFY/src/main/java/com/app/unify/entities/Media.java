@@ -33,10 +33,10 @@ public class Media {
 	@GeneratedValue(strategy = GenerationType.UUID)
 	String id;
 
-	@ManyToOne
-	@JoinColumn(name = "post_id")
-	@JsonBackReference
-	Post post;
+    @ManyToOne
+    @JoinColumn(name = "post_id")
+    @JsonBackReference
+    Post post;
 
 	@Column(nullable = false)
 	String url;

@@ -10,15 +10,16 @@ import lombok.experimental.FieldDefaults;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MediaDTO {
-	private String id;
 
-	private Post post;
+    private String id;
 
-	private String url;
+    private Post post;
 
-	private String fileType;
+    private String url;
 
-	private Long size;
+    private String fileType;
 
-	private MediaType mediaType;
+    private Long size;
+
+    private MediaType mediaType;
 }
