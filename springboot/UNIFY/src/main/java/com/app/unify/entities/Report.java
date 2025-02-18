@@ -31,15 +31,15 @@ public class Report {
 	String id;
 
 	@ManyToOne
-    @MapsId("id")
-    @JoinColumn(name = "user_id",  nullable = false)
-    User user;
+	@MapsId("id")
+	@JoinColumn(name = "user_id", nullable = false)
+	User user;
 
 	@Column(name = "reported_id", nullable = false)
 	String reportedId;
 
 	@Column(name = "reported_at", nullable = false)
-    LocalDateTime reportedAt;
+	LocalDateTime reportedAt;
 
 	Integer status;
 }

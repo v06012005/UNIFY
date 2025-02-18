@@ -19,7 +19,10 @@ import com.app.unify.repositories.RoleRepository;
 import com.app.unify.repositories.UserRepository;
 import com.app.unify.utils.EncryptPasswordUtil;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
 	private UserRepository userRepository;

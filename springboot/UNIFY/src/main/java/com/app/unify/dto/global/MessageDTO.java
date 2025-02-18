@@ -1,5 +1,8 @@
 package com.app.unify.dto.global;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 import com.app.unify.types.MessageType;
 
 import lombok.AccessLevel;
@@ -14,10 +17,14 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ChatMessageDTO {
+public class MessageDTO {
 
-    String content;
-    String sender;
-    MessageType type;
+	String id;
+	String sender;
+	String receiver;
+	String content;
+	LocalDateTime timestamp;
+	List<String> fileUrls;
+	MessageType type;
 
 }

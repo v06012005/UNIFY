@@ -21,10 +21,10 @@ import lombok.experimental.FieldDefaults;
 @Builder
 public class Role {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	Integer id;
 
-    String name;
+	String name;
 
 }

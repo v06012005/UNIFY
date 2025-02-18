@@ -4,10 +4,70 @@ import avatar from "@/public/images/testreel.jpg";
 import avatar2 from "@/public/images/testAvt.jpg";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
+import Message from "@/components/global/chat/Message";
+import { useApp } from "@/components/provider/AppProvider";
 import { useState } from "react";
 
 const Page = () => {
-  const [message, setMessage] = useState("");
+  const { user, useChat } = useApp();
+  const chatPartner = "3fc0aee5-b110-4788-80a8-7c571e244a13";
+  const { chatMessages, sendMessage } = useChat(user, chatPartner);
+  const [newMessage, setNewMessage] = useState("");
+
+  const handleSendMessage = () => {
+    if (newMessage.trim() === "") return;
+    sendMessage(newMessage);
+    setNewMessage("");
+  };
+
+  // const chatMessages = [
+  //   {
+  //     "id": "1",
+  //     "sender": "58d8ce36-2c82-4d75-b71b-9d34a3370b16",
+  //     "receiver": "user2",
+  //     "content": "Hey there!",
+  //     "timestamp": "2025-02-14T10:00:00Z",
+  //     "avatar": avatar,
+  //     "fileUrls": []
+  //   },
+  //   {
+  //     "id": "2",
+  //     "sender": "58d8ce36-2c82-4d75-b71b-9d34a3370b16",
+  //     "receiver": "58d8ce36-2c82-4d75-b71b-9d34a3370b16",
+  //     "content": "How are you?",
+  //     "timestamp": "2025-02-14T10:00:30Z",
+  //     "avatar": "/user1.png",
+  //     "fileUrls": []
+  //   },
+  //   {
+  //     "id": "3",
+  //     "sender": "user2",
+  //     "receiver": "58d8ce36-2c82-4d75-b71b-9d34a3370b16",
+  //     "content": "I'm doing great!",
+  //     "timestamp": "2025-02-14T10:01:00Z",
+  //     "avatar": avatar,
+  //     "fileUrls": []
+  //   },
+  //   {
+  //     "id": "4",
+  //     "sender": "user2",
+  //     "receiver": "user1",
+  //     "content": "What about you?",
+  //     "timestamp": "2025-02-14T10:01:30Z",
+  //     "avatar": avatar,
+  //     "fileUrls": []
+  //   },
+  //   {
+  //     "id": "5",
+  //     "sender": "58d8ce36-2c82-4d75-b71b-9d34a3370b16",
+  //     "receiver": "user2",
+  //     "content": "I'm good too!",
+  //     "timestamp": "2025-02-14T10:02:00Z",
+  //     "avatar": avatar,
+  //     "fileUrls": []
+  //   }
+  // ]
+
   return (
     <div className="ml-auto">
       <div className="flex w-full">
@@ -90,97 +150,8 @@ const Page = () => {
           <hr className=" border-1 dark:border-gray-300" />
           <div className="h-3/4 overflow-y-scroll">
             <h2 className="text-center m-3">23:48, 20/01/2025</h2>
-            <div className="m-4 flex">
-              <div className="">
-                <Image
-                  src={avatar2}
-                  alt="Avatar"
-                  className="rounded-full w-14 h-14"
-                />
-              </div>
-              <div className="ml-3">
-                <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
-                  So I started to walk into the water. I won't lie to you boys,
-                  I was terrified
-                </h2>
-                <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
-                  I don't know if it was divine intervention
-                </h2>
-                <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
-                  was divine intervention
-                </h2>
-              </div>
-            </div>
-            <div className="m-4 flex justify-end">
-              <div className="ml-3">
-                <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
-                  So I started to walk into the water. I won't lie to you boys,
-                  I was terrified
-                </h2>
-                <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
-                  I don't know if it was divine intervention
-                </h2>
-                <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
-                  was divine intervention
-                </h2>
-              </div>
-            </div>
-            <div className="m-4 flex">
-              <div className="">
-                <Image
-                  src={avatar2}
-                  alt="Avatar"
-                  className="rounded-full w-14 h-14"
-                />
-              </div>
-              <div className="ml-3">
-                <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
-                  So I started to walk into the water. I won't lie to you boys,
-                  I was terrified
-                </h2>
-                <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
-                  I don't know if it was divine intervention
-                </h2>
-                <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
-                  was divine intervention
-                </h2>
-              </div>
-            </div>
-            <div className="m-4 flex">
-              <div className="">
-                <Image
-                  src={avatar2}
-                  alt="Avatar"
-                  className="rounded-full w-14 h-14"
-                />
-              </div>
-              <div className="ml-3">
-                <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
-                  So I started to walk into the water. I won't lie to you boys,
-                  I was terrified
-                </h2>
-                <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
-                  I don't know if it was divine intervention
-                </h2>
-                <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
-                  was divine intervention
-                </h2>
-              </div>
-            </div>
-            <div className="m-4 flex justify-end">
-              <div className="ml-3">
-                <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
-                  So I started to walk into the water. I won't lie to you boys,
-                  I was terrified
-                </h2>
-                <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
-                  I don't know if it was divine intervention
-                </h2>
-                <h2 className="items-center justify-between bg-gray-800 text-white p-2 rounded-lg mb-2">
-                  was divine intervention
-                </h2>
-              </div>
-            </div>
+
+            <Message messages={chatMessages} />
           </div>
 
           <div className="flex items-center mt-3 bg-gray-800 text-white p-3 rounded-2xl w-full justify-center">
@@ -194,11 +165,20 @@ const Page = () => {
               type="text"
               placeholder="Type your message here..."
               className="bg-gray-700 text-white placeholder-gray-400 flex-grow py-2 px-4 rounded-3xl focus:outline-none"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault(); // Ngăn Enter xuống dòng
+                  handleSendMessage();
+                }
+              }}
             />
-            {message.trim() && (
-              <button className="ml-2 p-2 bg-blue-500 hover:bg-blue-600 rounded-full text-white">
+            {newMessage.trim() && (
+              <button
+                onClick={handleSendMessage}
+                className="ml-2 p-2 bg-blue-500 hover:bg-blue-600 rounded-full text-white"
+              >
                 <i className="fas fa-paper-plane text-xl"></i>
               </button>
             )}

@@ -1,3 +1,5 @@
+"use server"
+
 import 'server-only'
 
 import { cookies } from 'next/headers'
@@ -40,3 +42,64 @@ export const getUser = cache(async () => {
         return null
     }
 })
+
+export const savePost = async (post) => {
+    const token = (await cookies()).get('token')?.value
+
+    if (!token) {
+        redirect("/login");
+    }
+
+    try {
+        const response = await fetch("http://localhost:8080/posts", {
+
+            method: "POST",
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(post)
+        });
+
+        // if (!response.ok) {
+        //     console.log("Failed to fetch post");
+        //     return null;
+        // }
+
+        const savedPost = await response.json();
+        return savedPost;
+    } catch (error) {
+        console.log('Failed to fetch post and ran into an error, ' + error)
+        return null
+    }
+}
+
+export const saveMedia = async (media) => {
+    const token = (await cookies()).get('token')?.value
+
+    if (!token) {
+        redirect("/login");
+    }
+
+    try {
+        const response = await fetch("http://localhost:8080/media", {
+            method: "POST",
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(media)
+        });
+
+        // if (!response.ok) {
+        //     console.log("Failed to fetch post");
+        //     return null;
+        // }
+
+        const savedMedia = await response.json();
+        return savedMedia;
+    } catch (error) {
+        console.log('Failed to fetch media')
+        return null
+    }
+}

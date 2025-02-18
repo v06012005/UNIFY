@@ -1,7 +1,7 @@
 "use client";
 
 import FullUnifyLogoIcon from "@/components/global/FullUnifyLogoIcon_Auth";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
@@ -9,9 +9,12 @@ import GoogleLogo from "@/public/images/GoogleLogo.png";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { signIn } from "next-auth/react";
+import { useApp } from "@/components/provider/AppProvider";
+import { router } from "next/client";
 
 const LoginPage = () => {
-  const router = useRouter();
+  const { loginUser } = useApp();
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -45,25 +48,7 @@ const LoginPage = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:8080/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const result = await response.json();
-
-      if (response.ok) {
-        await fetch("/api/set-cookie", {
-          method: "POST",
-          body: JSON.stringify({ token: result.token }),
-        });
-        router.push("/");
-      } else {
-        alert(result.message || "Login failed");
-      }
+      await loginUser(formData.email, formData.password);
     } catch (error) {
       console.error("Error:", error);
       alert("Something went wrong. Please try again.");
@@ -90,6 +75,12 @@ const LoginPage = () => {
             className="w-[400px] h-12"
             value={formData.email}
             onChange={handleChange}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault(); // Ngăn Enter xuống dòng
+                handleLogin();
+              }
+            }}
           />
           {errors.email && <p className="text-red-500">{errors.email}</p>}
           <Input
@@ -99,6 +90,12 @@ const LoginPage = () => {
             className="w-[400px] h-12"
             value={formData.password}
             onChange={handleChange}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault(); // Ngăn Enter xuống dòng
+                handleLogin();
+              }
+            }}
           />
           {errors.password && <p className="text-red-500">{errors.password}</p>}
           <Link href="/password/reset">Forgot password?</Link>
@@ -123,7 +120,10 @@ const LoginPage = () => {
             </Link>
           </div>
           {errors.server && <p className="text-red-500">{errors.server}</p>}
-          <Button className="text-2xl mt-3 p-5" onClick={handleLogin}>
+          <Button
+            className="text-2xl mt-3 p-5"
+            onClick={handleLogin}
+          >
             Login
           </Button>
         </div>

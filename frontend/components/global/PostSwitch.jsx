@@ -1,22 +1,23 @@
 import { Switch, cn } from "@heroui/react";
 import { useState } from "react";
 
-export default function PostSwitch({ title, subtitle = "", className = "" }) {
+export default function PostSwitch({ title, subtitle = "", className = "", onToggle }) {
   const [isOn, setIsOn] = useState(false);
 
   const handleChange = () => {
-    setIsOn(!isOn);
+    const newValue = !isOn;
+    setIsOn(newValue);
+    onToggle(newValue); // 🔹 Pass new value to parent
   };
+
   return (
     <Switch
       color="success"
-      className={`${className} ${
-        isOn
+      className={`${className} ${isOn
           ? "border-gray-300 dark:border-white"
           : "border-gray-200 dark:border-gray-500"
-      } dark:border transition duration-300`}
+        } dark:border transition duration-300`}
       onValueChange={handleChange}
-      defaultSelected={isOn}
       isSelected={isOn}
       classNames={{
         base: cn(
@@ -27,9 +28,7 @@ export default function PostSwitch({ title, subtitle = "", className = "" }) {
         thumb: cn(
           "w-6 h-6",
           "group-data-[hover=true]:border-primary",
-          //selected
           "group-data-[selected=true]:ms-6",
-          // pressed
           "group-data-[pressed=true]:w-7",
           "group-data-[selected]:group-data-[pressed]:ms-4"
         ),
@@ -37,11 +36,8 @@ export default function PostSwitch({ title, subtitle = "", className = "" }) {
     >
       <div className="flex flex-col gap-1">
         <p
-          className={`text-medium ${
-            isOn
-              ? "text-dark dark:text-white"
-              : "text-gray-500 dark:text-gray-500"
-          }`}
+          className={`text-medium ${isOn ? "text-dark dark:text-white" : "text-gray-500 dark:text-gray-500"
+            }`}
         >
           {title}
         </p>
@@ -50,3 +46,4 @@ export default function PostSwitch({ title, subtitle = "", className = "" }) {
     </Switch>
   );
 }
+

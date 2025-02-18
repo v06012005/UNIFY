@@ -26,18 +26,18 @@ import lombok.experimental.FieldDefaults;
 @Builder
 public class Avatar {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    String id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.UUID)
+	String id;
 
-    @Column(nullable = false)
-    String url;
+	@Column(nullable = false)
+	String url;
 
-    @Column(name = "changed_date", nullable = false)
-    LocalDateTime changedDate;
+	@Column(name = "changed_date", nullable = false)
+	LocalDateTime changedDate;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    User user;
+	@ManyToOne
+	@JoinColumn(name = "user_id", nullable = false)
+	User user;
 
 }

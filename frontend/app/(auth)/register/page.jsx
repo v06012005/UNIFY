@@ -10,8 +10,15 @@ import { Button } from "@/components/ui/button";
 import DateSelector from "@/components/global/DateInput";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import {useApp} from "@/components/provider/AppProvider";
+import {redirect} from "next/navigation";
+
+import { useRouter } from "next/navigation";
 
 const RegisterPage = () => {
+
+
+
   const [errors, setErrors] = useState({});
   const [serverError, setServerError] = useState("");
 
@@ -158,6 +165,7 @@ const RegisterPage = () => {
       setServerError("Something went wrong. Please try again.");
     }
   };
+
 
   return (
     <div className={`w-full  grid place-content-center`}>

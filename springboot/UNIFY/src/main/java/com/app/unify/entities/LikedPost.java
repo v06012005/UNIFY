@@ -23,16 +23,16 @@ import lombok.experimental.FieldDefaults;
 @Builder
 public class LikedPost {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    String id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.UUID)
+	String id;
 
-    @ManyToOne
-    @JoinColumn(name = "post_id", referencedColumnName = "id", nullable = false)
-    Post post;
+	@ManyToOne
+	@JoinColumn(name = "post_id", referencedColumnName = "id", nullable = false)
+	Post post;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
-    User user;
+	@ManyToOne
+	@JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
+	User user;
 
 }
