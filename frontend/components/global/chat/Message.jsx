@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { useApp } from "@/components/provider/AppProvider";
 import avatar from "@/public/images/avatar.png";
-import {FixedSizeList} from "react-window";
 
 const Message = ({ messages }) => {
     const { user } = useApp();
