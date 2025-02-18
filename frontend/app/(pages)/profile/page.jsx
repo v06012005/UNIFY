@@ -1,12 +1,13 @@
 "use client";
 
 import React from "react";
- 
+import FollowerModal from '@/components/global/FollowerModalProfile';
+import FriendModal from "@/components/global/FriendModalProfile";
+import FollowingModal from "@/components/global/FollowingModalProfile";
 import Link from "next/link";
 import Image from "next/image";
-import Cookies from 'js-cookie';
-import { jwtDecode } from 'jwt-decode';
 import { useEffect, useState } from 'react';
+import axios from "axios";
  
 const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   return (
@@ -23,53 +24,42 @@ const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
 const Page = () => {
 
   const [activeTab, setActiveTab] = useState("post");
-
-  const [isFollowing, setIsFollowing] = useState(false);
   const [user, setUser] = useState({});
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchUserData = async () => {
       try {
-        const response = await fetch('http://localhost:8080/users/my-info', {
-          method: 'GET',
-          credentials: 'include' 
+        const { data: { token } } = await axios.get("/api/get-cookie");
+        const response = await fetch("http://localhost:8080/users/my-info", {
+          method: "GET",
+          headers: { Authorization: `Bearer ${token}` },
+          credentials: "include",
         });
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch user data');
+  
+        if (response.ok) {
+          const userData = await response.json();
+          setUser(userData);
+        } else {
+          console.error("Không thể lấy dữ liệu người dùng");
         }
-        
-        const data = await response.json();
-        setUser(data);
       } catch (error) {
-        console.error('Error fetching user data:', error);
+        console.error("Lỗi khi lấy dữ liệu người dùng:", error);
       }
     };
-
-    fetchData();
+  
+    fetchUserData();
   }, []);
 
+  const [isFollowerOpen, setIsFollowerOpen] = useState(false);
+  const [isFollowingOpen, setIsFollowingOpen] = useState(false);
 
+  const toggleFollowing = () => setIsFollowingOpen(!isFollowingOpen);
+  const toggleFollower = () => setIsFollowerOpen(!isFollowerOpen);
+  const toggleFollow = () => setIsFollow(!isFollow);
 
-  const toggleFollowing = () => {
-    setIsFollowing(!isFollowing);
-  };
-
-  const [isFollower, setIsFollower] = useState(false);
-
-  const toggleFollower = () => {
-    setIsFollower(!isFollower);
-  };
-  const [isFriend, setIsFriend] = useState(false);
-
-  const toggleFriend = () => {
-    setIsFriend(!isFriend);
-  };
+  const [isFriendOpen, setIsFriendOpen] = useState(false);
+  const toggleFriend = () => setIsFriendOpen(!isFriendOpen);
   const [isFollow, setIsFollow] = useState(false);
-
-  const toggleFollow = () => {
-    setIsFollow((prev) => !prev);
-  };
 
   return (
     <div className=" w-[82%] mx-auto">
@@ -99,11 +89,11 @@ const Page = () => {
             </div>
           </div>
 
-          <div className="p-2 ml-10">
+          <div className="p-2 ml-8">
             <div className="flex justify-between ml-10">
               <div className="flex flex-col items-center w-200 mt-2 mx-8">
  
-                <h3 className="text-2xl ">{user.username}</h3>
+                <h3 className="text-2xl truncate w-32">{user.username}</h3>
  
                 <p
                   className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer"
@@ -112,53 +102,7 @@ const Page = () => {
                   0 Friend
                 </p>
 
-                {isFriend && (
-                  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                    <div className="bg-white dark:bg-gray-800 dark:text-white rounded-lg w-[36%] p-6">
-                      <div className="flex justify-between mb-4 text-2xl">
-                        <h2 className="text-lg font-bold">Friend</h2>
-                        <button
-                          className="text-gray-500 hover:text-black "
-                          onClick={toggleFriend}
-                        >
-                          ×
-                        </button>
-                      </div>
-                      <input
-                        type="text"
-                        placeholder="Search ..."
-                        className="w-full border rounded-full px-4 py-1 mb-4 dark:bg-black dark:border-gray-600"
-                      />
-                      <ul>
-                        <li className="flex items-center justify-between py-2 border-b border-gray-500">
-                          <div className="flex items-center">
-                            <Image
-                              src={`/images/avt.jpg`}
-                              alt="Avatar"
-                              className="mx-auto rounded-full border-2 border-gray-300"
-                              width={50}
-                              height={50}
-                            />
-                            <span className="font-medium ml-3">TanVinh</span>
-                          </div>
-
-                          <div className="flex items-center space-x-2 ">
-                            <Link href="/messages">
-                              <div className="flex items-center space-x-2 border px-3 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-500 dark:bg-gray-700 cursor-pointer ">
-                                <NavButton
-                                  iconClass={
-                                    "fa-brands fa-facebook-messenger mr-2"
-                                  }
-                                  content="Message"
-                                />
-                              </div>
-                            </Link>
-                          </div>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                )}
+                <FriendModal isOpen={isFriendOpen} onClose={toggleFriend} />
               </div>
 
               <div className="flex flex-col mx-10 items-center w-200">
@@ -183,65 +127,12 @@ const Page = () => {
                   0 Follower
                 </p>
 
-                {isFollower && (
-                  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg w-[36%] p-6">
-                      <div className="flex justify-between mb-4 text-2xl">
-                        <h2 className="text-lg font-bold">Follower</h2>
-                        <button
-                          className="text-gray-500 hover:text-black "
-                          onClick={toggleFollower}
-                        >
-                          ×
-                        </button>
-                      </div>
-                      <input
-                        type="text"
-                        placeholder="Search ..."
-                        className="w-full border rounded-full px-4 py-1 mb-4 dark:bg-black dark:border-gray-600"
-                      />
-                      <ul>
-                        <li className="flex items-center justify-between py-2 border-b border-gray-500">
-                          <div className="flex items-center">
-                            <Image
-                              src={`/images/avt.jpg`}
-                              alt="Avatar"
-                              className="mx-auto rounded-full border-2 border-gray-300"
-                              width={50}
-                              height={50}
-                            />
-                            <span className="font-medium ml-3">TanVinh</span>
-                          </div>
-
-                          <div className="flex items-center space-x-2 ">
-                            <Link href="/messages">
-                              <div className="flex items-center space-x-2 border px-3 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-500 dark:bg-gray-700 cursor-pointer ">
-                                <NavButton
-                                  iconClass={
-                                    "fa-brands fa-facebook-messenger mr-2"
-                                  }
-                                  content="Message"
-                                />
-                              </div>
-                            </Link>
-
-                            <div className="flex items-center space-x-2 border px-3 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-500 dark:bg-gray-700 cursor-pointer">
-                              <NavButton
-                                iconClass={
-                                  isFollow
-                                    ? "fa-solid fa-check mr-2"
-                                    : "fa-solid fa-x mr-2"
-                                }
-                                content={isFollow ? "Unfollow" : "Follow"}
-                                onClick={toggleFollow}
-                              />
-                            </div>
-                          </div>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                )}
+                <FollowerModal
+        isOpen={isFollowerOpen}
+        onClose={toggleFollower}
+        isFollow={isFollow}
+        toggleFollow={toggleFollow}
+      />
               </div>
 
               <div className="flex flex-col mx-10 items-center w-200">
@@ -263,68 +154,12 @@ const Page = () => {
                   Following 0 user
                 </p>
 
-                {isFollowing && (
-                  <div className="fixed inset-0 bg-black  bg-opacity-50 flex items-center justify-center">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg w-[36%] p-6">
-                      <div className="flex justify-between mb-4 text-2xl">
-                        <h2 className="text-lg font-bold dark:text-white">
-                          Following
-                        </h2>
-                        <button
-                          className="text-gray-500 hover:text-black "
-                          onClick={toggleFollowing}
-                        >
-                          ×
-                        </button>
-                      </div>
-                      <input
-                        type="text"
-                        placeholder="Search ..."
-                        className="w-full border rounded-full px-4 py-1 mb-4 dark:bg-black dark:border-gray-600"
-                      />
-                      <ul>
-                        <li className="flex items-center justify-between py-2 border-b border-gray-500">
-                          <div className="flex items-center">
-                            <Image
-                              src={`/images/avt.jpg`}
-                              alt="Avatar"
-                              className="mx-auto rounded-full border-2 border-gray-300"
-                              width={50}
-                              height={50}
-                            />
-                            <span className="font-medium ml-3">TanVinh</span>
-                          </div>
-
-                          <div className="flex items-center space-x-2 ">
-                            <Link href="/messages">
-                              <div className="flex items-center space-x-2 border px-3 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-500 dark:bg-gray-700 cursor-pointer ">
-                                <NavButton
-                                  href="/messages"
-                                  iconClass={
-                                    "fa-brands fa-facebook-messenger mr-2"
-                                  }
-                                  content="Message"
-                                />
-                              </div>
-                            </Link>
-
-                            <div className="flex items-center space-x-2 border px-3 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-500 dark:bg-gray-700 cursor-pointer">
-                              <NavButton
-                                iconClass={
-                                  isFollow
-                                    ? "fa-solid fa-check mr-2"
-                                    : "fa-solid fa-x mr-2"
-                                }
-                                content={isFollow ? "Unfollow" : "Follow"}
-                                onClick={toggleFollow}
-                              />
-                            </div>
-                          </div>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                )}
+                <FollowingModal
+        isOpen={isFollowingOpen}
+        onClose={toggleFollowing}
+        isFollow={isFollow}
+        toggleFollow={toggleFollow}
+      />
               </div>
             </div>
             <p className="ml-20 mt-10 dark:text-gray-400 text-gray-600 font-bold">“Success is a journey, not a destination.”</p>

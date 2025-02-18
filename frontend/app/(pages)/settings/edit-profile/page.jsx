@@ -4,11 +4,7 @@ import React from "react";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useFormik } from "formik";
-import * as Yup from "yup";
-import axios from "axios";
 import { axiosResult } from "@/app/api/cookie";
-
 const NavButton = ({ iconClass, href = "", content = "" }) => {
   return (
     <Link className="flex h-full items-center text-center" href={href}>
@@ -17,51 +13,71 @@ const NavButton = ({ iconClass, href = "", content = "" }) => {
     </Link>
   );
 };
+const validateFormData = (formData) => {
+  const errors = {};
 
-const validationSchema = Yup.object({
-  biography: Yup.string()
-    .max(100, "Biography should be less than 100 characters")
-    .optional(),
-  firstName: Yup.string().required("First name is required"),
-  lastName: Yup.string().required("Last name is required"),
-  username: Yup.string()
-    .required("Username is required")
-    .min(3, "Username must be at least 3 characters")
-    .max(30, "Username must be at most 30 characters"),
-  email: Yup.string()
-    .matches(
-      /^[^@]+@[a-zA-Z0-9-]+\.(com)$/,
-      "Email must be in the format '@yourdomain.com'"
-    )
-    .email("Invalid email address")
-    .required("Email is required"),
-  phone: Yup.string()
-    .matches(/^[0-9]{10}$/, "Phone number should be 10 digits")
-    .required("Phone number is required"),
-  gender: Yup.string().required("Gender is required"),
-  birthDay: Yup.object({
-    day: Yup.number()
-      .min(1, "Invalid day")
-      .max(31, "Invalid day")
-      .required("Day is required"),
-    month: Yup.number()
-      .min(1, "Invalid month")
-      .max(12, "Invalid month")
-      .required("Month is required"),
-    year: Yup.number()
-      .min(1900, "Invalid year")
-      .max(2100, "Invalid year")
-      .required("Year is required"),
-  }),
-  location: Yup.string().optional(),
-  education: Yup.string().optional(),
-});
+  if (!formData.firstName) {
+    errors.firstName = "First name is required";
+  }
+  if (!formData.lastName) {
+    errors.lastName = "Last name is required";
+  }
+
+  if (!formData.username) {
+    errors.username = "Username is required";
+  } else if (formData.username.length < 3) {
+    errors.username = "Username must be at least 3 characters";
+  } else if (formData.username.length > 30) {
+    errors.username = "Username must be at most 30 characters";
+  }
+
+  const emailPattern = /^[^@]+@[a-zA-Z0-9-]+\.(com)$/;
+  if (!formData.email) {
+    errors.email = "Email is required";
+  } else if (!emailPattern.test(formData.email)) {
+    errors.email = "Email must be in the format '@yourdomain.com'";
+  }
+
+  if (formData.phone && !/^[0-9]{10}$/.test(formData.phone)) {
+    errors.phone = "Phone number should be 10 digits";
+  }
+
+  if (
+    !formData.birthDay.day ||
+    formData.birthDay.day < 1 ||
+    formData.birthDay.day > 31
+  ) {
+    errors.birthDay = errors.birthDay || {};
+    errors.birthDay.day = "Invalid day";
+  }
+
+  if (
+    !formData.birthDay.month ||
+    formData.birthDay.month < 1 ||
+    formData.birthDay.month > 12
+  ) {
+    errors.birthDay = errors.birthDay || {};
+    errors.birthDay.month = "Invalid month";
+  }
+
+  if (
+    !formData.birthDay.year ||
+    formData.birthDay.year < 1900 ||
+    formData.birthDay.year > 2100
+  ) {
+    errors.birthDay = errors.birthDay || {};
+    errors.birthDay.year = "Invalid year";
+  }
+
+  return errors;
+};
 
 const Page = () => {
   const defaultAvatar = "/images/unify_icon_2.svg";
   const [avatar, setAvatar] = useState(defaultAvatar);
   const fileInputRef = useRef(null);
   const [daysInMonth, setDaysInMonth] = useState(31);
+  const [errors, setErrors] = useState({});
   const [userData, setUserData] = useState({
     id: "",
     firstName: "",
@@ -76,105 +92,91 @@ const Page = () => {
     education: "",
     workAt: "",
   });
+  const [gender, setGender] = useState(null);
 
-  const handleDateChange = (field, value) => {
-    let newBirthDay = {
-      ...formik.values.birthDay,
-      [field]: value.padStart(2, "0"),
-    };
+  const handleGenderChange = (value) => {
+    setGender(value);
+  };
+  const [loading, setLoading] = useState(false);
 
-    if (field === "month" || field === "year") {
-      const month = parseInt(newBirthDay.month, 10);
-      const year = parseInt(newBirthDay.year, 10);
+  const handleChange = (field, value) => {
+    if (field.startsWith("birthDay.")) {
+      const birthField = field.split(".")[1];
+      const newBirthDay = {
+        ...userData.birthDay,
+        [birthField]: value.padStart(2, "0"),
+      };
 
-      if (
-        !year ||
-        year < 1900 ||
-        year > 2100 ||
-        !month ||
-        month < 1 ||
-        month > 12
-      ) {
-        console.error("Invalid month or year:", { year, month });
-        return;
+      if (birthField === "month" || birthField === "year") {
+        const month = parseInt(newBirthDay.month, 10);
+        const year = parseInt(newBirthDay.year, 10);
+
+        if (
+          !year ||
+          year < 1900 ||
+          year > 2100 ||
+          !month ||
+          month < 1 ||
+          month > 12
+        ) {
+          console.error("Invalid month or year:", { year, month });
+          return;
+        }
+
+        const days = new Date(year, month, 0).getDate();
+        setDaysInMonth(days);
+
+        if (parseInt(newBirthDay.day, 10) > days) {
+          newBirthDay.day = "01";
+        }
       }
 
-      const days = new Date(year, month, 0).getDate();
-      setDaysInMonth(days);
-
-      if (parseInt(newBirthDay.day, 10) > days) {
-        newBirthDay.day = "01";
-      }
+      setUserData((prevData) => ({
+        ...prevData,
+        birthDay: newBirthDay,
+      }));
+    } else {
+      setUserData((prevData) => ({
+        ...prevData,
+        [field]: value,
+      }));
     }
-
-    formik.setValues({
-      ...formik.values,
-      birthDay: newBirthDay,
-    });
   };
 
-  // useEffect(() => {
-  //   const fetchUserData = async () => {
-  //     let token = undefined;
-  //     try {
-  //       await axios.get("/api/get-cookie").then(function (response) {
-  //         token = response.data.token;
-  //       });
-  //       console.log(token);
-  //       const response = await fetch("http://localhost:8080/users/my-info", {
-  //         method: "GET",
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       });
-
-  //       if (response.ok) {
-  //         const data = await response.json();
-  //         const parsedBirthDay = data.birthDay
-  //           ? (() => {
-  //               const [year, month, day] = data.birthDay.split("-");
-  //               return {
-  //                 month: month.padStart(2, "0"),
-  //                 day: day.padStart(2, "0"),
-  //                 year,
-  //               };
-  //             })()
-  //           : { month: "", day: "", year: "" };
-
-  //         setUserData({ ...data, birthDay: parsedBirthDay });
-  //       } else {
-  //         console.error("Failed to fetch user data");
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching user data:", error);
-  //     }
-  //   };
-
-  //   fetchUserData();
-  // }, []);
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.get("/api/get-cookie");
-        const token = response.data.token;
-  
-        const userResponse = await fetch("http://localhost:8080/users/my-info", {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          credentials: "include",
-        });
-  
+        const tokenData = await axiosResult();
+        const token = tokenData?.token;
+
+        if (!token) {
+          throw new Error("Token is null or undefined. Please log in again.");
+        }
+
+        const userResponse = await fetch(
+          "http://localhost:8080/users/my-info",
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            credentials: "include",
+          }
+        );
+
         if (userResponse.ok) {
           const data = await userResponse.json();
           const parsedBirthDay = data.birthDay
             ? (() => {
                 const [year, month, day] = data.birthDay.split("-");
-                return { month: month.padStart(2, "0"), day: day.padStart(2, "0"), year };
+                return {
+                  month: month.padStart(2, "0"),
+                  day: day.padStart(2, "0"),
+                  year,
+                };
               })()
             : { month: "", day: "", year: "" };
-  
+
           setUserData({ ...data, birthDay: parsedBirthDay });
         } else {
           console.error("Không thể lấy dữ liệu người dùng");
@@ -183,17 +185,29 @@ const Page = () => {
         console.error("Lỗi khi lấy dữ liệu người dùng:", error);
       }
     };
-  
+
     fetchUserData();
   }, []);
-  
 
-  const handleSubmit = async (values) => {
-    console.log("Submitting data:", JSON.stringify(values));
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    const validationErrors = validateFormData(userData);
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    setLoading(true);
 
     try {
-      const token = getCookie("token");
-      if (!token) return console.error("No token found");
+      const tokenData = await axiosResult();
+      const token = tokenData?.token;
+
+      if (!token) {
+        throw new Error("Token is null or undefined. Please log in again.");
+      }
 
       const response = await fetch(`http://localhost:8080/users`, {
         method: "PUT",
@@ -202,12 +216,12 @@ const Page = () => {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          ...values,
-          birthDay: values.birthDay
-            ? `${values.birthDay.year}-${values.birthDay.month.padStart(
+          ...userData,
+          birthDay: userData.birthDay
+            ? `${userData.birthDay.year}-${userData.birthDay.month.padStart(
                 2,
                 "0"
-              )}-${values.birthDay.day.padStart(2, "0")}`
+              )}-${userData.birthDay.day.padStart(2, "0")}`
             : null,
         }),
       });
@@ -215,7 +229,6 @@ const Page = () => {
       if (response.ok) {
         const updatedUser = await response.json();
         setUserData(updatedUser);
-        formik.resetForm({ values: updatedUser });
         alert("Profile updated successfully!");
       } else {
         const result = await response.text();
@@ -224,37 +237,51 @@ const Page = () => {
     } catch (error) {
       console.error("Error updating profile:", error);
       alert("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const formik = useFormik({
-    initialValues: userData,
-    enableReinitialize: true,
-    validationSchema: validationSchema,
-    onSubmit: handleSubmit,
-  });
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("/api/remove-cookie", {
+        method: "GET",
+        credentials: "include",
+      });
 
+      if (response.ok) {
+        const data = await response.json();
+        alert(data.message);
+        window.location.href = "/";
+      } else {
+        alert("Failed to remove cookie.");
+      }
+    } catch (error) {
+      console.error("Error removing cookie:", error);
+      alert("An error occurred while removing the cookie.");
+    }
+  };
   const handleChangeAvatar = (event) => {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
         setAvatar(reader.result);
+        setUserData((prevData) => ({
+          ...prevData,
+          avatar: file,
+        }));
       };
       reader.readAsDataURL(file);
-
-      formik.setFieldValue("avatar", file);
     }
-
-    formik.setValues({
-      ...formik.values,
-      birthDay: newBirthDay,
-    });
   };
 
   const handleDeleteAvatar = () => {
     setAvatar(defaultAvatar);
-    formik.setFieldValue("avatar", null);
+    setUserData((prevData) => ({
+      ...prevData,
+      avatar: null,
+    }));
 
     if (fileInputRef.current) {
       fileInputRef.current.value = null;
@@ -276,15 +303,10 @@ const Page = () => {
     "December",
   ];
 
-  const handleLogout = async () => {
-    await fetch("/api/remove-cookie");
-
-    redirect("/");
-  };
   return (
     <div className="w-full">
       <div className="h-screen overflow-y-auto">
-        <form onSubmit={formik.handleSubmit}>
+        <form onSubmit={handleSubmit}>
           <div className="flex m-5 bg-gray-200 dark:bg-gray-800 rounded-xl items-center pr-5">
             <div className="flex-shrink-0 p-2">
               <div className="w-[100px] h-[100px] rounded-full border-2 border-gray-300 overflow-hidden">
@@ -335,8 +357,8 @@ const Page = () => {
               </button>
 
               <button
-                className="bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition"
                 onClick={handleLogout}
+                className="bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition"
               >
                 Logout
               </button>
@@ -355,15 +377,8 @@ const Page = () => {
               name="biography"
               type="text"
               placeholder="Enter your biography"
-              value={formik.values.biography}
-              onChange={formik.handleChange}
               className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-1 focus:ring-gray-500 focus:outline-none hover:border-gray-500 hover:shadow-md transition"
             />
-            {formik.touched.biography && formik.errors.biography && (
-              <div className="text-red-500 text-sm">
-                {formik.errors.biography}
-              </div>
-            )}
           </div>
 
           <div className="m-5 flex gap-4">
@@ -379,13 +394,13 @@ const Page = () => {
                 name="firstName"
                 type="text"
                 placeholder="Enter your first name"
-                value={formik.values.firstName}
-                onChange={formik.handleChange}
+                value={userData.firstName}
+                onChange={(e) => handleChange("firstName", e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
               />
-              {formik.touched.firstName && formik.errors.firstName && (
-                <div className="text-red-500 text-sm">
-                  {formik.errors.firstName}
+              {errors.firstName && (
+                <div className="text-red-500 text-sm mt-1">
+                  {errors.firstName}
                 </div>
               )}
             </div>
@@ -402,13 +417,13 @@ const Page = () => {
                 name="lastName"
                 type="text"
                 placeholder="Enter your last name"
-                value={formik.values.lastName}
-                onChange={formik.handleChange}
+                value={userData.lastName}
+                onChange={(e) => handleChange("lastName", e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
               />
-              {formik.touched.lastName && formik.errors.lastName && (
-                <div className="text-red-500 text-sm">
-                  {formik.errors.lastName}
+              {errors.lastName && (
+                <div className="text-red-500 text-sm mt-1">
+                  {errors.lastName}
                 </div>
               )}
             </div>
@@ -425,17 +440,13 @@ const Page = () => {
                 name="username"
                 type="text"
                 placeholder="Enter your username"
-                // value={userData.username}
-                // onChange={(e) =>
-                //   setUserData({ ...userData, username: e.target.value })
-                // }
-                value={formik.values.username}
-                onChange={formik.handleChange}
+                value={userData.username}
+                onChange={(e) => handleChange("username", e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
               />
-              {formik.touched.username && formik.errors.username && (
-                <div className="text-red-500 text-sm">
-                  {formik.errors.username}
+              {errors.username && (
+                <div className="text-red-500 text-sm mt-1">
+                  {errors.username}
                 </div>
               )}
             </div>
@@ -455,14 +466,12 @@ const Page = () => {
                 name="email"
                 type="text"
                 placeholder="Enter your email"
-                value={formik.values.email}
-                onChange={formik.handleChange}
+                value={userData.email}
+                onChange={(e) => handleChange("email", e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
               />
-              {formik.touched.email && formik.errors.email && (
-                <div className="text-red-500 text-sm">
-                  {formik.errors.email}
-                </div>
+              {errors.email && (
+                <div className="text-red-500 text-sm mt-1">{errors.email}</div>
               )}
             </div>
 
@@ -478,14 +487,12 @@ const Page = () => {
                 name="phone"
                 type="tel"
                 placeholder="Enter your phone number"
-                value={formik.values.phone}
-                onChange={formik.handleChange}
+                value={userData.phone}
+                onChange={(e) => handleChange("phone", e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
               />
-              {formik.touched.phone && formik.errors.phone && (
-                <div className="text-red-500 text-sm">
-                  {formik.errors.phone}
-                </div>
+              {errors.phone && (
+                <div className="text-red-500 text-sm mt-1">{errors.phone}</div>
               )}
             </div>
             <div className="flex-1">
@@ -500,14 +507,10 @@ const Page = () => {
                 name="workAt"
                 type="tel"
                 placeholder="Enter your workAt"
-                {...formik.getFieldProps("workAt")}
+                value={userData.workAt}
+                onChange={(e) => handleChange("workAt", e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
               />
-              {formik.touched.workAt && formik.errors.workAt && (
-                <div className="text-red-500 text-sm">
-                  {formik.errors.workAt}
-                </div>
-              )}
             </div>
           </div>
 
@@ -526,8 +529,8 @@ const Page = () => {
                     type="radio"
                     name="gender"
                     value={false}
-                    checked={formik.values.gender === false}
-                    onChange={() => formik.setFieldValue("gender", false)}
+                    checked={gender === false}
+                    onChange={() => handleGenderChange(false)}
                     className="focus:ring-2 focus:ring-gray-500 size-5 mr-3"
                   />
                   Female
@@ -542,19 +545,13 @@ const Page = () => {
                     type="radio"
                     name="gender"
                     value={true}
-                    checked={formik.values.gender === true}
-                    onChange={() => formik.setFieldValue("gender", true)}
+                    checked={gender === true}
+                    onChange={() => handleGenderChange(true)}
                     className="focus:ring-2 focus:ring-gray-500 size-5 mr-3"
                   />
                   Male
                 </label>
               </div>
-
-              {formik.touched.gender && formik.errors.gender && (
-                <div className="text-red-500 text-sm">
-                  {formik.errors.gender}
-                </div>
-              )}
             </div>
 
             <div className="flex flex-col gap-4 basis-1/2">
@@ -563,8 +560,10 @@ const Page = () => {
               </label>
               <div className="flex items-center gap-4">
                 <select
-                  onChange={(e) => handleDateChange("month", e.target.value)}
-                  value={formik.values.birthDay.month}
+                  value={userData.birthDay.month}
+                  onChange={(e) =>
+                    handleChange("birthDay.month", e.target.value)
+                  }
                   className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
                 >
                   {months.map((m, i) => {
@@ -578,8 +577,10 @@ const Page = () => {
                 </select>
 
                 <select
-                  onChange={(e) => handleDateChange("day", e.target.value)}
-                  value={formik.values.birthDay.day}
+                  value={userData.birthDay.month}
+                  onChange={(e) =>
+                    handleChange("birthDay.month", e.target.value)
+                  }
                   className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
                 >
                   {[...Array(daysInMonth)].map((_, i) => {
@@ -593,8 +594,10 @@ const Page = () => {
                 </select>
 
                 <select
-                  onChange={(e) => handleDateChange("year", e.target.value)}
-                  value={formik.values.birthDay.year}
+                  value={userData.birthDay.year}
+                  onChange={(e) =>
+                    handleChange("birthDay.year", e.target.value)
+                  }
                   className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
                 >
                   {[...Array(100)].map((_, i) => {
@@ -620,16 +623,10 @@ const Page = () => {
                 name="location"
                 type="text"
                 placeholder="Enter your location"
-                value={formik.values.location}
-                onChange={formik.handleChange}
+                value={userData.location}
+                onChange={(e) => handleChange("location", e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none"
               />
-
-              {formik.touched.location && formik.errors.location && (
-                <div className="text-red-500 text-sm">
-                  {formik.errors.location}
-                </div>
-              )}
             </div>
 
             <div className="flex flex-col gap-2 basis-1/2">
@@ -641,24 +638,20 @@ const Page = () => {
                 name="education"
                 type="text"
                 placeholder="Enter your education"
-                value={formik.values.education}
-                onChange={formik.handleChange}
+                value={userData.education}
+                onChange={(e) => handleChange("education", e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none"
               />
-              {formik.touched.education && formik.errors.education && (
-                <div className="text-red-500 text-sm">
-                  {formik.errors.education}
-                </div>
-              )}
             </div>
           </div>
 
           <div className="m-5 flex justify-end">
             <button
               type="submit"
+              disabled={loading}
               className="px-10 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 dark:bg-gray-500 dark:hover:bg-gray-600 transition focus:outline-none focus:ring-2 focus:ring-blue-500 text-xl"
             >
-              Save
+              {loading ? "Saving..." : "Save"}
             </button>
           </div>
         </form>

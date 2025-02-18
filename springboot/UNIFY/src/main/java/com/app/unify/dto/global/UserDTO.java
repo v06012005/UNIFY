@@ -11,9 +11,7 @@ import com.app.unify.entities.Role;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -41,9 +39,9 @@ public class UserDTO {
     @Column(nullable = true)
     private String phone;
 
- 
 
-  
+
+
 
     @NotBlank(message = "Email is required")
     @Email(message = "Email should be valid")
@@ -55,7 +53,7 @@ public class UserDTO {
 
     private LocalDateTime registeredAt = LocalDateTime.now();
 
- 
+
     private Boolean gender;
 
     @Past(message = "Birthdate must be in the past")
@@ -67,8 +65,9 @@ public class UserDTO {
 
     private String workAt;
 
-  
-    private Integer status;
 
+    private Integer status;
+    private String currentPassword;
+    private String newPassword;
     Set<Role> roles;
 }

@@ -30,14 +30,14 @@ public class SpringMailService {
 	public void sendOtpMail(String to, String otp) {
 		String subject = "Xác nhận OTP từ dịch vụ của chúng tôi";
         String content = loadEmailTemplate("templates/email-otp-form.html");
-        
+
         //chức năng: thay thế {{OTP_CODE}} bằng giá trị otp thực tế
         Map<String, String> valuesMap = new HashMap<>();
         valuesMap.put("OTP_CODE", otp);
-        
+
         StringSubstitutor substitutor = new StringSubstitutor(valuesMap);
         String finalContent = substitutor.replace(content);
-        
+
         sendHtmlMail(to, subject, finalContent);
 	}
 

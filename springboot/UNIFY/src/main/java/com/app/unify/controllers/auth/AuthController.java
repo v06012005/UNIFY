@@ -1,5 +1,18 @@
 package com.app.unify.controllers.auth;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.app.unify.dto.global.UserDTO;
 import com.app.unify.dto.request.UserLoginDto;
 import com.app.unify.dto.response.TokenResponse;
@@ -10,16 +23,11 @@ import com.app.unify.services.AuthenticationService;
 import com.app.unify.services.UserService;
 import com.app.unify.utils.EncryptPasswordUtil;
 import com.app.unify.utils.JwtUtil;
+
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -83,4 +91,12 @@ public class AuthController {
         }
     }
 
+    @GetMapping("/remove-cookie")
+    public ResponseEntity<String> removeCookie(HttpServletResponse response) {
+        Cookie cookie = new Cookie("token", null);
+        cookie.setPath("/");
+        cookie.setMaxAge(0); 
+        response.addCookie(cookie);
+        return ResponseEntity.ok("Cookie removed");
+    }
 }

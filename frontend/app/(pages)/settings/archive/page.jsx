@@ -18,7 +18,7 @@ const Page = () => {
   return (
     <div className="w-full">
       <div className="flex ">
-        <div className="h-screen overflow-y-auto bg-gray-100 dark:!bg-black">
+        <div className="h-screen overflow-y-auto dark:!bg-black">
           <h3 className="text-3xl font-bold mb-3">Archive</h3>
           <div className="mb-4">
             <input

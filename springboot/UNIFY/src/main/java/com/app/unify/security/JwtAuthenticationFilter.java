@@ -39,32 +39,46 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	@Override
 	protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
-			@NonNull FilterChain filterChain) throws ServletException, IOException {
+	        @NonNull FilterChain filterChain) throws ServletException, IOException {
 
-		String token = jwtUtil.getTokenFromRequest(request);
-		if (token == null || !StringUtils.hasText(token)) {
-			filterChain.doFilter(request, response);
-			return;
-		}
-		var isTokenValid = tokenRepository.findByToken(token).map(t -> !t.getExpired() && !t.getRevoked())
-				.orElse(false);
-		if (StringUtils.hasText(token) && jwtUtil.validToken(token) && isTokenValid
-				&& SecurityContextHolder.getContext().getAuthentication() == null) {
+	    String token = jwtUtil.getTokenFromRequest(request);
 
-			String email = jwtUtil.extractUsername(token);
-			UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
+	    if (token == null || !StringUtils.hasText(token)) {
+	        filterChain.doFilter(request, response);
+	        return;
+	    }
 
-			UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null,
-					userDetails.getAuthorities());
+	    try {
+	        var isTokenValid = tokenRepository.findByToken(token)
+	                .map(t -> !t.getExpired() && !t.getRevoked())
+	                .orElse(false);
 
-			authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-			SecurityContextHolder.getContext().setAuthentication(authToken);
-		}
+	        if (StringUtils.hasText(token) && jwtUtil.validToken(token) && isTokenValid
+	                && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-		String tokentest = request.getHeader("Authorization");
-		System.out.println("Received Token: " + tokentest);	
+	            String email = jwtUtil.extractUsername(token);
+	            if (email == null || email.isEmpty()) {
+	                throw new RuntimeException("Invalid token: unable to extract username");
+	            }
 
-		filterChain.doFilter(request, response);
+	            UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
+	            if (userDetails == null) {
+	                throw new RuntimeException("User not found for the given token");
+	            }
+
+	            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null,
+	                    userDetails.getAuthorities());
+	            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+	            SecurityContextHolder.getContext().setAuthentication(authToken);
+	        }
+	    } catch (Exception e) {
+	        System.out.println("Error during JWT authentication: " + e.getMessage());
+	    }
+
+	    String tokentest = request.getHeader("Authorization");
+	    System.out.println("Received Token: " + tokentest);
+
+	    filterChain.doFilter(request, response);
 	}
 
 }
