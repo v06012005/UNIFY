@@ -36,7 +36,6 @@ public class ChatController {
 		message.setTimestamp(LocalDateTime.now());
 		Message messageSaved = messageService.saveMessage(message);
 		messagingTemplate.convertAndSendToUser(message.getReceiver(), "/queue/messages", messageSaved);
-		messagingTemplate.convertAndSendToUser(message.getSender(), "/queue/messages", messageSaved);
 	}
 
 	@GetMapping("/{user1}/{user2}")

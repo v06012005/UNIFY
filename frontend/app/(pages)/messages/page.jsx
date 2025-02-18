@@ -6,67 +6,27 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import Message from "@/components/global/chat/Message";
 import { useApp } from "@/components/provider/AppProvider";
-import { useState } from "react";
+import {useState, useEffect, useRef} from "react";
 
 const Page = () => {
   const { user, useChat } = useApp();
-  const chatPartner = "3fc0aee5-b110-4788-80a8-7c571e244a13";
+  const chatPartner = user.id === "58d8ce36-2c82-4d75-b71b-9d34a3370b16" ?  "3fc0aee5-b110-4788-80a8-7c571e244a13"  : "58d8ce36-2c82-4d75-b71b-9d34a3370b16";
   const { chatMessages, sendMessage } = useChat(user, chatPartner);
   const [newMessage, setNewMessage] = useState("");
+
+
+  const messagesEndRef = useRef(null);
+
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatMessages]);
 
   const handleSendMessage = () => {
     if (newMessage.trim() === "") return;
     sendMessage(newMessage);
     setNewMessage("");
   };
-
-  // const chatMessages = [
-  //   {
-  //     "id": "1",
-  //     "sender": "58d8ce36-2c82-4d75-b71b-9d34a3370b16",
-  //     "receiver": "user2",
-  //     "content": "Hey there!",
-  //     "timestamp": "2025-02-14T10:00:00Z",
-  //     "avatar": avatar,
-  //     "fileUrls": []
-  //   },
-  //   {
-  //     "id": "2",
-  //     "sender": "58d8ce36-2c82-4d75-b71b-9d34a3370b16",
-  //     "receiver": "58d8ce36-2c82-4d75-b71b-9d34a3370b16",
-  //     "content": "How are you?",
-  //     "timestamp": "2025-02-14T10:00:30Z",
-  //     "avatar": "/user1.png",
-  //     "fileUrls": []
-  //   },
-  //   {
-  //     "id": "3",
-  //     "sender": "user2",
-  //     "receiver": "58d8ce36-2c82-4d75-b71b-9d34a3370b16",
-  //     "content": "I'm doing great!",
-  //     "timestamp": "2025-02-14T10:01:00Z",
-  //     "avatar": avatar,
-  //     "fileUrls": []
-  //   },
-  //   {
-  //     "id": "4",
-  //     "sender": "user2",
-  //     "receiver": "user1",
-  //     "content": "What about you?",
-  //     "timestamp": "2025-02-14T10:01:30Z",
-  //     "avatar": avatar,
-  //     "fileUrls": []
-  //   },
-  //   {
-  //     "id": "5",
-  //     "sender": "58d8ce36-2c82-4d75-b71b-9d34a3370b16",
-  //     "receiver": "user2",
-  //     "content": "I'm good too!",
-  //     "timestamp": "2025-02-14T10:02:00Z",
-  //     "avatar": avatar,
-  //     "fileUrls": []
-  //   }
-  // ]
 
   return (
     <div className="ml-auto">
@@ -148,10 +108,13 @@ const Page = () => {
             </div>
           </div>
           <hr className=" border-1 dark:border-gray-300" />
+
           <div className="h-3/4 overflow-y-scroll">
             <h2 className="text-center m-3">23:48, 20/01/2025</h2>
 
-            <Message messages={chatMessages} />
+            <Message messages={chatMessages}/>
+
+            <div ref={messagesEndRef}/>
           </div>
 
           <div className="flex items-center mt-3 bg-gray-800 text-white p-3 rounded-2xl w-full justify-center">
