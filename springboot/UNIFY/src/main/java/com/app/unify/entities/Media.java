@@ -1,6 +1,7 @@
 package com.app.unify.entities;
 
 import com.app.unify.types.MediaType;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,7 +12,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -29,26 +29,26 @@ import lombok.experimental.FieldDefaults;
 @Builder
 public class Media {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    String id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.UUID)
+	String id;
 
-    @ManyToOne
-    @MapsId("id")
-    @JoinColumn(name = "post_id")
-    Post post;
+	@ManyToOne
+	@JoinColumn(name = "post_id")
+	@JsonBackReference
+	Post post;
 
-    @Column(nullable = false)
-    String url;
+	@Column(nullable = false)
+	String url;
 
-    @Column(name = "file_type", nullable = false)
-    String fileType;
+	@Column(name = "file_type", nullable = false)
+	String fileType;
 
-    @Column(nullable = false)
-    Long size;
+	@Column(nullable = false)
+	Long size;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "media_type", nullable = false)
-    MediaType mediaType;
+	@Enumerated(EnumType.STRING)
+	@Column(name = "media_type", nullable = false)
+	MediaType mediaType;
 
 }

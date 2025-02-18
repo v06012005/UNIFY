@@ -35,88 +35,61 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+	@Value("${var.allowedOrigin}")
+	private String allowedOrigin;
 
-    @Value("${var.allowedOrigin}")
-    private String allowedOrigin;
+	private final String[] ACCESS_ENDPOINTS = { "/api/auth/**", "/send-email", };
 
-    private final String[] ACCESS_ENDPOINTS = {
-       "/api/auth/**",
-    };
+	private JwtAuthenticationFilter jwtAuthenticationFilter;
+	private CustomUserDetailsService customUserDetailsService;
+	private CustomLogoutHandler logoutHandler;
 
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
-    private CustomUserDetailsService customUserDetailsService;
-    private CustomLogoutHandler logoutHandler;
+	@Autowired
+	public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
+			CustomUserDetailsService customUserDetailsService, CustomLogoutHandler logoutHandler) {
+		this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+		this.customUserDetailsService = customUserDetailsService;
+		this.logoutHandler = logoutHandler;
+	}
 
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-    @Autowired
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
-                          CustomUserDetailsService customUserDetailsService,
-                          CustomLogoutHandler logoutHandler){
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-        this.customUserDetailsService = customUserDetailsService;
-        this.logoutHandler = logoutHandler;
-    }
+		return http.csrf(AbstractHttpConfigurer::disable).cors(Customizer.withDefaults())
+				.authorizeHttpRequests(authorize -> authorize
+						.requestMatchers(ACCESS_ENDPOINTS).permitAll().anyRequest().authenticated())
+				.userDetailsService(customUserDetailsService)
+				.exceptionHandling(ex -> ex
+						.accessDeniedHandler((request, response, accessDeniedException) -> response.setStatus(403))
+						.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.logout(log -> log.logoutUrl("/users/logout").addLogoutHandler(logoutHandler).logoutSuccessHandler(
+						((request, response, authentication) -> SecurityContextHolder.clearContext())))
+				.httpBasic(Customizer.withDefaults())
+				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class).build();
 
-   @Bean
-   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+	}
 
-      return http.csrf(AbstractHttpConfigurer::disable)
-               .cors(Customizer.withDefaults())
-               .authorizeHttpRequests(authorize -> authorize
-                       .requestMatchers(ACCESS_ENDPOINTS).permitAll()
-                       .anyRequest().authenticated()
-               ).userDetailsService(customUserDetailsService)
-               .exceptionHandling(
-                       ex -> ex.accessDeniedHandler(
-                                       (request, response, accessDeniedException) -> response.setStatus(403)
-                               )
-                               .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
-               ).sessionManagement(
-                       session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-               ).logout(log -> log.logoutUrl("/users/logout")
-                       .addLogoutHandler(logoutHandler)
-                       .logoutSuccessHandler(
-                               ((request, response, authentication) -> SecurityContextHolder.clearContext())
-                       )
-               )
-               .httpBasic(Customizer.withDefaults())
-               .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-               .build();
+	@Bean
+	public CorsConfigurationSource corsConfigurationSource() {
 
+		CorsConfiguration configuration = new CorsConfiguration();
+		configuration.setAllowedOrigins(Collections.singletonList(allowedOrigin));
+		configuration.setAllowedMethods(Collections.singletonList("*"));
+		configuration.setAllowedHeaders(List.of(HttpHeaders.AUTHORIZATION, HttpHeaders.CONTENT_TYPE));
+		configuration.setAllowCredentials(true);
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", configuration);
+		return source;
+	}
 
-    }
+	@Bean
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+		return configuration.getAuthenticationManager();
+	}
 
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource(){
-
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Collections.singletonList(allowedOrigin));
-        configuration.setAllowedMethods(Collections.singletonList("*"));
-        configuration.setAllowedHeaders(
-                List.of(
-                    HttpHeaders.AUTHORIZATION,
-                    HttpHeaders.CONTENT_TYPE
-                )
-        );
-        configuration.setAllowCredentials(true);
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager (
-            AuthenticationConfiguration configuration
-    ) throws Exception {
-       return configuration.getAuthenticationManager();
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder(10);
-    }
-
-
-
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder(10);
+	}
 }

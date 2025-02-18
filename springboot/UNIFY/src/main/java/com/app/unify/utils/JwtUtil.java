@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.StringJoiner;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -31,82 +32,70 @@ import jakarta.servlet.http.HttpServletRequest;
 @Component
 public class JwtUtil {
 
-    @Value("${jwt.signerKey}")
-    private String singerKey;
+	@Value("${jwt.signerKey}")
+	private String singerKey;
 
-    @Autowired
-    private UserRepository userRepository;
+	@Autowired
+	private UserRepository userRepository;
 
-    public String generateToken(String email) {
+	public String generateToken(String email) {
 
-        User user = userRepository.findByEmail(email)
-                                  .orElseThrow(() -> new UserNotFoundException("User not found !"));
+		User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found !"));
 
-        JWSHeader header = new JWSHeader(JWSAlgorithm.HS256);
-        JWTClaimsSet claimsSet = new JWTClaimsSet
-                                     .Builder()
-                .subject(email)
-                .issuer("unify.com")
-                .claim("scope", buildScope(user))
-                .issueTime(new Date())
-                .expirationTime(new Date(
-                        Instant.now()
-                                .plus(7, ChronoUnit.DAYS)
-                                .toEpochMilli()
-                ))
-                .build();
-        Payload payload = new Payload(claimsSet.toJSONObject());
-        JWSObject jwsObject = new JWSObject(header, payload);
-        try {
-            jwsObject.sign(new MACSigner(singerKey.getBytes()));
-            return jwsObject.serialize();
-        } catch (JOSEException e) {
-            throw new RuntimeException(e);
-        }
-    }
+		JWSHeader header = new JWSHeader(JWSAlgorithm.HS256);
+		JWTClaimsSet claimsSet = new JWTClaimsSet.Builder().subject(email).issuer("unify.com")
+				.claim("scope", buildScope(user)).issueTime(new Date())
+				.expirationTime(new Date(Instant.now().plus(7, ChronoUnit.DAYS).toEpochMilli())).build();
+		Payload payload = new Payload(claimsSet.toJSONObject());
+		JWSObject jwsObject = new JWSObject(header, payload);
+		try {
+			jwsObject.sign(new MACSigner(singerKey.getBytes()));
+			return jwsObject.serialize();
+		} catch (JOSEException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-    public boolean validToken(String token) {
-        try {
-            SignedJWT signed = SignedJWT.parse(token);
-            JWSVerifier verifier = new MACVerifier(singerKey);
-            Date expirationTime  = signed.getJWTClaimsSet().getExpirationTime();
-            return signed.verify(verifier) && expirationTime.after(new Date());
-        } catch (ParseException | JOSEException e) {
-            throw new RuntimeException(e);
-        }
-    }
+	public boolean validToken(String token) {
+		try {
+			SignedJWT signed = SignedJWT.parse(token);
+			JWSVerifier verifier = new MACVerifier(singerKey);
+			Date expirationTime = signed.getJWTClaimsSet().getExpirationTime();
+			return signed.verify(verifier) && expirationTime.after(new Date());
+		} catch (ParseException | JOSEException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
+	public String getTokenFromRequest(HttpServletRequest request) {
 
-    public String getTokenFromRequest(HttpServletRequest request){
+		String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+		if (authHeader == null) {
+			return request.getParameter("token");
+		}
+		if (StringUtils.hasText(authHeader) && authHeader.startsWith("Bearer ")) {
+			return authHeader.substring(7);
+		}
+		return null;
+	}
 
-        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (authHeader == null ){
-            return request.getParameter("token");
-        }
-        if(StringUtils.hasText(authHeader) && authHeader.startsWith("Bearer")){
-            return authHeader.substring(7);
-        }
-        return null;
-    }
+	public String extractUsername(String token) {
+		try {
+			SignedJWT signed = SignedJWT.parse(token);
+			return signed.getJWTClaimsSet().getSubject();
+		} catch (ParseException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-    public String extractUsername(String token) {
-        try {
-            SignedJWT signed = SignedJWT.parse(token);
-            return signed.getJWTClaimsSet().getSubject();
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private String buildScope(User user){
-        StringJoiner joiner = new StringJoiner(" ");
-        if(!CollectionUtils.isEmpty(user.getRoles())){
-            user.getRoles()
-                    .forEach(role -> {
-                        joiner.add("ROLE_" + role.getName());
-                    });
-        }
-        return joiner.toString();
-    }
+	private String buildScope(User user) {
+		StringJoiner joiner = new StringJoiner(" ");
+		if (!CollectionUtils.isEmpty(user.getRoles())) {
+			user.getRoles().forEach(role -> {
+				joiner.add("ROLE_" + role.getName());
+			});
+		}
+		return joiner.toString();
+	}
 
 }

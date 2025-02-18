@@ -17,26 +17,22 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CustomLogoutHandler implements LogoutHandler {
 
+	@Autowired
+	private TokenRepository tokenRepository;
 
-    @Autowired
-    private TokenRepository tokenRepository;
-
-    @Override
-    public void logout(HttpServletRequest request,
-                       HttpServletResponse response,
-                       Authentication authentication) {
-        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if(!StringUtils.hasText(authHeader) || !authHeader.startsWith("Bearer ")){
-            response.setStatus(401);
-            return;
-        }
-        String token = authHeader.substring(7);
-        var storedToken = tokenRepository.findByToken(token)
-                          .orElse(null);
-        if(storedToken != null){
-            storedToken.setExpired(true);
-            storedToken.setRevoked(true);
-            tokenRepository.save(storedToken);
-        }
-    }
+	@Override
+	public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+		String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+		if (!StringUtils.hasText(authHeader) || !authHeader.startsWith("Bearer ")) {
+			response.setStatus(401);
+			return;
+		}
+		String token = authHeader.substring(7);
+		var storedToken = tokenRepository.findByToken(token).orElse(null);
+		if (storedToken != null) {
+			storedToken.setExpired(true);
+			storedToken.setRevoked(true);
+			tokenRepository.save(storedToken);
+		}
+	}
 }

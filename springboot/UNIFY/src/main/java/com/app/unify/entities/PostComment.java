@@ -27,28 +27,28 @@ import lombok.experimental.FieldDefaults;
 @Builder
 public class PostComment {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    String id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.UUID)
+	String id;
 
-    @Column(name = "content", nullable = false)
-    String content;
+	@Column(name = "content", nullable = false)
+	String content;
 
-    @ManyToOne
-    @MapsId("id")
-    @JoinColumn(name = "post_id", nullable = false)
-    Post post;
+	@ManyToOne
+	@MapsId("id")
+	@JoinColumn(name = "post_id", nullable = false)
+	Post post;
 
-    @ManyToOne
-    @MapsId("id")
-    @JoinColumn(name = "user_id", nullable = false)
-    User user;
+	@ManyToOne
+	@MapsId("id")
+	@JoinColumn(name = "user_id", nullable = false)
+	User user;
 
-    @Column(name = "commented_at", nullable = false)
-    LocalDateTime commentedAt;
+	@Column(name = "commented_at", nullable = false)
+	LocalDateTime commentedAt;
 
-    @ManyToOne
-    @JoinColumn(name = "parent_id")
-    PostComment parentId;
+	@ManyToOne
+	@JoinColumn(name = "parent_id")
+	PostComment parentId;
 
 }
