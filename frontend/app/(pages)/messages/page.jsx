@@ -6,13 +6,20 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import Message from "@/components/global/chat/Message";
 import { useApp } from "@/components/provider/AppProvider";
-import {useState, useEffect, useRef} from "react";
-
+ 
+import { useState, useRef, useEffect } from "react";
+import Picker from "emoji-picker-react";
+import { Smile, Send, Plus } from "lucide-react";
+ 
 const Page = () => {
   const { user, useChat } = useApp();
   const chatPartner = user.id === "58d8ce36-2c82-4d75-b71b-9d34a3370b16" ?  "3fc0aee5-b110-4788-80a8-7c571e244a13"  : "58d8ce36-2c82-4d75-b71b-9d34a3370b16";
   const { chatMessages, sendMessage } = useChat(user, chatPartner);
   const [newMessage, setNewMessage] = useState("");
+ 
+  const [showPicker, setShowPicker] = useState(false);
+  const pickerRef = useRef(null);
+ 
 
 
   const messagesEndRef = useRef(null);
@@ -22,12 +29,78 @@ const Page = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatMessages]);
 
+ 
   const handleSendMessage = () => {
     if (newMessage.trim() === "") return;
     sendMessage(newMessage);
     setNewMessage("");
   };
 
+ 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (pickerRef.current && !pickerRef.current.contains(event.target)) {
+        setShowPicker(false);
+      }
+    };
+
+    if (showPicker) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showPicker]);
+  // const chatMessages = [
+  //   {
+  //     "id": "1",
+  //     "sender": "58d8ce36-2c82-4d75-b71b-9d34a3370b16",
+  //     "receiver": "user2",
+  //     "content": "Hey there!",
+  //     "timestamp": "2025-02-14T10:00:00Z",
+  //     "avatar": avatar,
+  //     "fileUrls": []
+  //   },
+  //   {
+  //     "id": "2",
+  //     "sender": "58d8ce36-2c82-4d75-b71b-9d34a3370b16",
+  //     "receiver": "58d8ce36-2c82-4d75-b71b-9d34a3370b16",
+  //     "content": "How are you?",
+  //     "timestamp": "2025-02-14T10:00:30Z",
+  //     "avatar": "/user1.png",
+  //     "fileUrls": []
+  //   },
+  //   {
+  //     "id": "3",
+  //     "sender": "user2",
+  //     "receiver": "58d8ce36-2c82-4d75-b71b-9d34a3370b16",
+  //     "content": "I'm doing great!",
+  //     "timestamp": "2025-02-14T10:01:00Z",
+  //     "avatar": avatar,
+  //     "fileUrls": []
+  //   },
+  //   {
+  //     "id": "4",
+  //     "sender": "user2",
+  //     "receiver": "user1",
+  //     "content": "What about you?",
+  //     "timestamp": "2025-02-14T10:01:30Z",
+  //     "avatar": avatar,
+  //     "fileUrls": []
+  //   },
+  //   {
+  //     "id": "5",
+  //     "sender": "58d8ce36-2c82-4d75-b71b-9d34a3370b16",
+  //     "receiver": "user2",
+  //     "content": "I'm good too!",
+  //     "timestamp": "2025-02-14T10:02:00Z",
+  //     "avatar": avatar,
+  //     "fileUrls": []
+  //   }
+  // ]
+
+ 
   return (
     <div className="ml-auto">
       <div className="flex w-full">
@@ -121,8 +194,15 @@ const Page = () => {
             <Image
               src={avatar}
               alt="Avatar"
-              className="rounded-full w-10 h-10 mr-4"
+              className="rounded-full w-10 h-10 "
             />
+            <button
+              onClick={() => document.getElementById("fileInput").click()}
+              className="text-gray-400 hover:text-gray-300 mr-3 ml-3"
+            >
+              <Plus size={28} />
+            </button>
+            <input type="file" id="fileInput" className="hidden" />
 
             <input
               type="text"
@@ -137,12 +217,32 @@ const Page = () => {
                 }
               }}
             />
+            <button
+              type="button"
+              onClick={() => setShowPicker(!showPicker)}
+              className="ml-2 text-gray-400 hover:text-gray-300"
+            >
+              <Smile size={28} />
+            </button>
+
+            {showPicker && (
+              <div
+                ref={pickerRef}
+                className="absolute bottom-20  right-14 z-50"
+              >
+                <Picker
+                  onEmojiClick={(emojiObject) =>
+                    setNewMessage(newMessage + emojiObject.emoji)
+                  }
+                />
+              </div>
+            )}
             {newMessage.trim() && (
               <button
                 onClick={handleSendMessage}
-                className="ml-2 p-2 bg-blue-500 hover:bg-blue-600 rounded-full text-white"
+                className="ml-2 text-blue-600 hover:text-white"
               >
-                <i className="fas fa-paper-plane text-xl"></i>
+                <Send size={30} />
               </button>
             )}
           </div>

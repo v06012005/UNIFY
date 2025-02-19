@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/messages")
-@RequiredArgsConstructor
+@RequiredArgsConstructor	
 public class ChatController {
 
 	private SimpMessagingTemplate messagingTemplate;

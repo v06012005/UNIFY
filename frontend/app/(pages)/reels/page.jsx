@@ -1,17 +1,17 @@
 "use client";
 
 import Image from "next/image";
-import React, { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import avatar2 from "@/public/images/testAvt.jpg";
-import { useModal } from "@/components/provider/ModalProvider";
+import { Send, Smile } from "lucide-react";
+import Picker from "emoji-picker-react";
 import {
   Modal,
   ModalContent,
   ModalHeader,
   ModalBody,
   ModalFooter,
-  Button,
   useDisclosure,
 } from "@heroui/react";
 
@@ -25,11 +25,29 @@ const Reels = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isFollow, setIsFollow] = useState(false);
   const [selectedAvatar, setSelectedAvatar] = useState(null);
+  const [showPicker, setShowPicker] = useState(false);
+  const [comment, setComment] = useState("");
+  const pickerRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (pickerRef.current && !pickerRef.current.contains(event.target)) {
+        setShowPicker(false);
+      }
+    };
+
+    if (showPicker) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showPicker]);
+
   const toggleMute = () => {
     setIsMuted((prev) => !prev);
   };
-
-  const { openModal } = useModal();
 
   const toggleComment = () => {
     setIsCommentOpen((prev) => !prev);
@@ -286,18 +304,60 @@ const Reels = () => {
                   </div>
                 </div>
               </div>
-              <div className="flex items-center mt-3  text-white p-3 rounded-2xl w-full justify-center">
+              <div className="flex items-center mt-3 text-white p-3 rounded-2xl w-full justify-center relative">
                 <Image
                   src={avatar2}
                   alt="Avatar"
                   className="rounded-full w-10 h-10 mr-2"
                 />
 
-                <input
-                  type="text"
+                <textarea
                   placeholder="Add a comment..."
-                  className="bg-gray-700 text-white placeholder-gray-400 flex-grow py-2 px-4 rounded-2xl focus:outline-none"
+                  maxLength={150}
+                  rows={1}
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                  onInput={(e) => {
+                    e.target.style.height = "auto";
+                    const maxHeight =
+                      3 * parseFloat(getComputedStyle(e.target).lineHeight); // 3 dòng
+                    if (e.target.scrollHeight > maxHeight) {
+                      e.target.style.height = `${maxHeight}px`;
+                      e.target.style.overflowY = "auto"; // Hiện scroll khi quá 3 dòng
+                    } else {
+                      e.target.style.height = `${e.target.scrollHeight}px`;
+                      e.target.style.overflowY = "hidden";
+                    }
+                  }}
+                  className="bg-gray-700 text-white placeholder-gray-400 flex-grow py-2 px-4 rounded-2xl focus:outline-none resize-none"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPicker(!showPicker)}
+                  className="ml-2 text-gray-600 hover:text-gray-400"
+                >
+                  <Smile size={28} />
+                </button>
+
+                {showPicker && (
+                  <div
+                    ref={pickerRef}
+                    className="absolute bottom-20  right-12 z-50"
+                  >
+                    <Picker
+                      onEmojiClick={(emojiObject) =>
+                        setComment(comment + emojiObject.emoji)
+                      }
+                    />
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  className="ml-2 text-gray-600 hover:text-gray-400"
+                >
+                  <Send size={28} />
+                </button>
               </div>
             </div>
           </div>

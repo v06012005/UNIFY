@@ -63,42 +63,53 @@ const LoginPage = () => {
 
   return (
     <div className={`w-full h-screen grid place-content-center`}>
-      <div align={"center"}>
+      <div>
         <div className={`grid gap-5`}>
-          <div>
+          <div align={"center"}>
             <FullUnifyLogoIcon className="mr-7 w-60" />
           </div>
-          <Input
-            name="email"
-            type="email"
-            placeholder="Email"
-            className="w-[400px] h-12"
-            value={formData.email}
-            onChange={handleChange}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault(); // Ngăn Enter xuống dòng
-                handleLogin();
-              }
-            }}
-          />
-          {errors.email && <p className="text-red-500">{errors.email}</p>}
-          <Input
-            name="password"
-            type="password"
-            placeholder="Password"
-            className="w-[400px] h-12"
-            value={formData.password}
-            onChange={handleChange}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault(); // Ngăn Enter xuống dòng
-                handleLogin();
-              }
-            }}
-          />
-          {errors.password && <p className="text-red-500">{errors.password}</p>}
-          <Link href="/password/reset">Forgot password?</Link>
+          <div className="basis-1/2">
+            <Input
+              name="email"
+              type="email"
+              placeholder="Email"
+              className="w-[400px] h-12"
+              value={formData.email}
+              onChange={handleChange}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleLogin();
+                }
+              }}
+            />
+            {errors.email && (
+              <p className="text-red-500 text-sm">{errors.email}</p>
+            )}
+          </div>
+          <div className="basis-1/2">
+            <Input
+              name="password"
+              type="password"
+              placeholder="Password"
+              className="w-[400px] h-12"
+              value={formData.password}
+              onChange={handleChange}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleLogin();
+                }
+              }}
+            />
+            {errors.password && (
+              <p className="text-red-500 text-sm">{errors.password}</p>
+            )}
+          </div>
+
+          <Link href="/password/reset" className="place-self-center">
+            Forgot password?
+          </Link>
           <div className="flex items-center gap-2 m-auto">
             <div className="w-10 h-[1px] bg-[#767676]"></div>
             <span className="text-[#767676] mb-1">or</span>
@@ -119,11 +130,10 @@ const LoginPage = () => {
               Sign up
             </Link>
           </div>
-          {errors.server && <p className="text-red-500">{errors.server}</p>}
-          <Button
-            className="text-2xl mt-3 p-5"
-            onClick={handleLogin}
-          >
+          {errors.server && (
+            <p className="text-red-500 text-sm">{errors.server}</p>
+          )}
+          <Button className="text-2xl mt-3 p-5" onClick={handleLogin}>
             Login
           </Button>
         </div>
