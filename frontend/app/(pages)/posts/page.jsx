@@ -168,15 +168,29 @@ const Page = () => {
               <div className={cn(
                 previews.length > 0 && "mt-4 grid grid-cols-4 gap-2",
                 previews.length < 1 && "h-full")}>
-                {previews.map((file, index) => (
-                  <div key={index} className="relative w-full h-full">
-                    <Image
-                      src={file}
-                      alt="Preview" width={100} height={100}
-                      className="w-full h-full object-cover rounded-md border"
-                    />
-                  </div>
-                ))}
+                {previews.map((file, index) => {
+                  const isVideo = file.endsWith(".mp4") || file.endsWith(".webm") || file.endsWith(".ogg");
+
+                  return (
+                    <div key={index} className="relative w-full h-full">
+                      {isVideo ? (
+                        <video
+                          src={file}
+                          controls
+                          className="w-full h-full object-cover rounded-md border"
+                        />
+                      ) : (
+                        <Image
+                          src={file}
+                          alt="Preview"
+                          width={100}
+                          height={100}
+                          className="w-full h-full object-cover rounded-md border"
+                        />
+                      )}
+                    </div>
+                  );
+                })}
                 <div onClick={handleDivClick} className={cn("mt-2 cursor-pointer flex justify-center rounded-lg border border-dashed dark:border-gray-200 border-gray-900/25",
                   previews.length < 1 && "h-5/6 px-6 py-10",
                   previews.length > 0 && "h-full my-auto")}>
@@ -207,7 +221,7 @@ const Page = () => {
                 multiple
                 name="file-upload"
                 type="file"
-                accept="image/*"
+                accept="image/*, video/*"
                 className="sr-only"
                 onChange={handleFileChange}
               />
