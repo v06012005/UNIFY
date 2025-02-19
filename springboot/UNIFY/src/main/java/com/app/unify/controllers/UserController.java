@@ -21,7 +21,7 @@ import com.app.unify.services.UserService;
 public class UserController {
 
 	@Autowired
-	UserService userService;
+	private UserService userService;
 
 	@GetMapping
 	public List<UserDTO> getUsers() {

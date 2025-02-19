@@ -8,6 +8,7 @@ import com.app.unify.entities.PostComment;
 import com.app.unify.entities.User;
 import com.app.unify.types.Audience;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
@@ -15,24 +16,25 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
 public class PostDTO {
-	private String id;
 
-	private String captions;
+	String id;
+
+	String captions;
 
 	// 0 -> hidden
 	// 1 -> visible
 	// 2 -> sensitive/ violent content
-	private Integer status = 1;
+	Integer status = 1;
 
-	private Audience audience;
+	Audience audience;
 
-	private User user;
+	User user;
 
-	private LocalDateTime postedAt;
+	LocalDateTime postedAt;
 
-	private Boolean isCommentVisible;
+	Boolean isCommentVisible;
 
-	private Boolean isLikeVisible = false;
+	Boolean isLikeVisible = false;
 
 	Set<PostComment> comments;
 

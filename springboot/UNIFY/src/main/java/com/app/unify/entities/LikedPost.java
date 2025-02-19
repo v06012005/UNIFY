@@ -1,5 +1,6 @@
 package com.app.unify.entities;
 
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -13,6 +14,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+
+import java.util.Objects;
 
 @Entity
 @Table(name = "LikedPosts")
@@ -34,5 +37,11 @@ public class LikedPost {
 	@ManyToOne
 	@JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
 	User user;
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
+	}
+
 
 }
