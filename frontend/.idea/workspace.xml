@@ -4,7 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1dc806c8-9b06-409a-84de-1db3bd7b8131" name="Changes" comment="" />
+    <list default="true" id="1dc806c8-9b06-409a-84de-1db3bd7b8131" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(pages)/messages/page.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(pages)/messages/page.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/global/chat/Message.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/global/chat/Message.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/provider/AppProvider.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/provider/AppProvider.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/config/WebSocketConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/config/WebSocketConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/controllers/chat/ChatController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/controllers/chat/ChatController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/security/JwtAuthenticationFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/security/JwtAuthenticationFilter.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

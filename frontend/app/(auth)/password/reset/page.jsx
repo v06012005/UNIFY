@@ -2,7 +2,7 @@
 
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import UnifyLogoIcon from "@/components/global/UnifyLogoIcon_Auth";
+import UnifyLogoIcon from "@/components/global/FullUnifyLogoIcon_Auth";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { useState } from "react";

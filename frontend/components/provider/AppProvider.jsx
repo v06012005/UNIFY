@@ -41,7 +41,7 @@ const useChat = (user, chatPartner) => {
                     reconnectDelay: 5000,
                     onConnect: () => {
                         console.log("✅ WebSocket connected");
-                        client.subscribe(`/${user.id}/queue/messages`, (message) => {
+                        client.subscribe(`/user/${user.id}/queue/messages`, (message) => {
                             setChatMessages((prev) =>
                                 [...prev, JSON.parse(message.body)].sort(
                                     (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
