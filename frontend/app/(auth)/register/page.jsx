@@ -10,17 +10,13 @@ import { Button } from "@/components/ui/button";
 import DateSelector from "@/components/global/DateInput";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import {useApp} from "@/components/provider/AppProvider";
-import {redirect} from "next/navigation";
+import { useApp } from "@/components/provider/AppProvider";
+import { redirect } from "next/navigation";
 
 import { useRouter } from "next/navigation";
-
-import { useRouter } from "next/navigation";
+import { router } from "next/client";
 
 const RegisterPage = () => {
-
-
-
   const [errors, setErrors] = useState({});
   const [serverError, setServerError] = useState("");
 
@@ -159,6 +155,9 @@ const RegisterPage = () => {
 
       if (response.ok) {
         alert("Registration successful!");
+        setTimeout(() => {
+          router.push("/login");
+        }, 1500);
       } else {
         setServerError(result?.message || result || "Unknown error occurred");
       }
@@ -168,13 +167,12 @@ const RegisterPage = () => {
     }
   };
 
-
   return (
     <div className={`w-full  grid place-content-center`}>
-      <div align="center">
+      <div>
         <form onSubmit={handleSubmit}>
           <div className={`grid gap-5`}>
-            <div>
+            <div align="center">
               <FullUnifyLogoIcon className="mr-7" />
             </div>
             <div className="flex gap-2">
@@ -203,49 +201,59 @@ const RegisterPage = () => {
                 )}
               </div>
             </div>
-            <Input
-              name="username"
-              placeholder="Username"
-              className="h-12"
-              value={formData.username}
-              onChange={handleChange}
-            />
-            {errors.username && (
-              <p className="text-red-500 text-sm">{errors.username}</p>
-            )}
-            <Input
-              name="email"
-              placeholder="Email"
-              className="h-12"
-              value={formData.email}
-              onChange={handleChange}
-            />
-            {errors.email && (
-              <p className="text-red-500 text-sm">{errors.email}</p>
-            )}
-            <Input
-              name="password"
-              placeholder="Password"
-              className="h-12"
-              type="password"
-              value={formData.password}
-              onChange={handleChange}
-            />
-            {errors.password && (
-              <p className="text-red-500 text-sm">{errors.password}</p>
-            )}
-            <Input
-              name="confirmPassword"
-              placeholder="Confirm Password"
-              className="h-12"
-              type="password"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-            />
+            <div className="basis-1/2">
+              <Input
+                name="username"
+                placeholder="Username"
+                className="h-12"
+                value={formData.username}
+                onChange={handleChange}
+              />
+              {errors.username && (
+                <p className="text-red-500 text-sm">{errors.username}</p>
+              )}
+            </div>
+            <div className="basis-1/2">
+              <Input
+                name="email"
+                placeholder="Email"
+                className="h-12"
+                value={formData.email}
+                onChange={handleChange}
+              />
+              {errors.email && (
+                <p className="text-red-500 text-sm">{errors.email}</p>
+              )}
+            </div>
+            <div className="basis-1/2">
+              <Input
+                name="password"
+                placeholder="Password"
+                className="h-12"
+                type="password"
+                value={formData.password}
+                onChange={handleChange}
+              />
+              {errors.password && (
+                <p className="text-red-500 text-sm">{errors.password}</p>
+              )}
+            </div>
 
-            {errors.confirmPassword && (
-              <p className="text-red-500 text-sm">{errors.confirmPassword}</p>
-            )}
+            <div className="basis-1/2">
+              <Input
+                name="confirmPassword"
+                placeholder="Confirm Password"
+                className="h-12"
+                type="password"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+              />
+
+              {errors.confirmPassword && (
+                <p className="text-red-500 text-sm">{errors.confirmPassword}</p>
+              )}
+            </div>
+
             <div className="flex gap-2">
               <RadioGroup
                 onValueChange={(value) =>
@@ -263,12 +271,13 @@ const RegisterPage = () => {
                 </div>
               </RadioGroup>
             </div>
+            <div className="basis-1/2">
+              <DateSelector date={date} setDate={setDate} months={months} />
+              {errors.birthDay && (
+                <p className="text-red-500 text-sm">{errors.birthDay}</p>
+              )}
+            </div>
 
-            <DateSelector date={date} setDate={setDate} months={months} />
-
-            {errors.birthDay && (
-              <p className="text-red-500 text-sm">{errors.birthDay}</p>
-            )}
             {errors.general && <p className="text-red-500">{errors.general}</p>}
 
             <div className="flex items-center gap-1 m-auto">

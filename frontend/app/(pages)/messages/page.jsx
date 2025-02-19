@@ -6,20 +6,37 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import Message from "@/components/global/chat/Message";
 import { useApp } from "@/components/provider/AppProvider";
-import { useState } from "react";
-
+import { useState, useRef, useEffect } from "react";
+import Picker from "emoji-picker-react";
+import { Smile, Send, Plus } from "lucide-react";
 const Page = () => {
   const { user, useChat } = useApp();
   const chatPartner = "3fc0aee5-b110-4788-80a8-7c571e244a13";
   const { chatMessages, sendMessage } = useChat(user, chatPartner);
   const [newMessage, setNewMessage] = useState("");
-
+  const [showPicker, setShowPicker] = useState(false);
+  const pickerRef = useRef(null);
   const handleSendMessage = () => {
     if (newMessage.trim() === "") return;
     sendMessage(newMessage);
     setNewMessage("");
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (pickerRef.current && !pickerRef.current.contains(event.target)) {
+        setShowPicker(false);
+      }
+    };
+
+    if (showPicker) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showPicker]);
   // const chatMessages = [
   //   {
   //     "id": "1",
@@ -158,8 +175,15 @@ const Page = () => {
             <Image
               src={avatar}
               alt="Avatar"
-              className="rounded-full w-10 h-10 mr-4"
+              className="rounded-full w-10 h-10 "
             />
+            <button
+              onClick={() => document.getElementById("fileInput").click()}
+              className="text-gray-400 hover:text-gray-300 mr-3 ml-3"
+            >
+              <Plus size={28} />
+            </button>
+            <input type="file" id="fileInput" className="hidden" />
 
             <input
               type="text"
@@ -174,12 +198,32 @@ const Page = () => {
                 }
               }}
             />
+            <button
+              type="button"
+              onClick={() => setShowPicker(!showPicker)}
+              className="ml-2 text-gray-400 hover:text-gray-300"
+            >
+              <Smile size={28} />
+            </button>
+
+            {showPicker && (
+              <div
+                ref={pickerRef}
+                className="absolute bottom-20  right-14 z-50"
+              >
+                <Picker
+                  onEmojiClick={(emojiObject) =>
+                    setNewMessage(newMessage + emojiObject.emoji)
+                  }
+                />
+              </div>
+            )}
             {newMessage.trim() && (
               <button
                 onClick={handleSendMessage}
-                className="ml-2 p-2 bg-blue-500 hover:bg-blue-600 rounded-full text-white"
+                className="ml-2 text-blue-600 hover:text-white"
               >
-                <i className="fas fa-paper-plane text-xl"></i>
+                <Send size={30} />
               </button>
             )}
           </div>
