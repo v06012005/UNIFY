@@ -6,22 +6,37 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import Message from "@/components/global/chat/Message";
 import { useApp } from "@/components/provider/AppProvider";
+ 
 import { useState, useRef, useEffect } from "react";
 import Picker from "emoji-picker-react";
 import { Smile, Send, Plus } from "lucide-react";
+ 
 const Page = () => {
   const { user, useChat } = useApp();
-  const chatPartner = "3fc0aee5-b110-4788-80a8-7c571e244a13";
+  const chatPartner = user.id === "58d8ce36-2c82-4d75-b71b-9d34a3370b16" ?  "3fc0aee5-b110-4788-80a8-7c571e244a13"  : "58d8ce36-2c82-4d75-b71b-9d34a3370b16";
   const { chatMessages, sendMessage } = useChat(user, chatPartner);
   const [newMessage, setNewMessage] = useState("");
+ 
   const [showPicker, setShowPicker] = useState(false);
   const pickerRef = useRef(null);
+ 
+
+
+  const messagesEndRef = useRef(null);
+
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatMessages]);
+
+ 
   const handleSendMessage = () => {
     if (newMessage.trim() === "") return;
     sendMessage(newMessage);
     setNewMessage("");
   };
 
+ 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (pickerRef.current && !pickerRef.current.contains(event.target)) {
@@ -85,6 +100,7 @@ const Page = () => {
   //   }
   // ]
 
+ 
   return (
     <div className="ml-auto">
       <div className="flex w-full">
@@ -165,10 +181,13 @@ const Page = () => {
             </div>
           </div>
           <hr className=" border-1 dark:border-gray-300" />
+
           <div className="h-3/4 overflow-y-scroll">
             <h2 className="text-center m-3">23:48, 20/01/2025</h2>
 
-            <Message messages={chatMessages} />
+            <Message messages={chatMessages}/>
+
+            <div ref={messagesEndRef}/>
           </div>
 
           <div className="flex items-center mt-3 bg-gray-800 text-white p-3 rounded-2xl w-full justify-center">

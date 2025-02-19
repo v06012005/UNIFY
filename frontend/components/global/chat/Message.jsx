@@ -3,13 +3,14 @@
 import Image from "next/image";
 import { useApp } from "@/components/provider/AppProvider";
 import avatar from "@/public/images/avatar.png";
+import {FixedSizeList} from "react-window";
 
 const Message = ({ messages }) => {
     const { user } = useApp();
     const currentUser = user.id;
 
     return (
-        <div  className="m-4 flex flex-col gap-3 ">
+        <div className="m-4 flex flex-col gap-3 ">
 
             {messages.map((message, index) => {
 

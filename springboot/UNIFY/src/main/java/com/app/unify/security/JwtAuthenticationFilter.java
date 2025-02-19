@@ -41,17 +41,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
 			@NonNull FilterChain filterChain) throws ServletException, IOException {
 
-		String token = jwtUtil.getTokenFromRequest(request);
-		var isTokenValid = tokenRepository.findByToken(token).map(t -> !t.getExpired() && !t.getRevoked())
-				.orElse(false);
-		if (StringUtils.hasText(token) && jwtUtil.validToken(token) && isTokenValid) {
-			String email = jwtUtil.extractUsername(token);
-			UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
-			UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-					userDetails, null, userDetails.getAuthorities());
-			authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-			SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-		}
+		try{
+            String token = jwtUtil.getTokenFromRequest(request);
+            var isTokenValid = tokenRepository.findByToken(token).map(t -> !t.getExpired() && !t.getRevoked())
+                    .orElse(false);
+            if (StringUtils.hasText(token) && jwtUtil.validToken(token) && isTokenValid) {
+                String email = jwtUtil.extractUsername(token);
+                UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
+                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities());
+                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            }
+        } catch (Exception e) {
+            response.setStatus(401);
+            return;
+        }
 		filterChain.doFilter(request, response);
 	}
 }
