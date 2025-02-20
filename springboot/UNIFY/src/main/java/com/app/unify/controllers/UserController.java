@@ -54,10 +54,6 @@ public class UserController {
 		return userService.createUser(userDto);
 	}
 
-	@PostMapping
-	public UserDTO createUser(@RequestBody UserDTO userDto) {
-		return userService.createUser(userDto);
-	}
 
 	@PutMapping
 	public ResponseEntity<?> updateUser(@RequestBody UserDTO userDto) {
