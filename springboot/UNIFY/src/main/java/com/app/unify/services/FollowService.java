@@ -25,7 +25,6 @@ public class FollowService {
 	@Transactional
 	public String followUser(String followingId) {
 		String currentUserId = getCurrentUserId();
-
 		if (currentUserId.equals(followingId)) {
 			return "Can't follow yourself!";
 		}
@@ -75,17 +74,12 @@ public class FollowService {
 		if (authentication == null || authentication.getPrincipal() == null) {
 			throw new RuntimeException("User not authenticated (401)");
 		}
-
 		Object principal = authentication.getPrincipal();
-		System.out.println("Principal: " + principal); // Debug log
-
 		if (principal instanceof UserDetails userDetails) {
-			String userId = userRepository.findByUsername(userDetails.getUsername())
+			String userId = userRepository.findByEmail(userDetails.getUsername())
 					.orElseThrow(() -> new RuntimeException("User not found")).getId();
-			System.out.println("UserId: " + userId);
 			return userId;
 		}
-
 		throw new RuntimeException("User not authenticated (401)");
 	}
 

@@ -76,9 +76,4 @@ public class Post {
 	public int hashCode() {
 		return Objects.hash(id);
 	}
-
-
-	@OneToMany(mappedBy = "post")
-	@JsonManagedReference
-	Set<Media> media;
 }
