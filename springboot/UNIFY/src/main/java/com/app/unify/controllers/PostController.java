@@ -29,7 +29,7 @@ public class PostController {
 
 	@GetMapping
 	public List<PostDTO> getAllPosts(){
-	   return postService.getAll();
+	   return postService.getPostsTrending();
 	}
 
 	@PostMapping

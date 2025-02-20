@@ -68,14 +68,11 @@ public class Post {
 	Set<Media> media;
 
 	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@JsonIgnore
-	List<LikedPost> likedPosts;
+	Set<LikedPost> likedPosts;
 
 	@Override
 	public int hashCode() {
 		return Objects.hash(id);
 	}
-
-
 
 }
