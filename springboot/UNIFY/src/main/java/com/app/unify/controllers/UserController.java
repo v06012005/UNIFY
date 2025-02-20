@@ -49,6 +49,10 @@ public class UserController {
 	    return userService.findByUsername(username);
 	}
 
+	@PostMapping
+	public UserDTO createUser(@RequestBody UserDTO userDto) {
+		return userService.createUser(userDto);
+	}
 
 	@PostMapping
 	public UserDTO createUser(@RequestBody UserDTO userDto) {

@@ -23,8 +23,6 @@ import com.app.unify.services.UserService;
 import com.app.unify.utils.EncryptPasswordUtil;
 import com.app.unify.utils.JwtUtil;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -89,12 +87,4 @@ public class AuthController {
 		return ResponseEntity.status(200).body(new TokenResponse(token));
 	}
 
-    @GetMapping("/remove-cookie")
-    public ResponseEntity<String> removeCookie(HttpServletResponse response) {
-        Cookie cookie = new Cookie("token", null);
-        cookie.setPath("/");
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
-        return ResponseEntity.ok("Cookie removed");
-    }
 }
