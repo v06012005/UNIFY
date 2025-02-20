@@ -28,22 +28,22 @@ public class ChangePasswordController {
 	@PostMapping("/change-password")
 	public ResponseEntity<?> changePassword(@RequestBody UserDTO userDto, HttpServletRequest request) {
 	    String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-	    int failedAttempts = changePasswordService.getFailedAttempts(userEmail); 
+	    int failedAttempts = changePasswordService.getFailedAttempts(userEmail);
 
 	    if (failedAttempts >= 5) {
-	    	changePasswordService.clearFailedAttempts(userEmail); 
+	    	changePasswordService.clearFailedAttempts(userEmail);
 	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
 	            "message", "Too many failed attempts! Please log in again.",
-	            "action", "logout" 
+	            "action", "logout"
 	        ));
 	    }
 
 	    try {
 	        userService.changePassword(userDto.getCurrentPassword(), userDto.getNewPassword());
-	        changePasswordService.clearFailedAttempts(userEmail); 
+	        changePasswordService.clearFailedAttempts(userEmail);
 	        return ResponseEntity.ok(Map.of("message", "Password changed successfully!"));
 	    } catch (IllegalArgumentException e) {
-	    	changePasswordService.incrementFailedAttempts(userEmail); 
+	    	changePasswordService.incrementFailedAttempts(userEmail);
 	        return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
 	    } catch (Exception e) {
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

@@ -53,7 +53,7 @@ public class UserDTO {
 
 	private String education;
     private String workAt;
-
+    private String biography;
 
     private Integer status;
     private String currentPassword;

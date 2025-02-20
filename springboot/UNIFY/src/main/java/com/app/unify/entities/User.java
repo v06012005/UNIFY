@@ -70,6 +70,8 @@ public class User {
 
 	@Column(name = "work_at")
 	String workAt;
+	@Column(name = "biography")
+	String biography;
 
 	@OneToMany(mappedBy = "user")
 	Set<Post> posts;

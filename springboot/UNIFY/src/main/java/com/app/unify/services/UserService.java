@@ -83,6 +83,13 @@ public class UserService {
 		return userMapper.toUserDTO(user);
 	}
 
+	public UserDTO findByUsername(String username) {
+		User user = userRepository.findByUsername(username)
+				.orElseThrow(() -> new UserNotFoundException("Username not found: " + username));
+
+		return userMapper.toUserDTO(user);
+	}
+
 	public UserDTO changePassword(String currentPassword, String newPassword) {
 		var context = SecurityContextHolder.getContext();
 		String email = context.getAuthentication().getName();

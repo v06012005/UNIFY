@@ -23,23 +23,25 @@ const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   );
 };
 const Page = () => {
-  const [activeTab, setActiveTab] = useState("post");
-  const { user, setUser, getInfoUser } = useApp();
-  useEffect(() => {
-      const fetchUserInfo = async () => {
-          try {
-              const fetchedUser = await getInfoUser();
-              setUser(fetchedUser);
-          } catch (error) {
-              console.error("Error fetching user info:", error);
-          }
-      };
+  const router = useRouter();
+  const { username } = router.query; // Lấy username từ URL
+  const { user, getInfoUser } = useApp(); // Lấy hàm từ AppProvider
+  const [profileUser, setProfileUser] = useState(null);
 
-      if (!user) {
-          fetchUserInfo();
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const fetchedUser = await getInfoUser(username); // Lấy thông tin user theo username
+        setProfileUser(fetchedUser); // Lưu thông tin để hiển thị
+      } catch (error) {
+        console.error("Error fetching user info:", error);
       }
-  }, [user, getInfoUser, setUser]);
-  
+    };
+
+    fetchUserInfo();
+  }, [username, getInfoUser]);
+
+  if (!profileUser) return <p>Loading...</p>;
 
   
 
@@ -86,7 +88,7 @@ const Page = () => {
           <div className="p-2 ml-8">
             <div className="flex justify-between ml-10">
               <div className="flex flex-col items-center w-200 mt-2 mx-8">
-                <h3 className="text-2xl truncate w-32">{user.username}</h3>
+                <h3 className="text-2xl truncate w-32">{profileUser.username}</h3>
 
                 <p
                   className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer"

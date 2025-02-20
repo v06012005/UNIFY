@@ -18,6 +18,8 @@ import com.app.unify.dto.global.UserDTO;
 import com.app.unify.exceptions.UserNotFoundException;
 import com.app.unify.services.UserService;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -37,10 +39,16 @@ public class UserController {
 
 	}
 
+	
 	@GetMapping("/{id}")
 	public UserDTO getUser(@PathVariable String id) {
 		return userService.findById(id);
 	}
+	@GetMapping("/{username}")
+	public UserDTO getUserByUsername(@PathVariable String username) {
+	    return userService.findByUsername(username);
+	}
+
 
 	@PostMapping
 	public UserDTO createUser(@RequestBody UserDTO userDto) {
@@ -60,7 +68,7 @@ public class UserController {
 			return ResponseEntity.status(500).body("An unexpected error occurred: " + e.getMessage());
 		}
 	}
-	
+
 	@DeleteMapping("/{id}")
 	public ResponseEntity<String> removeUser(@PathVariable String id) {
 		userService.removeUser(id);

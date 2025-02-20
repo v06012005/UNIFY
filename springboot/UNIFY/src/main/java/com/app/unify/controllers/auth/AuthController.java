@@ -10,7 +10,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.unify.dto.global.UserDTO;
@@ -94,7 +93,7 @@ public class AuthController {
     public ResponseEntity<String> removeCookie(HttpServletResponse response) {
         Cookie cookie = new Cookie("token", null);
         cookie.setPath("/");
-        cookie.setMaxAge(0); 
+        cookie.setMaxAge(0);
         response.addCookie(cookie);
         return ResponseEntity.ok("Cookie removed");
     }

@@ -4,7 +4,8 @@ import React from "react";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { axiosResult } from "@/app/api/cookie";
+import { useApp } from "@/components/provider/AppProvider";
+import Cookies from "js-cookie";
 const NavButton = ({ iconClass, href = "", content = "" }) => {
   return (
     <Link className="flex h-full items-center text-center" href={href}>
@@ -13,64 +14,6 @@ const NavButton = ({ iconClass, href = "", content = "" }) => {
     </Link>
   );
 };
-const validateFormData = (formData) => {
-  const errors = {};
-
-  if (!formData.firstName) {
-    errors.firstName = "First name is required";
-  }
-  if (!formData.lastName) {
-    errors.lastName = "Last name is required";
-  }
-
-  if (!formData.username) {
-    errors.username = "Username is required";
-  } else if (formData.username.length < 3) {
-    errors.username = "Username must be at least 3 characters";
-  } else if (formData.username.length > 30) {
-    errors.username = "Username must be at most 30 characters";
-  }
-
-  const emailPattern = /^[^@]+@[a-zA-Z0-9-]+\.(com)$/;
-  if (!formData.email) {
-    errors.email = "Email is required";
-  } else if (!emailPattern.test(formData.email)) {
-    errors.email = "Email must be in the format '@yourdomain.com'";
-  }
-
-  if (formData.phone && !/^[0-9]{10}$/.test(formData.phone)) {
-    errors.phone = "Phone number should be 10 digits";
-  }
-
-  if (
-    !formData.birthDay.day ||
-    formData.birthDay.day < 1 ||
-    formData.birthDay.day > 31
-  ) {
-    errors.birthDay = errors.birthDay || {};
-    errors.birthDay.day = "Invalid day";
-  }
-
-  if (
-    !formData.birthDay.month ||
-    formData.birthDay.month < 1 ||
-    formData.birthDay.month > 12
-  ) {
-    errors.birthDay = errors.birthDay || {};
-    errors.birthDay.month = "Invalid month";
-  }
-
-  if (
-    !formData.birthDay.year ||
-    formData.birthDay.year < 1900 ||
-    formData.birthDay.year > 2100
-  ) {
-    errors.birthDay = errors.birthDay || {};
-    errors.birthDay.year = "Invalid year";
-  }
-
-  return errors;
-};
 
 const Page = () => {
   const defaultAvatar = "/images/unify_icon_2.svg";
@@ -78,6 +21,8 @@ const Page = () => {
   const fileInputRef = useRef(null);
   const [daysInMonth, setDaysInMonth] = useState(31);
   const [errors, setErrors] = useState({});
+  const { user, setUser } = useApp();
+
   const [userData, setUserData] = useState({
     id: "",
     firstName: "",
@@ -90,14 +35,42 @@ const Page = () => {
     birthDay: { day: "", month: "", year: "" },
     location: "",
     education: "",
+    status: "",
     workAt: "",
+    biography: "",
   });
-  const [gender, setGender] = useState(null);
+
+  const [gender, setGender] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      setUserData({
+        id: user.id || "",
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        username: user.username || "",
+        email: user.email || "",
+        password: user.password || "",
+        phone: user.phone || "",
+        gender: user.gender || false,
+        birthDay: user.birthDay || { day: "", month: "", year: "" },
+        location: user.location || "",
+        education: user.education || "",
+        status: user.status || 0,
+        workAt: user.workAt || "",
+        biography: user.biography || "",
+      });
+      setGender(user.gender || false);
+    }
+  }, [user]);
 
   const handleGenderChange = (value) => {
-    setGender(value);
+    setUserData((prevData) => ({
+      ...prevData,
+      gender: value,
+    }));
   };
-  const [loading, setLoading] = useState(false);
 
   const handleChange = (field, value) => {
     if (field.startsWith("birthDay.")) {
@@ -124,8 +97,6 @@ const Page = () => {
         }
 
         const days = new Date(year, month, 0).getDate();
-        setDaysInMonth(days);
-
         if (parseInt(newBirthDay.day, 10) > days) {
           newBirthDay.day = "01";
         }
@@ -143,57 +114,67 @@ const Page = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const tokenData = await axiosResult();
-        const token = tokenData?.token;
+  const validateFormData = (data) => {
+    const errors = {};
 
-        if (!token) {
-          throw new Error("Token is null or undefined. Please log in again.");
-        }
+    if (!data.firstName) {
+      errors.firstName = "First name is required";
+    }
+    if (!data.lastName) {
+      errors.lastName = "Last name is required";
+    }
 
-        const userResponse = await fetch(
-          "http://localhost:8080/users/my-info",
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            credentials: "include",
-          }
-        );
+    if (!data.username) {
+      errors.username = "Username is required";
+    } else if (data.username.length < 3) {
+      errors.username = "Username must be at least 3 characters";
+    } else if (data.username.length > 30) {
+      errors.username = "Username must be at most 30 characters";
+    }
+   if (!data.biography.length > 100) {
+      errors.biography = "Biography must be at most 100 characters";
+    }
+    const emailPattern = /^[^@]+@[a-zA-Z0-9-]+\.(com)$/;
+    if (!data.email) {
+      errors.email = "Email is required";
+    } else if (!emailPattern.test(data.email)) {
+      errors.email = "Email must be in the format '@yourdomain.com'";
+    }
 
-        if (userResponse.ok) {
-          const data = await userResponse.json();
-          const parsedBirthDay = data.birthDay
-            ? (() => {
-                const [year, month, day] = data.birthDay.split("-");
-                return {
-                  month: month.padStart(2, "0"),
-                  day: day.padStart(2, "0"),
-                  year,
-                };
-              })()
-            : { month: "", day: "", year: "" };
+    if (data.phone && !/^[0-9]{10}$/.test(data.phone)) {
+      errors.phone = "Phone number should be 10 digits";
+    }
 
-          setUserData({ ...data, birthDay: parsedBirthDay });
-        } else {
-          console.error("Không thể lấy dữ liệu người dùng");
-        }
-      } catch (error) {
-        console.error("Lỗi khi lấy dữ liệu người dùng:", error);
-      }
-    };
+    if (!data.birthDay.day || data.birthDay.day < 1 || data.birthDay.day > 31) {
+      errors.birthDay = errors.birthDay || {};
+      errors.birthDay.day = "Invalid day";
+    }
 
-    fetchUserData();
-  }, []);
+    if (
+      !data.birthDay.month ||
+      data.birthDay.month < 1 ||
+      data.birthDay.month > 12
+    ) {
+      errors.birthDay = errors.birthDay || {};
+      errors.birthDay.month = "Invalid month";
+    }
+
+    if (
+      !data.birthDay.year ||
+      data.birthDay.year < 1900 ||
+      data.birthDay.year > 2100
+    ) {
+      errors.birthDay = errors.birthDay || {};
+      errors.birthDay.year = "Invalid year";
+    }
+
+    return errors;
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     const validationErrors = validateFormData(userData);
-
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
@@ -201,42 +182,45 @@ const Page = () => {
 
     setLoading(true);
 
+    console.log("Submitting user data:", userData);
+
     try {
-      const tokenData = await axiosResult();
-      const token = tokenData?.token;
+      const token = Cookies.get("token");
+      console.log("Token:", token);
+      const requestData = {
+        ...userData,
+        birthDay: userData.birthDay
+          ? `${userData.birthDay.year}-${userData.birthDay.month.padStart(
+              2,
+              "0"
+            )}-${userData.birthDay.day.padStart(2, "0")}`
+          : null,
+      };
+      console.log("Request data to send:", requestData);
 
-      if (!token) {
-        throw new Error("Token is null or undefined. Please log in again.");
-      }
-
-      const response = await fetch(`http://localhost:8080/users`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          ...userData,
-          birthDay: userData.birthDay
-            ? `${userData.birthDay.year}-${userData.birthDay.month.padStart(
-                2,
-                "0"
-              )}-${userData.birthDay.day.padStart(2, "0")}`
-            : null,
-        }),
+        body: JSON.stringify(requestData),
       });
 
       if (response.ok) {
         const updatedUser = await response.json();
+        setUser(updatedUser);
         setUserData(updatedUser);
         alert("Profile updated successfully!");
       } else {
         const result = await response.text();
         alert(`Error: ${result}`);
+        setLoading(false);
       }
     } catch (error) {
       console.error("Error updating profile:", error);
       alert("Something went wrong. Please try again.");
+      setLoading(false);
     } finally {
       setLoading(false);
     }
@@ -320,14 +304,10 @@ const Page = () => {
               </div>
             </div>
             <div className="ml-4">
-              <p className="text-2xl">
-                {userData.username?.trim() || "Unknown User"}
-              </p>
+              <p className="text-2xl">{user?.username || "Unknown User"}</p>
               <p className="font-bold truncate w-60">
-                {userData.firstName || userData.lastName
-                  ? `${userData.firstName || ""} ${
-                      userData.lastName || ""
-                    }`.trim()
+                {user?.firstName || user?.lastName
+                  ? `${user?.firstName || ""} ${user?.lastName || ""}`.trim()
                   : "No Name"}
               </p>
             </div>
@@ -377,8 +357,15 @@ const Page = () => {
               name="biography"
               type="text"
               placeholder="Enter your biography"
+              value={userData.biography}
+              onChange={(e) => handleChange("biography", e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-1 focus:ring-gray-500 focus:outline-none hover:border-gray-500 hover:shadow-md transition"
             />
+             {errors.biography && (
+                <div className="text-red-500 text-sm mt-1">
+                  {errors.biography}
+                  </div>
+             )}
           </div>
 
           <div className="m-5 flex gap-4">
@@ -559,6 +546,7 @@ const Page = () => {
                 Birthday:
               </label>
               <div className="flex items-center gap-4">
+                {/* Month */}
                 <select
                   value={userData.birthDay.month}
                   onChange={(e) =>
@@ -576,11 +564,10 @@ const Page = () => {
                   })}
                 </select>
 
+                {/* Day */}
                 <select
-                  value={userData.birthDay.month}
-                  onChange={(e) =>
-                    handleChange("birthDay.month", e.target.value)
-                  }
+                  value={userData.birthDay.day}
+                  onChange={(e) => handleChange("birthDay.day", e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
                 >
                   {[...Array(daysInMonth)].map((_, i) => {
@@ -593,6 +580,7 @@ const Page = () => {
                   })}
                 </select>
 
+                {/* Year */}
                 <select
                   value={userData.birthDay.year}
                   onChange={(e) =>
