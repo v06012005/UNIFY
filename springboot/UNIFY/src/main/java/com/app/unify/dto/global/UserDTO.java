@@ -18,44 +18,44 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserDTO {
 
-	private String id;
+	String id;
 
 	@NotBlank(message = "First name is required")
 	@Size(max = 50, message = "First name must be at most 50 characters")
-	private String firstName;
+	String firstName;
 
 	@NotBlank(message = "Last name is required")
 	@Size(max = 50, message = "Last name must be at most 50 characters")
-	private String lastName;
+	String lastName;
 
 	@NotBlank(message = "Username is required")
 	@Size(min = 3, max = 30, message = "Username must be between 3 and 30 characters")
-	private String username;
+	String username;
 
-	private String phone;
+	String phone;
 
 	@NotBlank(message = "Email is required")
 	@Email(message = "Email should be valid")
-	private String email;
+	String email;
 
 	@NotBlank(message = "Password is required")
 	@Size(min = 8, message = "Password must be at least 8 characters long")
-	private String password;
+	String password;
 
-	private LocalDateTime registeredAt = LocalDateTime.now();
+	LocalDateTime registeredAt = LocalDateTime.now();
 
-	private Boolean gender;
+	Boolean gender;
 
 	@Past(message = "Birthdate must be in the past")
-	private LocalDate birthDay;
+	LocalDate birthDay;
 
-	private String location;
+	String location;
 
-	private String education;
+	String education;
 
-	private String workAt;
+	String workAt;
 
-	private Integer status;
+	Integer status;
 
 	Set<Role> roles;
 }
