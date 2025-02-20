@@ -52,10 +52,12 @@ public class UserDTO {
 	private String location;
 
 	private String education;
+    private String workAt;
+    private String biography;
 
-	private String workAt;
+    private Integer status;
+    private String currentPassword;
+    private String newPassword;
+    Set<Role> roles;
 
-	private Integer status;
-
-	Set<Role> roles;
 }

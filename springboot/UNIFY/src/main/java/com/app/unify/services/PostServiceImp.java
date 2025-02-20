@@ -1,6 +1,9 @@
 package com.app.unify.services;
 
 import java.util.List;
+
+import java.util.Objects;
+
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +49,16 @@ public class PostServiceImp implements PostService {
 		Post post = postRepository.save(postRepository.findById(postDTO.getId())
 				.orElseThrow(() -> new PostNotFoundException("Post not found!")));
 		return mapper.toPostDTO(post);
+	}
+
+	@Override
+
+	public List<PostDTO> getPostsTrending() {
+		List<Object[]> results = postRepository.findPostsWithInteractionCounts();
+		return results.stream()
+				.filter(Objects::nonNull)
+				.map(result -> mapper.toPostDTO((Post) result[0]))
+				.collect(Collectors.toList());
 	}
 
 	@Override

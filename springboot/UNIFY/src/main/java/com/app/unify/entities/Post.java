@@ -1,22 +1,15 @@
 package com.app.unify.entities;
 
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.*;
 
 import com.app.unify.types.Audience;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,6 +25,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+
 public class Post {
 
 	@Id
@@ -68,7 +62,21 @@ public class Post {
 	Boolean isLikeVisible = false;
 
 	@OneToMany(mappedBy = "post")
+	@JsonIgnore
 	Set<PostComment> comments;
+
+	@OneToMany(mappedBy = "post")
+	@JsonManagedReference
+	Set<Media> media;
+
+	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	Set<LikedPost> likedPosts;
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
+	}
+
 
 	@OneToMany(mappedBy = "post")
 	@JsonManagedReference
