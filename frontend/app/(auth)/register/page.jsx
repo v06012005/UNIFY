@@ -13,7 +13,6 @@ import Link from "next/link";
 import { useApp } from "@/components/provider/AppProvider";
 import { redirect } from "next/navigation";
 
-import { useRouter } from "next/navigation";
 import { router } from "next/client";
 
 import { useRouter } from "next/navigation";

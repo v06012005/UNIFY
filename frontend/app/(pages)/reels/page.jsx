@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import avatar2 from "@/public/images/testAvt.jpg";
 import { Send, Smile } from "lucide-react";
 import Picker from "emoji-picker-react";
+import LikeButton from "@/components/global/LikeButton";
 import {
   Modal,
   ModalContent,
@@ -13,6 +14,9 @@ import {
   ModalBody,
   ModalFooter,
   useDisclosure,
+  Card,
+  CardFooter,
+  Button,
 } from "@heroui/react";
 
 const Reels = () => {
@@ -28,7 +32,7 @@ const Reels = () => {
   const [showPicker, setShowPicker] = useState(false);
   const [comment, setComment] = useState("");
   const pickerRef = useRef(null);
-
+  const [isShown, setIsShown] = useState(false);
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (pickerRef.current && !pickerRef.current.contains(event.target)) {
@@ -90,6 +94,67 @@ const Reels = () => {
     setSelectedAvatar(index === selectedAvatar ? null : index);
   };
 
+  const handleClick = () => {
+    setIsShown(!isShown);
+  };
+
+  const Comment = ({ text, maxLength = 100 }) => {
+    const [isExpanded, setIsExpanded] = useState(false);
+
+    const toggleExpanded = () => setIsExpanded(!isExpanded);
+    return (
+      <>
+        <div className="my-3 leading-snug text-sm w-80">
+          {isExpanded ? text : `${text.slice(0, maxLength)}...`}
+          <button onClick={toggleExpanded} className="text-gray-500">
+            {isExpanded ? "Less" : "More"}
+          </button>
+        </div>
+      </>
+    );
+  };
+
+  const Reply = () => {
+    return (
+      <div className="w-full flex items-center">
+        <p className="dark:text-white w-4/12 text-center">
+          <i className="fa-solid fa-arrow-turn-up rotate-90"></i>
+        </p>
+        <Card className="overflow-visible w-11/12 my-2 border-none bg-transparent shadow-none ">
+          <div className="">
+            <div className="flex items-center">
+              <Image
+                src={avatar2}
+                alt="User avatar"
+                className="rounded-full w-12 h-12"
+              />
+              <h4 className="text-lg font-bold truncate w-20 pl-2 ">TanVinh</h4>
+            </div>
+            <div className="ml-2">
+              <Comment
+                text={`Lorem ipsum dolor sit amet consectetur adipisicing elit. Sed quibusdam, ex maiores amet alias dolor minima magnam quis totam molestias consectetur laudantium possimus et asperiores? Dignissimos minima animi omnis sed! Lorem ipsum dolor sit amet consectetur, adipisicing elit. Saepe, id repellat minus labore esse eligendi maiores asperiores? Architecto dolorem veritatis, totam nam, molestiae quo quis asperiores qui nostrum animi possimus?`}
+              />
+            </div>
+          </div>
+
+          <CardFooter className="flex flex-row justify-end">
+            <LikeButton className="!text-sm" />
+            <Button size="sm" className="bg-transparent dark:text-white">
+              <i className="fa-solid fa-reply"></i>Reply
+            </Button>
+            <Button
+              size="sm"
+              className="bg-transparent dark:text-white"
+              startContent={<i className="fa-solid fa-ellipsis"></i>}
+            >
+              More
+            </Button>
+          </CardFooter>
+        </Card>
+      </div>
+    );
+  };
+
   return (
     <>
       {reels.map((_, index) => (
@@ -113,7 +178,7 @@ const Reels = () => {
             </button>
 
             <video
-              autoPlay
+              // autoPlay
               muted={isMuted}
               loop
               className="w-full h-full object-cover relative z-0"
@@ -260,49 +325,69 @@ const Reels = () => {
           onClick={closeComment}
         >
           <div
-            className="fixed top-0 right-0 h-full w-1/3 dark:bg-black transition-all duration-300"
+            className="fixed top-0 right-0 h-full transition-all duration-300"
             style={{
               transform: isCommentOpen ? "translateX(0)" : "translateX(100%)",
             }}
           >
-            <div className="h-full flex flex-col p-4 border border-l ">
+            <div className=" h-full flex flex-col p-4 border   border-l ">
               <div className="flex items-center justify-between dark:text-white mb-4">
-                <h2 className="text-2xl text-center font-bold">Comments</h2>
+                <h2 className="text-2xl text-center font-bold mb-2">
+                  Comments
+                </h2>
               </div>
-              <div className="flex-grow overflow-auto dark:text-white pl-8">
-                <div className="flex items-center mt-9">
-                  <Image
-                    src={avatar2}
-                    alt="User avatar"
-                    className="rounded-full w-12 h-12"
-                  />
-                  <div className="ml-4">
-                    <h4 className="text-lg font-bold truncate w-20">TanVinh</h4>
-                    <p className="text-sm  truncate w-60">Good</p>
+              <div className="flex-grow overflow-auto pl-12 pr-12 ">
+                <Card className="overflow-visible border-none bg-transparent shadow-none">
+                  <div className="">
+                    <div className="flex items-center">
+                      <Image
+                        src={avatar2}
+                        alt="User avatar"
+                        className="rounded-full w-12 h-12"
+                      />
+                      <h4 className="text-lg font-bold truncate w-20 pl-2 ">
+                        TanVinh
+                      </h4>
+                    </div>
+                    <div className="">
+                      <Comment
+                        text={`Lorem ipsum dolor sit amet consectetur adipisicing elit. Sed quibusdam, ex maiores amet alias dolor minima magnam quis totam molestias consectetur laudantium possimus et asperiores? Dignissimos minima animi omnis sed! Lorem ipsum dolor sit amet consectetur, adipisicing elit. Saepe, id repellat minus labore esse eligendi maiores asperiores? Architecto dolorem veritatis, totam nam, molestiae quo quis asperiores qui nostrum animi possimus?`}
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-center mt-9">
-                  <Image
-                    src={avatar2}
-                    alt="User avatar"
-                    className="rounded-full w-12 h-12"
-                  />
-                  <div className="ml-4">
-                    <h4 className="text-lg font-bold truncate w-20">TanVinh</h4>
-                    <p className="text-sm  truncate w-60">Good</p>
-                  </div>
-                </div>
-                <div className="flex items-center mt-9">
-                  <Image
-                    src={avatar2}
-                    alt="User avatar"
-                    className="rounded-full w-12 h-12"
-                  />
-                  <div className="ml-4">
-                    <h4 className="text-lg font-bold truncate w-20">TanVinh</h4>
-                    <p className="text-sm  truncate w-60">Good</p>
-                  </div>
-                </div>
+
+                  <CardFooter className="flex flex-row justify-end">
+                    <LikeButton className="!text-sm" />
+                    <Button
+                      size="sm"
+                      className="bg-transparent dark:text-white"
+                    >
+                      <i className="fa-solid fa-reply"></i>Reply
+                    </Button>
+                    <Button
+                      onPress={handleClick}
+                      size="sm"
+                      className="bg-transparent dark:text-white"
+                    >
+                      <i className="fa-solid fa-comments"></i>Show Replies
+                    </Button>
+                    <Button
+                      size="sm"
+                      className="bg-transparent dark:text-white"
+                      startContent={<i className="fa-solid fa-ellipsis"></i>}
+                    >
+                      More
+                    </Button>
+                  </CardFooter>
+                </Card>
+                {isShown && (
+                  <>
+                    <div className="w-full flex flex-col items-end">
+                      <Reply />
+                      <Reply />
+                    </div>
+                  </>
+                )}
               </div>
               <div className="flex items-center mt-3 text-white p-3 rounded-2xl w-full justify-center relative">
                 <Image

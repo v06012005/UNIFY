@@ -1,15 +1,14 @@
 "use client";
-import { useRouter } from "next/router";
+
 import React from "react";
-import FollowerModal from "@/components/global/FollowerModalProfile";
+import FollowerModal from '@/components/global/FollowerModalProfile';
 import FriendModal from "@/components/global/FriendModalProfile";
 import FollowingModal from "@/components/global/FollowingModalProfile";
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useEffect, useState } from 'react';
 import { useApp } from "@/components/provider/AppProvider";
-
+ 
 const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   return (
     <Link
@@ -23,24 +22,23 @@ const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   );
 };
 const Page = () => {
+
   const [activeTab, setActiveTab] = useState("post");
-  const { user, setUser, getInfoUser } = useApp();
+  const { user, setUser, getInfoUser } = useApp(); 
   useEffect(() => {
       const fetchUserInfo = async () => {
           try {
               const fetchedUser = await getInfoUser();
-              setUser(fetchedUser);
+              setUser(fetchedUser); 
           } catch (error) {
               console.error("Error fetching user info:", error);
           }
       };
-
-      if (!user) {
+  
+      if (!user) {  
           fetchUserInfo();
       }
   }, [user, getInfoUser, setUser]);
-  
-
   
 
   const [isFollowerOpen, setIsFollowerOpen] = useState(false);
@@ -55,7 +53,6 @@ const Page = () => {
   const [isFollow, setIsFollow] = useState(false);
 
   return (
-    
     <div className=" w-[82%] mx-auto">
       <div className="h-screen overflow-y-auto">
         <div className="flex p-5 mx-20">
@@ -86,8 +83,9 @@ const Page = () => {
           <div className="p-2 ml-8">
             <div className="flex justify-between ml-10">
               <div className="flex flex-col items-center w-200 mt-2 mx-8">
+ 
                 <h3 className="text-2xl truncate w-32">{user.username}</h3>
-
+ 
                 <p
                   className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer"
                   onClick={toggleFriend}
@@ -108,7 +106,7 @@ const Page = () => {
                       <NavButton
                         href="/settings/edit-profile"
                         iconClass="fa-regular fa-address-card mr-5"
-                        content="Edit Profile"
+                        content="Follow"
                       />
                     </div>
                   </Link>
@@ -121,11 +119,11 @@ const Page = () => {
                 </p>
 
                 <FollowerModal
-                  isOpen={isFollowerOpen}
-                  onClose={toggleFollower}
-                  isFollow={isFollow}
-                  toggleFollow={toggleFollow}
-                />
+        isOpen={isFollowerOpen}
+        onClose={toggleFollower}
+        isFollow={isFollow}
+        toggleFollow={toggleFollow}
+      />
               </div>
 
               <div className="flex flex-col mx-10 items-center w-200">
@@ -135,7 +133,7 @@ const Page = () => {
                       <NavButton
                         href="/settings/archive"
                         iconClass="fa-regular fa-bookmark mr-5"
-                        content="View Archive"
+                        content="Message"
                       />
                     </div>
                   </Link>
@@ -148,16 +146,14 @@ const Page = () => {
                 </p>
 
                 <FollowingModal
-                  isOpen={isFollowingOpen}
-                  onClose={toggleFollowing}
-                  isFollow={isFollow}
-                  toggleFollow={toggleFollow}
-                />
+        isOpen={isFollowingOpen}
+        onClose={toggleFollowing}
+        isFollow={isFollow}
+        toggleFollow={toggleFollow}
+      />
               </div>
             </div>
-            <p className="ml-20 mt-10 dark:text-gray-400 text-gray-600 font-bold">
-              “{user.biography}”
-            </p>
+            <p className="ml-20 mt-10 dark:text-gray-400 text-gray-600 font-bold">“{user.biography}”</p>
           </div>
         </div>
         <div className="bg-gray-100 dark:bg-gray-800  mt-2 ml-3 mr-5 rounded-lg shadow-md p-2 flex-grow">
@@ -200,27 +196,17 @@ const Page = () => {
 
             <button
               className={`py-2 px-4 font-bold flex items-center ${
-                activeTab === "saved"
+                activeTab === "reel"
                   ? "text-blue-500 border-b-4 border-blue-500"
                   : "text-gray-500 dark:text-gray-200"
               }`}
-              onClick={() => setActiveTab("saved")}
+              onClick={() => setActiveTab("reel")}
             >
               <NavButton href="/" iconClass="fa-solid fa-bookmark" />
-              <span className="ml-2">SAVED</span>
+              <span className="ml-2">REEL</span>
             </button>
 
-            <button
-              className={`py-2 px-4 font-bold flex items-center ${
-                activeTab === "tagged"
-                  ? "text-blue-500 border-b-4 border-blue-500"
-                  : "text-gray-500 dark:text-gray-200"
-              }`}
-              onClick={() => setActiveTab("tagged")}
-            >
-              <NavButton href="/" iconClass="fa-solid fa-tag" />
-              <span className="ml-2">TAGGED</span>
-            </button>
+          
           </div>
 
           <div className="mt-4">
@@ -230,18 +216,13 @@ const Page = () => {
                 <p>Here are your posts...</p>
               </div>
             )}
-            {activeTab === "saved" && (
+            {activeTab === "reel" && (
               <div>
-                <h3 className="text-xl font-bold">Saved Items</h3>
+                <h3 className="text-xl font-bold">Your Reels</h3>
                 <p>Here are your saved items...</p>
               </div>
             )}
-            {activeTab === "tagged" && (
-              <div>
-                <h3 className="text-xl font-bold">Tagged Posts</h3>
-                <p>Here are the posts you're tagged in...</p>
-              </div>
-            )}
+           
           </div>
         </div>
       </div>
