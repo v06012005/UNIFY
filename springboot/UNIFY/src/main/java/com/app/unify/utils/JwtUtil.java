@@ -45,7 +45,9 @@ public class JwtUtil {
 		JWSHeader header = new JWSHeader(JWSAlgorithm.HS256);
 		JWTClaimsSet claimsSet = new JWTClaimsSet.Builder().subject(email).issuer("unify.com")
 				.claim("scope", buildScope(user)).issueTime(new Date())
+
 				.expirationTime(new Date(Instant.now().plus(7, ChronoUnit.DAYS).toEpochMilli())).build();
+
 		Payload payload = new Payload(claimsSet.toJSONObject());
 		JWSObject jwsObject = new JWSObject(header, payload);
 		try {
@@ -63,7 +65,10 @@ public class JwtUtil {
 			Date expirationTime = signed.getJWTClaimsSet().getExpirationTime();
 			return signed.verify(verifier) && expirationTime.after(new Date());
 		} catch (ParseException | JOSEException e) {
-			throw new RuntimeException(e);
+
+			System.out.println("Error validating token: " + e.getMessage());
+			throw new RuntimeException("Invalid token format or verification failed", e);
+
 		}
 	}
 

@@ -1,7 +1,9 @@
 package com.app.unify.services;
 
 import java.util.List;
+
 import java.util.Objects;
+
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +52,7 @@ public class PostServiceImp implements PostService {
 	}
 
 	@Override
+
 	public List<PostDTO> getPostsTrending() {
 		List<Object[]> results = postRepository.findPostsWithInteractionCounts();
 		return results.stream()

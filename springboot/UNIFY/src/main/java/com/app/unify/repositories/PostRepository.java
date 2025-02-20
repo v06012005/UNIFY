@@ -3,6 +3,7 @@ package com.app.unify.repositories;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.app.unify.entities.Post;
+
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;

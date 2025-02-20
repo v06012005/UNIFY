@@ -3,13 +3,16 @@ package com.app.unify.dto.global;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+
 import com.app.unify.entities.LikedPost;
+
 import com.app.unify.entities.Media;
 import com.app.unify.entities.PostComment;
 import com.app.unify.entities.User;
 import com.app.unify.types.Audience;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
@@ -22,9 +25,11 @@ public class PostDTO {
 
 	String captions;
 
+
 	// 0 -> hidden
 	// 1 -> visible
 	// 2 -> sensitive/ violent content
+
 	Integer status = 1;
 
 	Audience audience;
@@ -36,6 +41,7 @@ public class PostDTO {
 	Boolean isCommentVisible;
 
 	Boolean isLikeVisible = false;
+
 
 	Set<PostComment> comments;
 

@@ -31,6 +31,7 @@ public class LikedPost {
 	@GeneratedValue(strategy = GenerationType.UUID)
 	String id;
 
+
 	@ManyToOne
 	@JoinColumn(name = "post_id", referencedColumnName = "id", nullable = false)
 	@JsonIgnore
@@ -44,6 +45,7 @@ public class LikedPost {
 	public int hashCode() {
 		return Objects.hash(id);
 	}
+
 
 
 }

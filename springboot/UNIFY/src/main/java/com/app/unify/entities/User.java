@@ -72,7 +72,11 @@ public class User {
 	@Column(name = "work_at")
 	String workAt;
 
+	@Column(name = "biography")
+	String biography;
+
 	@JsonIgnore
+
 	@OneToMany(mappedBy = "user")
 	Set<Post> posts;
 
@@ -94,6 +98,7 @@ public class User {
 	@OneToMany(mappedBy = "user")
 	Set<PostComment> postComments;
 
+
 	@JsonIgnore
 	@OneToMany(mappedBy = "user")
 	Set<LikedPost> likedPosts;
@@ -101,6 +106,7 @@ public class User {
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
 	Set<Role> roles;
+
 
 	@JsonIgnore
 	@OneToMany(mappedBy = "user")

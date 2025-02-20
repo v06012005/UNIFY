@@ -4,10 +4,12 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import com.app.unify.types.Audience;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.*;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -75,4 +77,8 @@ public class Post {
 		return Objects.hash(id);
 	}
 
+
+	@OneToMany(mappedBy = "post")
+	@JsonManagedReference
+	Set<Media> media;
 }
