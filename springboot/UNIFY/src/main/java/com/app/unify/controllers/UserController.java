@@ -25,9 +25,11 @@ import jakarta.servlet.http.HttpServletRequest;
 public class UserController {
 
 	@Autowired
+
 	UserService userService;
 	@Autowired
     private PasswordEncoder passwordEncoder;
+
 	@GetMapping
 	public List<UserDTO> getUsers() {
 		return userService.findAll();
@@ -36,10 +38,7 @@ public class UserController {
 	@GetMapping("/my-info")
 	public UserDTO getMyInfo() {
 		return userService.getMyInfo();
-
-	}
-
-	
+  }
 	@GetMapping("/{id}")
 	public UserDTO getUser(@PathVariable String id) {
 		return userService.findById(id);
@@ -49,10 +48,12 @@ public class UserController {
 	    return userService.findByUsername(username);
 	}
 
+
 	@PostMapping
 	public UserDTO createUser(@RequestBody UserDTO userDto) {
 		return userService.createUser(userDto);
 	}
+
 
 
 	@PutMapping
@@ -67,6 +68,7 @@ public class UserController {
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body("An unexpected error occurred: " + e.getMessage());
 		}
+
 	}
 
 	@DeleteMapping("/{id}")

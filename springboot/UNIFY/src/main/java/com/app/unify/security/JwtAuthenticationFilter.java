@@ -79,5 +79,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	    System.out.println("Received Token: " + tokentest);
 
 	    filterChain.doFilter(request, response);
+
 	}
 }

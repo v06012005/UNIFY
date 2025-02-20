@@ -28,6 +28,7 @@ public class UserService {
 	private UserRepository userRepository;
 	private RoleRepository roleRepository;
 	private UserMapper userMapper;
+
 	private PasswordEncoder passwordEncoder;
 
 	@Autowired
@@ -37,6 +38,7 @@ public class UserService {
 		this.roleRepository = roleRepository;
 		this.userMapper = userMapper;
 		this.passwordEncoder = passwordEncoder;
+
 	}
 
 	@PreAuthorize("hasRole('ADMIN')")
@@ -60,6 +62,7 @@ public class UserService {
 
 	@PreAuthorize("#userDto.email == authentication.name")
 	public UserDTO updateUser(UserDTO userDto) {
+
 		User user = userRepository.findById(userDto.getId())
 				.orElseThrow(() -> new UserNotFoundException("User not found !"));
 
@@ -68,6 +71,7 @@ public class UserService {
 
 		updatedUser = userRepository.save(updatedUser);
 		return userMapper.toUserDTO(updatedUser);
+
 	}
 
 	@PreAuthorize("hasRole('ADMIN')")
@@ -110,5 +114,6 @@ public class UserService {
 
 		return userMapper.toUserDTO(updatedUser);
 	}
+
 
 }

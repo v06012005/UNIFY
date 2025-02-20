@@ -59,4 +59,5 @@ public class UserDTO {
     private String currentPassword;
     private String newPassword;
     Set<Role> roles;
+
 }
