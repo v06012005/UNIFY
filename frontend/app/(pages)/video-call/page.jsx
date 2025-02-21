@@ -33,12 +33,10 @@ const Page = () => {
 
     const { user } = useApp();
 
-    // Initialize media stream and stomp connection when user is available.
     useEffect(() => {
         if (user) {
             setMe(user.id);
 
-            // Get initial media stream based on current toggle states
             navigator.mediaDevices
                 .getUserMedia({ video: toggleCamera, audio: toggleMicrophone })
                 .then((localStream) => {
@@ -50,7 +48,6 @@ const Page = () => {
                 })
                 .catch((error) => console.error("Media error:", error));
 
-            // Setup STOMP connection
             const sockJS = new SockJS(
                 `${process.env.NEXT_PUBLIC_API_URL}/ws?token=${Cookies.get("token")}`
             );
@@ -92,12 +89,7 @@ const Page = () => {
         }
     }, [user, toggleCamera, toggleMicrophone]);
 
-    // Function to call a user via Peer connection
     const callUser = (id) => {
-        if (!stream) {
-            console.error("No media stream available.");
-            return;
-        }
         const peer = new Peer({
             initiator: true,
             trickle: false,
@@ -125,7 +117,6 @@ const Page = () => {
         connectionRef.current = peer;
     };
 
-    // Function to answer an incoming call
     const answerCall = () => {
         setCallAccepted(true);
         const peer = new Peer({
@@ -207,7 +198,6 @@ const Page = () => {
     };
 
 
-    // Toggle Audio: Update the stream to add or remove the audio track.
     const toggleAudio = async () => {
         if (!toggleMicrophone) {
             try {
