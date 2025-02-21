@@ -7,41 +7,42 @@ import FollowingModal from "@/components/global/FollowingModalProfile";
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import ProfileTabs from "@/components/global/TabProfile/Tabs";
 import { useApp } from "@/components/provider/AppProvider";
-
-const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
+import People from "@/components/global/TabProfile/People";
+const NavButton = ({ iconClass, content = "", onClick }) => {
   return (
-    <Link
-      className="flex h-full items-center text-center"
-      href={href}
-      onClick={onClick}
-    >
-      <i className={`${iconClass}`}></i>
-      <span className="">{content}</span>
-    </Link>
+    <div className="flex h-full items-center text-center cursor-pointer" onClick={onClick}>
+      <i className={iconClass}></i>
+      <span>{content}</span>
+    </div>
   );
 };
 const Page = () => {
   const [activeTab, setActiveTab] = useState("post");
+  const [userPosts, setUserPosts] = useState([]);
+  const [userReels, setUserReels] = useState([]);
+  const [savedItems, setSavedItems] = useState([]); 
+  const [taggedPosts, setTaggedPosts] = useState([]);
   const { user, setUser, getInfoUser } = useApp();
   useEffect(() => {
-      const fetchUserInfo = async () => {
-          try {
-              const fetchedUser = await getInfoUser();
-              setUser(fetchedUser);
-          } catch (error) {
-              console.error("Error fetching user info:", error);
-          }
-      };
-
-      if (!user) {
-          fetchUserInfo();
+    const fetchUserInfo = async () => {
+      try {
+        const fetchedUser = await getInfoUser();
+        setUser(fetchedUser);
+        if (fetchedUser?.id) {
+          const posts = await fetchUserPosts(fetchedUser.id);
+          setUserPosts(posts);
+        }
+      } catch (error) {
+        console.error("Error fetching user info:", error);
       }
-  }, [user, getInfoUser, setUser]);
-  
+    };
 
-  
+    if (!user) {
+      fetchUserInfo();
+    }
+  }, [user, getInfoUser, setUser]);
 
   const [isFollowerOpen, setIsFollowerOpen] = useState(false);
   const [isFollowingOpen, setIsFollowingOpen] = useState(false);
@@ -55,9 +56,8 @@ const Page = () => {
   const [isFollow, setIsFollow] = useState(false);
 
   return (
-    
+    <div className="h-screen overflow-y-auto">
     <div className=" w-[82%] mx-auto">
-      <div className="h-screen overflow-y-auto">
         <div className="flex p-5 mx-20">
           <div className="relative">
             <Image
@@ -83,7 +83,7 @@ const Page = () => {
             </div>
           </div>
 
-          <div className="p-2 ml-8">
+          <div className="p-2 ml-8">                                      
             <div className="flex justify-between ml-10">
               <div className="flex flex-col items-center w-200 mt-2 mx-8">
                 <h3 className="text-2xl truncate w-32">{user.username}</h3>
@@ -100,10 +100,10 @@ const Page = () => {
 
               <div className="flex flex-col mx-10 items-center w-200">
                 <ul>
-                  <Link
+                  {/* <Link
                     className="flex items-center"
                     href="/settings/edit-profile"
-                  >
+                  > */}
                     <div className="flex items-center font-bold py-2 px-5 rounded-lg hover:bg-gray-400 bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors w-full">
                       <NavButton
                         href="/settings/edit-profile"
@@ -111,7 +111,7 @@ const Page = () => {
                         content="Edit Profile"
                       />
                     </div>
-                  </Link>
+                  {/* </Link> */}
                 </ul>
                 <p
                   className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer"
@@ -130,7 +130,7 @@ const Page = () => {
 
               <div className="flex flex-col mx-10 items-center w-200">
                 <ul>
-                  <Link className="flex items-center" href="/settings/archive">
+                  {/* <Link className="flex items-center" href="/settings/archive"> */}
                     <div className="flex items-center font-bold py-2 px-5 rounded-lg hover:bg-gray-400 bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors w-full">
                       <NavButton
                         href="/settings/archive"
@@ -138,7 +138,7 @@ const Page = () => {
                         content="View Archive"
                       />
                     </div>
-                  </Link>
+                  {/* </Link> */}
                 </ul>
                 <p
                   className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer"
@@ -160,88 +160,66 @@ const Page = () => {
             </p>
           </div>
         </div>
-        <div className="bg-gray-100 dark:bg-gray-800  mt-2 ml-3 mr-5 rounded-lg shadow-md p-2 flex-grow">
-          <p className="text-lg text-gray-700 dark:text-white mb-2">
-            People you may know
-          </p>
-
-          <div className="flex gap-4 overflow-x-scroll scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
-            <div className="min-w-[150px] flex-shrink-0 p-2 mb-2 flex flex-col items-center bg-white dark:bg-gray-600 rounded-lg shadow hover:shadow-lg transition-shadow">
-              <Image
-                src={`/images/avt.jpg`}
-                alt="Avatar"
-                className="rounded-full border-4 border-gray-300"
-                width={80}
-                height={80}
-              />
-              <p className="mt-2 text-gray-700 dark:text-white font-semibold text-sm text-center">
-                John Doe
-              </p>
-              <div className="flex items-center mt-2 py-1 rounded-md bg-gray-500 hover:bg-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors text-white w-full justify-center cursor-pointer">
-                <NavButton href="/follow" iconClass={"fa-solid fa-user-plus"} />
-                <p className="ml-2">Follow</p>
-              </div>
-            </div>
-          </div>
-        </div>
+       <People />
         <div className="p-4">
-          <div className="flex justify-around border-b-2 border-gray-300">
+          <div className="flex justify-center border-b-2 border-gray-300">
             <button
-              className={`py-2 px-4 font-bold flex items-center ${
+              className={`py-2 px-4 mr-5 font-bold flex items-center ${
                 activeTab === "post"
                   ? "text-blue-500 border-b-4 border-blue-500"
                   : "text-gray-500 dark:text-gray-200"
               }`}
               onClick={() => setActiveTab("post")}
             >
-              <NavButton href="/" iconClass="fa-solid fa-pen" />
+              <NavButton iconClass="fa-solid fa-pen" />
               <span className="ml-2">POST</span>
             </button>
 
             <button
-              className={`py-2 px-4 font-bold flex items-center ${
+              className={`py-2 px-4 mr-5 font-bold flex items-center ${
+                activeTab === "reel"
+                  ? "text-blue-500 border-b-4 border-blue-500"
+                  : "text-gray-500 dark:text-gray-200"
+              }`}
+              onClick={() => setActiveTab("reel")}
+            >
+              <NavButton iconClass="fa-solid fa-film" />
+              <span className="ml-2">REEL</span>
+            </button>
+
+            <button
+              className={`py-2 px-4 mr-5 font-bold flex items-center ${
                 activeTab === "saved"
                   ? "text-blue-500 border-b-4 border-blue-500"
                   : "text-gray-500 dark:text-gray-200"
               }`}
               onClick={() => setActiveTab("saved")}
             >
-              <NavButton href="/" iconClass="fa-solid fa-bookmark" />
+              <NavButton iconClass="fa-solid fa-bookmark" />
               <span className="ml-2">SAVED</span>
             </button>
 
             <button
-              className={`py-2 px-4 font-bold flex items-center ${
+              className={`py-2 px-4 mr-5 font-bold flex items-center ${
                 activeTab === "tagged"
                   ? "text-blue-500 border-b-4 border-blue-500"
                   : "text-gray-500 dark:text-gray-200"
               }`}
               onClick={() => setActiveTab("tagged")}
             >
-              <NavButton href="/" iconClass="fa-solid fa-tag" />
+              <NavButton iconClass="fa-solid fa-tag" />
               <span className="ml-2">TAGGED</span>
             </button>
           </div>
 
           <div className="mt-4">
-            {activeTab === "post" && (
-              <div>
-                <h3 className="text-xl font-bold">Your Posts</h3>
-                <p>Here are your posts...</p>
-              </div>
-            )}
-            {activeTab === "saved" && (
-              <div>
-                <h3 className="text-xl font-bold">Saved Items</h3>
-                <p>Here are your saved items...</p>
-              </div>
-            )}
-            {activeTab === "tagged" && (
-              <div>
-                <h3 className="text-xl font-bold">Tagged Posts</h3>
-                <p>Here are the posts you're tagged in...</p>
-              </div>
-            )}
+            <ProfileTabs
+              activeTab={activeTab}
+              userPosts={userPosts}
+              userReels={userReels}
+              savedItems={savedItems}
+              taggedPosts={taggedPosts}
+            />
           </div>
         </div>
       </div>
