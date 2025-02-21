@@ -9,7 +9,7 @@ import Peer from "simple-peer";
 import { Mic, MicOff, Video, VideoOff, Phone } from "lucide-react";
 
 const Page = () => {
-    // Local state variables
+
     const [me, setMe] = useState("");
     const [stream, setStream] = useState(null);
     const [receiver, setReceiver] = useState(false);
@@ -19,12 +19,8 @@ const Page = () => {
     const [idToCall, setIdToCall] = useState("");
     const [callEnded, setCallEnded] = useState(false);
     const [name, setName] = useState("");
-
-    // Toggle states for camera and mic
-    const [toggleCamera, setToggleCamera] = useState(false); // initially off
-    const [toggleMicrophone, setToggleMicrophone] = useState(true); // initially on
-
-    // Refs for video elements, stream, connection, and stomp client
+    const [toggleCamera, setToggleCamera] = useState(false);
+    const [toggleMicrophone, setToggleMicrophone] = useState(true);
     const myScreen = useRef(null);
     const receiverScreen = useRef(null);
     const streamRef = useRef(null);
