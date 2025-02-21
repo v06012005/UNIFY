@@ -2,7 +2,6 @@
 
 import React, { createContext, useState, useEffect,useRef, useContext } from "react";
 import {redirect, useRouter} from "next/navigation";
-
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import axios from "axios";
@@ -210,11 +209,37 @@ export const AppProvider = ({ children }) => {
           : { month: "", day: "", year: "" };
 
         setUser({ ...data, birthDay: parsedBirthDay });
+     if (router.pathname === "/profile") {
+        router.push(`/profile/${data.username}`, { scroll: false });
+      }
       }
     } catch (err) {
       console.log(err);
     }
   };
+  const fetchUserPosts = async (userId) => {
+    try {
+      const token = Cookies.get("token");
+      const response = await fetch(`${API_URL}/posts/${id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to fetch user posts");
+      }
+  
+      const posts = await response.json();
+      return posts;
+    } catch (error) {
+      console.error("Error fetching user posts:", error);
+      return [];
+    }
+  };
+  
 
   useEffect(() => {
     if (user) {
@@ -224,6 +249,9 @@ export const AppProvider = ({ children }) => {
 
   useEffect(() => {
     getInfoUser().catch((error) => console.log(error));
+  }, []);
+  useEffect(() => {
+    fetchUserPosts().catch((error) => console.log(error));
   }, []);
 
   return (

@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useApp } from "@/components/provider/AppProvider";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Cookies from "js-cookie";
 const NavButton = ({ iconClass, href = "", content = "" }) => {
   return (
@@ -22,7 +23,7 @@ const Page = () => {
   const [daysInMonth, setDaysInMonth] = useState(31);
   const [errors, setErrors] = useState({});
   const { user, setUser } = useApp();
-
+  const {logoutUser} = useApp();
   const [userData, setUserData] = useState({
     id: "",
     firstName: "",
@@ -66,10 +67,7 @@ const Page = () => {
   }, [user]);
 
   const handleGenderChange = (value) => {
-    setUserData((prevData) => ({
-      ...prevData,
-      gender: value,
-    }));
+    setGender(value); 
   };
 
   const handleChange = (field, value) => {
@@ -131,7 +129,7 @@ const Page = () => {
     } else if (data.username.length > 30) {
       errors.username = "Username must be at most 30 characters";
     }
-   if (!data.biography.length > 100) {
+    if (!data.biography.length > 100) {
       errors.biography = "Biography must be at most 100 characters";
     }
     const emailPattern = /^[^@]+@[a-zA-Z0-9-]+\.(com)$/;
@@ -226,25 +224,6 @@ const Page = () => {
     }
   };
 
-  const handleLogout = async () => {
-    try {
-      const response = await fetch("/api/remove-cookie", {
-        method: "GET",
-        credentials: "include",
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        alert(data.message);
-        window.location.href = "/";
-      } else {
-        alert("Failed to remove cookie.");
-      }
-    } catch (error) {
-      console.error("Error removing cookie:", error);
-      alert("An error occurred while removing the cookie.");
-    }
-  };
   const handleChangeAvatar = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -337,7 +316,10 @@ const Page = () => {
               </button>
 
               <button
-                onClick={handleLogout}
+              onClick={(e) => {
+                e.preventDefault(); 
+                logoutUser();
+              }}
                 className="bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition"
               >
                 Logout
@@ -361,11 +343,11 @@ const Page = () => {
               onChange={(e) => handleChange("biography", e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-1 focus:ring-gray-500 focus:outline-none hover:border-gray-500 hover:shadow-md transition"
             />
-             {errors.biography && (
-                <div className="text-red-500 text-sm mt-1">
-                  {errors.biography}
-                  </div>
-             )}
+            {errors.biography && (
+              <div className="text-red-500 text-sm mt-1">
+                {errors.biography}
+              </div>
+            )}
           </div>
 
           <div className="m-5 flex gap-4">
@@ -502,44 +484,25 @@ const Page = () => {
           </div>
 
           <div className="m-5 flex gap-4 items-start">
-            <div className="flex flex-col gap-4 basis-1/2">
-              <label className="text-lg font-medium text-gray-700 dark:text-white">
-                Gender:
-              </label>
-              <div className="flex items-center gap-4">
-                <label
-                  htmlFor="female"
-                  className="flex items-center gap-1 dark:text-gray-400 mr-10"
-                >
-                  <input
-                    id="female"
-                    type="radio"
-                    name="gender"
-                    value={false}
-                    checked={gender === false}
-                    onChange={() => handleGenderChange(false)}
-                    className="focus:ring-2 focus:ring-gray-500 size-5 mr-3"
-                  />
-                  Female
-                </label>
-
-                <label
-                  htmlFor="male"
-                  className="flex items-center gap-1 dark:text-gray-400"
-                >
-                  <input
-                    id="male"
-                    type="radio"
-                    name="gender"
-                    value={true}
-                    checked={gender === true}
-                    onChange={() => handleGenderChange(true)}
-                    className="focus:ring-2 focus:ring-gray-500 size-5 mr-3"
-                  />
-                  Male
-                </label>
-              </div>
-            </div>
+          <div className="flex flex-col gap-4 basis-1/2">
+      <label className="text-lg font-medium text-gray-700 dark:text-white">
+        Gender:
+      </label>
+      <RadioGroup
+        value={gender === true ? "male" : "female"} 
+        onValueChange={(value) => handleGenderChange(value === "male")} 
+        className="flex items-center gap-4"
+      >
+        <label className="flex items-center gap-1 dark:text-gray-400 mr-10">
+          <RadioGroupItem value="female" id="female" />
+          Female
+        </label>
+        <label className="flex items-center gap-1 dark:text-gray-400">
+          <RadioGroupItem value="male" id="male" />
+          Male
+        </label>
+      </RadioGroup>
+    </div>
 
             <div className="flex flex-col gap-4 basis-1/2">
               <label className="text-lg font-medium text-gray-700 dark:text-white">
