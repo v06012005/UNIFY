@@ -7,6 +7,13 @@ import avatar2 from "@/public/images/testAvt.jpg";
 import { Send, Smile } from "lucide-react";
 import Picker from "emoji-picker-react";
 import LikeButton from "@/components/global/LikeButton";
+import Reply from "@/components/comments/Reply";
+import Content from "@/components/comments/Content";
+
+import axios from "axios"; // Dùng axios để gọi API
+
+// 0de81a82-caa6-439c-a0bc-124a83b5ceaf  ID POST
+
 import {
   Modal,
   ModalContent,
@@ -23,7 +30,6 @@ const Reels = () => {
   const reels = Array(1).fill(0);
   const [isMuted, setIsMuted] = useState(false);
   const [isCommentOpen, setIsCommentOpen] = useState(false);
-
   const [isLiked, setIsLiked] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -33,6 +39,7 @@ const Reels = () => {
   const [comment, setComment] = useState("");
   const pickerRef = useRef(null);
   const [isShown, setIsShown] = useState(false);
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (pickerRef.current && !pickerRef.current.contains(event.target)) {
@@ -98,63 +105,6 @@ const Reels = () => {
     setIsShown(!isShown);
   };
 
-  const Comment = ({ text, maxLength = 100 }) => {
-    const [isExpanded, setIsExpanded] = useState(false);
-
-    const toggleExpanded = () => setIsExpanded(!isExpanded);
-    return (
-      <>
-        <div className="my-3 leading-snug text-sm w-80">
-          {isExpanded ? text : `${text.slice(0, maxLength)}...`}
-          <button onClick={toggleExpanded} className="text-gray-500">
-            {isExpanded ? "Less" : "More"}
-          </button>
-        </div>
-      </>
-    );
-  };
-
-  const Reply = () => {
-    return (
-      <div className="w-full flex items-center">
-        <p className="dark:text-white w-4/12 text-center">
-          <i className="fa-solid fa-arrow-turn-up rotate-90"></i>
-        </p>
-        <Card className="overflow-visible w-11/12 my-2 border-none bg-transparent shadow-none ">
-          <div className="">
-            <div className="flex items-center">
-              <Image
-                src={avatar2}
-                alt="User avatar"
-                className="rounded-full w-12 h-12"
-              />
-              <h4 className="text-lg font-bold truncate w-20 pl-2 ">TanVinh</h4>
-            </div>
-            <div className="ml-2">
-              <Comment
-                text={`Lorem ipsum dolor sit amet consectetur adipisicing elit. Sed quibusdam, ex maiores amet alias dolor minima magnam quis totam molestias consectetur laudantium possimus et asperiores? Dignissimos minima animi omnis sed! Lorem ipsum dolor sit amet consectetur, adipisicing elit. Saepe, id repellat minus labore esse eligendi maiores asperiores? Architecto dolorem veritatis, totam nam, molestiae quo quis asperiores qui nostrum animi possimus?`}
-              />
-            </div>
-          </div>
-
-          <CardFooter className="flex flex-row justify-end">
-            <LikeButton className="!text-sm" />
-            <Button size="sm" className="bg-transparent dark:text-white">
-              <i className="fa-solid fa-reply"></i>Reply
-            </Button>
-            <Button
-              size="sm"
-              className="bg-transparent dark:text-white"
-              startContent={<i className="fa-solid fa-ellipsis"></i>}
-            >
-              More
-            </Button>
-          </CardFooter>
-        </Card>
-      </div>
-    );
-  };
-
   return (
     <>
       {reels.map((_, index) => (
@@ -187,7 +137,7 @@ const Reels = () => {
             </video>
           </div>
 
-          <div className="absolute bottom-4 left-4 flex items-center space-x-2 text-white">
+          <div className="absolute bottom-4 left-4 flex items-center space-x- text-white">
             <Image
               src={avatar2}
               alt="User Avatar"
@@ -196,10 +146,13 @@ const Reels = () => {
             <div className="flex items-center space-x-2">
               <span className="font-medium">TanVinh</span>
               <button
-                className="backdrop-blur-3xl text-sm p-4 py-1 rounded-2xl font-sans font-bold"
+                className="backdrop-blur-3xl text-sm p-4 py-1 rounded-2xl font-bold 
+             transition-all duration-200 ease-in-out 
+             active:scale-125
+             hover:bg-gray-700 dark:hover:bg-gray-700"
                 onClick={folloWing}
               >
-                {isFollow ? "Following" : "Follow"}{" "}
+                {isFollow ? "Following" : "Follow"}
               </button>
             </div>
           </div>
@@ -350,7 +303,7 @@ const Reels = () => {
                       </h4>
                     </div>
                     <div className="">
-                      <Comment
+                      <Content
                         text={`Lorem ipsum dolor sit amet consectetur adipisicing elit. Sed quibusdam, ex maiores amet alias dolor minima magnam quis totam molestias consectetur laudantium possimus et asperiores? Dignissimos minima animi omnis sed! Lorem ipsum dolor sit amet consectetur, adipisicing elit. Saepe, id repellat minus labore esse eligendi maiores asperiores? Architecto dolorem veritatis, totam nam, molestiae quo quis asperiores qui nostrum animi possimus?`}
                       />
                     </div>

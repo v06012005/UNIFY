@@ -1,4 +1,4 @@
-{
+  {
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
@@ -37,7 +37,6 @@
     "draft-js": "^0.11.7",
     "emoji-picker-react": "^4.12.0",
     "formik": "^2.4.6",
-    "framer-motion": "^11.18.1",
     "frontend": "file:",
     "jose": "^5.9.6",
     "js-cookie": "^3.0.5",

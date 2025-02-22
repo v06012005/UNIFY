@@ -45,6 +45,7 @@ const RegisterPage = () => {
     confirmPassword: "",
     gender: "true",
     status: 0,
+    
   });
 
   const [date, setDate] = useState({
