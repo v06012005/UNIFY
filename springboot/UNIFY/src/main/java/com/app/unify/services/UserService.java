@@ -60,8 +60,6 @@ public class UserService {
 				userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found !")));
 	}
 
-
-	
 	@PreAuthorize("#userDto.email == authentication.name")
 	public UserDTO updateUser(UserDTO userDto) {
 		Role role = roleRepository.findByName("USER").orElseThrow(() -> new RuntimeException("Role not found !"));
@@ -111,6 +109,5 @@ public class UserService {
 
 		return userMapper.toUserDTO(updatedUser);
 	}
-
 
 }
