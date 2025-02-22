@@ -7,7 +7,8 @@ import avatar from "@/public/images/test1.png";
 import SearchHorizontalToggle from "@/components/global/SearchHorizontalToggle";
 import NotificationModal from "@/components/global/NotificationModal";
 import UnifyLogoIcon from "./UnifyLogoIcon";
-
+import { useApp } from "@/components/provider/AppProvider";
+import { useParams } from "next/navigation"; 
 const NavButton = React.memo(function NavButton({
   iconClass,
   href = "",
@@ -25,6 +26,8 @@ const NavButton = React.memo(function NavButton({
 });
 
 const SideBar = () => {
+  
+  const { user } = useApp();
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const modalRef = useRef(null);
   const buttonRef = useRef(null);
@@ -138,17 +141,19 @@ const SideBar = () => {
               />
             </li>
             <li className="h-16">
-              <Link
-                title="Your profile"
-                href="/profile"
-                className={`w-full flex h-full items-center`}
-              >
-                <Image
-                  src={avatar}
-                  alt="User profile image"
-                  className="h-10 w-10 mx-auto rounded-full"
-                />
-              </Link>
+              {user && (
+                <Link
+                  title="Your profile"
+                  href={`/profile/${user.username}`} 
+                  className="w-full flex h-full items-center"
+                >
+                  <Image
+                    src={avatar}
+                    alt="User profile image"
+                    className="h-10 w-10 mx-auto rounded-full"
+                  />
+                </Link>
+              )}
             </li>
           </ul>
           <Link

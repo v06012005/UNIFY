@@ -3,12 +3,10 @@
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import UnifyLogoIcon from "@/components/global/FullUnifyLogoIcon_Auth";
-import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const ForgotPasswordPage = () => {
-  const { theme, setTheme } = useTheme();
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);

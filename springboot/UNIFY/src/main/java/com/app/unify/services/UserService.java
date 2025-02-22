@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.app.unify.dto.global.UserDTO;
@@ -28,11 +29,16 @@ public class UserService {
 	private RoleRepository roleRepository;
 	private UserMapper userMapper;
 
+	private PasswordEncoder passwordEncoder;
+
 	@Autowired
-	public UserService(UserRepository userRepository, RoleRepository roleRepository, UserMapper userMapper) {
+	public UserService(UserRepository userRepository, RoleRepository roleRepository, UserMapper userMapper,
+			PasswordEncoder passwordEncoder) {
 		this.userRepository = userRepository;
-		this.userMapper = userMapper;
 		this.roleRepository = roleRepository;
+		this.userMapper = userMapper;
+		this.passwordEncoder = passwordEncoder;
+
 	}
 
 	@PreAuthorize("hasRole('ADMIN')")
@@ -75,6 +81,33 @@ public class UserService {
 		String name = context.getAuthentication().getName();
 		User user = userRepository.findByEmail(name).orElseThrow(() -> new UserNotFoundException("User not found !"));
 		return userMapper.toUserDTO(user);
+	}
+
+	public UserDTO findByUsername(String username) {
+		User user = userRepository.findByUsername(username)
+				.orElseThrow(() -> new UserNotFoundException("Username not found: " + username));
+
+		return userMapper.toUserDTO(user);
+	}
+
+	public UserDTO changePassword(String currentPassword, String newPassword) {
+		var context = SecurityContextHolder.getContext();
+		String email = context.getAuthentication().getName();
+
+		User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found!"));
+
+		if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+			throw new IllegalArgumentException("Incorrect old password!");
+		}
+		if (passwordEncoder.matches(newPassword, user.getPassword())) {
+			throw new IllegalArgumentException("New password must not be the same as the old password!");
+		}
+
+		user.setPassword(passwordEncoder.encode(newPassword));
+
+		User updatedUser = userRepository.save(user);
+
+		return userMapper.toUserDTO(updatedUser);
 	}
 
 }

@@ -1,5 +1,9 @@
 package com.app.unify.entities;
 
+import java.util.Objects;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -29,10 +33,16 @@ public class LikedPost {
 
 	@ManyToOne
 	@JoinColumn(name = "post_id", referencedColumnName = "id", nullable = false)
+	@JsonIgnore
 	Post post;
 
 	@ManyToOne
 	@JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
 	User user;
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
+	}
 
 }
