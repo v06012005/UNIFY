@@ -42,8 +42,8 @@ const NotificationModal = ({ isNotificationOpen, modalRef }) => {
         ref={modalRef}
         className={`bg-white dark:bg-black text-black dark:text-white shadow-lg max-w-md h-screen overflow-hidden ${
           isNotificationOpen
-            ? "animate-fadeScale" // Sử dụng fadeScale khi mở modal
-            : "animate-fadeOut" // Sử dụng fadeOut khi đóng modal
+            ? "animate-fadeScale"
+            : "animate-fadeOut"
         } transition-all ease-in-out duration-300`}
         style={{
           width: isNotificationOpen ? 448 : 0,

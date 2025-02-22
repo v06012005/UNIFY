@@ -18,8 +18,6 @@ import com.app.unify.dto.global.UserDTO;
 import com.app.unify.exceptions.UserNotFoundException;
 import com.app.unify.services.UserService;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -28,7 +26,7 @@ public class UserController {
 
 	UserService userService;
 	@Autowired
-    private PasswordEncoder passwordEncoder;
+	private PasswordEncoder passwordEncoder;
 
 	@GetMapping
 	public List<UserDTO> getUsers() {
@@ -38,23 +36,22 @@ public class UserController {
 	@GetMapping("/my-info")
 	public UserDTO getMyInfo() {
 		return userService.getMyInfo();
-  }
+	}
+
 	@GetMapping("/{id}")
 	public UserDTO getUser(@PathVariable String id) {
 		return userService.findById(id);
 	}
+
 	@GetMapping("/{username}")
 	public UserDTO getUserByUsername(@PathVariable String username) {
-	    return userService.findByUsername(username);
+		return userService.findByUsername(username);
 	}
-
 
 	@PostMapping
 	public UserDTO createUser(@RequestBody UserDTO userDto) {
 		return userService.createUser(userDto);
 	}
-
-
 
 	@PutMapping
 	public ResponseEntity<?> updateUser(@RequestBody UserDTO userDto) {
