@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { useEffect, useRef, useState } from "react";
 import { useApp } from "@/components/provider/AppProvider";
@@ -6,10 +6,9 @@ import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 import Cookies from "js-cookie";
 import Peer from "simple-peer";
-import { Mic, MicOff, Video, VideoOff, Phone } from "lucide-react";
+import { Mic, MicOff, Phone, Video, VideoOff } from "lucide-react";
 
 const Page = () => {
-
     const [me, setMe] = useState("");
     const [stream, setStream] = useState(null);
     const [receiver, setReceiver] = useState(false);
@@ -21,9 +20,10 @@ const Page = () => {
     const [name, setName] = useState("");
     const [toggleCamera, setToggleCamera] = useState(false);
     const [toggleMicrophone, setToggleMicrophone] = useState(true);
+    const [isOffCamera, setIsOffCamera] = useState(false);
+    const [isOffMicrophone, setIsOffMicrophone] = useState(false);
     const myScreen = useRef(null);
     const receiverScreen = useRef(null);
-    const streamRef = useRef(null);
     const connectionRef = useRef(null);
     const stompClientRef = useRef(null);
 
@@ -34,10 +34,9 @@ const Page = () => {
             setMe(user.id);
 
             navigator.mediaDevices
-                .getUserMedia({ video: toggleCamera, audio: toggleMicrophone })
+                .getUserMedia({ audio: true })
                 .then((localStream) => {
                     setStream(localStream);
-                    streamRef.current = localStream;
                     if (myScreen.current) {
                         myScreen.current.srcObject = localStream;
                     }
@@ -67,6 +66,24 @@ const Page = () => {
                         if (connectionRef.current) {
                             connectionRef.current.signal(data.signalData);
                         }
+                    } else if (data.type === "offCamera") {
+                        setIsOffCamera(true);
+                    } else if (data.type === "onCamera") {
+                        console.log('On Camera !');
+                        setIsOffCamera(false);
+                        if (connectionRef.current && connectionRef.current._pc) {
+                            const remoteStream = new MediaStream(
+                                connectionRef.current._pc.getReceivers().map(r => r.track).filter(Boolean)
+                            );
+                            console.log("Rebuilt remote stream", remoteStream);
+                            if (receiverScreen.current) {
+                                receiverScreen.current.srcObject = remoteStream;
+                            }
+                        }
+                    } else if (data.type === "offMic") {
+                        setIsOffMicrophone(true);
+                    } else if (data.type === "onMic") {
+                        setIsOffMicrophone(false);
                     }
                 });
             };
@@ -83,9 +100,17 @@ const Page = () => {
                 client.deactivate();
             };
         }
-    }, [user, toggleCamera, toggleMicrophone]);
+    }, [user]);
+
+
+    useEffect(() => {
+        if (stream && myScreen.current) {
+            myScreen.current.srcObject = stream;
+        }
+    }, [stream, toggleMicrophone, toggleCamera]);
 
     const callUser = (id) => {
+
         const peer = new Peer({
             initiator: true,
             trickle: false,
@@ -138,11 +163,9 @@ const Page = () => {
             }
         });
 
-
         peer.signal(callerSignal);
         connectionRef.current = peer;
     };
-
 
     const leaveCall = () => {
         setCallEnded(true);
@@ -151,94 +174,114 @@ const Page = () => {
         }
     };
 
-    const stopTrack = (type) => {
-        if (streamRef.current) {
-            streamRef.current.getTracks().forEach((track) => {
-                if (track.kind === type) {
-                    track.stop();
-                }
-            });
-        }
-    };
-
     const toggleVideo = async () => {
-        if (!toggleCamera) {
-            try {
-
-                const videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
-                const newVideoTrack = videoStream.getVideoTracks()[0];
-
-                if (streamRef.current) {
-                    const existingVideoTracks = streamRef.current.getVideoTracks();
-                    if (existingVideoTracks.length > 0 && connectionRef.current) {
-                        connectionRef.current.replaceTrack(existingVideoTracks[0], newVideoTrack, streamRef.current);
-                    } else {
-                        streamRef.current.addTrack(newVideoTrack);
-                    }
-                    setStream(streamRef.current);
-                } else {
-                    streamRef.current = videoStream;
-                    setStream(videoStream);
-                }
-                if (myScreen.current) {
-                    myScreen.current.srcObject = streamRef.current;
-                }
+        if (stream && stompClientRef.current) {
+            const videoTrack = stream.getVideoTracks()[0];
+            if (videoTrack && videoTrack.readyState === "live") {
+                    stompClientRef.current.publish({
+                        destination: "/app/toggle",
+                        body: JSON.stringify({
+                            type: "offCamera",
+                            from: me,
+                            name: name,
+                            userToCall: caller ? caller : idToCall,
+                            to: caller ? caller : idToCall,
+                        }),
+                    });
+                videoTrack.stop();
+                stream.removeTrack(videoTrack);
+                setToggleCamera(false);
+            } else {
+                const newStream = await navigator.mediaDevices.getUserMedia({
+                    video: true,
+                });
+                const newVideoTrack = newStream.getVideoTracks()[0];
+                stream.addTrack(newVideoTrack);
                 setToggleCamera(true);
-            } catch (err) {
-                console.error("Error toggling video:", err);
+                   stompClientRef.current.publish({
+                       destination: "/app/toggle",
+                       body: JSON.stringify({
+                           type: "onCamera",
+                           from: me,
+                           name: name,
+                           userToCall: caller ? caller : idToCall,
+                           to: caller ? caller : idToCall,
+                       }),
+                   });
+                if (connectionRef.current && connectionRef.current._pc) {
+                    const sender = connectionRef.current._pc
+                        .getSenders()
+                        .find((s) => s.track && s.track.kind === "video");
+                    if (sender) {
+                        await sender.replaceTrack(newVideoTrack);
+                        console.log("Video track replaced on PeerConnection");
+                    }
+                }
             }
-        } else {
-            stopTrack("video");
-            setToggleCamera(false);
         }
     };
-
 
     const toggleAudio = async () => {
-        if (!toggleMicrophone) {
-            try {
-                const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                const newAudioTrack = audioStream.getAudioTracks()[0];
-
-                if (streamRef.current) {
-                    const existingAudioTracks = streamRef.current.getAudioTracks();
-                    if (existingAudioTracks.length > 0 && connectionRef.current) {
-                        connectionRef.current.replaceTrack(existingAudioTracks[0], newAudioTrack, streamRef.current);
-                    } else {
-                        streamRef.current.addTrack(newAudioTrack);
-                    }
-                    setStream(streamRef.current);
-                } else {
-                    streamRef.current = audioStream;
-                    setStream(audioStream);
-                }
+        if (stream && stompClientRef.current) {
+            const audioTrack = stream.getAudioTracks()[0];
+            if (audioTrack && audioTrack.readyState === "live") {
+                stompClientRef.current.publish({
+                    destination: "/app/toggle",
+                    body: JSON.stringify({
+                        type: "offMic",
+                        from: me,
+                        name: name,
+                        userToCall: caller,
+                        to: caller,
+                    }),
+                });
+                audioTrack.stop();
+                stream.removeTrack(audioTrack);
+                setToggleMicrophone(false);
+            } else {
+                const newStream = await navigator.mediaDevices.getUserMedia({
+                    audio: true,
+                });
+                const newAudioTrack = newStream.getAudioTracks()[0];
+                stream.addTrack(newAudioTrack);
                 setToggleMicrophone(true);
-            } catch (err) {
-                console.error("Error toggling audio:", err);
+                stompClientRef.current.publish({
+                    destination: "/app/toggle",
+                    body: JSON.stringify({
+                        type: "onMic",
+                        from: me,
+                        name: name,
+                        userToCall: caller,
+                        to: caller,
+                    }),
+                });
             }
-        } else {
-            stopTrack("audio");
-            setToggleMicrophone(false);
         }
     };
-
 
     return (
         <div className="w-full h-screen relative">
-            <div
-                className={`w-full h-full flex justify-center absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 -z-50`}>
-                {callAccepted && !callEnded && (
-                    <video ref={receiverScreen} autoPlay className={`w-full`}/>
+
+            <div className="w-full h-full flex justify-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-50">
+                {callAccepted && !callEnded && !isOffCamera ? (
+                    <video ref={receiverScreen} autoPlay className="w-20" />
+                ) : (
+                    isOffCamera && (
+                        <div className="w-80 h-40">
+                            <h3 className="text-white">{name}</h3>
+                        </div>
+                    )
                 )}
             </div>
+
             <div className="w-full flex items-center justify-center gap-5 bottom-0 absolute mb-10 z-50">
-                <div style={{marginTop: "1rem"}}>
+                <div style={{ marginTop: "1rem" }}>
                     <input
                         type="text"
                         placeholder="Your Name"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        style={{padding: "0.5rem", marginRight: "1rem"}}
+                        style={{ padding: "0.5rem", marginRight: "1rem" }}
                         className="text-black"
                     />
                     <input
@@ -246,30 +289,23 @@ const Page = () => {
                         placeholder="ID to call"
                         value={idToCall}
                         onChange={(e) => setIdToCall(e.target.value)}
-                        style={{padding: "0.5rem", marginRight: "1rem"}}
+                        style={{ padding: "0.5rem", marginRight: "1rem" }}
                         className="text-black"
                     />
                     {callAccepted && !callEnded ? (
-                        <button onClick={leaveCall} style={{padding: "0.5rem"}}>
+                        <button onClick={leaveCall} style={{ padding: "0.5rem" }}>
                             End Call
                         </button>
                     ) : (
-                        <button onClick={() => callUser(idToCall)} style={{padding: "0.5rem"}}>
+                        <button onClick={() => callUser(idToCall)} style={{ padding: "0.5rem" }}>
                             Call
                         </button>
                     )}
                 </div>
-                <div>
-                    {callAccepted && !callEnded && (
-                        <button onClick={leaveCall} style={{padding: "0.5rem"}}>
-                            End Call
-                        </button>
-                    )}
-                </div>
                 {receiver && !callAccepted && (
-                    <div style={{marginTop: "1rem"}}>
+                    <div style={{ marginTop: "1rem" }}>
                         <p>{name} is calling...</p>
-                        <button onClick={answerCall} style={{padding: "0.5rem"}}>
+                        <button onClick={answerCall} style={{ padding: "0.5rem" }}>
                             Answer
                         </button>
                     </div>
@@ -278,21 +314,21 @@ const Page = () => {
                     onClick={toggleAudio}
                     className="flex items-center gap-2 px-5 py-5 bg-transparent border-2 border-solid border-gray-300 rounded-full"
                 >
-                    {!toggleMicrophone ? <MicOff className="w-5 h-5"/> : <Mic className="w-5 h-5"/>}
+                    {!toggleMicrophone ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
                 </button>
                 <button
                     onClick={toggleVideo}
                     className="flex items-center gap-2 px-5 py-5 bg-transparent border-2 border-solid border-gray-300 rounded-full"
                 >
-                    {!toggleCamera ? <VideoOff className="w-5 h-5"/> : <Video className="w-5 h-5"/>}
+                    {!toggleCamera ? <VideoOff className="w-5 h-5" /> : <Video className="w-5 h-5" />}
                 </button>
                 <button
                     className="flex items-center gap-2 px-5 py-5 bg-red-500 hover:bg-red-600 text-white border-2 border-transparent transition-colors rounded-full"
                 >
-                    <Phone className="w-5 h-5"/>
+                    <Phone className="w-5 h-5" />
                 </button>
             </div>
-            {/* Local Video Preview */}
+
             <div className="absolute bottom-0 right-0">
                 <video
                     ref={myScreen}
