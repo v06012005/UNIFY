@@ -1,8 +1,10 @@
 
-
-  import React, { useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 
+const testPost = {
+  id: 1,
+};
 
 const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   return (
@@ -50,12 +52,16 @@ const UserReels = () => {
             <div className="w-1/2 flex flex-col">
               <div className="flex items-center justify-between p-4 border-b">
                 <div className="flex items-center">
-                  <img
-                    src={`/images/avt.jpg`}
-                    alt="User Avatar"
-                    className="w-8 h-8 rounded-full mr-2"
-                  />
-                  <span className="font-bold">huynhdiz</span>
+
+                  <div className="w-10 h-10 rounded-full border-2 border-gray-300">
+                    <img
+                      src={`/images/avt.jpg`}
+                      alt="User Avatar"
+                      className="w-full h-full rounded-full object-cover"
+                    />
+                  </div>
+                  <span className="font-bold ml-3">huynhdiz</span>
+
                 </div>
 
                 <NavButton
@@ -95,35 +101,47 @@ const UserReels = () => {
 
               <div className="flex-1 p-4 h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
 
-              <div className="flex items-start space-x-2 mb-2">
-                  <img
-                    src={`/images/avt.jpg`}
-                    alt="Avatar"
-                    className="w-8 h-8 rounded-full mr-3"
-                  />
+                <div className="flex items-start space-x-2 mb-2">
+                  <div className="w-8 h-8 rounded-full border-2 border-gray-300">
+                    <img
+                      src={`/images/avt.jpg`}
+                      alt="User Avatar"
+                      className="w-full h-full rounded-full object-cover"
+                    />
+                  </div>
                   <div className="flex flex-col">
                     <p className="text-sm leading-tight">
-                      <span className="font-bold mr-4">huynhdiz</span> Nghe nhạc nào mọi người!
+                      <span className="font-bold mr-4">huynhdiz</span> Nghe nhạc
+                      nào mọi người!
                     </p>
-                   <div className="flex">
-                   <span className="text-xs text-gray-500 mr-5">2 giờ trước</span>
-                   </div>
+                    <div className="flex">
+                      <span className="text-xs text-gray-500 mr-5">
+                        2 giờ trước
+                      </span>
+                    </div>
                   </div>
                 </div>
                 <div className="flex items-start space-x-2 mb-2">
-                  <img
-                    src={`/images/avt.jpg`}
-                    alt="Avatar"
-                    className="w-8 h-8 rounded-full mr-3"
-                  />
+                  <div className="w-8 h-8 rounded-full border-2 border-gray-300">
+                    <img
+                      src={`/images/avt.jpg`}
+                      alt="User Avatar"
+                      className="w-full h-full rounded-full object-cover"
+                    />
+                  </div>
+
                   <div className="flex flex-col">
                     <p className="text-sm leading-tight">
                       <span className="font-bold mr-4">user2</span> Đẹp quá!
                     </p>
-                   <div className="flex">
-                   <span className="text-xs text-gray-500 mr-5">2 giờ trước</span>
-                   <span className="text-xs text-gray-500">Reply</span>
-                   </div>
+
+                    <div className="flex">
+                      <span className="text-xs text-gray-500 mr-5">
+                        2 giờ trước
+                      </span>
+                      <span className="text-xs text-gray-500">Reply</span>
+                    </div>
+
                   </div>
                 </div>
               </div>
@@ -163,4 +181,3 @@ const UserReels = () => {
 
 export default UserReels;
 
-  

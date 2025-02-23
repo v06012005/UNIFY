@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.unify.dto.global.UserDTO;
+import com.app.unify.entities.User;
 import com.app.unify.exceptions.UserNotFoundException;
 import com.app.unify.services.UserService;
 
@@ -36,6 +38,11 @@ public class UserController {
 	@GetMapping("/my-info")
 	public UserDTO getMyInfo() {
 		return userService.getMyInfo();
+
+  }
+	@GetMapping("/username/{username}")
+	public UserDTO getUserByUsername(@PathVariable String username) {
+	    return userService.findByUsername(username);
 	}
 
 	@GetMapping("/{id}")
@@ -43,9 +50,12 @@ public class UserController {
 		return userService.findById(id);
 	}
 
-	@GetMapping("/{username}")
-	public UserDTO getUserByUsername(@PathVariable String username) {
-		return userService.findByUsername(username);
+	
+	@GetMapping("/suggestions")
+	public ResponseEntity<List<UserDTO>> getSuggestedUsers(@RequestParam String currentUsername) {
+	    List<UserDTO> users = userService.getSuggestedUsers(currentUsername);
+	    return ResponseEntity.ok(users);
+
 	}
 
 	@PostMapping
