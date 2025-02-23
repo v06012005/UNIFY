@@ -20,7 +20,9 @@ export const verifySession = cache(async () => {
 
 export const getUser = cache(async () => {
     const token = (await cookies()).get('token')?.value
-
+    if (!token) {
+        redirect("/login");
+    }
     try {
         const response = await fetch("http://localhost:8080/users/my-info", {
             method: "GET",
@@ -61,10 +63,11 @@ export const savePost = async (post) => {
             body: JSON.stringify(post)
         });
 
-        // if (!response.ok) {
-        //     console.log("Failed to fetch post");
-        //     return null;
-        // }
+        if (!response.ok) {
+            console.log(response);
+            console.log("Response is not ok");
+            return null;
+        }
 
         const savedPost = await response.json();
         return savedPost;
@@ -75,7 +78,7 @@ export const savePost = async (post) => {
 }
 
 export const saveMedia = async (media) => {
-    const token = (await cookies()).get('token')?.value
+    const token = (await cookies()).get('token')?.value;
 
     if (!token) {
         redirect("/login");
@@ -100,6 +103,37 @@ export const saveMedia = async (media) => {
         return savedMedia;
     } catch (error) {
         console.log('Failed to fetch media')
+        return null
+    }
+}
+
+export const fetchPosts = async () => {
+    const token = (await cookies()).get('token')?.value;
+
+    if (!token) {
+        redirect("/login");
+    }
+
+    // const user = await getUser();
+
+    try {
+        const response = await fetch("http://localhost:8080/posts", {
+            method: "GET",
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            console.log("Failed to fetch posts");
+            return null;
+        }
+
+        const myPosts = await response.json();
+        return myPosts;
+    } catch (error) {
+        console.log('Failed to fetch posts: ' + error)
         return null
     }
 }

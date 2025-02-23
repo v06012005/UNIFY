@@ -50,4 +50,9 @@ public class PostController {
 		postService.deletePostById(id);
 		return ResponseEntity.ok("Post deleted successfully!");
 	}
+	
+	@GetMapping("/{username}")
+	public List<PostDTO> getMyPosts(@PathVariable("username") String username) {
+		return postService.getMyPosts(username);
+	}
 }
