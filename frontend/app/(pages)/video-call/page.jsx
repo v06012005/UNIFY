@@ -34,8 +34,9 @@ const Page = () => {
             setMe(user.id);
 
             navigator.mediaDevices
-                .getUserMedia({ audio: true })
+                .getUserMedia({ video: true, audio: true })
                 .then((localStream) => {
+                    localStream.getVideoTracks()[0].enabled = false;
                     setStream(localStream);
                     if (myScreen.current) {
                         myScreen.current.srcObject = localStream;
@@ -69,17 +70,7 @@ const Page = () => {
                     } else if (data.type === "offCamera") {
                         setIsOffCamera(true);
                     } else if (data.type === "onCamera") {
-                        console.log('On Camera !');
                         setIsOffCamera(false);
-                        if (connectionRef.current && connectionRef.current._pc) {
-                            const remoteStream = new MediaStream(
-                                connectionRef.current._pc.getReceivers().map(r => r.track).filter(Boolean)
-                            );
-                            console.log("Rebuilt remote stream", remoteStream);
-                            if (receiverScreen.current) {
-                                receiverScreen.current.srcObject = remoteStream;
-                            }
-                        }
                     } else if (data.type === "offMic") {
                         setIsOffMicrophone(true);
                     } else if (data.type === "onMic") {
@@ -103,11 +94,7 @@ const Page = () => {
     }, [user]);
 
 
-    useEffect(() => {
-        if (stream && myScreen.current) {
-            myScreen.current.srcObject = stream;
-        }
-    }, [stream, toggleMicrophone, toggleCamera]);
+
 
     const callUser = (id) => {
 
@@ -175,87 +162,24 @@ const Page = () => {
     };
 
     const toggleVideo = async () => {
-        if (stream && stompClientRef.current) {
-            const videoTrack = stream.getVideoTracks()[0];
-            if (videoTrack && videoTrack.readyState === "live") {
-                    stompClientRef.current.publish({
-                        destination: "/app/toggle",
-                        body: JSON.stringify({
-                            type: "offCamera",
-                            from: me,
-                            name: name,
-                            userToCall: caller ? caller : idToCall,
-                            to: caller ? caller : idToCall,
-                        }),
-                    });
-                videoTrack.stop();
-                stream.removeTrack(videoTrack);
-                setToggleCamera(false);
-            } else {
-                const newStream = await navigator.mediaDevices.getUserMedia({
-                    video: true,
-                });
-                const newVideoTrack = newStream.getVideoTracks()[0];
-                stream.addTrack(newVideoTrack);
-                setToggleCamera(true);
-                   stompClientRef.current.publish({
-                       destination: "/app/toggle",
-                       body: JSON.stringify({
-                           type: "onCamera",
-                           from: me,
-                           name: name,
-                           userToCall: caller ? caller : idToCall,
-                           to: caller ? caller : idToCall,
-                       }),
-                   });
-                if (connectionRef.current && connectionRef.current._pc) {
-                    const sender = connectionRef.current._pc
-                        .getSenders()
-                        .find((s) => s.track && s.track.kind === "video");
-                    if (sender) {
-                        await sender.replaceTrack(newVideoTrack);
-                        console.log("Video track replaced on PeerConnection");
-                    }
-                }
+        const videoTrack = stream.getVideoTracks()[0];
+        if (videoTrack) {
+            videoTrack.enabled = !videoTrack.enabled;
+            if (connectionRef.current) {
+                connectionRef.current.replaceTrack(videoTrack, videoTrack, stream);
             }
+            setToggleCamera(videoTrack.enabled);
         }
     };
 
     const toggleAudio = async () => {
-        if (stream && stompClientRef.current) {
-            const audioTrack = stream.getAudioTracks()[0];
-            if (audioTrack && audioTrack.readyState === "live") {
-                stompClientRef.current.publish({
-                    destination: "/app/toggle",
-                    body: JSON.stringify({
-                        type: "offMic",
-                        from: me,
-                        name: name,
-                        userToCall: caller,
-                        to: caller,
-                    }),
-                });
-                audioTrack.stop();
-                stream.removeTrack(audioTrack);
-                setToggleMicrophone(false);
-            } else {
-                const newStream = await navigator.mediaDevices.getUserMedia({
-                    audio: true,
-                });
-                const newAudioTrack = newStream.getAudioTracks()[0];
-                stream.addTrack(newAudioTrack);
-                setToggleMicrophone(true);
-                stompClientRef.current.publish({
-                    destination: "/app/toggle",
-                    body: JSON.stringify({
-                        type: "onMic",
-                        from: me,
-                        name: name,
-                        userToCall: caller,
-                        to: caller,
-                    }),
-                });
+        const audioTrack = stream.getAudioTracks()[0];
+        if (audioTrack) {
+            audioTrack.enabled = !audioTrack.enabled;
+            if (connectionRef.current) {
+                connectionRef.current.replaceTrack(audioTrack, audioTrack, stream);
             }
+            setToggleMicrophone(audioTrack.enabled);
         }
     };
 
@@ -264,7 +188,7 @@ const Page = () => {
 
             <div className="w-full h-full flex justify-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-50">
                 {callAccepted && !callEnded && !isOffCamera ? (
-                    <video ref={receiverScreen} autoPlay className="w-20" />
+                    <video ref={receiverScreen} autoPlay className="w-full" />
                 ) : (
                     isOffCamera && (
                         <div className="w-80 h-40">
