@@ -30,7 +30,6 @@ public class SignalingController {
 
     @MessageMapping("/answer")
     public void answerCall(@Payload SignalMessageDTO signalMessageDTO){
-        System.out.println(signalMessageDTO.getTo());
         messagingTemplate.convertAndSendToUser(
                 signalMessageDTO.getTo(),
                 "/topic/call",
@@ -38,6 +37,20 @@ public class SignalingController {
                         .type("callAccepted")
                         .signalData(signalMessageDTO.getSignalData())
                         .from(signalMessageDTO.getFrom())
+                        .build()
+        );
+    }
+
+    @MessageMapping("/toggle")
+    public void toggle(@Payload SignalMessageDTO signalMessageDTO) {
+        messagingTemplate.convertAndSendToUser(
+                signalMessageDTO.getUserToCall(),
+                "/topic/call",
+                SignalMessageDTO.builder()
+                        .type(signalMessageDTO.getType())
+                        .signalData(signalMessageDTO.getSignalData())
+                        .from(signalMessageDTO.getFrom())
+                        .name(signalMessageDTO.getName())
                         .build()
         );
     }
