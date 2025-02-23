@@ -119,5 +119,4 @@ public class UserService {
 		return userMapper.toUserDTO(updatedUser);
 	}
 
-
 }

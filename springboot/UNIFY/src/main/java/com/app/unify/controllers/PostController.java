@@ -1,5 +1,7 @@
 package com.app.unify.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,23 +16,18 @@ import org.springframework.web.bind.annotation.RestController;
 import com.app.unify.dto.global.PostDTO;
 import com.app.unify.services.PostService;
 
-import java.util.List;
-import java.util.Set;
-
 // This controller is for user only
 
 @RestController
 @RequestMapping("/posts")
 public class PostController {
 
-
 	@Autowired
 	private PostService postService;
 
-
 	@GetMapping
-	public List<PostDTO> getAllPosts(){
-	   return postService.getPostsTrending();
+	public List<PostDTO> getAllPosts() {
+		return postService.getPostsTrending();
 	}
 
 	@PostMapping
