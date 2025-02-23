@@ -1,45 +1,89 @@
-import React, { useState } from "react";
-import Link from "next/link";
-import Image from "next/image";
-const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
-  return (
-    <Link
-      className="flex h-full items-center text-center"
-      href={href}
-      onClick={onClick}
-    >
-      <i className={`${iconClass}`}></i>
-      <span className="">{content}</span>
-    </Link>
-  );
-};
-const People = () => {
-  return (
-    <div className="bg-gray-100 dark:bg-gray-800  mt-2 ml-3 mr-5 rounded-lg shadow-md p-2 flex-grow">
-      <p className="text-lg text-gray-700 dark:text-white mb-2">
-        People you may know
-      </p>
 
-      <div className="flex gap-4 overflow-x-scroll scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
-        <div className="min-w-[150px] flex-shrink-0 p-2 mb-2 flex flex-col items-center bg-white dark:bg-gray-600 rounded-lg shadow hover:shadow-lg transition-shadow">
-          <Link href={`/profile/huynhdiz`}>
-            <Image
-              src={`/images/avt.jpg`}
-              alt="Avatar"
-              className="rounded-full border-4 border-gray-300"
-              width={80}
-              height={80}
-            />
-          </Link>
-          <p className="mt-2 text-gray-700 dark:text-white font-semibold text-sm text-center">
-            John Doe
-          </p>
-          <div className="flex items-center mt-2 py-1 rounded-md bg-gray-500 hover:bg-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors text-white w-full justify-center cursor-pointer">
-            <NavButton href="/follow" iconClass={"fa-solid fa-user-plus"} />
-            <p className="ml-2">Follow</p>
-          </div>
-        </div>
+import React, { useRef, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { useSuggestedUsers } from "@/components/provider/SuggestedUsersProvider";
+import { ChevronLeft, ChevronRight } from "lucide-react"; // Biểu tượng
+
+const People = () => {
+  const scrollRef = useRef(null);
+  const router = useRouter();
+  const [showArrows, setShowArrows] = useState(false);
+
+  const { suggestedUsers, getSuggestedUsers, loading } = useSuggestedUsers();
+
+  useEffect(() => {
+    getSuggestedUsers();
+  }, []);
+
+  useEffect(() => {
+    setShowArrows(suggestedUsers.length > 10);
+  }, [suggestedUsers]);
+
+  const handleClick = (username) => {
+    if (!username) {
+      console.error("Lỗi: Username bị null hoặc undefined!");
+      return;
+    }
+    router.push(`/othersProfile/${username}`);
+  };
+
+  const scroll = (direction) => {
+    if (scrollRef.current) {
+      const scrollAmount = 200;
+      scrollRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  return (
+    <div className="relative mt-2 ml-3 mr-5 p-3">
+      {showArrows && (
+        <button
+          className="absolute left-0 top-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 p-2 rounded-full shadow-md"
+          onClick={() => scroll("left")}
+        >
+          <ChevronLeft size={20} />
+        </button>
+      )}
+
+      <div ref={scrollRef} className="flex gap-11 overflow-x-auto scrollbar-hide scroll-smooth px-10">
+        {loading ? (
+          <p className="text-gray-500">Đang tải danh sách...</p>
+        ) : suggestedUsers.length > 0 ? (
+          suggestedUsers.slice(0, 11).map((user, index) => (
+            <div
+              key={user.username}
+              onClick={() => handleClick(user.username)}
+              className="flex flex-col items-center cursor-pointer"
+            >
+              <Image
+                src={user.avatar || "/images/default-avatar.jpg"}
+                alt="Avatar"
+                className="rounded-full border-2 border-gray-300 w-16 h-16 object-cover"
+                width={64}
+                height={64}
+                priority={index === 0}
+              />
+              <p className="text-sm text-gray-700 dark:text-white mt-1">{user.username}</p>
+            </div>
+          ))
+        ) : (
+          <p className="text-gray-500">Không có gợi ý nào.</p>
+        )}
       </div>
+
+      {showArrows && (
+        <button
+          className="absolute right-0 top-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 p-2 rounded-full shadow-md"
+          onClick={() => scroll("right")}
+        >
+          <ChevronRight size={20} />
+        </button>
+      )}
+
     </div>
   );
 };

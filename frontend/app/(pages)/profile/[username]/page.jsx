@@ -1,7 +1,14 @@
 "use client";
 
-import React, { createContext, useState, useEffect,useRef, useContext } from "react";
-import { useParams } from "next/navigation"; 
+import React, {
+  createContext,
+  useState,
+  useEffect,
+  useRef,
+  useContext,
+} from "react";
+import { useParams } from "next/navigation";
+
 import { useRouter } from "next/navigation";
 import FollowerModal from "@/components/global/FollowerModalProfile";
 import FriendModal from "@/components/global/FriendModalProfile";
@@ -27,18 +34,18 @@ const Page = () => {
   const [activeTab, setActiveTab] = useState("post");
   const [userPosts, setUserPosts] = useState([]);
   const [userReels, setUserReels] = useState([]);
-  const [savedItems, setSavedItems] = useState([]); 
+
+  const [savedItems, setSavedItems] = useState([]);
   const [taggedPosts, setTaggedPosts] = useState([]);
+  const router = useRouter();
+
   const { user, setUser, getInfoUser } = useApp();
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
         const fetchedUser = await getInfoUser();
         setUser(fetchedUser);
-        if (fetchedUser?.id) {
-          const posts = await fetchUserPosts(fetchedUser.id);
-          setUserPosts(posts);
-        }
+
       } catch (error) {
         console.error("Error fetching user info:", error);
       }
@@ -48,7 +55,6 @@ const Page = () => {
       fetchUserInfo();
     }
   }, [user, getInfoUser, setUser]);
-  const router = useRouter();
 
   const handleClickView = () => {
     router.push("/settings/archive");
@@ -69,7 +75,9 @@ const Page = () => {
 
   return (
     <div className="h-screen overflow-y-auto">
-    <div className=" w-[82%] mx-auto">
+
+      <div className=" w-[82%] mx-auto">
+
         <div className="flex p-5 mx-20">
           <div className="relative">
             <Image
@@ -79,26 +87,14 @@ const Page = () => {
               width={200}
               height={200}
             />
-            <div className="absolute bottom-0 right-1 mb-2 mr-2">
-              <label
-                htmlFor="file-upload"
-                className="cursor-pointer bg-gray-600 text-white rounded-full p-2 hover:bg-gray-700 transition"
-              >
-                <i className="fa-solid fa-camera text-2xl"></i>
-              </label>
-              <input
-                id="file-upload"
-                type="file"
-                className="hidden"
-                onChange={(e) => handleFileChange(e)}
-              />
-            </div>
+
           </div>
 
-          <div className="p-2 ml-8">                                      
+          <div className="p-2 ml-8">
             <div className="flex justify-between ml-10">
               <div className="flex flex-col items-center w-200 mt-2 mx-8">
-                <h3 className="text-2xl truncate w-32">{user.username}</h3>
+                <h3 className="text-2xl truncate w-32 text-center">{user.username}</h3>
+
 
                 <p
                   className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer"
@@ -112,13 +108,15 @@ const Page = () => {
 
               <div className="flex flex-col mx-10 items-center w-200">
                 <ul>
-                <div
-      className="flex items-center font-bold py-2 px-4 rounded-lg hover:bg-gray-400 bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors w-full cursor-pointer"
-      onClick={handleClickEdit}
-    >
-      <i className="fa-regular fa-pen-to-square mr-5"></i>
-      <span>Edit Profile</span>
-    </div>
+
+                  <div
+                    className="flex items-center font-bold py-2 px-4 rounded-lg hover:bg-gray-400 bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors w-full cursor-pointer"
+                    onClick={handleClickEdit}
+                  >
+                    <i className="fa-regular fa-pen-to-square mr-3"></i>
+                    <span>Edit Profile</span>
+                  </div>
+
                 </ul>
                 <p
                   className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer"
@@ -137,13 +135,15 @@ const Page = () => {
 
               <div className="flex flex-col mx-10 items-center w-200">
                 <ul>
-                <div
-      className="flex items-center font-bold py-2 px-4 rounded-lg hover:bg-gray-400 bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors w-full cursor-pointer"
-      onClick={handleClickView}
-    >
-      <i className="fa-regular fa-bookmark mr-5"></i>
-      <span>View Archive</span>
-    </div>
+
+                  <div
+                    className="flex items-center font-bold py-2 px-4 rounded-lg hover:bg-gray-400 bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors w-full cursor-pointer"
+                    onClick={handleClickView}
+                  >
+                    <i className="fa-regular fa-bookmark mr-3"></i>
+                    <span>View Archive</span>
+                  </div>
+
                 </ul>
                 <p
                   className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer"
@@ -165,7 +165,9 @@ const Page = () => {
             </p>
           </div>
         </div>
-       <People />
+
+        <People />
+
         <div className="p-4">
           <div className="flex justify-center border-b-2 border-gray-300">
             <button
