@@ -12,4 +12,4 @@ public class CorsConfig implements WebMvcConfigurer {
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowCredentials(true); // Cho phép gửi cookie
     }
-} 
+}

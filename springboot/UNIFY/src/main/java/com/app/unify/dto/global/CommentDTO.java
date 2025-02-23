@@ -1,5 +1,15 @@
 package com.app.unify.dto.global;
 
-public class CommentDTO {
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class CommentDTO {
+    private String userId;
+    private String postId;
+    private String content;
+    private String parentId;
 }

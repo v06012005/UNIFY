@@ -9,8 +9,9 @@ import Picker from "emoji-picker-react";
 import LikeButton from "@/components/global/LikeButton";
 import Reply from "@/components/comments/Reply";
 import Content from "@/components/comments/Content";
-
-import axios from "axios"; // Dùng axios để gọi API
+import { useApp } from "@/components/provider/AppProvider";
+import Cookies from "js-cookie";
+import axios from "axios";
 
 // 0de81a82-caa6-439c-a0bc-124a83b5ceaf  ID POST
 
@@ -26,7 +27,7 @@ import {
   Button,
 } from "@heroui/react";
 
-const Reels = () => {
+const Reels = ({ postId }) => {
   const reels = Array(1).fill(0);
   const [isMuted, setIsMuted] = useState(false);
   const [isCommentOpen, setIsCommentOpen] = useState(false);
@@ -36,9 +37,14 @@ const Reels = () => {
   const [isFollow, setIsFollow] = useState(false);
   const [selectedAvatar, setSelectedAvatar] = useState(null);
   const [showPicker, setShowPicker] = useState(false);
+  const [comments, setComments] = useState([]);
   const [comment, setComment] = useState("");
   const pickerRef = useRef(null);
   const [isShown, setIsShown] = useState(false);
+  const { user } = useApp();
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+  const token = Cookies.get("token");
+  const [isCommentEmpty, setIsCommentEmpty] = useState(true);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -55,6 +61,111 @@ const Reels = () => {
 
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showPicker]);
+  /////////
+  ///////
+  useEffect(() => {
+    fetchComments();
+  }, [postId]);
+
+  ////////
+  const fetchComments = async () => {
+    try {
+      if (!token) {
+        console.error("Không có token trong cookie");
+        return;
+      }
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/posts/${postId}/comments`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        setComments(data);
+      } else {
+        const result = await response.text();
+
+        if (response.status === 401) {
+          console.error("Token không hợp lệ hoặc đã hết hạn");
+          // Cookies.remove("token");
+          // window.location.href = "/login";
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+      alert("Something went wrong. Please try again.");
+    }
+  };
+  ////////////////
+  const handleCommentSubmit = async () => {
+    if (!user || !user.id) {
+      console.error("User is not logged in");
+      return;
+    }
+
+    if (!comment.trim()) {
+      console.warn("Comment is empty");
+      return;
+    }
+
+    try {
+      if (!token) {
+        console.error("Không có token trong cookie");
+        return;
+      }
+
+      const response = await axios.post(
+        `${API_URL}/api/posts/${postId}/comments`,
+        {
+          userId: user.id,
+          postId: postId,
+          content: comment,
+          parentId: null,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 201) {
+        setComments((prevComments) => [
+          ...prevComments,
+          {
+            id: response.data.id,
+            user: {
+              id: user.id,
+              username: user.username,
+              avatar: user.avatar,
+            },
+            content: comment,
+            commentedAt: new Date().toISOString(),
+          },
+        ]);
+        setComment("");
+      }
+    } catch (error) {
+      if (error.response?.status === 401) {
+        console.error("Token không hợp lệ hoặc đã hết hạn");
+        // Cookies.remove("token");
+        // window.location.href = "/login";
+      } else {
+        console.error(
+          "Failed to submit comment:",
+          error.response?.data || error.message
+        );
+      }
+    }
+  };
+  /////////////////
 
   const toggleMute = () => {
     setIsMuted((prev) => !prev);
@@ -289,58 +400,61 @@ const Reels = () => {
                   Comments
                 </h2>
               </div>
-              <div className="flex-grow overflow-auto pl-12 pr-12 ">
-                <Card className="overflow-visible border-none bg-transparent shadow-none">
-                  <div className="">
-                    <div className="flex items-center">
-                      <Image
-                        src={avatar2}
-                        alt="User avatar"
-                        className="rounded-full w-12 h-12"
-                      />
-                      <h4 className="text-lg font-bold truncate w-20 pl-2 ">
-                        TanVinh
-                      </h4>
-                    </div>
+              <div className="flex-grow overflow-auto pl-12 pr-12">
+                {comments.map((comment) => (
+                  <Card
+                    key={comment.id}
+                    className="overflow-visible border-none bg-transparent shadow-none"
+                  >
+                    {isShown && (
+                      <>
+                        <div className="w-full flex flex-col items-end">
+                          <Reply />
+                          <Reply />
+                        </div>
+                      </>
+                    )}
                     <div className="">
-                      <Content
-                        text={`Lorem ipsum dolor sit amet consectetur adipisicing elit. Sed quibusdam, ex maiores amet alias dolor minima magnam quis totam molestias consectetur laudantium possimus et asperiores? Dignissimos minima animi omnis sed! Lorem ipsum dolor sit amet consectetur, adipisicing elit. Saepe, id repellat minus labore esse eligendi maiores asperiores? Architecto dolorem veritatis, totam nam, molestiae quo quis asperiores qui nostrum animi possimus?`}
-                      />
+                      <div className="flex items-center">
+                        <Image
+                          src={avatar2}
+                          alt="User avatar"
+                          className="rounded-full w-12 h-12"
+                        />
+                        <h4 className="text-lg font-bold truncate w-20 pl-2">
+                          {comment.user.username}
+                        </h4>
+                      </div>
+                      <div>
+                        <Content text={comment.content} />
+                      </div>
                     </div>
-                  </div>
 
-                  <CardFooter className="flex flex-row justify-end">
-                    <LikeButton className="!text-sm" />
-                    <Button
-                      size="sm"
-                      className="bg-transparent dark:text-white"
-                    >
-                      <i className="fa-solid fa-reply"></i>Reply
-                    </Button>
-                    <Button
-                      onPress={handleClick}
-                      size="sm"
-                      className="bg-transparent dark:text-white"
-                    >
-                      <i className="fa-solid fa-comments"></i>Show Replies
-                    </Button>
-                    <Button
-                      size="sm"
-                      className="bg-transparent dark:text-white"
-                      startContent={<i className="fa-solid fa-ellipsis"></i>}
-                    >
-                      More
-                    </Button>
-                  </CardFooter>
-                </Card>
-                {isShown && (
-                  <>
-                    <div className="w-full flex flex-col items-end">
-                      <Reply />
-                      <Reply />
-                    </div>
-                  </>
-                )}
+                    <CardFooter className="flex flex-row justify-end">
+                      <LikeButton className="!text-sm" />
+                      <Button
+                        size="sm"
+                        className="bg-transparent dark:text-white"
+                      >
+                        <i className="fa-solid fa-reply"></i>Reply
+                      </Button>
+                      <Button
+                        onPress={handleClick}
+                        size="sm"
+                        className="bg-transparent dark:text-white"
+                      >
+                        <i className="fa-solid fa-comments"></i>Show Replies
+                      </Button>
+                      <Button
+                        size="sm"
+                        className="bg-transparent dark:text-white"
+                        startContent={<i className="fa-solid fa-ellipsis"></i>}
+                      >
+                        More
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                ))}
               </div>
               <div className="flex items-center mt-3 text-white p-3 rounded-2xl w-full justify-center relative">
                 <Image
@@ -354,7 +468,10 @@ const Reels = () => {
                   maxLength={150}
                   rows={1}
                   value={comment}
-                  onChange={(e) => setComment(e.target.value)}
+                  onChange={(e) => {
+                    setComment(e.target.value); // Cập nhật nội dung comment
+                    setIsCommentEmpty(e.target.value.trim() === ""); // Kiểm tra xem nội dung có trống không
+                  }}
                   onInput={(e) => {
                     e.target.style.height = "auto";
                     const maxHeight =
@@ -376,26 +493,29 @@ const Reels = () => {
                 >
                   <Smile size={28} />
                 </button>
-
                 {showPicker && (
                   <div
                     ref={pickerRef}
-                    className="absolute bottom-20  right-12 z-50"
+                    className="absolute bottom-20 right-12 z-50"
                   >
                     <Picker
-                      onEmojiClick={(emojiObject) =>
-                        setComment(comment + emojiObject.emoji)
-                      }
+                      onEmojiClick={(emojiObject) => {
+                        const newComment = comment + emojiObject.emoji;
+                        setComment(newComment); // Cập nhật nội dung comment
+                        setIsCommentEmpty(newComment.trim() === ""); // Kiểm tra xem nội dung có trống không
+                      }}
                     />
                   </div>
                 )}
-
-                <button
-                  type="submit"
-                  className="ml-2 text-gray-600 hover:text-gray-400"
-                >
-                  <Send size={28} />
-                </button>
+                {!isCommentEmpty && (
+                  <button
+                    type="submit"
+                    onClick={handleCommentSubmit}
+                    className="ml-2 text-gray-600 hover:text-gray-400"
+                  >
+                    <Send size={28} />
+                  </button>
+                )}
               </div>
             </div>
           </div>

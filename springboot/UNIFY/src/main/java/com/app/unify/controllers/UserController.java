@@ -18,8 +18,6 @@ import com.app.unify.dto.global.UserDTO;
 import com.app.unify.exceptions.UserNotFoundException;
 import com.app.unify.services.UserService;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 @RestController
 @RequestMapping("/users")
 public class UserController {

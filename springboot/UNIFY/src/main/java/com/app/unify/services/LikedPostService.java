@@ -1,11 +1,14 @@
 package com.app.unify.services;
 
-import com.app.unify.dto.global.LikedPostDTO;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.app.unify.dto.global.PostDTO;
 import com.app.unify.dto.request.LikedPostRequest;
-import com.app.unify.dto.response.PostsDataResponse;
 import com.app.unify.entities.LikedPost;
-import com.app.unify.entities.Post;
 import com.app.unify.entities.User;
 import com.app.unify.exceptions.PostNotFoundException;
 import com.app.unify.exceptions.UserNotFoundException;
@@ -14,13 +17,8 @@ import com.app.unify.mapper.PostMapper;
 import com.app.unify.repositories.LikedPostRepository;
 import com.app.unify.repositories.PostRepository;
 import com.app.unify.repositories.UserRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor

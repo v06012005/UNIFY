@@ -1,11 +1,13 @@
 package com.app.unify.services;
 
-import com.app.unify.dto.global.PostDTO;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import java.util.List;
+
+import com.app.unify.dto.global.PostDTO;
 
 @Service
 public class RecommendationService {

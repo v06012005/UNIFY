@@ -50,6 +50,7 @@ public class UserService {
 		userDto.setPassword(EncryptPasswordUtil.encryptPassword(userDto.getPassword()));
 		Role role = roleRepository.findByName("USER").orElseThrow(() -> new RuntimeException("Role not found !"));
 		userDto.setRoles(Collections.singleton(role));
+		
 		User user = userRepository.save(userMapper.toUser(userDto));
 		return userMapper.toUserDTO(user);
 	}

@@ -1,11 +1,10 @@
 package com.app.unify.mapper;
 
 
-import com.app.unify.dto.response.PostsDataResponse;
-
 import org.mapstruct.Mapper;
 
 import com.app.unify.dto.global.PostDTO;
+import com.app.unify.dto.response.PostsDataResponse;
 import com.app.unify.entities.Post;
 
 @Mapper(componentModel = "spring")

@@ -3,15 +3,10 @@ package com.app.unify.dto.global;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-
-import com.app.unify.entities.LikedPost;
-
 import com.app.unify.entities.Media;
 import com.app.unify.entities.PostComment;
 import com.app.unify.entities.User;
 import com.app.unify.types.Audience;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AccessLevel;
 import lombok.Data;
