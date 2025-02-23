@@ -2,19 +2,11 @@
 
 import React from "react";
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import Image from "next/image";
 import { useApp } from "@/components/provider/AppProvider";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Cookies from "js-cookie";
-const NavButton = ({ iconClass, href = "", content = "" }) => {
-  return (
-    <Link className="flex h-full items-center text-center" href={href}>
-      <i className={`${iconClass}`}></i>
-      <span className="ml-5">{content}</span>
-    </Link>
-  );
-};
+
 
 const Page = () => {
   const defaultAvatar = "/images/unify_icon_2.svg";
@@ -23,7 +15,7 @@ const Page = () => {
   const [daysInMonth, setDaysInMonth] = useState(31);
   const [errors, setErrors] = useState({});
   const { user, setUser } = useApp();
-  const {logoutUser} = useApp();
+  const { logoutUser } = useApp();
   const [userData, setUserData] = useState({
     id: "",
     firstName: "",
@@ -67,8 +59,30 @@ const Page = () => {
   }, [user]);
 
   const handleGenderChange = (value) => {
-    setGender(value); 
+    setGender(value);
   };
+
+  useEffect(() => {
+    const { month, year } = userData.birthDay;
+    if (month && year) {
+      const days = new Date(
+        parseInt(year, 10),
+        parseInt(month, 10),
+        0
+      ).getDate();
+      setDaysInMonth(days);
+
+      if (parseInt(userData.birthDay.day, 10) > days) {
+        setUserData((prev) => ({
+          ...prev,
+          birthDay: {
+            ...prev.birthDay,
+            day: days.toString().padStart(2, "0"),
+          },
+        }));
+      }
+    }
+  }, [userData.birthDay.month, userData.birthDay.year, setUserData]);
 
   const handleChange = (field, value) => {
     if (field.startsWith("birthDay.")) {
@@ -77,28 +91,6 @@ const Page = () => {
         ...userData.birthDay,
         [birthField]: value.padStart(2, "0"),
       };
-
-      if (birthField === "month" || birthField === "year") {
-        const month = parseInt(newBirthDay.month, 10);
-        const year = parseInt(newBirthDay.year, 10);
-
-        if (
-          !year ||
-          year < 1900 ||
-          year > 2100 ||
-          !month ||
-          month < 1 ||
-          month > 12
-        ) {
-          console.error("Invalid month or year:", { year, month });
-          return;
-        }
-
-        const days = new Date(year, month, 0).getDate();
-        if (parseInt(newBirthDay.day, 10) > days) {
-          newBirthDay.day = "01";
-        }
-      }
 
       setUserData((prevData) => ({
         ...prevData,
@@ -111,6 +103,20 @@ const Page = () => {
       }));
     }
   };
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
 
   const validateFormData = (data) => {
     const errors = {};
@@ -251,21 +257,6 @@ const Page = () => {
     }
   };
 
-  const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
-
   return (
     <div className="w-full">
       <div className="h-screen overflow-y-auto">
@@ -316,10 +307,10 @@ const Page = () => {
               </button>
 
               <button
-              onClick={(e) => {
-                e.preventDefault(); 
-                logoutUser();
-              }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  logoutUser();
+                }}
                 className="bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition"
               >
                 Logout
@@ -484,32 +475,31 @@ const Page = () => {
           </div>
 
           <div className="m-5 flex gap-4 items-start">
-          <div className="flex flex-col gap-4 basis-1/2">
-      <label className="text-lg font-medium text-gray-700 dark:text-white">
-        Gender:
-      </label>
-      <RadioGroup
-        value={gender === true ? "male" : "female"} 
-        onValueChange={(value) => handleGenderChange(value === "male")} 
-        className="flex items-center gap-4"
-      >
-        <label className="flex items-center gap-1 dark:text-gray-400 mr-10">
-          <RadioGroupItem value="female" id="female" />
-          Female
-        </label>
-        <label className="flex items-center gap-1 dark:text-gray-400">
-          <RadioGroupItem value="male" id="male" />
-          Male
-        </label>
-      </RadioGroup>
-    </div>
+            <div className="flex flex-col gap-4 basis-1/2">
+              <label className="text-lg font-medium text-gray-700 dark:text-white">
+                Gender:
+              </label>
+              <RadioGroup
+                value={gender === true ? "male" : "female"}
+                onValueChange={(value) => handleGenderChange(value === "male")}
+                className="flex items-center gap-4"
+              >
+                <label className="flex items-center gap-1 dark:text-gray-400 mr-10">
+                  <RadioGroupItem value="female" id="female" />
+                  Female
+                </label>
+                <label className="flex items-center gap-1 dark:text-gray-400">
+                  <RadioGroupItem value="male" id="male" />
+                  Male
+                </label>
+              </RadioGroup>
+            </div>
 
             <div className="flex flex-col gap-4 basis-1/2">
               <label className="text-lg font-medium text-gray-700 dark:text-white">
                 Birthday:
               </label>
               <div className="flex items-center gap-4">
-                {/* Month */}
                 <select
                   value={userData.birthDay.month}
                   onChange={(e) =>
@@ -527,7 +517,6 @@ const Page = () => {
                   })}
                 </select>
 
-                {/* Day */}
                 <select
                   value={userData.birthDay.day}
                   onChange={(e) => handleChange("birthDay.day", e.target.value)}
@@ -543,7 +532,6 @@ const Page = () => {
                   })}
                 </select>
 
-                {/* Year */}
                 <select
                   value={userData.birthDay.year}
                   onChange={(e) =>
@@ -600,7 +588,7 @@ const Page = () => {
             <button
               type="submit"
               disabled={loading}
-              className="px-10 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 dark:bg-gray-500 dark:hover:bg-gray-600 transition focus:outline-none focus:ring-2 focus:ring-blue-500 text-xl"
+              className="px-10 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700  transition focus:outline-none focus:ring-2 focus:ring-blue-500 text-xl"
             >
               {loading ? "Saving..." : "Save"}
             </button>

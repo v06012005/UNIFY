@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import Link from "next/link";
-
+const testPost = {
+  id: 1,
+};
 
 const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   return (
@@ -46,14 +48,16 @@ const UserPosts = () => {
             </div>
 
             <div className="w-1/2 flex flex-col">
-              <div className="flex items-center justify-between p-4 border-b">
+              <div className="flex items-center justify-between p-3 border-b">
                 <div className="flex items-center">
-                  <img
-                    src={`/images/avt.jpg`}
-                    alt="User Avatar"
-                    className="w-8 h-8 rounded-full mr-2"
-                  />
-                  <span className="font-bold">huynhdiz</span>
+                  <div className="w-10 h-10 rounded-full border-2 border-gray-300">
+                    <img
+                      src={`/images/avt.jpg`}
+                      alt="User Avatar"
+                      className="w-full h-full rounded-full object-cover"
+                    />
+                  </div>
+                  <span className="font-bold ml-3">huynhdiz</span>
                 </div>
 
                 <NavButton
@@ -79,6 +83,7 @@ const UserPosts = () => {
                       <button className="w-full py-2 dark:hover:bg-gray-900 hover:bg-gray-100">
                         Go to Post
                       </button>
+
                       <button
                         onClick={() => setOpenList(false)}
                         className="w-full py-2 text-gray-400 hover:bg-gray-700"
@@ -90,37 +95,45 @@ const UserPosts = () => {
                 )}
               </div>
 
-              <div className="flex-1 p-4 h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
-
-              <div className="flex items-start space-x-2 mb-2">
-                  <img
-                    src={`/images/avt.jpg`}
-                    alt="Avatar"
-                    className="w-8 h-8 rounded-full mr-3"
-                  />
+              <div className="flex-1 p-4 overflow-y-auto">
+                <div className="flex items-start space-x-2 mb-2">
+                  <div className="w-8 h-8 rounded-full border-2 border-gray-300">
+                    <img
+                      src={`/images/avt.jpg`}
+                      alt="User Avatar"
+                      className="w-full h-full rounded-full object-cover"
+                    />
+                  </div>
                   <div className="flex flex-col">
                     <p className="text-sm leading-tight">
-                      <span className="font-bold mr-4">huynhdiz</span> Nghe nhạc nào mọi người!
+                      <span className="font-bold mr-4">huynhdiz</span> Nghe nhạc
+                      nà mn
                     </p>
-                   <div className="flex">
-                   <span className="text-xs text-gray-500 mr-5">2 giờ trước</span>
-                   </div>
+                    <div className="flex">
+                      <span className="text-xs text-gray-500 mr-5">
+                        2 giờ trước
+                      </span>
+                    </div>
                   </div>
                 </div>
                 <div className="flex items-start space-x-2 mb-2">
-                  <img
-                    src={`/images/avt.jpg`}
-                    alt="Avatar"
-                    className="w-8 h-8 rounded-full mr-3"
-                  />
+                  <div className="w-8 h-8 rounded-full border-2 border-gray-300">
+                    <img
+                      src={`/images/avt.jpg`}
+                      alt="User Avatar"
+                      className="w-full h-full rounded-full object-cover"
+                    />
+                  </div>
                   <div className="flex flex-col">
                     <p className="text-sm leading-tight">
                       <span className="font-bold mr-4">user2</span> Đẹp quá!
                     </p>
-                   <div className="flex">
-                   <span className="text-xs text-gray-500 mr-5">2 giờ trước</span>
-                   <span className="text-xs text-gray-500">Reply</span>
-                   </div>
+                    <div className="flex">
+                      <span className="text-xs text-gray-500 mr-5">
+                        2 giờ trước
+                      </span>
+                      <span className="text-xs text-gray-500">Reply</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -135,11 +148,11 @@ const UserPosts = () => {
                   <NavButton iconClass="fa-regular fa-bookmark" />
                 </div>
                 <p className="dark:text-gray-500">Thời gian</p>
-                <div className="flex items-center pt-2 ">
+                <div className="flex items-center border-none pt-2">
                   <input
                     type="text"
-                    placeholder="Comment..."
-                    className="flex-1 border-none focus:outline-none focus:ring-0 dark:bg-gray-900"
+                    placeholder="Thêm bình luận..."
+                    className="flex-1 border-none focus:ring-0 focus:outline-none dark:bg-gray-900 caret-blue-500"
                   />
                   <button className="text-blue-500 font-bold ml-2">Đăng</button>
                 </div>
