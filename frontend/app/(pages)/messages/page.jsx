@@ -48,53 +48,6 @@ const Page = () => {
 
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showPicker]);
-  // const chatMessages = [
-  //   {
-  //     "id": "1",
-  //     "sender": "58d8ce36-2c82-4d75-b71b-9d34a3370b16",
-  //     "receiver": "user2",
-  //     "content": "Hey there!",
-  //     "timestamp": "2025-02-14T10:00:00Z",
-  //     "avatar": avatar,
-  //     "fileUrls": []
-  //   },
-  //   {
-  //     "id": "2",
-  //     "sender": "58d8ce36-2c82-4d75-b71b-9d34a3370b16",
-  //     "receiver": "58d8ce36-2c82-4d75-b71b-9d34a3370b16",
-  //     "content": "How are you?",
-  //     "timestamp": "2025-02-14T10:00:30Z",
-  //     "avatar": "/user1.png",
-  //     "fileUrls": []
-  //   },
-  //   {
-  //     "id": "3",
-  //     "sender": "user2",
-  //     "receiver": "58d8ce36-2c82-4d75-b71b-9d34a3370b16",
-  //     "content": "I'm doing great!",
-  //     "timestamp": "2025-02-14T10:01:00Z",
-  //     "avatar": avatar,
-  //     "fileUrls": []
-  //   },
-  //   {
-  //     "id": "4",
-  //     "sender": "user2",
-  //     "receiver": "user1",
-  //     "content": "What about you?",
-  //     "timestamp": "2025-02-14T10:01:30Z",
-  //     "avatar": avatar,
-  //     "fileUrls": []
-  //   },
-  //   {
-  //     "id": "5",
-  //     "sender": "58d8ce36-2c82-4d75-b71b-9d34a3370b16",
-  //     "receiver": "user2",
-  //     "content": "I'm good too!",
-  //     "timestamp": "2025-02-14T10:02:00Z",
-  //     "avatar": avatar,
-  //     "fileUrls": []
-  //   }
-  // ]
 
   return (
     <div className="ml-auto">
