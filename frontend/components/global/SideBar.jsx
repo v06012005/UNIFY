@@ -8,6 +8,7 @@ import SearchHorizontalToggle from "@/components/global/SearchHorizontalToggle";
 import NotificationModal from "@/components/global/NotificationModal";
 import UnifyLogoIcon from "./UnifyLogoIcon";
 import { useApp } from "@/components/provider/AppProvider";
+import { useParams } from "next/navigation"; 
 const NavButton = React.memo(function NavButton({
   iconClass,
   href = "",
@@ -25,6 +26,7 @@ const NavButton = React.memo(function NavButton({
 });
 
 const SideBar = () => {
+  
   const { user } = useApp();
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const modalRef = useRef(null);
@@ -142,7 +144,10 @@ const SideBar = () => {
               {user && (
                 <Link
                   title="Your profile"
-                  href="/profile"
+
+                  href= {`/profile/${user.username}`}
+                 // {`/profile/${user.username}`}
+
                   className="w-full flex h-full items-center"
                 >
                   <Image

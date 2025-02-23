@@ -11,15 +11,18 @@ import CommentButton from "./CommentButton";
 import ShareButton from "./ShareButton";
 import CommentForm from "./CommentForm";
 import PostVideo from "./PostVideo";
+import { fetchPosts } from "@/app/lib/dal";
+import { useEffect } from "react";
+import { Spinner } from "@heroui/react";
 
-const User = ({ href = "" }) => {
+const User = ({ href = "", username = "", firstname = "", lastname = "" }) => {
   return (
     <Link href={href}>
       <div className="flex mb-4">
         <Image src={avatar} alt="Avatar" className="rounded-full w-14 h-14" />
         <div className="ml-5">
-          <p className="my-auto text-lg font-bold">@username</p>
-          <p className="my-auto">Johnny Dang</p>
+          <p className="my-auto text-lg font-bold">@{username}</p>
+          <p className="my-auto">{firstname} {lastname}</p>
         </div>
       </div>
     </Link>
@@ -44,7 +47,7 @@ const Caption = ({ text, maxLength = 100 }) => {
   return (
     <>
       <div className="my-3 leading-snug text-wrap">
-        {isExpanded ? text : `${text.slice(0, maxLength)}...`}
+        {isExpanded || text.length < 100 ? text : `${text.slice(0, maxLength)}...`}
         <button
           onClick={toggleExpanded}
           className="text-gray-500 font-semibold ml-2"
@@ -58,6 +61,8 @@ const Caption = ({ text, maxLength = 100 }) => {
 
 const Slider = ({ srcs = [] }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
+
 
   const prev = () => {
     const isFirst = currentIndex === 0;
@@ -77,16 +82,22 @@ const Slider = ({ srcs = [] }) => {
 
   return (
     <div className="max-w-[450px] w-full h-[550px] bg-cover relative mx-auto group">
-      {srcs[currentIndex].type === "image" && (
+      {loading && (
+        <div className="absolute inset-0 flex justify-center rounded-lg items-center bg-gray-200 dark:bg-gray-800">
+          <Spinner classNames={{ label: "text-foreground mt-4" }} label="Please wait..." variant="wave" />
+        </div>
+      )}
+      {srcs[currentIndex]?.mediaType === "IMAGE" && (
         <Image
           src={srcs[currentIndex].url}
           alt="Image"
-          className="object-cover w-full h-full rounded-lg duration-500"
+          className={`transition-opacity duration-300 ${loading ? "opacity-0" : "opacity-100"} object-cover w-full h-full rounded-lg duration-500`}
           width={450}
           height={550}
+          onLoad={() => setLoading(false)}
         />
       )}
-      {srcs[currentIndex].type === "video" && (
+      {srcs[currentIndex]?.mediaType === "VIDEO" && (
         <>
           <PostVideo src={srcs[currentIndex].url} />
         </>
@@ -108,9 +119,8 @@ const Slider = ({ srcs = [] }) => {
           <div
             key={index}
             onClick={() => goTo(index)}
-            className={`text-xs mx-[2px] cursor-pointer ${
-              currentIndex === index ? "dark:text-white" : "text-gray-500"
-            }`}
+            className={`text-xs mx-[2px] cursor-pointer ${currentIndex === index ? "dark:text-white" : "text-gray-500"
+              }`}
           >
             <i className="fa-solid fa-circle fa-xs "></i>
           </div>
@@ -120,42 +130,67 @@ const Slider = ({ srcs = [] }) => {
   );
 };
 
-const Post = ({ srcs }) => {
+const Post = () => {
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function getPosts() {
+      const homePosts = await fetchPosts();
+      setPosts(homePosts);
+      setLoading(false);
+    }
+    console.log(posts)
+    getPosts();
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Spinner color="primary" label="Loading..." labelColor="primary" />
+      </div>
+    );
+  }
+
   return (
-    <div className="w-3/4 mb-8 mx-auto pb-8">
-      <User href="/profile" />
-      <Slider srcs={srcs} />
-      {/* <Image src={imageSrc} alt='Dummy' className='w-[450px] h-[550px] mb-2 object-cover mx-auto rounded-lg' width={450} height={550} /> */}
-      <Caption
-        text={`Lorem ipsum dolor sit amet consectetur adipisicing elit. Sed quibusdam, ex maiores amet alias dolor minima magnam quis totam molestias consectetur laudantium possimus et asperiores? Dignissimos minima animi omnis sed! Lorem ipsum dolor sit amet consectetur, adipisicing elit. Saepe, id repellat minus labore esse eligendi maiores asperiores? Architecto dolorem veritatis, totam nam, molestiae quo quis asperiores qui nostrum animi possimus?`}
-      />
-      <div className="flex text-xl">
-        <LikeButton className="!text-xl" />
-        <CommentButton className="text-xl">
-          <i className="fa-regular fa-comment"></i>47K
-        </CommentButton>
-        <ShareButton />
-      </div>
-      <div className="mt-2 flex flex-wrap">
-        <Hashtag content="#myhashtag"></Hashtag>
-        <Hashtag content="#myhashtag"></Hashtag>
-        <Hashtag content="#myhashtag"></Hashtag>
-        <Hashtag content="#myhashtag"></Hashtag>
-        <Hashtag content="#myhashtag"></Hashtag>
-        <Hashtag content="#myhashtag"></Hashtag>
-        <Hashtag content="#myhashtag"></Hashtag>
-        <Hashtag content="#myhashtag"></Hashtag>
-        <Hashtag content="#myhashtag"></Hashtag>
-        <Hashtag content="#myhashtag"></Hashtag>
-        <Hashtag content="#myhashtag"></Hashtag>
-      </div>
-      <div className="mt-2">
-        <CommentButton className="text-black hover:text-gray-500 text-md animate-none transition-none dark:text-gray-400 dark:hover:text-white">
-          View all comments
-        </CommentButton>
-      </div>
-      <CommentForm />
-    </div>
+    <>
+      {posts.map(post => (
+        <div className="w-3/4 mb-8 mx-auto pb-8" key={post.id}>
+          <User href="/profile" username={post.user?.username} firstname={post.user?.firstName} lastname={post.user?.lastName} />
+          <Slider srcs={post.media} />
+          {/* <Image src={imageSrc} alt='Dummy' className='w-[450px] h-[550px] mb-2 object-cover mx-auto rounded-lg' width={450} height={550} /> */}
+          <Caption
+            text={post.captions}
+          />
+          <div className="flex text-xl">
+            <LikeButton className="!text-xl" />
+            <CommentButton className="text-xl">
+              <i className="fa-regular fa-comment"></i>47K
+            </CommentButton>
+            <ShareButton />
+          </div>
+          <div className="mt-2 flex flex-wrap">
+            <Hashtag content="#myhashtag"></Hashtag>
+            {/* <Hashtag content="#myhashtag"></Hashtag>
+            <Hashtag content="#myhashtag"></Hashtag>
+            <Hashtag content="#myhashtag"></Hashtag>
+            <Hashtag content="#myhashtag"></Hashtag>
+            <Hashtag content="#myhashtag"></Hashtag>
+            <Hashtag content="#myhashtag"></Hashtag>
+            <Hashtag content="#myhashtag"></Hashtag>
+            <Hashtag content="#myhashtag"></Hashtag>
+            <Hashtag content="#myhashtag"></Hashtag>
+            <Hashtag content="#myhashtag"></Hashtag> */}
+          </div>
+          <div className="mt-2">
+            <CommentButton className="text-black hover:text-gray-500 text-md animate-none transition-none dark:text-gray-400 dark:hover:text-white">
+              View all comments
+            </CommentButton>
+          </div>
+          <CommentForm />
+        </div>
+      ))}
+    </>
   );
 };
 

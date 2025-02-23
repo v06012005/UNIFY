@@ -17,4 +17,6 @@ public interface PostService {
 	List<PostDTO> getPostsTrending();
 
 	void deletePostById(String id);
+	
+	List<PostDTO> getMyPosts(String username);
 }

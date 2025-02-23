@@ -1,3 +1,4 @@
+
 import Post from "@/components/global/Post";
 import avatar from "@/public/images/test1.png";
 import Image from "next/image";
@@ -83,14 +84,13 @@ const User = ({ href = "" }) => {
 export default async function Home() {
   const session = await verifySession();
 
+
   return (
     <RootLayout>
       <div className="flex">
         <div className="basis-3/4 border-r py-8 h-screen overflow-y-scroll no-scrollbar">
           <div className="w-3/4 flex flex-col mx-auto">
-            <Post srcs={srcs}></Post>
-            <Post srcs={srcs}></Post>
-            <Post srcs={srcs}></Post>
+            <Post></Post>
           </div>
         </div>
         <div className="basis-1/4 border py-8 h-screen sticky top-0">
