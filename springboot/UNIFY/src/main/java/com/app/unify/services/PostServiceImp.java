@@ -61,5 +61,11 @@ public class PostServiceImp implements PostService {
 	public void deletePostById(String id) {
 		postRepository.deleteById(id);
 	}
+	
+	
+	public List<PostDTO> getMyPosts(String username) {
+		return postRepository.getMyPosts(username);
+	}
+	
 
 }
