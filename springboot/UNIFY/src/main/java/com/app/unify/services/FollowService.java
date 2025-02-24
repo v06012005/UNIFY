@@ -71,6 +71,7 @@ public class FollowService {
 
 	private String getCurrentUserId() {
 		var authentication = SecurityContextHolder.getContext().getAuthentication();
+		System.out.println("Authencation: " + authentication);
 
 		if (authentication == null || authentication.getPrincipal() == null) {
 			throw new RuntimeException("User not authenticated (401)");
@@ -80,7 +81,7 @@ public class FollowService {
 		System.out.println("Principal: " + principal); // Debug log
 
 		if (principal instanceof UserDetails userDetails) {
-			String userId = userRepository.findByUsername(userDetails.getUsername())
+			String userId = userRepository.findByEmail(userDetails.getUsername())
 					.orElseThrow(() -> new RuntimeException("User not found")).getId();
 			System.out.println("UserId: " + userId);
 			return userId;

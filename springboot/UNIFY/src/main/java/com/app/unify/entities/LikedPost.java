@@ -1,7 +1,9 @@
 package com.app.unify.entities;
 
+import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,8 +18,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-import java.util.Objects;
-
 @Entity
 @Table(name = "LikedPosts")
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -30,7 +30,6 @@ public class LikedPost {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	String id;
-
 
 	@ManyToOne
 	@JoinColumn(name = "post_id", referencedColumnName = "id", nullable = false)
@@ -45,7 +44,5 @@ public class LikedPost {
 	public int hashCode() {
 		return Objects.hash(id);
 	}
-
-
 
 }

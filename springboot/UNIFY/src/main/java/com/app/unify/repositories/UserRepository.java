@@ -73,6 +73,4 @@ public interface UserRepository extends JpaRepository<User, String> {
 		    AND u.id <> :currentUserId
 		""")
 		List<User> findFriendsByUserId(@Param("currentUserId") String currentUserId);
-
-	
 }

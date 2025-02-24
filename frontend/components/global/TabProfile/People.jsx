@@ -82,6 +82,7 @@ const People = () => {
           <ChevronRight size={20} />
         </button>
       )}
+
     </div>
   );
 };

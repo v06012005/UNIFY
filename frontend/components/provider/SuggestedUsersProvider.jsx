@@ -72,7 +72,6 @@ export const SuggestedUsersProvider = ({ children }) => {
           },
         }
       );
-
       setSuggestedUsers(response.data || []);
       console.log("Danh sách gợi ý:", response.data);
     } catch (err) {
@@ -204,6 +203,7 @@ export const SuggestedUsersProvider = ({ children }) => {
         loading,
       }}
     >
+
       {children}
     </SuggestedUsersContext.Provider>
   );
@@ -212,9 +212,8 @@ export const SuggestedUsersProvider = ({ children }) => {
 export const useSuggestedUsers = () => {
   const context = useContext(SuggestedUsersContext);
   if (!context) {
-    throw new Error(
-      "useSuggestedUsers phải được sử dụng trong SuggestedUsersProvider!"
-    );
+
+    throw new Error("useSuggestedUsers phải được sử dụng trong SuggestedUsersProvider!");
   }
   return context;
 };

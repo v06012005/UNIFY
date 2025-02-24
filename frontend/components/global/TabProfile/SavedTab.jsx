@@ -32,6 +32,7 @@ const SavedItems = () => {
       <h3 className="text-sm text-gray-400 mb-2">
         Chỉ mình bạn có thể xem mục mình đã lưu{" "}
       </h3>
+
       <div className="grid grid-cols-4 gap-3">
         <img
           src={`/images/avt.jpg`}
@@ -47,6 +48,7 @@ const SavedItems = () => {
               <img
                 src={`/images/avt.jpg`}
                 className="w-full h-full object-cover rounded-tl-lg rounded-bl-lg"
+
               />
             </div>
 
@@ -73,12 +75,10 @@ const SavedItems = () => {
                     <div className="bg-white dark:bg-black rounded-lg shadow-lg w-72">
                       <button className="w-full py-2 text-red-500 dark:hover:bg-gray-900 hover:bg-gray-100">
                         Delete
-                      </button>
-                     
+                      </button>                     
                       <button className="w-full py-2 dark:hover:bg-gray-900 hover:bg-gray-100">
                         Share
                       </button>
-                   
                       <button className="w-full py-2 dark:hover:bg-gray-900 hover:bg-gray-100">
                         Go to Post
                       </button>

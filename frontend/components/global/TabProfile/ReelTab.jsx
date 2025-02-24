@@ -59,7 +59,6 @@ const UserReels = () => {
                   </div>
                   <span className="font-bold ml-3">huynhdiz</span>
                 </div>
-
                 <NavButton
                   onClick={() => setOpenList(true)}
                   className="text-gray-500 hover:text-black"

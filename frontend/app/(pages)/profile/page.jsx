@@ -34,6 +34,7 @@ const Page = () => {
         //   const posts = await fetchUserPosts(fetchedUser.id);
         //   setUserPosts(posts);
         // }
+
       } catch (error) {
         console.error("Error fetching user info:", error);
       }

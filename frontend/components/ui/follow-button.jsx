@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@heroui/react";
+import Cookies from "js-cookie";
 
 const FollowButton = ({
   userId,
@@ -13,13 +14,16 @@ const FollowButton = ({
 
   useEffect(() => {
     const checkFollowing = async () => {
+      const token = Cookies.get("token");
+      if (!token) return;
+
       try {
-        const token = localStorage.getItem("token");
         const response = await fetch(
           `http://localhost:8080/api/follow/isFollowing/${userId}/${followingId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
             },
           }
         );
@@ -34,9 +38,14 @@ const FollowButton = ({
     checkFollowing();
   }, [userId, followingId]);
 
-  const handleClick = async () => {
+  const handleFollow = async () => {
+    const token = Cookies.get("token");
+    if (!token) {
+      console.error("Chưa đăng nhập!");
+      return;
+    }
+
     try {
-      const token = localStorage.getItem("token");
       const method = follow ? "DELETE" : "POST";
       const response = await fetch(
         `http://localhost:8080/api/follow/${followingId}`,
@@ -44,10 +53,16 @@ const FollowButton = ({
           method,
           headers: {
             Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
         }
       );
-      if (response.ok) setFollow(!follow);
+      if (response.ok) {
+        setFollow(!follow);
+        console.log("Log response:", await response.text());
+      } else {
+        console.error("Lỗi API follow/unfollow:", await response.text());
+      }
     } catch (error) {
       console.error("Lỗi khi follow/unfollow:", error);
     }
@@ -55,10 +70,10 @@ const FollowButton = ({
 
   return (
     <Button
-      onPress={handleClick}
+      onPress={handleFollow}
       className={follow ? classFollowing : classFollow}
     >
-      {follow ? "Following" : "Follow"}
+      <span>{follow ? "Following" : "Follow"}</span>
     </Button>
   );
 };

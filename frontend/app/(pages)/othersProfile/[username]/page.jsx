@@ -15,6 +15,8 @@ import Image from "next/image";
 import ProfileTabs from "@/components/global/TabProfile/Tabs";
 import { useApp } from "@/components/provider/AppProvider";
 import People from "@/components/global/TabProfile/People";
+import FollowButton from "@/components/ui/follow-button";
+
 const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   return (
     <Link
@@ -28,12 +30,13 @@ const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   );
 };
 const Page = () => {
-    const { username } = useParams(); 
+
+  const { username } = useParams();
   const [activeTab, setActiveTab] = useState("post");
   const [userPosts, setUserPosts] = useState([]);
   const [userReels, setUserReels] = useState([]);
-  const { getUserInfoByUsername, userFromAPI, setUserFromAPI } = useApp();
   const router = useRouter();
+  const { user, getUserInfoByUsername, userFromAPI, setUserFromAPI } = useApp();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -41,7 +44,6 @@ const Page = () => {
       console.error("❌ Lỗi: Username không tồn tại trong URL!");
       return;
     }
-  
     setLoading(true);
     getUserInfoByUsername(username)
       .then((data) => {
@@ -57,7 +59,6 @@ const Page = () => {
         setLoading(false);
       });
   }, []);
-  
 
   if (loading) return <p>Loading...</p>;
 
@@ -78,43 +79,36 @@ const Page = () => {
           <div className="p-2 ml-8">
             <div className="flex justify-between ml-10">
               <div className="flex flex-col items-center w-200 mt-2 mx-8">
-                <h3 className="text-2xl truncate w-32 text-center">{userFromAPI.username}</h3>
 
-                <p className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer">44 posts</p>
+                <h3 className="text-2xl truncate w-32 text-center">
+                  {userFromAPI.username}
+                </h3>
 
+                <p className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer">
+                  44 posts
+                </p>
               </div>
 
               <div className="flex flex-col mx-10 items-center w-200">
-                <ul>
-                  <div
-                    className="flex items-center font-bold py-2 px-4 rounded-lg hover:bg-gray-400 bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors w-full cursor-pointer"
-                   
-                  >
-                    <i className="fa-solid fa-plus mr-3"></i>
-                    <span>Follow</span> 
-                  </div>
-                </ul>
+                <FollowButton
+                  userId={user.id}
+                  followingId={userFromAPI.id}
+                  classFollow="bg-red-500 font-bold py-2 px-8 rounded-lg w-full text-white text-md"
+                  classFollowing="bg-gray-700 hover:bg-gray-600 font-bold py-2 px-8 rounded-lg w-full text-white text-md"
+                />
                 <p className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer">
                   0 Follower
                 </p>
-
               </div>
 
               <div className="flex flex-col mx-10 items-center w-200">
-                <ul>
-                  <div
-                    className="flex items-center font-bold py-2 px-4 rounded-lg hover:bg-gray-400 bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors w-full cursor-pointer"
-                   
-                  >
-                    <i className="fa-brands fa-facebook-messenger mr-3"></i>
-                    <span>Message</span>
-                  </div>
-                </ul>
-                <p className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer"
-                >
-                  Following 0 user
+                <div className="flex items-center font-bold py-2 px-4 rounded-lg hover:bg-gray-400 bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors w-full cursor-pointer">
+                  <i className="fa-brands fa-facebook-messenger mr-3"></i>
+                  <span>Message</span>
+                </div>
+                <p className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer">
+                  0 Following
                 </p>
-
               </div>
             </div>
             <p className="ml-20 mt-10 dark:text-gray-400 text-gray-600 font-bold">
@@ -149,6 +143,7 @@ const Page = () => {
             </button>
 
           
+
           </div>
 
           <div className="mt-4">
@@ -156,7 +151,6 @@ const Page = () => {
               activeTab={activeTab}
               userPosts={userPosts}
               userReels={userReels}
-             
             />
           </div>
         </div>

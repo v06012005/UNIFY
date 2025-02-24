@@ -94,7 +94,6 @@ const UserPosts = () => {
                   </div>
                 )}
               </div>
-
               <div className="flex-1 p-4 overflow-y-auto">
                 <div className="flex items-start space-x-2 mb-2">
                   <div className="w-8 h-8 rounded-full border-2 border-gray-300">
@@ -128,6 +127,7 @@ const UserPosts = () => {
                     <p className="text-sm leading-tight">
                       <span className="font-bold mr-4">user2</span> Đẹp quá!
                     </p>
+
                     <div className="flex">
                       <span className="text-xs text-gray-500 mr-5">
                         2 giờ trước
@@ -148,6 +148,7 @@ const UserPosts = () => {
                   <NavButton iconClass="fa-regular fa-bookmark" />
                 </div>
                 <p className="dark:text-gray-500">Thời gian</p>
+
                 <div className="flex items-center border-none pt-2">
                   <input
                     type="text"

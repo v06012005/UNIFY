@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -98,7 +99,6 @@ public class User {
 	@OneToMany(mappedBy = "user")
 	Set<PostComment> postComments;
 
-
 	@JsonIgnore
 	@OneToMany(mappedBy = "user")
 	Set<LikedPost> likedPosts;
@@ -106,7 +106,6 @@ public class User {
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
 	Set<Role> roles;
-
 
 	@JsonIgnore
 	@OneToMany(mappedBy = "user")

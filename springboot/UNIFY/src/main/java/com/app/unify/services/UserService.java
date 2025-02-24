@@ -134,6 +134,7 @@ public class UserService {
 	            .stream()
 	            .map(userMapper::toUserDTO)
 	            .collect(Collectors.toList());
+
 	}
 
 	public UserDTO changePassword(String currentPassword, String newPassword) {
@@ -155,6 +156,5 @@ public class UserService {
 
 		return userMapper.toUserDTO(updatedUser);
 	}
-
 
 }

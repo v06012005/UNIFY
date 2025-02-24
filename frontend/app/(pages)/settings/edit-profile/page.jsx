@@ -475,6 +475,7 @@ const Page = () => {
           </div>
 
           <div className="m-5 flex gap-4 items-start">
+
             <div className="flex flex-col gap-4 basis-1/2">
               <label className="text-lg font-medium text-gray-700 dark:text-white">
                 Gender:
@@ -494,6 +495,7 @@ const Page = () => {
                 </label>
               </RadioGroup>
             </div>
+
 
             <div className="flex flex-col gap-4 basis-1/2">
               <label className="text-lg font-medium text-gray-700 dark:text-white">
