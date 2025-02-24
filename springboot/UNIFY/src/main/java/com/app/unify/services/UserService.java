@@ -60,8 +60,6 @@ public class UserService {
 				userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found !")));
 	}
 
-
-	
 	@PreAuthorize("#userDto.email == authentication.name")
 	public UserDTO updateUser(UserDTO userDto) {
 		Role role = roleRepository.findByName("USER").orElseThrow(() -> new RuntimeException("Role not found !"));
@@ -86,17 +84,15 @@ public class UserService {
 	}
 
 	public UserDTO findByUsername(String username) {
-	    return userRepository.findByUsername(username)
-	        .map(userMapper::toUserDTO)
-	        .orElseThrow(() -> new UserNotFoundException("Username not found: " + username));
+		return userRepository.findByUsername(username).map(userMapper::toUserDTO)
+				.orElseThrow(() -> new UserNotFoundException("Username not found: " + username));
 	}
-	public List<UserDTO> getSuggestedUsers(String currentUsername) {
-	    UserDTO userDTO = findByUsername(currentUsername);
 
-	    return userRepository.findUsersNotFriendsOrFollowing(currentUsername)
-	            .stream()
-	            .map(userMapper::toUserDTO)
-	            .collect(Collectors.toList());
+	public List<UserDTO> getSuggestedUsers(String currentUsername) {
+		UserDTO userDTO = findByUsername(currentUsername);
+
+		return userRepository.findUsersNotFriendsOrFollowing(currentUsername).stream().map(userMapper::toUserDTO)
+				.collect(Collectors.toList());
 	}
 
 	public UserDTO changePassword(String currentPassword, String newPassword) {
