@@ -39,11 +39,11 @@ const UserReels = () => {
 
       {selectedPost && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white dark:bg-gray-900 rounded-lg flex flex-row w-[1200px]">
+          <div className="bg-white dark:bg-gray-900 rounded-lg flex flex-row w-[1300px] h-[740px]">
             <div className="w-1/2">
               <img
                 src={`/images/avt.jpg`}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover rounded-tl-lg rounded-bl-lg"
               />
             </div>
 
@@ -54,7 +54,7 @@ const UserReels = () => {
                     <img
                       src={`/images/avt.jpg`}
                       alt="User Avatar"
-                      className="w-full h-full rounded-full object-cover"
+                      className="w-full h-full rounded-full object-cover "
                     />
                   </div>
                   <span className="font-bold ml-3">huynhdiz</span>

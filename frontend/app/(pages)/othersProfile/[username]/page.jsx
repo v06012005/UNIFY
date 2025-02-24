@@ -91,7 +91,7 @@ const Page = () => {
                    
                   >
                     <i className="fa-solid fa-plus mr-3"></i>
-                    <span>Follow</span>
+                    <span>Follow</span> 
                   </div>
                 </ul>
                 <p className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer">

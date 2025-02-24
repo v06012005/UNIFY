@@ -90,10 +90,47 @@ public class UserService {
 	        .map(userMapper::toUserDTO)
 	        .orElseThrow(() -> new UserNotFoundException("Username not found: " + username));
 	}
-	public List<UserDTO> getSuggestedUsers(String currentUsername) {
-	    UserDTO userDTO = findByUsername(currentUsername);
+	public List<UserDTO> getSuggestedUsers(String currentUserId) {
+	    UserDTO userDTO = findById(currentUserId);
+	    if (userDTO == null) {
+	        return Collections.emptyList(); 
+	    }
+	    
+	    return userRepository.findUsersNotFriendsOrFollowing(userDTO.getId()) 
+	            .stream()
+	            .map(userMapper::toUserDTO)
+	            .collect(Collectors.toList());
+	}
 
-	    return userRepository.findUsersNotFriendsOrFollowing(currentUsername)
+
+	public List<UserDTO> findUsersFollowingMe(String currentUserId) {
+	    UserDTO userDTO = findById(currentUserId);
+	    if (userDTO == null) {
+	        return Collections.emptyList(); 
+	    }
+	    return userRepository.findUsersFollowingMe(userDTO.getId())
+	            .stream()
+	            .map(userMapper::toUserDTO)
+	            .collect(Collectors.toList());
+	}
+	public List<UserDTO> findUsersFollowedBy(String currentUserId) {
+	    UserDTO userDTO = findById(currentUserId);
+	    if (userDTO == null) {
+	        return Collections.emptyList(); 
+	    }
+	    
+	    return userRepository.findUsersFollowedBy(userDTO.getId())
+	            .stream()
+	            .map(userMapper::toUserDTO)
+	            .collect(Collectors.toList());
+	}
+	public List<UserDTO> getFriends(String currentUserId) {
+	    UserDTO userDTO = findById(currentUserId);
+	    if (userDTO == null) {
+	        return Collections.emptyList(); 
+	    }
+	    
+	    return userRepository.findFriendsByUserId(userDTO.getId())
 	            .stream()
 	            .map(userMapper::toUserDTO)
 	            .collect(Collectors.toList());

@@ -30,10 +30,10 @@ const Page = () => {
       try {
         const fetchedUser = await getInfoUser();
         setUser(fetchedUser);
-        if (fetchedUser?.id) {
-          const posts = await fetchUserPosts(fetchedUser.id);
-          setUserPosts(posts);
-        }
+        // if (fetchedUser?.id) {
+        //   const posts = await fetchUserPosts(fetchedUser.id);
+        //   setUserPosts(posts);
+        // }
       } catch (error) {
         console.error("Error fetching user info:", error);
       }

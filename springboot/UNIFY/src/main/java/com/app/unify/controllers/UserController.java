@@ -51,12 +51,26 @@ public class UserController {
 	}
 	
 	@GetMapping("/suggestions")
-	public ResponseEntity<List<UserDTO>> getSuggestedUsers(@RequestParam String currentUsername) {
-	    List<UserDTO> users = userService.getSuggestedUsers(currentUsername);
+	public ResponseEntity<List<UserDTO>> getSuggestedUsers(@RequestParam String currentUserId) {
+	    List<UserDTO> users = userService.getSuggestedUsers(currentUserId);
 	    return ResponseEntity.ok(users);
 	}
-
-
+	@GetMapping("/follower")
+	public ResponseEntity<List<UserDTO>> findUsersFollowingMe(@RequestParam String currentUserId) {
+	    List<UserDTO> users = userService.findUsersFollowingMe(currentUserId);
+	    return ResponseEntity.ok(users);
+	}
+	
+	@GetMapping("/following")
+	public ResponseEntity<List<UserDTO>> findUsersFollowedBy(@RequestParam String currentUserId) {
+	    List<UserDTO> users = userService.findUsersFollowedBy(currentUserId);
+	    return ResponseEntity.ok(users);
+	}
+	@GetMapping("/friend")
+    public ResponseEntity<List<UserDTO>> getFriends(@RequestParam String currentUserId) {
+        List<UserDTO> friends = userService.getFriends(currentUserId);
+        return ResponseEntity.ok(friends);
+    }
 	@PostMapping
 	public UserDTO createUser(@RequestBody UserDTO userDto) {
 		return userService.createUser(userDto);
