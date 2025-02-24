@@ -8,7 +8,6 @@ import React, {
   useContext,
 } from "react";
 import { redirect, useRouter, useParams } from "next/navigation";
-
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import axios from "axios";
@@ -221,7 +220,6 @@ export const AppProvider = ({ children }) => {
         const parsedBirthDay = parseBirthDay(data.birthDay);
 
         setUser({ ...data, birthDay: parsedBirthDay });
-
         if (router.pathname === "/profile" && data.username) {
           router.replace(`/user/${data.username}`);
         }

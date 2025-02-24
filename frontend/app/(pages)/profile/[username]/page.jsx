@@ -8,7 +8,6 @@ import React, {
   useContext,
 } from "react";
 import { useParams } from "next/navigation";
-
 import { useRouter } from "next/navigation";
 import FollowerModal from "@/components/global/FollowerModalProfile";
 import FriendModal from "@/components/global/FriendModalProfile";
@@ -34,7 +33,6 @@ const Page = () => {
   const [activeTab, setActiveTab] = useState("post");
   const [userPosts, setUserPosts] = useState([]);
   const [userReels, setUserReels] = useState([]);
-
   const [savedItems, setSavedItems] = useState([]);
   const [taggedPosts, setTaggedPosts] = useState([]);
   const router = useRouter();
@@ -54,7 +52,6 @@ const Page = () => {
       fetchUserInfo();
     }
   }, [user, getInfoUser, setUser]);
-
   const handleClickView = () => {
     router.push("/settings/archive");
   };
@@ -89,10 +86,7 @@ const Page = () => {
           <div className="p-2 ml-8">
             <div className="flex justify-between ml-10">
               <div className="flex flex-col items-center w-200 mt-2 mx-8">
-                <h3 className="text-2xl truncate w-32 text-center">
-                  {user.username}
-                </h3>
-
+                <h3 className="text-2xl truncate w-32 text-center">{user.username}</h3>
                 <p
                   className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer"
                   onClick={toggleFriend}
@@ -142,7 +136,7 @@ const Page = () => {
                   className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer"
                   onClick={toggleFollowing}
                 >
-                  Following 0 user
+                  0 Following
                 </p>
 
                 <FollowingModal
@@ -158,9 +152,7 @@ const Page = () => {
             </p>
           </div>
         </div>
-
         <People />
-
         <div className="p-4">
           <div className="flex justify-center border-b-2 border-gray-300">
             <button

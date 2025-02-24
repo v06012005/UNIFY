@@ -14,9 +14,7 @@ const Page = () => {
   const [daysInMonth, setDaysInMonth] = useState(31);
   const [errors, setErrors] = useState({});
   const { user, setUser } = useApp();
-
   const { logoutUser } = useApp();
-
   const [userData, setUserData] = useState({
     id: "",
     firstName: "",

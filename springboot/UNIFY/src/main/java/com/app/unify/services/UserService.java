@@ -50,7 +50,6 @@ public class UserService {
 		userDto.setPassword(EncryptPasswordUtil.encryptPassword(userDto.getPassword()));
 		Role role = roleRepository.findByName("USER").orElseThrow(() -> new RuntimeException("Role not found !"));
 		userDto.setRoles(Collections.singleton(role));
-
 		User user = userRepository.save(userMapper.toUser(userDto));
 		return userMapper.toUserDTO(user);
 	}
@@ -62,6 +61,7 @@ public class UserService {
 	}
 
 
+	
 	@PreAuthorize("#userDto.email == authentication.name")
 	public UserDTO updateUser(UserDTO userDto) {
 		Role role = roleRepository.findByName("USER").orElseThrow(() -> new RuntimeException("Role not found !"));
@@ -86,15 +86,55 @@ public class UserService {
 	}
 
 	public UserDTO findByUsername(String username) {
-		return userRepository.findByUsername(username).map(userMapper::toUserDTO)
-				.orElseThrow(() -> new UserNotFoundException("Username not found: " + username));
+	    return userRepository.findByUsername(username)
+	        .map(userMapper::toUserDTO)
+	        .orElseThrow(() -> new UserNotFoundException("Username not found: " + username));
+	}
+	public List<UserDTO> getSuggestedUsers(String currentUserId) {
+	    UserDTO userDTO = findById(currentUserId);
+	    if (userDTO == null) {
+	        return Collections.emptyList(); 
+	    }
+	    
+	    return userRepository.findUsersNotFriendsOrFollowing(userDTO.getId()) 
+	            .stream()
+	            .map(userMapper::toUserDTO)
+	            .collect(Collectors.toList());
 	}
 
-	public List<UserDTO> getSuggestedUsers(String currentUsername) {
-		UserDTO userDTO = findByUsername(currentUsername);
 
-		return userRepository.findUsersNotFriendsOrFollowing(currentUsername).stream().map(userMapper::toUserDTO)
-				.collect(Collectors.toList());
+	public List<UserDTO> findUsersFollowingMe(String currentUserId) {
+	    UserDTO userDTO = findById(currentUserId);
+	    if (userDTO == null) {
+	        return Collections.emptyList(); 
+	    }
+	    return userRepository.findUsersFollowingMe(userDTO.getId())
+	            .stream()
+	            .map(userMapper::toUserDTO)
+	            .collect(Collectors.toList());
+	}
+	public List<UserDTO> findUsersFollowedBy(String currentUserId) {
+	    UserDTO userDTO = findById(currentUserId);
+	    if (userDTO == null) {
+	        return Collections.emptyList(); 
+	    }
+	    
+	    return userRepository.findUsersFollowedBy(userDTO.getId())
+	            .stream()
+	            .map(userMapper::toUserDTO)
+	            .collect(Collectors.toList());
+	}
+	public List<UserDTO> getFriends(String currentUserId) {
+	    UserDTO userDTO = findById(currentUserId);
+	    if (userDTO == null) {
+	        return Collections.emptyList(); 
+	    }
+	    
+	    return userRepository.findFriendsByUserId(userDTO.getId())
+	            .stream()
+	            .map(userMapper::toUserDTO)
+	            .collect(Collectors.toList());
+
 	}
 
 	public UserDTO changePassword(String currentPassword, String newPassword) {
