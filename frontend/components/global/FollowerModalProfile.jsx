@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSuggestedUsers } from "@/components/provider/SuggestedUsersProvider";
 import { useApp } from "@/components/provider/AppProvider";
@@ -10,6 +10,7 @@ const FollowerModal = ({ isOpen, onClose }) => {
   const { followerUsers, getFollowerUsers, loading } = useSuggestedUsers();
   const router = useRouter();
   const { user } = useApp();
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     getFollowerUsers();
@@ -22,6 +23,10 @@ const FollowerModal = ({ isOpen, onClose }) => {
     }
     router.push(`/othersProfile/${username}`);
   };
+
+  const filteredUsers = followerUsers?.filter((userData) =>
+    userData.username.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]">
@@ -36,14 +41,16 @@ const FollowerModal = ({ isOpen, onClose }) => {
           type="text"
           placeholder="Search ..."
           className="w-full border rounded-full px-4 py-1  dark:bg-black dark:border-gray-600"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
         />
         <ul className="h-[390px]  overflow-y-auto scrollbar-hide">
           {loading ? (
             <p className="text-gray-500">Đang tải danh sách...</p>
-          ) : !followerUsers || followerUsers.length === 0 ? (
+          ) : !filteredUsers || filteredUsers.length === 0 ? (
             <p className="text-gray-500">Không có người theo dõi nào.</p>
           ) : (
-            followerUsers.slice(0, 11).map((userData) => (
+            filteredUsers.slice(0, 11).map((userData) => (
               <li
                 key={userData.username}
                 className="flex items-center justify-between py-2 border-b border-gray-500 "

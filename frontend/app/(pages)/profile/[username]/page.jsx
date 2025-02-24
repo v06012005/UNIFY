@@ -86,7 +86,9 @@ const Page = () => {
           <div className="p-2 ml-8">
             <div className="flex justify-between ml-10">
               <div className="flex flex-col items-center w-200 mt-2 mx-8">
-                <h3 className="text-2xl truncate w-32 text-center">{user.username}</h3>
+                <h3 className="text-2xl truncate w-32 text-center">
+                  {user.username}
+                </h3>
                 <p
                   className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer"
                   onClick={toggleFriend}
@@ -98,15 +100,13 @@ const Page = () => {
               </div>
 
               <div className="flex flex-col mx-10 items-center w-200">
-                <ul>
-                  <div
-                    className="flex items-center font-bold py-2 px-4 rounded-lg hover:bg-gray-400 bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors w-full cursor-pointer"
-                    onClick={handleClickEdit}
-                  >
-                    <i className="fa-regular fa-pen-to-square mr-3"></i>
-                    <span>Edit Profile</span>
-                  </div>
-                </ul>
+                <div
+                  className="flex items-center font-bold py-2 px-4 rounded-lg hover:bg-gray-400 bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors w-full cursor-pointer"
+                  onClick={handleClickEdit}
+                >
+                  <i className="fa-regular fa-pen-to-square mr-3"></i>
+                  <span>Edit Profile</span>
+                </div>
                 <p
                   className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer"
                   onClick={toggleFollower}
@@ -123,15 +123,13 @@ const Page = () => {
               </div>
 
               <div className="flex flex-col mx-10 items-center w-200">
-                <ul>
-                  <div
-                    className="flex items-center font-bold py-2 px-4 rounded-lg hover:bg-gray-400 bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors w-full cursor-pointer"
-                    onClick={handleClickView}
-                  >
-                    <i className="fa-regular fa-bookmark mr-3"></i>
-                    <span>View Archive</span>
-                  </div>
-                </ul>
+                <div
+                  className="flex items-center font-bold py-2 px-4 rounded-lg hover:bg-gray-400 bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors w-full cursor-pointer"
+                  onClick={handleClickView}
+                >
+                  <i className="fa-regular fa-bookmark mr-3"></i>
+                  <span>View Archive</span>
+                </div>
                 <p
                   className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer"
                   onClick={toggleFollowing}
