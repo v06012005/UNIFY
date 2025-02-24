@@ -29,21 +29,12 @@ const Page = () => {
 
     const { user } = useApp();
 
+
+
     useEffect(() => {
         if (user) {
             setMe(user.id);
-
-            navigator.mediaDevices
-                .getUserMedia({ video: true, audio: true })
-                .then((localStream) => {
-                    localStream.getVideoTracks()[0].enabled = false;
-                    setStream(localStream);
-                    if (myScreen.current) {
-                        myScreen.current.srcObject = localStream;
-                    }
-                })
-                .catch((error) => console.error("Media error:", error));
-
+            getLocalStream();
             const sockJS = new SockJS(
                 `${process.env.NEXT_PUBLIC_API_URL}/ws?token=${Cookies.get("token")}`
             );
@@ -58,16 +49,19 @@ const Page = () => {
                 client.subscribe(`/user/${user.id}/topic/call`, (message) => {
                     const data = JSON.parse(message.body);
                     if (data.type === "callUser") {
+                        setCallEnded(false);
                         setReceiver(true);
                         setCaller(data.from);
                         setName(data.name);
                         setCallerSignal(data.signalData);
                     } else if (data.type === "callAccepted") {
+                        setCallEnded(false);
                         setCallAccepted(true);
                         if (connectionRef.current) {
                             connectionRef.current.signal(data.signalData);
                         }
                     } else if (data.type === "offCamera") {
+                        console.log("offCamera");
                         setIsOffCamera(true);
                     } else if (data.type === "onCamera") {
                         setIsOffCamera(false);
@@ -75,6 +69,8 @@ const Page = () => {
                         setIsOffMicrophone(true);
                     } else if (data.type === "onMic") {
                         setIsOffMicrophone(false);
+                    }else if(data.type === 'endCall'){
+                       disconnection();
                     }
                 });
             };
@@ -93,8 +89,18 @@ const Page = () => {
         }
     }, [user]);
 
-
-
+    const getLocalStream =  () => {
+        navigator.mediaDevices
+            .getUserMedia({ video: true, audio: true })
+            .then((localStream) => {
+                localStream.getVideoTracks()[0].enabled =  toggleCamera;
+                setStream(localStream);
+                if (myScreen.current) {
+                    myScreen.current.srcObject = localStream;
+                }
+            })
+            .catch((error) => console.error("Media error:", error));
+    }
 
     const callUser = (id) => {
 
@@ -154,20 +160,47 @@ const Page = () => {
         connectionRef.current = peer;
     };
 
-    const leaveCall = () => {
+
+    const disconnection = () => {
+        setCallEnded(true);
+        setCaller(null);
+        setCallerSignal(null);
+        setReceiver(false);
+        setCallAccepted(false);
         setCallEnded(true);
         if (connectionRef.current) {
             connectionRef.current.destroy();
+            connectionRef.current = null;
         }
+    }
+
+    const leaveCall = () => {
+        stompClientRef.current.publish({
+            destination: "/app/toggle",
+            body: JSON.stringify({
+                type:"endCall",
+                from: me,
+                userToCall: caller ? caller : idToCall,
+                to: caller ? caller : idToCall
+            }),
+        });
+        disconnection();
+        getLocalStream();
     };
 
     const toggleVideo = async () => {
         const videoTrack = stream.getVideoTracks()[0];
         if (videoTrack) {
+            stompClientRef.current.publish({
+                destination: "/app/toggle",
+                body: JSON.stringify({
+                    type: videoTrack.enabled ? "onCamera" : "offCamera",
+                    from: me,
+                    userToCall: caller ? caller : idToCall,
+                    to: caller ? caller: idToCall
+                }),
+            });
             videoTrack.enabled = !videoTrack.enabled;
-            if (connectionRef.current) {
-                connectionRef.current.replaceTrack(videoTrack, videoTrack, stream);
-            }
             setToggleCamera(videoTrack.enabled);
         }
     };
@@ -176,9 +209,6 @@ const Page = () => {
         const audioTrack = stream.getAudioTracks()[0];
         if (audioTrack) {
             audioTrack.enabled = !audioTrack.enabled;
-            if (connectionRef.current) {
-                connectionRef.current.replaceTrack(audioTrack, audioTrack, stream);
-            }
             setToggleMicrophone(audioTrack.enabled);
         }
     };
@@ -187,14 +217,17 @@ const Page = () => {
         <div className="w-full h-screen relative">
 
             <div className="w-full h-full flex justify-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-50">
-                {callAccepted && !callEnded && !isOffCamera ? (
-                    <video ref={receiverScreen} autoPlay className="w-full" />
-                ) : (
-                    isOffCamera && (
-                        <div className="w-80 h-40">
-                            <h3 className="text-white">{name}</h3>
-                        </div>
-                    )
+                {callAccepted && !callEnded && (
+                    <div className={`w-full h-screen relative`}>
+                        {
+                           !isOffCamera && (
+                                <div className={`w-full h-screen absolute top-0 left-0 bg-gray-400 z-50`}>
+                                    <h3 className={`text-4xl`}>{name}</h3>
+                                </div>
+                            )
+                        }
+                        <video ref={receiverScreen} autoPlay className="w-20 z-10"/>
+                    </div>
                 )}
             </div>
 
