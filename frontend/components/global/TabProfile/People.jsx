@@ -1,9 +1,8 @@
-
 import React, { useRef, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useSuggestedUsers } from "@/components/provider/SuggestedUsersProvider";
-import { ChevronLeft, ChevronRight } from "lucide-react"; // Biểu tượng
+import { ChevronLeft, ChevronRight } from "lucide-react"; 
 
 const People = () => {
   const scrollRef = useRef(null);

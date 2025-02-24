@@ -15,9 +15,7 @@ const Page = () => {
   const [daysInMonth, setDaysInMonth] = useState(31);
   const [errors, setErrors] = useState({});
   const { user, setUser } = useApp();
-
   const { logoutUser } = useApp();
-
   const [userData, setUserData] = useState({
     id: "",
     firstName: "",
@@ -61,9 +59,7 @@ const Page = () => {
   }, [user]);
 
   const handleGenderChange = (value) => {
-
     setGender(value);
-
   };
 
   useEffect(() => {
@@ -311,12 +307,10 @@ const Page = () => {
               </button>
 
               <button
-
                 onClick={(e) => {
                   e.preventDefault();
                   logoutUser();
                 }}
-
                 className="bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition"
               >
                 Logout

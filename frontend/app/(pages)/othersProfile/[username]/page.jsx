@@ -30,6 +30,7 @@ const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   );
 };
 const Page = () => {
+
   const { username } = useParams();
   const [activeTab, setActiveTab] = useState("post");
   const [userPosts, setUserPosts] = useState([]);
@@ -43,7 +44,6 @@ const Page = () => {
       console.error("❌ Lỗi: Username không tồn tại trong URL!");
       return;
     }
-
     setLoading(true);
     getUserInfoByUsername(username)
       .then((data) => {
@@ -79,6 +79,7 @@ const Page = () => {
           <div className="p-2 ml-8">
             <div className="flex justify-between ml-10">
               <div className="flex flex-col items-center w-200 mt-2 mx-8">
+
                 <h3 className="text-2xl truncate w-32 text-center">
                   {userFromAPI.username}
                 </h3>
@@ -126,7 +127,6 @@ const Page = () => {
               onClick={() => setActiveTab("post")}
             >
               <NavButton iconClass="fa-solid fa-pen" />
-
               <span className="ml-2">POST</span>
             </button>
 
@@ -139,9 +139,11 @@ const Page = () => {
               onClick={() => setActiveTab("reel")}
             >
               <NavButton iconClass="fa-solid fa-film" />
-
               <span className="ml-2">REEL</span>
             </button>
+
+          
+
           </div>
 
           <div className="mt-4">

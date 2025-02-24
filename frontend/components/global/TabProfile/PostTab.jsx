@@ -1,10 +1,8 @@
 import React, { useState } from "react";
 import Link from "next/link";
-
 const testPost = {
   id: 1,
 };
-
 
 const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   return (
@@ -41,16 +39,15 @@ const UserPosts = () => {
 
       {selectedPost && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white dark:bg-gray-900 rounded-lg flex flex-row w-[1200px]">
+          <div className="bg-white dark:bg-gray-900 rounded-lg flex flex-row w-[1300px] h-[740px]">
             <div className="w-1/2">
               <img
                 src={`/images/avt.jpg`}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover rounded-tl-lg rounded-bl-lg"
               />
             </div>
 
             <div className="w-1/2 flex flex-col">
-
               <div className="flex items-center justify-between p-3 border-b">
                 <div className="flex items-center">
                   <div className="w-10 h-10 rounded-full border-2 border-gray-300">
@@ -61,7 +58,6 @@ const UserPosts = () => {
                     />
                   </div>
                   <span className="font-bold ml-3">huynhdiz</span>
-
                 </div>
 
                 <NavButton
@@ -98,8 +94,6 @@ const UserPosts = () => {
                   </div>
                 )}
               </div>
-
-
               <div className="flex-1 p-4 overflow-y-auto">
                 <div className="flex items-start space-x-2 mb-2">
                   <div className="w-8 h-8 rounded-full border-2 border-gray-300">
@@ -129,7 +123,6 @@ const UserPosts = () => {
                       className="w-full h-full rounded-full object-cover"
                     />
                   </div>
-
                   <div className="flex flex-col">
                     <p className="text-sm leading-tight">
                       <span className="font-bold mr-4">user2</span> Đẹp quá!
@@ -141,7 +134,6 @@ const UserPosts = () => {
                       </span>
                       <span className="text-xs text-gray-500">Reply</span>
                     </div>
-
                   </div>
                 </div>
               </div>
@@ -162,7 +154,6 @@ const UserPosts = () => {
                     type="text"
                     placeholder="Thêm bình luận..."
                     className="flex-1 border-none focus:ring-0 focus:outline-none dark:bg-gray-900 caret-blue-500"
-
                   />
                   <button className="text-blue-500 font-bold ml-2">Đăng</button>
                 </div>
