@@ -38,10 +38,11 @@ public class UserController {
 	public UserDTO getMyInfo() {
 		return userService.getMyInfo();
 
-  }
+	}
+
 	@GetMapping("/username/{username}")
 	public UserDTO getUserByUsername(@PathVariable String username) {
-	    return userService.findByUsername(username);
+		return userService.findByUsername(username);
 	}
 
 	@GetMapping("/{id}")
@@ -52,8 +53,8 @@ public class UserController {
 
 	@GetMapping("/suggestions")
 	public ResponseEntity<List<UserDTO>> getSuggestedUsers(@RequestParam String currentUsername) {
-	    List<UserDTO> users = userService.getSuggestedUsers(currentUsername);
-	    return ResponseEntity.ok(users);
+		List<UserDTO> users = userService.getSuggestedUsers(currentUsername);
+		return ResponseEntity.ok(users);
 
 	}
 

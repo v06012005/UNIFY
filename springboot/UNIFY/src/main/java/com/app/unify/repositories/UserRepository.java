@@ -30,6 +30,7 @@ public interface UserRepository extends JpaRepository<User, String> {
 	void updatePasswordByEmail(@Param("email") String email, @Param("password") String password);
 
 
+
 	@Query("""
 		    SELECT u FROM User u
 		    WHERE u.username <> :currentUsername
@@ -47,6 +48,7 @@ public interface UserRepository extends JpaRepository<User, String> {
 		    )
 		""")
 		List<User> findUsersNotFriendsOrFollowing(@Param("currentUsername") String currentUsername);
+
 
 
 
