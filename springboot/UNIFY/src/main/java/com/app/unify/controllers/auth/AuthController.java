@@ -61,6 +61,7 @@ public class AuthController {
 
 			String tokenGenerated = jwtUtil.generateToken(userLoginDto.getEmail());
 			authenticationService.saveUserToken(user, tokenGenerated);
+			
 			return ResponseEntity.status(HttpStatus.OK).body(new TokenResponse(tokenGenerated));
 		}
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect email or password !");

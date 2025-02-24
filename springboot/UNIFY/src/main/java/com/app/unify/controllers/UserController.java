@@ -50,6 +50,7 @@ public class UserController {
 		return userService.findById(id);
 	}
 
+
 	@GetMapping("/suggestions")
 	public ResponseEntity<List<UserDTO>> getSuggestedUsers(@RequestParam String currentUsername) {
 		List<UserDTO> users = userService.getSuggestedUsers(currentUsername);

@@ -50,6 +50,7 @@ public class UserService {
 		userDto.setPassword(EncryptPasswordUtil.encryptPassword(userDto.getPassword()));
 		Role role = roleRepository.findByName("USER").orElseThrow(() -> new RuntimeException("Role not found !"));
 		userDto.setRoles(Collections.singleton(role));
+
 		User user = userRepository.save(userMapper.toUser(userDto));
 		return userMapper.toUserDTO(user);
 	}
@@ -59,6 +60,7 @@ public class UserService {
 		return userMapper.toUserDTO(
 				userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found !")));
 	}
+
 
 	@PreAuthorize("#userDto.email == authentication.name")
 	public UserDTO updateUser(UserDTO userDto) {

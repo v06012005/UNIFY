@@ -19,7 +19,6 @@ const Page = () => {
       : "58d8ce36-2c82-4d75-b71b-9d34a3370b16";
   const { chatMessages, sendMessage } = useChat(user, chatPartner);
   const [newMessage, setNewMessage] = useState("");
-
   const [showPicker, setShowPicker] = useState(false);
   const pickerRef = useRef(null);
   const messagesEndRef = useRef(null);

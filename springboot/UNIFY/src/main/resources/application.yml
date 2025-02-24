@@ -39,7 +39,7 @@ mail:
 
 logging:
   level:
-    com.zaxxer.hikari.HikariConfig: DEBUG
+    org.springframework.http.converter.json: DEBUG
     com.zaxxer.hikari: TRACE
 
 jwt:
