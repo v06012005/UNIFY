@@ -36,7 +36,6 @@ const Page = () => {
   const [savedItems, setSavedItems] = useState([]);
   const [taggedPosts, setTaggedPosts] = useState([]);
   const router = useRouter();
-
   const { user, setUser, getInfoUser } = useApp();
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -86,9 +85,8 @@ const Page = () => {
           <div className="p-2 ml-8">
             <div className="flex justify-between ml-10">
               <div className="flex flex-col items-center w-200 mt-2 mx-8">
-                <h3 className="text-2xl truncate w-32 text-center">
-                  {user.username}
-                </h3>
+                <h3 className="text-2xl truncate w-32 text-center">{user.username}</h3>
+
                 <p
                   className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer"
                   onClick={toggleFriend}

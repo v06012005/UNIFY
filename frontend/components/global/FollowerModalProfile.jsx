@@ -68,9 +68,6 @@ const FollowerModal = ({ isOpen, onClose }) => {
                   />
                   <span className="font-medium ml-3">{userData.username}</span>
                 </div>
-                {/* <div className="flex items-center space-x-2 border px-6 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-500 dark:bg-gray-700 cursor-pointer">
-                  <span>Xóa</span>
-                </div> */}
                 <FollowButton
                   userId={user.id}
                   followingId={userData.id}

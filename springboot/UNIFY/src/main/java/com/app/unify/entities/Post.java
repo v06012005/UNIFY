@@ -88,6 +88,4 @@ public class Post {
 		return Objects.hash(id);
 	}
 
-
-
 }

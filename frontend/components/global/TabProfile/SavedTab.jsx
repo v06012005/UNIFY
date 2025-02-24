@@ -32,7 +32,6 @@ const SavedItems = () => {
       <h3 className="text-sm text-gray-400 mb-2">
         Chỉ mình bạn có thể xem mục mình đã lưu{" "}
       </h3>
-
       <div className="grid grid-cols-4 gap-3">
         <img
           src={`/images/avt.jpg`}
@@ -48,7 +47,6 @@ const SavedItems = () => {
               <img
                 src={`/images/avt.jpg`}
                 className="w-full h-full object-cover rounded-tl-lg rounded-bl-lg"
-
               />
             </div>
 

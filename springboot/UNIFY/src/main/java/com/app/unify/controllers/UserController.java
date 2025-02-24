@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.unify.dto.global.UserDTO;
+import com.app.unify.entities.User;
 import com.app.unify.exceptions.UserNotFoundException;
 import com.app.unify.services.UserService;
 
@@ -47,7 +48,7 @@ public class UserController {
 	public UserDTO getUser(@PathVariable String id) {
 		return userService.findById(id);
 	}
-
+	
 	@GetMapping("/suggestions")
 	public ResponseEntity<List<UserDTO>> getSuggestedUsers(@RequestParam String currentUserId) {
 	    List<UserDTO> users = userService.getSuggestedUsers(currentUserId);

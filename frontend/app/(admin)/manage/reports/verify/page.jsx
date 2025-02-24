@@ -160,7 +160,7 @@ const VerifyReportList = () => {
                       Approve
                     </button>
                     <button className="border border-red-500 text-red-500 px-3 py-1 rounded-md hover:bg-red-500 hover:text-white">
-                    Rejectrd
+                      Rejectrd
                     </button>
                   </td>
                 </tr>
