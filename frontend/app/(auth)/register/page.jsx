@@ -45,7 +45,6 @@ const RegisterPage = () => {
     confirmPassword: "",
     gender: "true",
     status: 0,
-    
   });
 
   const [date, setDate] = useState({
@@ -126,6 +125,7 @@ const RegisterPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!validateForm()) return;
 
     const fullDate = `${date.year}-${String(
@@ -146,14 +146,8 @@ const RegisterPage = () => {
         body: JSON.stringify(requestData),
       });
 
-      const contentType = response.headers.get("content-type");
-      let result = {};
-
-      if (contentType && contentType.includes("application/json")) {
-        result = await response.json();
-      } else {
-        result = await response.text();
-      }
+      // Đọc nội dung phản hồi từ server (text vì backend trả về chuỗi)
+      const result = await response.text();
 
       if (response.ok) {
         alert("Registration successful!");
@@ -161,7 +155,8 @@ const RegisterPage = () => {
           router.push("/login");
         }, 1500);
       } else {
-        setServerError(result?.message || result || "Unknown error occurred");
+        // Hiển thị lỗi từ backend
+        setServerError(result);
       }
     } catch (error) {
       console.error("Error:", error);
@@ -280,7 +275,9 @@ const RegisterPage = () => {
               )}
             </div>
 
-            {errors.general && <p className="text-red-500">{errors.general}</p>}
+            {serverError && (
+              <p className="text-red-500 text-sm">{serverError}</p>
+            )}
 
             <div className="flex items-center gap-1 m-auto">
               <span>Do you have an account?</span>

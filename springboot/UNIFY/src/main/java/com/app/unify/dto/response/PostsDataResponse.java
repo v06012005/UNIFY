@@ -11,7 +11,7 @@ import lombok.experimental.FieldDefaults;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PostsDataResponse {
-    String id;
-    String captions;
-    Set<Media> media;
+	String id;
+	String captions;
+	Set<Media> media;
 }

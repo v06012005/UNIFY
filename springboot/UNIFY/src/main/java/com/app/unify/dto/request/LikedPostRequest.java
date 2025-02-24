@@ -7,6 +7,6 @@ import lombok.experimental.FieldDefaults;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class LikedPostRequest {
-    String postId;
-    String userId;
+	String postId;
+	String userId;
 }

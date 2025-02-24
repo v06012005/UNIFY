@@ -24,45 +24,36 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class LikedPostService {
 
-    private PostRepository postRepository;
-    private UserRepository userRepository;
-    private LikedPostRepository likedPostRepository;
-    private LikedPostMapper likedPostMapper;
-    private PostMapper postMapper;
+	private PostRepository postRepository;
+	private UserRepository userRepository;
+	private LikedPostRepository likedPostRepository;
+	private LikedPostMapper likedPostMapper;
+	private PostMapper postMapper;
 
-    @Autowired
-    public LikedPostService(PostRepository postRepository,
-                            UserRepository userRepository,
-                            LikedPostRepository likedPostRepository,
-                            LikedPostMapper likedPostMapper,
-                            PostMapper postMapper) {
-        this.postRepository = postRepository;
-        this.userRepository = userRepository;
-        this.likedPostRepository = likedPostRepository;
-        this.likedPostMapper = likedPostMapper;
-        this.postMapper = postMapper;
-    }
+	@Autowired
+	public LikedPostService(PostRepository postRepository, UserRepository userRepository,
+			LikedPostRepository likedPostRepository, LikedPostMapper likedPostMapper, PostMapper postMapper) {
+		this.postRepository = postRepository;
+		this.userRepository = userRepository;
+		this.likedPostRepository = likedPostRepository;
+		this.likedPostMapper = likedPostMapper;
+		this.postMapper = postMapper;
+	}
 
-    public void createLikedPost(LikedPostRequest request){
-        LikedPost likedPost = LikedPost.builder()
-                .post(postRepository.findById(request.getPostId())
-                        .orElseThrow(() -> new PostNotFoundException("Post not found !")))
-                .user(userRepository.findById(request.getUserId())
-                        .orElseThrow(() -> new UserNotFoundException("User not found !")))
-                .build();
-       likedPostRepository.save(likedPost);
-    }
+	public void createLikedPost(LikedPostRequest request) {
+		LikedPost likedPost = LikedPost.builder()
+				.post(postRepository.findById(request.getPostId())
+						.orElseThrow(() -> new PostNotFoundException("Post not found !")))
+				.user(userRepository.findById(request.getUserId())
+						.orElseThrow(() -> new UserNotFoundException("User not found !")))
+				.build();
+		likedPostRepository.save(likedPost);
+	}
 
-
-    public Set<PostDTO> getListLikedPosts(String userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found!"));
-       return user.getLikedPosts()
-               .stream()
-               .map(LikedPost::getPost)
-               .map(postMapper::toPostDTO)
-               .collect(Collectors.toSet());
-    }
-
+	public Set<PostDTO> getListLikedPosts(String userId) {
+		User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found!"));
+		return user.getLikedPosts().stream().map(LikedPost::getPost).map(postMapper::toPostDTO)
+				.collect(Collectors.toSet());
+	}
 
 }

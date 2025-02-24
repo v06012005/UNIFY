@@ -53,9 +53,7 @@ public class PostServiceImp implements PostService {
 
 	public List<PostDTO> getPostsTrending() {
 		List<Object[]> results = postRepository.findPostsWithInteractionCounts();
-		return results.stream()
-				.filter(Objects::nonNull)
-				.map(result -> mapper.toPostDTO((Post) result[0]))
+		return results.stream().filter(Objects::nonNull).map(result -> mapper.toPostDTO((Post) result[0]))
 				.collect(Collectors.toList());
 	}
 
@@ -63,5 +61,12 @@ public class PostServiceImp implements PostService {
 	public void deletePostById(String id) {
 		postRepository.deleteById(id);
 	}
+
+
+	@Override
+	public List<PostDTO> getMyPosts(String username) {
+		return postRepository.getMyPosts(username);
+	}
+
 
 }

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.unify.dto.global.UserDTO;
@@ -26,7 +27,7 @@ public class UserController {
 
 	UserService userService;
 	@Autowired
-    private PasswordEncoder passwordEncoder;
+	private PasswordEncoder passwordEncoder;
 
 	@GetMapping
 	public List<UserDTO> getUsers() {
@@ -36,23 +37,30 @@ public class UserController {
 	@GetMapping("/my-info")
 	public UserDTO getMyInfo() {
 		return userService.getMyInfo();
+
   }
-	@GetMapping("/{id}")
-	public UserDTO getUser(@PathVariable String id) {
-		return userService.findById(id);
-	}
-	@GetMapping("/{username}")
+	@GetMapping("/username/{username}")
 	public UserDTO getUserByUsername(@PathVariable String username) {
 	    return userService.findByUsername(username);
 	}
 
+	@GetMapping("/{id}")
+	public UserDTO getUser(@PathVariable String id) {
+		return userService.findById(id);
+	}
+
+
+	@GetMapping("/suggestions")
+	public ResponseEntity<List<UserDTO>> getSuggestedUsers(@RequestParam String currentUsername) {
+	    List<UserDTO> users = userService.getSuggestedUsers(currentUsername);
+	    return ResponseEntity.ok(users);
+
+	}
 
 	@PostMapping
 	public UserDTO createUser(@RequestBody UserDTO userDto) {
 		return userService.createUser(userDto);
 	}
-
-
 
 	@PutMapping
 	public ResponseEntity<?> updateUser(@RequestBody UserDTO userDto) {

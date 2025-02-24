@@ -2,18 +2,10 @@
 
 import React from "react";
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import Image from "next/image";
 import { useApp } from "@/components/provider/AppProvider";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Cookies from "js-cookie";
-const NavButton = ({ iconClass, href = "", content = "" }) => {
-  return (
-    <Link className="flex h-full items-center text-center" href={href}>
-      <i className={`${iconClass}`}></i>
-      <span className="ml-5">{content}</span>
-    </Link>
-  );
-};
 
 const Page = () => {
   const defaultAvatar = "/images/unify_icon_2.svg";
@@ -22,6 +14,8 @@ const Page = () => {
   const [daysInMonth, setDaysInMonth] = useState(31);
   const [errors, setErrors] = useState({});
   const { user, setUser } = useApp();
+
+  const { logoutUser } = useApp();
 
   const [userData, setUserData] = useState({
     id: "",
@@ -66,11 +60,30 @@ const Page = () => {
   }, [user]);
 
   const handleGenderChange = (value) => {
-    setUserData((prevData) => ({
-      ...prevData,
-      gender: value,
-    }));
+    setGender(value);
   };
+
+  useEffect(() => {
+    const { month, year } = userData.birthDay;
+    if (month && year) {
+      const days = new Date(
+        parseInt(year, 10),
+        parseInt(month, 10),
+        0
+      ).getDate();
+      setDaysInMonth(days);
+
+      if (parseInt(userData.birthDay.day, 10) > days) {
+        setUserData((prev) => ({
+          ...prev,
+          birthDay: {
+            ...prev.birthDay,
+            day: days.toString().padStart(2, "0"),
+          },
+        }));
+      }
+    }
+  }, [userData.birthDay.month, userData.birthDay.year, setUserData]);
 
   const handleChange = (field, value) => {
     if (field.startsWith("birthDay.")) {
@@ -79,28 +92,6 @@ const Page = () => {
         ...userData.birthDay,
         [birthField]: value.padStart(2, "0"),
       };
-
-      if (birthField === "month" || birthField === "year") {
-        const month = parseInt(newBirthDay.month, 10);
-        const year = parseInt(newBirthDay.year, 10);
-
-        if (
-          !year ||
-          year < 1900 ||
-          year > 2100 ||
-          !month ||
-          month < 1 ||
-          month > 12
-        ) {
-          console.error("Invalid month or year:", { year, month });
-          return;
-        }
-
-        const days = new Date(year, month, 0).getDate();
-        if (parseInt(newBirthDay.day, 10) > days) {
-          newBirthDay.day = "01";
-        }
-      }
 
       setUserData((prevData) => ({
         ...prevData,
@@ -113,6 +104,20 @@ const Page = () => {
       }));
     }
   };
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
 
   const validateFormData = (data) => {
     const errors = {};
@@ -131,7 +136,7 @@ const Page = () => {
     } else if (data.username.length > 30) {
       errors.username = "Username must be at most 30 characters";
     }
-   if (!data.biography.length > 100) {
+    if (!data.biography.length > 100) {
       errors.biography = "Biography must be at most 100 characters";
     }
     const emailPattern = /^[^@]+@[a-zA-Z0-9-]+\.(com)$/;
@@ -226,25 +231,6 @@ const Page = () => {
     }
   };
 
-  const handleLogout = async () => {
-    try {
-      const response = await fetch("/api/remove-cookie", {
-        method: "GET",
-        credentials: "include",
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        alert(data.message);
-        window.location.href = "/";
-      } else {
-        alert("Failed to remove cookie.");
-      }
-    } catch (error) {
-      console.error("Error removing cookie:", error);
-      alert("An error occurred while removing the cookie.");
-    }
-  };
   const handleChangeAvatar = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -271,21 +257,6 @@ const Page = () => {
       fileInputRef.current.value = null;
     }
   };
-
-  const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
 
   return (
     <div className="w-full">
@@ -337,7 +308,10 @@ const Page = () => {
               </button>
 
               <button
-                onClick={handleLogout}
+                onClick={(e) => {
+                  e.preventDefault();
+                  logoutUser();
+                }}
                 className="bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition"
               >
                 Logout
@@ -361,11 +335,11 @@ const Page = () => {
               onChange={(e) => handleChange("biography", e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-1 focus:ring-gray-500 focus:outline-none hover:border-gray-500 hover:shadow-md transition"
             />
-             {errors.biography && (
-                <div className="text-red-500 text-sm mt-1">
-                  {errors.biography}
-                  </div>
-             )}
+            {errors.biography && (
+              <div className="text-red-500 text-sm mt-1">
+                {errors.biography}
+              </div>
+            )}
           </div>
 
           <div className="m-5 flex gap-4">
@@ -506,39 +480,20 @@ const Page = () => {
               <label className="text-lg font-medium text-gray-700 dark:text-white">
                 Gender:
               </label>
-              <div className="flex items-center gap-4">
-                <label
-                  htmlFor="female"
-                  className="flex items-center gap-1 dark:text-gray-400 mr-10"
-                >
-                  <input
-                    id="female"
-                    type="radio"
-                    name="gender"
-                    value={false}
-                    checked={gender === false}
-                    onChange={() => handleGenderChange(false)}
-                    className="focus:ring-2 focus:ring-gray-500 size-5 mr-3"
-                  />
+              <RadioGroup
+                value={gender === true ? "male" : "female"}
+                onValueChange={(value) => handleGenderChange(value === "male")}
+                className="flex items-center gap-4"
+              >
+                <label className="flex items-center gap-1 dark:text-gray-400 mr-10">
+                  <RadioGroupItem value="female" id="female" />
                   Female
                 </label>
-
-                <label
-                  htmlFor="male"
-                  className="flex items-center gap-1 dark:text-gray-400"
-                >
-                  <input
-                    id="male"
-                    type="radio"
-                    name="gender"
-                    value={true}
-                    checked={gender === true}
-                    onChange={() => handleGenderChange(true)}
-                    className="focus:ring-2 focus:ring-gray-500 size-5 mr-3"
-                  />
+                <label className="flex items-center gap-1 dark:text-gray-400">
+                  <RadioGroupItem value="male" id="male" />
                   Male
                 </label>
-              </div>
+              </RadioGroup>
             </div>
 
             <div className="flex flex-col gap-4 basis-1/2">
@@ -546,7 +501,6 @@ const Page = () => {
                 Birthday:
               </label>
               <div className="flex items-center gap-4">
-                {/* Month */}
                 <select
                   value={userData.birthDay.month}
                   onChange={(e) =>
@@ -564,7 +518,6 @@ const Page = () => {
                   })}
                 </select>
 
-                {/* Day */}
                 <select
                   value={userData.birthDay.day}
                   onChange={(e) => handleChange("birthDay.day", e.target.value)}
@@ -580,7 +533,6 @@ const Page = () => {
                   })}
                 </select>
 
-                {/* Year */}
                 <select
                   value={userData.birthDay.year}
                   onChange={(e) =>
@@ -637,7 +589,7 @@ const Page = () => {
             <button
               type="submit"
               disabled={loading}
-              className="px-10 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 dark:bg-gray-500 dark:hover:bg-gray-600 transition focus:outline-none focus:ring-2 focus:ring-blue-500 text-xl"
+              className="px-10 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700  transition focus:outline-none focus:ring-2 focus:ring-blue-500 text-xl"
             >
               {loading ? "Saving..." : "Save"}
             </button>

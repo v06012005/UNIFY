@@ -15,11 +15,11 @@ import com.app.unify.services.RecommendationService;
 @RequestMapping("/api/recommend")
 public class RecommendationController {
 
-    @Autowired
-    private RecommendationService recommendationService;
+	@Autowired
+	private RecommendationService recommendationService;
 
-    @GetMapping("/{id}")
-    public List<PostDTO> fetchRecommendations(@PathVariable String id) {
-        return recommendationService.getRecommendations(id);
-    }
+	@GetMapping("/{id}")
+	public List<PostDTO> fetchRecommendations(@PathVariable String id) {
+		return recommendationService.getRecommendations(id);
+	}
 }

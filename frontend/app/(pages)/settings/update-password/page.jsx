@@ -14,9 +14,7 @@ const ChangePassword = () => {
   const getPasswordError = (value) => {
     if (value.length < 8) {
       return "Password must be at least 8 characters long";
-    } else if (!/[A-Z]/.test(value)) {
-      return "Password must contain at least one uppercase letter";
-    } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(value)) {
+    }  else if (!/[!@#$%^&*(),.?":{}|<>]/.test(value)) {
       return "Password must contain at least one special character";
     }
     return null;
@@ -135,6 +133,7 @@ const ChangePassword = () => {
           <Input
             id="current-password"
             name="currentPassword"
+             type="password"
             value={currentPassword}
             onChange={(e) => setCurrentPassword(e.target.value)}
             placeholder="Enter your current password"
@@ -202,6 +201,7 @@ const ChangePassword = () => {
                   setCurrentPassword("");
                   setNewPassword("");
                   setConfirmPassword("");
+                  setErrors({});
                 }}
                 className="w-full bg-transparent border dark:text-white border-gray-300 hover:border-gray-500 text-gray-700 font-medium py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"
               >

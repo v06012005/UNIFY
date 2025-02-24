@@ -20,7 +20,6 @@ public class PostDTO {
 
 	String captions;
 
-
 	// 0 -> hidden
 	// 1 -> visible
 	// 2 -> sensitive/ violent content
@@ -36,7 +35,6 @@ public class PostDTO {
 	Boolean isCommentVisible;
 
 	Boolean isLikeVisible = false;
-
 
 	Set<PostComment> comments;
 

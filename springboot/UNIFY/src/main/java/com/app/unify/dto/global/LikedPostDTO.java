@@ -10,7 +10,7 @@ import lombok.experimental.FieldDefaults;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class LikedPostDTO {
-    String id;
-    Post post;
-    User user;
+	String id;
+	Post post;
+	User user;
 }

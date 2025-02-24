@@ -19,19 +19,18 @@ import com.app.unify.services.LikedPostService;
 @RequestMapping("/liked-posts")
 public class LikedPostController {
 
-    @Autowired
-    private LikedPostService likedPostService;
+	@Autowired
+	private LikedPostService likedPostService;
 
+	@GetMapping("/{id}")
+	public Set<PostDTO> getListLikedPosts(@PathVariable String id) {
+		return likedPostService.getListLikedPosts(id);
+	}
 
-    @GetMapping("/{id}")
-    public Set<PostDTO> getListLikedPosts(@PathVariable String id){
-        return likedPostService.getListLikedPosts(id);
-    }
-
-    @PostMapping
-    public ResponseEntity<?> save(@RequestBody LikedPostRequest request){
-        likedPostService.createLikedPost(request);
-        return ResponseEntity.ok("You liked this post !");
-    }
+	@PostMapping
+	public ResponseEntity<?> save(@RequestBody LikedPostRequest request) {
+		likedPostService.createLikedPost(request);
+		return ResponseEntity.ok("You liked this post !");
+	}
 
 }

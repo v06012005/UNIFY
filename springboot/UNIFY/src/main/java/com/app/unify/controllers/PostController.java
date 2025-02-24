@@ -22,14 +22,12 @@ import com.app.unify.services.PostService;
 @RequestMapping("/posts")
 public class PostController {
 
-
 	@Autowired
 	private PostService postService;
 
-
 	@GetMapping
-	public List<PostDTO> getAllPosts(){
-	   return postService.getPostsTrending();
+	public List<PostDTO> getAllPosts() {
+		return postService.getPostsTrending();
 	}
 
 	@PostMapping
@@ -51,5 +49,10 @@ public class PostController {
 	public ResponseEntity<String> deletePost(@PathVariable("id") String id) {
 		postService.deletePostById(id);
 		return ResponseEntity.ok("Post deleted successfully!");
+	}
+
+	@GetMapping("/{username}")
+	public List<PostDTO> getMyPosts(@PathVariable("username") String username) {
+		return postService.getMyPosts(username);
 	}
 }

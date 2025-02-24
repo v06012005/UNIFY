@@ -50,29 +50,27 @@ public class UserService {
 		userDto.setPassword(EncryptPasswordUtil.encryptPassword(userDto.getPassword()));
 		Role role = roleRepository.findByName("USER").orElseThrow(() -> new RuntimeException("Role not found !"));
 		userDto.setRoles(Collections.singleton(role));
-		
+
 		User user = userRepository.save(userMapper.toUser(userDto));
 		return userMapper.toUserDTO(user);
 	}
 
-	@PreAuthorize("hasRole('ADMIN')")
+//	@PreAuthorize("hasRole('ADMIN')")
 	public UserDTO findById(String id) {
 		return userMapper.toUserDTO(
 				userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found !")));
 	}
 
+
+
 	@PreAuthorize("#userDto.email == authentication.name")
 	public UserDTO updateUser(UserDTO userDto) {
-
-		User user = userRepository.findById(userDto.getId())
-				.orElseThrow(() -> new UserNotFoundException("User not found !"));
-
-		User updatedUser = userMapper.toUser(userDto);
-		updatedUser.setId(user.getId());
-
-		updatedUser = userRepository.save(updatedUser);
-		return userMapper.toUserDTO(updatedUser);
-
+		Role role = roleRepository.findByName("USER").orElseThrow(() -> new RuntimeException("Role not found !"));
+		userDto.setPassword(userRepository.findById(userDto.getId())
+				.orElseThrow(() -> new UserNotFoundException("User not found !")).getPassword());
+		userDto.setRoles(Collections.singleton(role));
+		User user = userRepository.save(userMapper.toUser(userDto));
+		return userMapper.toUserDTO(user);
 	}
 
 	@PreAuthorize("hasRole('ADMIN')")
@@ -89,10 +87,17 @@ public class UserService {
 	}
 
 	public UserDTO findByUsername(String username) {
-		User user = userRepository.findByUsername(username)
-				.orElseThrow(() -> new UserNotFoundException("Username not found: " + username));
+	    return userRepository.findByUsername(username)
+	        .map(userMapper::toUserDTO)
+	        .orElseThrow(() -> new UserNotFoundException("Username not found: " + username));
+	}
+	public List<UserDTO> getSuggestedUsers(String currentUsername) {
+	    UserDTO userDTO = findByUsername(currentUsername);
 
-		return userMapper.toUserDTO(user);
+	    return userRepository.findUsersNotFriendsOrFollowing(currentUsername)
+	            .stream()
+	            .map(userMapper::toUserDTO)
+	            .collect(Collectors.toList());
 	}
 
 	public UserDTO changePassword(String currentPassword, String newPassword) {
@@ -104,7 +109,6 @@ public class UserService {
 		if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
 			throw new IllegalArgumentException("Incorrect old password!");
 		}
-
 		if (passwordEncoder.matches(newPassword, user.getPassword())) {
 			throw new IllegalArgumentException("New password must not be the same as the old password!");
 		}
@@ -115,6 +119,5 @@ public class UserService {
 
 		return userMapper.toUserDTO(updatedUser);
 	}
-
 
 }

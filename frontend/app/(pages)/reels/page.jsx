@@ -11,7 +11,6 @@ import Reply from "@/components/comments/Reply";
 import Content from "@/components/comments/Content";
 import { useApp } from "@/components/provider/AppProvider";
 import Cookies from "js-cookie";
-import axios from "axios";
 
 // 0de81a82-caa6-439c-a0bc-124a83b5ceaf  ID POST
 
@@ -27,7 +26,7 @@ import {
   Button,
 } from "@heroui/react";
 
-const Reels = ({ postId }) => {
+const Reels = () => {
   const reels = Array(1).fill(0);
   const [isMuted, setIsMuted] = useState(false);
   const [isCommentOpen, setIsCommentOpen] = useState(false);
@@ -42,10 +41,10 @@ const Reels = ({ postId }) => {
   const pickerRef = useRef(null);
   const [isShown, setIsShown] = useState(false);
   const { user } = useApp();
-  const API_URL = process.env.NEXT_PUBLIC_API_URL;
   const token = Cookies.get("token");
+  console.log("Token từ Cookies:", token);
   const [isCommentEmpty, setIsCommentEmpty] = useState(true);
-
+  const postId = "0de81a82-caa6-439c-a0bc-124a83b5ceaf";
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (pickerRef.current && !pickerRef.current.contains(event.target)) {
@@ -62,21 +61,21 @@ const Reels = ({ postId }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showPicker]);
   /////////
-  ///////
-  useEffect(() => {
-    fetchComments();
-  }, [postId]);
-
-  ////////
   const fetchComments = async () => {
-    try {
-      if (!token) {
-        console.error("Không có token trong cookie");
-        return;
-      }
+    if (!postId) {
+      console.error("postId is undefined");
+      return;
+    }
 
+    if (!token) {
+      console.error("Token không tồn tại");
+      return;
+    }
+
+    try {
+      console.log("Token in fetchComments:", token);
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/posts/${postId}/comments`,
+        `${process.env.NEXT_PUBLIC_API_URL}/comments/reels/${postId}`,
         {
           method: "GET",
           headers: {
@@ -86,23 +85,35 @@ const Reels = ({ postId }) => {
         }
       );
 
+      console.log("Status Code:", response.status);
+
       if (response.ok) {
-        const data = await response.json();
-        setComments(data);
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const data = await response.json();
+          console.log("Data from server:", data);
+          setComments(data);
+        } else {
+          console.error("Response is not JSON");
+        }
       } else {
-        const result = await response.text();
+        const errorText = await response.text();
+        console.error("Server response:", errorText);
 
         if (response.status === 401) {
-          console.error("Token không hợp lệ hoặc đã hết hạn");
-          // Cookies.remove("token");
-          // window.location.href = "/login";
+          console.error("LỖI khác (TOKEN đã hợp lệ)");
         }
       }
     } catch (error) {
       console.error("Error fetching comments:", error);
-      alert("Something went wrong. Please try again.");
+      alert("Failed to fetch comments. Please try again later.");
     }
   };
+  //////////
+  useEffect(() => {
+    fetchComments();
+  }, [postId]);
+
   ////////////////
   const handleCommentSubmit = async () => {
     if (!user || !user.id) {
@@ -110,59 +121,44 @@ const Reels = ({ postId }) => {
       return;
     }
 
-    if (!comment.trim()) {
-      console.warn("Comment is empty");
-      return;
-    }
-
     try {
-      if (!token) {
-        console.error("Không có token trong cookie");
-        return;
-      }
-
-      const response = await axios.post(
-        `${API_URL}/api/posts/${postId}/comments`,
+      console.log("Token in handleCommentSubmit:", token);
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/comments`,
         {
-          userId: user.id,
-          postId: postId,
-          content: comment,
-          parentId: null,
-        },
-        {
+          method: "POST",
           headers: {
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
+          body: JSON.stringify({
+            userId: user.id,
+            postId: postId,
+            content: comment,
+            parentId: null,
+          }),
         }
       );
 
-      if (response.status === 201) {
-        setComments((prevComments) => [
-          ...prevComments,
-          {
-            id: response.data.id,
-            user: {
-              id: user.id,
-              username: user.username,
-              avatar: user.avatar,
-            },
-            content: comment,
-            commentedAt: new Date().toISOString(),
-          },
-        ]);
+      console.log("Status Code:", response.status);
+      console.log("Response Headers:", response.headers);
+
+      const responseBody = await response.text();
+      console.log("Response Body:", responseBody);
+
+      if (response.status === 200 || response.status === 201) {
+        const newComment = JSON.parse(responseBody);
+        setComments((prevComments) => [...prevComments, newComment]);
         setComment("");
+      } else {
+        console.error("Server response:", responseBody);
+        if (response.status === 401) {
+          console.error("LỖI khác (TOKEN đã hợp lệ)");
+        }
       }
     } catch (error) {
-      if (error.response?.status === 401) {
-        console.error("Token không hợp lệ hoặc đã hết hạn");
-        // Cookies.remove("token");
-        // window.location.href = "/login";
-      } else {
-        console.error(
-          "Failed to submit comment:",
-          error.response?.data || error.message
-        );
-      }
+      console.error("Error submitting comment:", error);
+      alert("Failed to submit comment. Please try again later.");
     }
   };
   /////////////////
@@ -400,20 +396,12 @@ const Reels = ({ postId }) => {
                   Comments
                 </h2>
               </div>
-              <div className="flex-grow overflow-auto pl-12 pr-12">
+              <div className="flex-grow overflow-auto pl-12 pr-12 ">
                 {comments.map((comment) => (
                   <Card
                     key={comment.id}
                     className="overflow-visible border-none bg-transparent shadow-none"
                   >
-                    {isShown && (
-                      <>
-                        <div className="w-full flex flex-col items-end">
-                          <Reply />
-                          <Reply />
-                        </div>
-                      </>
-                    )}
                     <div className="">
                       <div className="flex items-center">
                         <Image
@@ -421,8 +409,11 @@ const Reels = ({ postId }) => {
                           alt="User avatar"
                           className="rounded-full w-12 h-12"
                         />
-                        <h4 className="text-lg font-bold truncate w-20 pl-2">
-                          {comment.user.username}
+                        <h4 className="text-base font-bold truncate w-32 pl-2">
+                          {comment.user ? comment.user.username : "Unknown123"}
+                        </h4>
+                        <h4 className="text-sm font-bold truncate w-40 text-gray-500">
+                          {comment.commentedAt}
                         </h4>
                       </div>
                       <div>
@@ -439,7 +430,7 @@ const Reels = ({ postId }) => {
                         <i className="fa-solid fa-reply"></i>Reply
                       </Button>
                       <Button
-                        onPress={handleClick}
+                        onPress={() => setIsShown(!isShown)} // Cập nhật trạng thái isShown
                         size="sm"
                         className="bg-transparent dark:text-white"
                       >
@@ -453,6 +444,17 @@ const Reels = ({ postId }) => {
                         More
                       </Button>
                     </CardFooter>
+
+                    {/* Kiểm tra nếu isShown là true thì hiển thị replies */}
+                    {isShown &&
+                      comment.replies &&
+                      comment.replies.length > 0 && (
+                        <div className="w-full flex flex-col items-end">
+                          {comment.replies.map((reply) => (
+                            <Reply key={reply.id} reply={reply} />
+                          ))}
+                        </div>
+                      )}
                   </Card>
                 ))}
               </div>
@@ -482,6 +484,12 @@ const Reels = ({ postId }) => {
                     } else {
                       e.target.style.height = `${e.target.scrollHeight}px`;
                       e.target.style.overflowY = "hidden";
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault(); // Ngăn Enter xuống dòng
+                      handleCommentSubmit();
                     }
                   }}
                   className="bg-gray-700 text-white placeholder-gray-400 flex-grow py-2 px-4 rounded-2xl focus:outline-none resize-none"

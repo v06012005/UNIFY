@@ -7,7 +7,7 @@ const Content = ({ text, maxLength = 100 }) => {
   const toggleExpanded = () => setIsExpanded(!isExpanded);
   return (
     <>
-      <div className="my-3 leading-snug text-sm w-80">
+      <div className="my-3 leading-snug text-sm text-gray-300 w-80">
         {isExpanded ? text : `${text.slice(0, maxLength)}...`}
         <button onClick={toggleExpanded} className="text-gray-500">
           {isExpanded ? "Less" : "More"}

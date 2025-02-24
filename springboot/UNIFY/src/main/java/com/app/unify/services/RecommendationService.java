@@ -12,14 +12,12 @@ import com.app.unify.dto.global.PostDTO;
 @Service
 public class RecommendationService {
 
-    @Autowired
-    private  WebClient webClient;
+	@Autowired
+	private WebClient webClient;
 
-    public List<PostDTO> getRecommendations(String userId) {
-      return webClient.get()
-                .uri("/recommend/" + userId)
-                .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<List<PostDTO>>() {})
-                .block();
-    }
+	public List<PostDTO> getRecommendations(String userId) {
+		return webClient.get().uri("/recommend/" + userId).retrieve()
+				.bodyToMono(new ParameterizedTypeReference<List<PostDTO>>() {
+				}).block();
+	}
 }
