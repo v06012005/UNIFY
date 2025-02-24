@@ -30,7 +30,6 @@ const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   );
 };
 const Page = () => {
-
   const { username } = useParams();
   const [activeTab, setActiveTab] = useState("post");
   const [userPosts, setUserPosts] = useState([]);
@@ -75,20 +74,16 @@ const Page = () => {
               height={200}
             />
           </div>
-
           <div className="p-2 ml-8">
             <div className="flex justify-between ml-10">
               <div className="flex flex-col items-center w-200 mt-2 mx-8">
-
                 <h3 className="text-2xl truncate w-32 text-center">
                   {userFromAPI.username}
                 </h3>
-
                 <p className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer">
                   44 posts
                 </p>
               </div>
-
               <div className="flex flex-col mx-10 items-center w-200">
                 <FollowButton
                   userId={user.id}
@@ -100,7 +95,6 @@ const Page = () => {
                   0 Follower
                 </p>
               </div>
-
               <div className="flex flex-col mx-10 items-center w-200">
                 <div className="flex items-center font-bold py-2 px-4 rounded-lg hover:bg-gray-400 bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors w-full cursor-pointer">
                   <i className="fa-brands fa-facebook-messenger mr-3"></i>
@@ -141,9 +135,6 @@ const Page = () => {
               <NavButton iconClass="fa-solid fa-film" />
               <span className="ml-2">REEL</span>
             </button>
-
-          
-
           </div>
 
           <div className="mt-4">

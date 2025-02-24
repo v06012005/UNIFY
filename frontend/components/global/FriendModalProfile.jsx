@@ -25,7 +25,7 @@ const FriendModal = ({ isOpen, onClose }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]">
       <div className="bg-white dark:bg-gray-800 rounded-lg w-[450px] h-[500px] p-6 ">
         <div className="flex justify-between mb-4 text-2xl">
-          <h2 className="text-lg font-bold">Following</h2>
+          <h2 className="text-lg font-bold">Friend</h2>
           <button className="text-gray-500 hover:text-black" onClick={onClose}>
             ×
           </button>

@@ -145,7 +145,7 @@ const Page = () => {
                   className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer"
                   onClick={toggleFollowing}
                 >
-                  Following 0 user
+                  0 Following
                 </p>
 
                 <FollowingModal

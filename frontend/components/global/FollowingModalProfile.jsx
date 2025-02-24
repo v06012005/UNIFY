@@ -1,13 +1,15 @@
-import Image from 'next/image';
+import Image from "next/image";
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSuggestedUsers } from "@/components/provider/SuggestedUsersProvider";
 import { useApp } from "@/components/provider/AppProvider";
+import FollowButton from "../ui/follow-button";
 const FollowingModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   const { followingUsers, getFollowingUsers, loading } = useSuggestedUsers();
-  const router = useRouter(); 
+  const router = useRouter();
+  const { user } = useApp();
 
   useEffect(() => {
     getFollowingUsers();
@@ -35,19 +37,19 @@ const FollowingModal = ({ isOpen, onClose }) => {
           placeholder="Search ..."
           className="w-full border rounded-full px-4 py-1  dark:bg-black dark:border-gray-600"
         />
-        <ul className='h-[390px]  overflow-y-auto scrollbar-hide'>
+        <ul className="h-[390px]  overflow-y-auto scrollbar-hide">
           {loading ? (
             <p className="text-gray-500">Đang tải danh sách...</p>
-          ) : !followingUsers || followingUsers.length === 0 ? ( 
+          ) : !followingUsers || followingUsers.length === 0 ? (
             <p className="text-gray-500">Không đang theo dõi ai.</p>
           ) : (
-            followingUsers.slice(0, 11).map((user) => (
+            followingUsers.slice(0, 11).map((userData) => (
               <li
-                key={user.username}
+                key={userData.username}
                 className="flex items-center justify-between py-2 border-b border-gray-500 "
               >
                 <div
-                  onClick={() => handleClick(user.username)}
+                  onClick={() => handleClick(userData.username)}
                   className="flex items-center cursor-pointer"
                 >
                   <Image
@@ -57,11 +59,17 @@ const FollowingModal = ({ isOpen, onClose }) => {
                     width={50}
                     height={50}
                   />
-                  <span className="font-medium ml-3">{user.username}</span>
+                  <span className="font-medium ml-3">{userData.username}</span>
                 </div>
-                <div className="flex items-center space-x-2 border px-6 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-500 dark:bg-gray-700 cursor-pointer">
+                {/* <div className="flex items-center space-x-2 border px-6 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-500 dark:bg-gray-700 cursor-pointer">
                   <span>Xóa</span>
-                </div>
+                </div> */}
+                <FollowButton
+                  userId={user.id}
+                  followingId={userData.id}
+                  classFollow="bg-red-500 font-bold py-1 px-4 rounded-lg text-white text-md"
+                  classFollowing="bg-gray-700 hover:bg-gray-600 font-bold py-1 px-4 rounded-lg text-white text-md"
+                />
               </li>
             ))
           )}
