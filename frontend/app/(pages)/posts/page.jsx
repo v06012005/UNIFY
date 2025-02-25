@@ -14,8 +14,6 @@ import { cn } from "@/lib/utils";
 import { addToast, ToastProvider } from "@heroui/toast";
 
 const User = ({ user }) => {
-
-
   return (
     <div className="flex mb-4 w-full my-auto">
       <Image src={avatar} alt="Avatar" className="rounded-full w-14 h-14" />
@@ -47,7 +45,7 @@ const Page = () => {
     }
 
     fetchUser();
-  }, [])
+  }, []);
 
   const handleDivClick = () => {
     fileInputRef.current?.click();
@@ -60,11 +58,11 @@ const Page = () => {
 
   const handleLikeVisibility = (newValue) => {
     setIsLikeVisible(newValue);
-  }
+  };
 
   const handleCommentVisibility = (newValue) => {
     setIsCommentVisible(newValue);
-  }
+  };
 
   function handleClick() {
     refreshPost();
@@ -73,40 +71,52 @@ const Page = () => {
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files);
 
-    const allowedTypes = ["image/png", "image/jpeg", "image/jpg", "image/gif", "video/mp4", "video/webm"];
-    const validFiles = selectedFiles.filter(file => allowedTypes.includes(file.type));
+    const allowedTypes = [
+      "image/png",
+      "image/jpeg",
+      "image/jpg",
+      "image/gif",
+      "video/mp4",
+      "video/webm",
+    ];
+    const validFiles = selectedFiles.filter((file) =>
+      allowedTypes.includes(file.type)
+    );
 
     if (validFiles.length === 0) {
-      alert("Only images (png, jpeg, jpg, gif) and videos (mp4, webm) are allowed.");
+      alert(
+        "Only images (png, jpeg, jpg, gif) and videos (mp4, webm) are allowed."
+      );
       return;
     }
 
-    setFiles(prevFiles => [...prevFiles, ...validFiles]);
-    const newPreviews = validFiles.map(file => ({
+    setFiles((prevFiles) => [...prevFiles, ...validFiles]);
+    const newPreviews = validFiles.map((file) => ({
       url: URL.createObjectURL(file),
       type: file.type,
     }));
 
-    setPreviews(prevPreviews => [...prevPreviews, ...newPreviews]);
+    setPreviews((prevPreviews) => [...prevPreviews, ...newPreviews]);
   };
 
   useEffect(() => {
     return () => {
-      previews.forEach(file => URL.revokeObjectURL(file.url));
+      previews.forEach((file) => URL.revokeObjectURL(file.url));
     };
   }, [previews]);
 
   const handleUpload = async () => {
-    if (files.length === 0) return addToast({
-      title: "No files uploaded",
-      description: "Please upload at least one media file (image/ video).",
-      timeout: 3000,
-      shouldShowTimeoutProgess: true,
-      color: "warning"
-    });
+    if (files.length === 0)
+      return addToast({
+        title: "No files uploaded",
+        description: "Please upload at least one media file (image/ video).",
+        timeout: 3000,
+        shouldShowTimeoutProgess: true,
+        color: "warning",
+      });
 
     const formData = new FormData();
-    files.forEach(file => formData.append("files", file));
+    files.forEach((file) => formData.append("files", file));
 
     const res = await fetch("/api/upload", {
       method: "POST",
@@ -124,7 +134,7 @@ const Page = () => {
     // setIsCommentVisible(false);
     // setIsLikeVisible(false);
     setAudience("PUBLIC");
-  }
+  };
 
   const handleSave = async () => {
     try {
@@ -136,7 +146,7 @@ const Page = () => {
           description: "Please upload at least one media file (image/ video).",
           timeout: 3000,
           shouldShowTimeoutProgess: true,
-          color: "danger"
+          color: "danger",
         });
         return;
       }
@@ -147,17 +157,18 @@ const Page = () => {
         user: user,
         isCommentVisible: isCommentVisible,
         isLikeVisible: isLikeVisible,
-        postedAt: new Date().toISOString()
+        postedAt: new Date().toISOString(),
       };
 
       const post = await savePost(newPost);
       if (!post) {
         addToast({
           title: "Fail to save post",
-          description: "Cannot save your post. Please contact the admin for further information",
+          description:
+            "Cannot save your post. Please contact the admin for further information",
           timeout: 3000,
           shouldShowTimeoutProgess: true,
-          color: "danger"
+          color: "danger",
         });
         return;
       }
@@ -168,36 +179,38 @@ const Page = () => {
           description: "Please upload at least one media file (image/ video).",
           timeout: 3000,
           shouldShowTimeoutProgess: true,
-          color: "danger"
+          color: "danger",
         });
         return;
       }
 
-      const postMedia = fetchedFiles.files.map(file => ({
+      const postMedia = fetchedFiles.files.map((file) => ({
         post: post,
         url: file.url,
         fileType: file.file_type,
         size: file.size,
-        mediaType: file.media_type.toUpperCase()
+        mediaType: file.media_type.toUpperCase(),
       }));
 
       const savedMedia = await saveMedia(postMedia);
       if (savedMedia) {
         addToast({
           title: "Success",
-          description: "Your post is uploaded successfully. Other users can now interact with your post.",
+          description:
+            "Your post is uploaded successfully. Other users can now interact with your post.",
           timeout: 3000,
           shouldShowTimeoutProgess: true,
-          color: "success"
+          color: "success",
         });
         refreshPost();
       } else {
         addToast({
           title: "Fail to save media",
-          description: "The server ran into a problem and could not save your images/ videos successfully. Please contact the admin for further information.",
+          description:
+            "The server ran into a problem and could not save your images/ videos successfully. Please contact the admin for further information.",
           timeout: 3000,
           shouldShowTimeoutProgess: true,
-          color: "danger"
+          color: "danger",
         });
       }
     } catch (error) {
@@ -206,7 +219,7 @@ const Page = () => {
         description: "Error: " + error,
         timeout: 3000,
         shouldShowTimeoutProgess: true,
-        color: "danger"
+        color: "danger",
       });
     } finally {
       setLoading(false);
@@ -214,10 +227,11 @@ const Page = () => {
   };
 
   const removeFile = (value) => {
-    setPreviews((prevPreviews) => prevPreviews.filter(item => item.url !== value.url));
-    setFiles((prevFiles) => prevFiles.filter(item => item.url !== value.url));
+    setPreviews((prevPreviews) =>
+      prevPreviews.filter((item) => item.url !== value.url)
+    );
+    setFiles((prevFiles) => prevFiles.filter((item) => item.url !== value.url));
   };
-
 
   return (
     <>
@@ -230,7 +244,9 @@ const Page = () => {
             </h1>
             <User user={user} />
           </div>
-          {loading && <div className="fixed inset-0 bg-transparent z-[9998]"></div>}
+          {loading && (
+            <div className="fixed inset-0 bg-transparent z-[9998]"></div>
+          )}
 
           {loading && (
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[9998]">
@@ -251,15 +267,24 @@ const Page = () => {
                   {/* <button onClick={handleDivClick} className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-green-500"><i className="fa-solid fa-arrow-up-from-bracket"></i></button> */}
                 </div>
                 {/* {images.length > 0 && ( */}
-                <div className={cn(
-                  previews.length > 0 && "mt-4 grid grid-cols-4 gap-2 items-stretch",
-                  previews.length < 1 && "h-full")}>
+                <div
+                  className={cn(
+                    previews.length > 0 &&
+                      "mt-4 grid grid-cols-4 gap-2 items-stretch",
+                    previews.length < 1 && "h-full"
+                  )}
+                >
                   {previews.map((file) => {
                     const isVideo = file.type.startsWith("video/");
 
                     return (
                       <div key={file.url} className="relative w-full h-full">
-                        <button onClick={() => removeFile(file)} className="z-50 absolute right-[-5px] top-[-5px] bg-red-500 text-white rounded-full h-4 w-4 flex"><i className="fa-solid m-auto fa-sm fa-xmark"></i></button>
+                        <button
+                          onClick={() => removeFile(file)}
+                          className="z-50 absolute right-[-5px] top-[-5px] bg-red-500 text-white rounded-full h-4 w-4 flex"
+                        >
+                          <i className="fa-solid m-auto fa-sm fa-xmark"></i>
+                        </button>
                         {isVideo ? (
                           <video
                             src={file.url}
@@ -278,10 +303,15 @@ const Page = () => {
                       </div>
                     );
                   })}
-                  <div onClick={handleDivClick} className={cn("mt-2 cursor-pointer flex justify-center rounded-lg border border-dashed dark:border-gray-200 border-gray-900/25",
-                    previews.length < 1 && "h-5/6 px-6 py-10",
-                    previews.length > 0 && "h-full my-auto",
-                    previews.length >= 12 && "hidden")}>
+                  <div
+                    onClick={handleDivClick}
+                    className={cn(
+                      "mt-2 cursor-pointer flex justify-center rounded-lg border border-dashed dark:border-gray-200 border-gray-900/25",
+                      previews.length < 1 && "h-5/6 px-6 py-10",
+                      previews.length > 0 && "h-full my-auto",
+                      previews.length >= 12 && "hidden"
+                    )}
+                  >
                     <div className="text-center my-auto">
                       <PhotoIcon
                         aria-hidden="true"
@@ -320,7 +350,9 @@ const Page = () => {
                 <p className="text-sm/6 font-medium text-gray-900 dark:text-white">
                   Write Your Caption
                 </p>
-                <Textarea value={caption} onChange={(e) => setCaption(e.target.value)}
+                <Textarea
+                  value={caption}
+                  onChange={(e) => setCaption(e.target.value)}
                   placeholder="Write your caption here"
                   minRows={9}
                   variant="underlined"
@@ -330,7 +362,8 @@ const Page = () => {
                 <p className="text-sm/6 mt-3 font-medium text-gray-900 mb-2 dark:text-white">
                   Who can see your post?
                 </p>
-                <Select onSelectionChange={handleAudienceChange}
+                <Select
+                  onSelectionChange={handleAudienceChange}
                   defaultSelectedKeys={["PUBLIC"]}
                   className="w-full"
                   label=""
@@ -356,12 +389,14 @@ const Page = () => {
                   Advanced Settings
                 </p>
                 <div>
-                  <PostSwitch onToggle={handleLikeVisibility}
+                  <PostSwitch
+                    onToggle={handleLikeVisibility}
                     className="mb-3"
                     title={"Hide like and comment counts on this post"}
                     subtitle="Control your privacy by hiding the like and comment counts on this post, keeping the focus on the content rather than the numbers."
                   />
-                  <PostSwitch onToggle={handleCommentVisibility}
+                  <PostSwitch
+                    onToggle={handleCommentVisibility}
                     title={"Turn off commenting"}
                     subtitle="Disable comments on this post to maintain control over interactions and focus solely on the content."
                   />
@@ -389,7 +424,8 @@ const Page = () => {
                   </p>
                 </ModalDialog>
                 <button
-                  type="button" onClick={handleSave}
+                  type="button"
+                  onClick={handleSave}
                   className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 >
                   Save

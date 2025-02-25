@@ -5,8 +5,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.app.unify.entities.PostComment;
-
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -23,25 +24,27 @@ public class CommentDTO {
     private String content;
     private String userId;
     private String postId;
+    private String username;
     private String parentId;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     private LocalDateTime commentedAt;
-    @JsonIgnoreProperties("replies") // Ngăn Jackson tuần hoàn vô hạn khi có replies
-    private List<CommentDTO> replies; 
+    
+    @JsonIgnoreProperties("replies")
+    private List<CommentDTO> replies;  
 
-    /**
-     * Chuyển từ PostComment sang CommentDTO để tránh vòng lặp đệ quy
-     */
     public CommentDTO(PostComment comment) {
         this.id = comment.getId();
         this.content = comment.getContent();
         this.userId = comment.getUser().getId();
         this.postId = comment.getPost().getId();
+        this.parentId = (comment.getParent() != null) ? comment.getParent().getId() : null;  
         this.commentedAt = comment.getCommentedAt();
-        // Lọc và chỉ lấy các comment con nếu có
-        if (comment.getReplies() != null) {
-            this.replies = comment.getReplies().stream()
+
+        
+        this.replies = (comment.getReplies() != null) ? 
+            comment.getReplies().stream()
                 .map(CommentDTO::new)
-                .collect(Collectors.toList());
-        }
+                .collect(Collectors.toList()) 
+            : List.of();  
     }
 }

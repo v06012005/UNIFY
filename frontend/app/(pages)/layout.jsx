@@ -3,7 +3,7 @@
 import SideBar from "../../components/global/SideBar";
 import { HeroUIProvider } from "@heroui/react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
-
+import { Toaster } from "@/components/ui/toaster";
 const RootLayout = ({ children }) => {
   return (
     <>
@@ -17,6 +17,7 @@ const RootLayout = ({ children }) => {
             </aside>
             <main className="w-full flex-initial z-10">{children}</main>
           </div>
+          <Toaster />
         </NextThemesProvider>
       </HeroUIProvider>
     </>
