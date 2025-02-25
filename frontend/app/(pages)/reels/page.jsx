@@ -11,6 +11,8 @@ import Reply from "@/components/comments/Reply";
 import Content from "@/components/comments/Content";
 import { useApp } from "@/components/provider/AppProvider";
 import Cookies from "js-cookie";
+import { formatDistanceToNow } from "date-fns";
+import { fetchComments, postComment } from "app/api/service/commentService";
 
 // 0de81a82-caa6-439c-a0bc-124a83b5ceaf  ID POST
 
@@ -40,10 +42,12 @@ const Reels = () => {
   const [comment, setComment] = useState("");
   const pickerRef = useRef(null);
   const [isShown, setIsShown] = useState(false);
+
+  const [isCommentEmpty, setIsCommentEmpty] = useState(true);
+  ///////
   const { user } = useApp();
   const token = Cookies.get("token");
-  console.log("Token từ Cookies:", token);
-  const [isCommentEmpty, setIsCommentEmpty] = useState(true);
+
   const postId = "0de81a82-caa6-439c-a0bc-124a83b5ceaf";
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -60,108 +64,125 @@ const Reels = () => {
 
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showPicker]);
+
   /////////
-  const fetchComments = async () => {
-    if (!postId) {
-      console.error("postId is undefined");
-      return;
-    }
+  // const fetchComments = async () => {
+  //   if (!postId) {
+  //     console.error("postId is undefined");
+  //     return;
+  //   }
 
-    if (!token) {
-      console.error("Token không tồn tại");
-      return;
-    }
+  //   if (!token) {
+  //     console.error("Token không tồn tại");
+  //     return;
+  //   }
 
-    try {
-      console.log("Token in fetchComments:", token);
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/comments/reels/${postId}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+  //   try {
+  //     console.log("Token in fetchComments:", token);
+  //     const response = await fetch(
+  //       `${process.env.NEXT_PUBLIC_API_URL}/comments/${postId}`,
+  //       {
+  //         method: "GET",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
 
-      console.log("Status Code:", response.status);
+  //     if (response.ok) {
+  //       const contentType = response.headers.get("content-type");
+  //       if (contentType && contentType.includes("application/json")) {
+  //         const data = await response.json();
+  //         setComments(data);
+  //       } else {
+  //         console.error("Response is not JSON");
+  //       }
+  //     } else {
+  //       const errorText = await response.text();
+  //       console.error("Server response:", errorText);
 
-      if (response.ok) {
-        const contentType = response.headers.get("content-type");
-        if (contentType && contentType.includes("application/json")) {
-          const data = await response.json();
-          console.log("Data from server:", data);
-          setComments(data);
-        } else {
-          console.error("Response is not JSON");
-        }
-      } else {
-        const errorText = await response.text();
-        console.error("Server response:", errorText);
-
-        if (response.status === 401) {
-          console.error("LỖI khác (TOKEN đã hợp lệ)");
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching comments:", error);
-      alert("Failed to fetch comments. Please try again later.");
-    }
-  };
+  //       if (response.status === 401) {
+  //         console.error("LỖI khác (TOKEN đã hợp lệ)");
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching comments:", error);
+  //     alert("Failed to fetch comments. Please try again later.");
+  //   }
+  // };
   //////////
-  useEffect(() => {
-    fetchComments();
-  }, [postId]);
+  // useEffect(() => {
+  //   fetchComments();
+  // }, [postId]);
 
   ////////////////
+  // const handleCommentSubmit = async () => {
+  //   if (!user || !user.id) {
+  //     console.error("User is not logged in");
+  //     return;
+  //   }
+
+  //   try {
+  //     console.log("Token in handleCommentSubmit:", token);
+  //     const response = await fetch(
+  //       `${process.env.NEXT_PUBLIC_API_URL}/comments`,
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //         body: JSON.stringify({
+  //           userId: user.id,
+  //           postId: postId,
+  //           content: comment,
+  //           parentId: null,
+  //         }),
+  //       }
+  //     );
+
+  //     console.log("Status Code:", response.status);
+  //     console.log("Response Headers:", response.headers);
+
+  //     const responseBody = await response.text();
+  //     console.log("Response Body:", responseBody);
+
+  //     if (response.status === 200 || response.status === 201) {
+  //       const newComment = JSON.parse(responseBody);
+  //       setComments((prevComments) => [newComment, ...prevComments]);
+  //       setComment("");
+  //     } else {
+  //       console.error("Server response:", responseBody);
+  //       if (response.status === 401) {
+  //         console.error("LỖI khác (TOKEN đã hợp lệ)");
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error("Error submitting comment:", error);
+  //     alert("Failed to submit comment. Please try again later.");
+  //   }
+  // };
+  /////////////////
+  //TEST//
+  useEffect(() => {
+    const loadComments = async () => {
+      const data = await fetchComments(postId, token);
+      setComments(data);
+    };
+    loadComments();
+  }, [postId, token]);
+
   const handleCommentSubmit = async () => {
-    if (!user || !user.id) {
-      console.error("User is not logged in");
-      return;
-    }
+    if (!comment.trim()) return;
 
-    try {
-      console.log("Token in handleCommentSubmit:", token);
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/comments`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            userId: user.id,
-            postId: postId,
-            content: comment,
-            parentId: null,
-          }),
-        }
-      );
-
-      console.log("Status Code:", response.status);
-      console.log("Response Headers:", response.headers);
-
-      const responseBody = await response.text();
-      console.log("Response Body:", responseBody);
-
-      if (response.status === 200 || response.status === 201) {
-        const newComment = JSON.parse(responseBody);
-        setComments((prevComments) => [...prevComments, newComment]);
-        setComment("");
-      } else {
-        console.error("Server response:", responseBody);
-        if (response.status === 401) {
-          console.error("LỖI khác (TOKEN đã hợp lệ)");
-        }
-      }
-    } catch (error) {
-      console.error("Error submitting comment:", error);
-      alert("Failed to submit comment. Please try again later.");
+    const newComment = await postComment(user.id, postId, comment, token);
+    if (newComment) {
+      setComments((prevComments) => [newComment, ...prevComments]);
+      setComment("");
     }
   };
-  /////////////////
+  /////
 
   const toggleMute = () => {
     setIsMuted((prev) => !prev);
@@ -377,7 +398,6 @@ const Reels = () => {
           </div>
         </div>
       ))}
-
       {isCommentOpen && (
         <div
           id="overlay"
@@ -396,11 +416,11 @@ const Reels = () => {
                   Comments
                 </h2>
               </div>
-              <div className="flex-grow overflow-auto pl-12 pr-12 ">
+              <div className="flex-grow overflow-auto  ">
                 {comments.map((comment) => (
                   <Card
                     key={comment.id}
-                    className="overflow-visible border-none bg-transparent shadow-none"
+                    className="overflow-visible border-none bg-transparent  shadow-none p-5 m-4"
                   >
                     <div className="">
                       <div className="flex items-center">
@@ -410,10 +430,16 @@ const Reels = () => {
                           className="rounded-full w-12 h-12"
                         />
                         <h4 className="text-base font-bold truncate w-32 pl-2">
-                          {comment.user ? comment.user.username : "Unknown123"}
+                          {comment.username}
                         </h4>
-                        <h4 className="text-sm font-bold truncate w-40 text-gray-500">
-                          {comment.commentedAt}
+                        <h4 className="text-xs font-bold truncate w-40 dark:text-gray-500">
+                          {comment.commentedAt &&
+                          !isNaN(new Date(comment.commentedAt).getTime())
+                            ? formatDistanceToNow(
+                                new Date(comment.commentedAt),
+                                { addSuffix: true }
+                              )
+                            : "Vừa xong"}
                         </h4>
                       </div>
                       <div>
@@ -471,8 +497,8 @@ const Reels = () => {
                   rows={1}
                   value={comment}
                   onChange={(e) => {
-                    setComment(e.target.value); // Cập nhật nội dung comment
-                    setIsCommentEmpty(e.target.value.trim() === ""); // Kiểm tra xem nội dung có trống không
+                    setComment(e.target.value);
+                    setIsCommentEmpty(e.target.value.trim() === "");
                   }}
                   onInput={(e) => {
                     e.target.style.height = "auto";
@@ -480,7 +506,7 @@ const Reels = () => {
                       3 * parseFloat(getComputedStyle(e.target).lineHeight); // 3 dòng
                     if (e.target.scrollHeight > maxHeight) {
                       e.target.style.height = `${maxHeight}px`;
-                      e.target.style.overflowY = "auto"; // Hiện scroll khi quá 3 dòng
+                      e.target.style.overflowY = "auto"; // Hiện scroll
                     } else {
                       e.target.style.height = `${e.target.scrollHeight}px`;
                       e.target.style.overflowY = "hidden";
@@ -488,7 +514,7 @@ const Reels = () => {
                   }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
-                      e.preventDefault(); // Ngăn Enter xuống dòng
+                      e.preventDefault();
                       handleCommentSubmit();
                     }
                   }}

@@ -39,21 +39,6 @@ const Page = () => {
   const [taggedPosts, setTaggedPosts] = useState([]);
   const router = useRouter();
 
-  const { user, setUser, getInfoUser } = useApp();
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const fetchedUser = await getInfoUser();
-        setUser(fetchedUser);
-      } catch (error) {
-        console.error("Error fetching user info:", error);
-      }
-    };
-
-    if (!user) {
-      fetchUserInfo();
-    }
-  }, [user, getInfoUser, setUser]);
 
   const handleClickView = () => {
     router.push("/settings/archive");
