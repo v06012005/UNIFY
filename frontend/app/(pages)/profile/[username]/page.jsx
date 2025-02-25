@@ -36,6 +36,7 @@ const Page = () => {
   const [savedItems, setSavedItems] = useState([]);
   const [taggedPosts, setTaggedPosts] = useState([]);
   const router = useRouter();
+ 
   const { user, setUser, getInfoUser } = useApp();
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -51,6 +52,7 @@ const Page = () => {
       fetchUserInfo();
     }
   }, [user, getInfoUser, setUser]);
+ 
   const handleClickView = () => {
     router.push("/settings/archive");
   };

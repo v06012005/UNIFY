@@ -58,24 +58,28 @@ public class PostCommentService {
 
      
     public List<CommentDTO> getCommentsByPostId(String postId) {
-        List<PostComment> comments = postCommentRepository.findByPostId(postId);
+        List<PostComment> comments = postCommentRepository.findCommentsByPostIdWithUser(postId);
         return comments.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
- 
+
+    /**
+     * Chuyển đổi từ PostComment thành CommentDTO
+     */
     private CommentDTO convertToDto(PostComment comment) {
         CommentDTO dto = new CommentDTO();
         dto.setId(comment.getId());
         dto.setContent(comment.getContent());
         dto.setUserId(comment.getUser().getId());
+        dto.setUsername(comment.getUser().getUsername()); // Thêm username
         dto.setPostId(comment.getPost().getId());
         dto.setCommentedAt(comment.getCommentedAt());
 
-     
+        // Xử lý replies nếu có
         if (comment.getReplies() != null && !comment.getReplies().isEmpty()) {
             List<CommentDTO> replyDtos = comment.getReplies().stream()
-                    .map(this::convertToDto)  
+                    .map(this::convertToDto)
                     .collect(Collectors.toList());
             dto.setReplies(replyDtos);
         }
