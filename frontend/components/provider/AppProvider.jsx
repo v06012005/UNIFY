@@ -295,10 +295,6 @@ export const AppProvider = ({ children }) => {
   useEffect(() => {
     getInfoUser().catch((error) => console.log(error));
   }, []);
-  useEffect(() => {
-    fetchUserPosts().catch((error) => console.log(error));
-  }, []);
-
 
   return (
     <SuggestedUsersProvider> {

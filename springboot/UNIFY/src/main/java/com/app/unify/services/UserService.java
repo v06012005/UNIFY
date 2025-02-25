@@ -77,6 +77,28 @@ public class UserService {
 		User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found !"));
 		userRepository.delete(user);
 	}
+	
+	@PreAuthorize("hasRole('ADMIN')")
+	public void temporarilyDisableUser(String id) {
+		User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found !"));
+		user.setStatus(1);
+		userRepository.save(user);
+	}
+	
+	@PreAuthorize("hasRole('ADMIN')")
+	public void permanentlyDisableUser(String id) {
+		User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found !"));
+		user.setStatus(2);
+		userRepository.save(user);
+	}
+	
+	
+	@PreAuthorize("hasRole('ADMIN')")
+	public void unlockUser(String id) {
+		User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found !"));
+		user.setStatus(0);
+		userRepository.save(user);
+	}
 
 	public UserDTO getMyInfo() {
 		var context = SecurityContextHolder.getContext();

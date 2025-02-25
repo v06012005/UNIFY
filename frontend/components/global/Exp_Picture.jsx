@@ -117,7 +117,7 @@ export default function Picture() {
                 </div>
                 <div className="flex">
                   <i
-                    class="fas fa-ellipsis-h hover:opacity-75 hover:cursor-pointer transition"
+                    className="fas fa-ellipsis-h hover:opacity-75 hover:cursor-pointer transition"
                     onClick={togglePopup}
                   ></i>
                   {isPopupVisible && (
@@ -196,7 +196,7 @@ export default function Picture() {
                       </Link>
                       <Link href={"#"} className="opacity-75 hover:opacity-100">
                         <small>
-                          <i class="fas fa-ellipsis-h"></i>
+                          <i className="fas fa-ellipsis-h"></i>
                         </small>
                       </Link>
                     </div>
@@ -230,7 +230,7 @@ export default function Picture() {
                       </Link>
                       <Link href={"#"} className="opacity-75 hover:opacity-100">
                         <small>
-                          <i class="fas fa-ellipsis-h"></i>
+                          <i className="fas fa-ellipsis-h"></i>
                         </small>
                       </Link>
                     </div>
@@ -264,7 +264,7 @@ export default function Picture() {
                       </Link>
                       <Link href={"#"} className="opacity-75 hover:opacity-100">
                         <small>
-                          <i class="fas fa-ellipsis-h"></i>
+                          <i className="fas fa-ellipsis-h"></i>
                         </small>
                       </Link>
                     </div>
@@ -298,7 +298,7 @@ export default function Picture() {
                       </Link>
                       <Link href={"#"} className="opacity-75 hover:opacity-100">
                         <small>
-                          <i class="fas fa-ellipsis-h"></i>
+                          <i className="fas fa-ellipsis-h"></i>
                         </small>
                       </Link>
                     </div>
@@ -332,7 +332,7 @@ export default function Picture() {
                       </Link>
                       <Link href={"#"} className="opacity-75 hover:opacity-100">
                         <small>
-                          <i class="fas fa-ellipsis-h"></i>
+                          <i className="fas fa-ellipsis-h"></i>
                         </small>
                       </Link>
                     </div>
@@ -366,7 +366,7 @@ export default function Picture() {
                       </Link>
                       <Link href={"#"} className="opacity-75 hover:opacity-100">
                         <small>
-                          <i class="fas fa-ellipsis-h"></i>
+                          <i className="fas fa-ellipsis-h"></i>
                         </small>
                       </Link>
                     </div>
@@ -400,7 +400,7 @@ export default function Picture() {
                       </Link>
                       <Link href={"#"} className="opacity-75 hover:opacity-100">
                         <small>
-                          <i class="fas fa-ellipsis-h"></i>
+                          <i className="fas fa-ellipsis-h"></i>
                         </small>
                       </Link>
                     </div>
@@ -434,7 +434,7 @@ export default function Picture() {
                       </Link>
                       <Link href={"#"} className="opacity-75 hover:opacity-100">
                         <small>
-                          <i class="fas fa-ellipsis-h"></i>
+                          <i className="fas fa-ellipsis-h"></i>
                         </small>
                       </Link>
                     </div>
@@ -468,7 +468,7 @@ export default function Picture() {
                       </Link>
                       <Link href={"#"} className="opacity-75 hover:opacity-100">
                         <small>
-                          <i class="fas fa-ellipsis-h"></i>
+                          <i className="fas fa-ellipsis-h"></i>
                         </small>
                       </Link>
                     </div>
@@ -502,7 +502,7 @@ export default function Picture() {
                       </Link>
                       <Link href={"#"} className="opacity-75 hover:opacity-100">
                         <small>
-                          <i class="fas fa-ellipsis-h"></i>
+                          <i className="fas fa-ellipsis-h"></i>
                         </small>
                       </Link>
                     </div>
@@ -536,7 +536,7 @@ export default function Picture() {
                       </Link>
                       <Link href={"#"} className="opacity-75 hover:opacity-100">
                         <small>
-                          <i class="fas fa-ellipsis-h"></i>
+                          <i className="fas fa-ellipsis-h"></i>
                         </small>
                       </Link>
                     </div>
@@ -570,7 +570,109 @@ export default function Picture() {
                       </Link>
                       <Link href={"#"} className="opacity-75 hover:opacity-100">
                         <small>
-                          <i class="fas fa-ellipsis-h"></i>
+                          <i className="fas fa-ellipsis-h"></i>
+                        </small>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+                <div className={"flex items-center"}>
+                  <Image
+                    src={avatar}
+                    className={"size-10 text-lg rounded-full"}
+                    alt=""
+                  />
+                  <div className="grid grid-rows-2 ml-4">
+                    <div className="flex gap-1">
+                      <h6 className="font-bold">@tagname</h6>
+                      <p>comment</p>
+                    </div>
+                    <div className="flex gap-3 items-end">
+                      <small className="text-gray-400">6d</small>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">
+                          15 likes
+                        </small>
+                      </Link>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">Reply</small>
+                      </Link>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">
+                          See translation
+                        </small>
+                      </Link>
+                      <Link href={"#"} className="opacity-75 hover:opacity-100">
+                        <small>
+                          <i className="fas fa-ellipsis-h"></i>
+                        </small>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+                <div className={"flex items-center"}>
+                  <Image
+                    src={avatar}
+                    className={"size-10 text-lg rounded-full"}
+                    alt=""
+                  />
+                  <div className="grid grid-rows-2 ml-4">
+                    <div className="flex gap-1">
+                      <h6 className="font-bold">@tagname</h6>
+                      <p>comment</p>
+                    </div>
+                    <div className="flex gap-3 items-end">
+                      <small className="text-gray-400">6d</small>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">
+                          15 likes
+                        </small>
+                      </Link>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">Reply</small>
+                      </Link>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">
+                          See translation
+                        </small>
+                      </Link>
+                      <Link href={"#"} className="opacity-75 hover:opacity-100">
+                        <small>
+                          <i className="fas fa-ellipsis-h"></i>
+                        </small>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+                <div className={"flex items-center"}>
+                  <Image
+                    src={avatar}
+                    className={"size-10 text-lg rounded-full"}
+                    alt=""
+                  />
+                  <div className="grid grid-rows-2 ml-4">
+                    <div className="flex gap-1">
+                      <h6 className="font-bold">@tagname</h6>
+                      <p>comment</p>
+                    </div>
+                    <div className="flex gap-3 items-end">
+                      <small className="text-gray-400">6d</small>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">
+                          15 likes
+                        </small>
+                      </Link>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">Reply</small>
+                      </Link>
+                      <Link href={"#"}>
+                        <small className="font-bold text-gray-400">
+                          See translation
+                        </small>
+                      </Link>
+                      <Link href={"#"} className="opacity-75 hover:opacity-100">
+                        <small>
+                          <i className="fas fa-ellipsis-h"></i>
                         </small>
                       </Link>
                     </div>
