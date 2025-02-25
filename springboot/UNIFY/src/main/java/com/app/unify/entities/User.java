@@ -97,6 +97,7 @@ public class User {
 	Set<Friendship> friendshipsReceived;
 
 	@OneToMany(mappedBy = "user")
+	@JsonIgnore
 	Set<PostComment> postComments;
 
 	@JsonIgnore

@@ -28,15 +28,13 @@ public class PostDTO {
 
 	Audience audience;
 
-	User user;
+	UserDTO user;
 
 	LocalDateTime postedAt;
 
 	Boolean isCommentVisible;
 
 	Boolean isLikeVisible = false;
-
-	Set<PostComment> comments;
 
 	Set<Media> media;
 
