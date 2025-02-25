@@ -73,7 +73,6 @@ public class Post {
 	Boolean isLikeVisible = false;
 
 	@OneToMany(mappedBy = "post")
-	@JsonIgnore
 	Set<PostComment> comments;
 
 	@OneToMany(mappedBy = "post")
