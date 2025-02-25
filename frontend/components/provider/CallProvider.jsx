@@ -4,8 +4,6 @@ import SockJS from "sockjs-client";
 import Cookies from "js-cookie";
 import {Client} from "@stomp/stompjs";
 import Peer from "simple-peer";
-import {usePathname} from "next/navigation";
-import axios from "axios";
 
 const CallContext = createContext(null);
 
@@ -23,29 +21,19 @@ export const CallProvider = ({children}) => {
     const [toggleCamera, setToggleCamera] = useState(false);
     const [toggleMicrophone, setToggleMicrophone] = useState(true);
     const [isOffCamera, setIsOffCamera] = useState(false);
-    const [isOffMicrophone, setIsOffMicrophone] = useState(true);
-    const [callStartTime, setCallStartTime] = useState(null);
-    const [callDuration, setCallDuration] = useState(0);
-    const [nameReceiver, setNameReceiver] = useState("");
     const myScreen = useRef(null);
     const receiverScreen = useRef(null);
     const isOnCameraRef = useRef(null);
-    const isOnMicRef = useRef(null);
     const connectionRef = useRef(null);
     const stompClientRef = useRef(null);
     const btnRef = useRef(null);
 
     const { user } = useApp();
-    const path = usePathname();
 
     useEffect(() => {
-
         if (user) {
             setMe(user.id);
-            setName(`${user.firstName} ${user.lastName}`);
-            if(path === '/video-call') {
-                getLocalStream();
-            }
+            getLocalStream();
             const sockJS = new SockJS(
                 `${process.env.NEXT_PUBLIC_API_URL}/ws?token=${Cookies.get("token")}`
             );
@@ -64,35 +52,10 @@ export const CallProvider = ({children}) => {
                         setReceiver(true);
                         setCaller(data.from);
                         setName(data.name);
-                        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/users/${data.from}`, {
-                            headers: {
-                                Authorization: `Bearer ${Cookies.get('token')}`,
-                            }
-                        })
-                            .then((response) => {
-                                const user = response.data;
-                                setNameReceiver(`${user.firstName} ${user.lastName}`);
-                            })
-                            .catch((error) => {
-                                console.error('Error fetching user info:', error);
-                            });
                         setCallerSignal(data.signalData);
                     } else if (data.type === "callAccepted") {
                         setCallEnded(false);
                         setCallAccepted(true);
-                        setCallStartTime(Date.now());
-                        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/users/${data.from}`, {
-                            headers: {
-                                Authorization: `Bearer ${Cookies.get('token')}`,
-                            }
-                        })
-                            .then((response) => {
-                                const user = response.data;
-                               setNameReceiver(`${user.firstName} ${user.lastName}`);
-                            })
-                            .catch((error) => {
-                                console.error('Error fetching user info:', error);
-                            });
                         if (connectionRef.current) {
                             connectionRef.current.signal(data.signalData);
                         }
@@ -104,16 +67,12 @@ export const CallProvider = ({children}) => {
                         isOnCameraRef.current = true;
                         setIsOffCamera(false);
                     } else if (data.type === "offMic") {
-                        isOnMicRef.current = false;
                         setIsOffMicrophone(true);
                     } else if (data.type === "onMic") {
-                        isOnCameraRef.current = true;
                         setIsOffMicrophone(false);
                     }else if(data.type === 'endCall'){
                         if(btnRef.current){
                             btnRef.current.click();
-                        }else {
-                            leaveCall();
                         }
                     }
                 });
@@ -124,7 +83,6 @@ export const CallProvider = ({children}) => {
                 console.error(`Additional details ${frame.body}`);
             };
 
-
             client.activate();
             stompClientRef.current = client;
 
@@ -133,21 +91,6 @@ export const CallProvider = ({children}) => {
             };
         }
     }, [user]);
-
-    useEffect(() => {
-        let interval;
-        if (callStartTime && callAccepted && !callEnded) {
-            interval = setInterval(() => {
-                const now = Date.now();
-                const duration = Math.floor((now - callStartTime) / 1000);
-                setCallDuration(duration);
-            }, 1000);
-        }
-        return () => {
-            if (interval) clearInterval(interval);
-        };
-    }, [callStartTime, callAccepted, callEnded]);
-
 
     const getLocalStream =  () => {
 
@@ -164,9 +107,7 @@ export const CallProvider = ({children}) => {
     }
 
 
-
     const callUser = (id) => {
-
 
         const peer = new Peer({
             initiator: true,
@@ -188,8 +129,7 @@ export const CallProvider = ({children}) => {
 
         peer.on("stream", (remoteStream) => {
             if (receiverScreen.current) {
-                if(isOnCameraRef.current) {
-                    setIsOffMicrophone(remoteStream.getAudioTracks()[0].enabled);
+                if(isOnCameraRef.current){
                     remoteStream.getVideoTracks()[0].enabled = isOnCameraRef.current;
                 }
                 receiverScreen.current.srcObject = remoteStream;
@@ -201,9 +141,7 @@ export const CallProvider = ({children}) => {
 
     const answerCall = () => {
 
-
         setCallAccepted(true);
-        setCallStartTime(Date.now());
 
         const peer = new Peer({
             initiator: false,
@@ -224,8 +162,7 @@ export const CallProvider = ({children}) => {
 
         peer.on("stream", (remoteStream) => {
             if (receiverScreen.current) {
-                if(isOnCameraRef.current) {
-                    setIsOffMicrophone(remoteStream.getAudioTracks()[0].enabled);
+                if(isOnCameraRef.current){
                     remoteStream.getVideoTracks()[0].enabled = isOnCameraRef.current;
                 }
                 receiverScreen.current.srcObject = remoteStream;
@@ -246,7 +183,6 @@ export const CallProvider = ({children}) => {
         if (connectionRef.current) {
             connectionRef.current.destroy();
         }
-    };
 
     const leaveCall = () => {
         stompClientRef.current.publish({
@@ -259,7 +195,6 @@ export const CallProvider = ({children}) => {
                 }),
         });
         disconnection();
-        getLocalStream();
     };
 
     const toggleVideo = async () => {
@@ -321,10 +256,6 @@ export const CallProvider = ({children}) => {
             toggleAudio,
             myScreen,
             receiverScreen,
-            callDuration,
-            nameReceiver,
-            stompClientRef,
-            connectionRef,
         }}>
             {children}
         </CallContext.Provider>
