@@ -4,7 +4,6 @@ import Link from "next/link";
 const testPost = {
   id: 1,
 };
-
 const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   return (
     <Link
@@ -30,11 +29,9 @@ const SavedItems = () => {
 
   return (
     <div>
-
       <h3 className="text-sm text-gray-400 mb-2">
         Chỉ mình bạn có thể xem mục mình đã lưu{" "}
       </h3>
-
       <div className="grid grid-cols-4 gap-3">
         <img
           src={`/images/avt.jpg`}
@@ -45,18 +42,17 @@ const SavedItems = () => {
 
       {selectedPost && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white dark:bg-gray-900 rounded-lg flex flex-row w-[1200px]">
+          <div className="bg-white dark:bg-gray-900 rounded-lg flex flex-row w-[1300px] h-[740px]">
             <div className="w-1/2">
               <img
                 src={`/images/avt.jpg`}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover rounded-tl-lg rounded-bl-lg"
               />
             </div>
 
             <div className="w-1/2 flex flex-col">
               <div className="flex items-center justify-between p-4 border-b">
                 <div className="flex items-center">
-
                   <div className="w-10 h-10 rounded-full border-2 border-gray-300">
                     <img
                       src={`/images/avt.jpg`}
@@ -65,7 +61,6 @@ const SavedItems = () => {
                     />
                   </div>
                   <span className="font-bold ml-3">huynhdiz</span>
-
                 </div>
 
                 <NavButton
@@ -78,14 +73,10 @@ const SavedItems = () => {
                     <div className="bg-white dark:bg-black rounded-lg shadow-lg w-72">
                       <button className="w-full py-2 text-red-500 dark:hover:bg-gray-900 hover:bg-gray-100">
                         Delete
-                      </button>
-
-                     
+                      </button>                     
                       <button className="w-full py-2 dark:hover:bg-gray-900 hover:bg-gray-100">
                         Share
                       </button>
-                   
-
                       <button className="w-full py-2 dark:hover:bg-gray-900 hover:bg-gray-100">
                         Go to Post
                       </button>
@@ -101,7 +92,6 @@ const SavedItems = () => {
               </div>
 
               <div className="flex-1 p-4 h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
-
                 <div className="flex items-start space-x-2 mb-2">
                   <div className="w-8 h-8 rounded-full border-2 border-gray-300">
                     <img
@@ -130,19 +120,16 @@ const SavedItems = () => {
                       className="w-full h-full rounded-full object-cover"
                     />
                   </div>
-
                   <div className="flex flex-col">
                     <p className="text-sm leading-tight">
                       <span className="font-bold mr-4">user2</span> Đẹp quá!
                     </p>
-
                     <div className="flex">
                       <span className="text-xs text-gray-500 mr-5">
                         2 giờ trước
                       </span>
                       <span className="text-xs text-gray-500">Reply</span>
                     </div>
-
                   </div>
                 </div>
               </div>

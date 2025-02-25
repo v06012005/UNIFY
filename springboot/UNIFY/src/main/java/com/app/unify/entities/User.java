@@ -77,7 +77,6 @@ public class User {
 	String biography;
 
 	@JsonIgnore
-
 	@OneToMany(mappedBy = "user")
 	Set<Post> posts;
 
