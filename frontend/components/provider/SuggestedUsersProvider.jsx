@@ -15,9 +15,11 @@ export const SuggestedUsersProvider = ({ children }) => {
   const [followerUsers, setFollowerUsers] = useState([]);
   const [friendUsers, setFriendUsers] = useState([]);
   const [followingUsers, setFollowingUsers] = useState([]);
+  const [postUsers, setPostUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentUserId, setCurrentUserId] = useState("");
-
+  
+ 
   // Hàm lấy thông tin user
   const fetchUserInfo = useCallback(async () => {
     try {
@@ -52,6 +54,7 @@ export const SuggestedUsersProvider = ({ children }) => {
       return null;
     }
   }, []);
+
 
   // Hàm lấy danh sách gợi ý
   const getSuggestedUsers = useCallback(async () => {
@@ -177,7 +180,7 @@ export const SuggestedUsersProvider = ({ children }) => {
       setLoading(false);
     }
   }, [fetchUserInfo]);
-
+ 
   useEffect(() => {
     fetchUserInfo().then((id) => {
       if (id) {
@@ -187,7 +190,13 @@ export const SuggestedUsersProvider = ({ children }) => {
         getFriendUsers();
       }
     });
-  }, [fetchUserInfo, getSuggestedUsers, getFollowerUsers, getFriendUsers, getFollowingUsers]);
+  }, [
+    fetchUserInfo,
+    getSuggestedUsers,
+    getFollowerUsers,
+    getFriendUsers,
+    getFollowingUsers,
+  ]);
 
   return (
     <SuggestedUsersContext.Provider
@@ -200,6 +209,8 @@ export const SuggestedUsersProvider = ({ children }) => {
         getFollowerUsers,
         friendUsers,
         getFriendUsers,
+        postUsers,
+        currentUserId,
         loading,
       }}
     >
@@ -211,8 +222,9 @@ export const SuggestedUsersProvider = ({ children }) => {
 export const useSuggestedUsers = () => {
   const context = useContext(SuggestedUsersContext);
   if (!context) {
-
-    throw new Error("useSuggestedUsers phải được sử dụng trong SuggestedUsersProvider!");
+    throw new Error(
+      "useSuggestedUsers phải được sử dụng trong SuggestedUsersProvider!"
+    );
   }
   return context;
 };

@@ -13,6 +13,7 @@ public interface ReportRepository extends JpaRepository<Report, String> {
     List<Report> findByStatus(Integer status);
     
     Optional<Report> findById(String id);
+    boolean existsByUser_IdAndReportedId(String userId, String reportedId);
     
 }
 

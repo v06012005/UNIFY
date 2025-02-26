@@ -50,6 +50,7 @@ public class UserService {
 		userDto.setPassword(EncryptPasswordUtil.encryptPassword(userDto.getPassword()));
 		Role role = roleRepository.findByName("USER").orElseThrow(() -> new RuntimeException("Role not found !"));
 		userDto.setRoles(Collections.singleton(role));
+
 		User user = userRepository.save(userMapper.toUser(userDto));
 		return userMapper.toUserDTO(user);
 	}
@@ -61,7 +62,6 @@ public class UserService {
 	}
 
 
-	
 	@PreAuthorize("#userDto.email == authentication.name")
 	public UserDTO updateUser(UserDTO userDto) {
 		Role role = roleRepository.findByName("USER").orElseThrow(() -> new RuntimeException("Role not found !"));
@@ -108,9 +108,8 @@ public class UserService {
 	}
 
 	public UserDTO findByUsername(String username) {
-	    return userRepository.findByUsername(username)
-	        .map(userMapper::toUserDTO)
-	        .orElseThrow(() -> new UserNotFoundException("Username not found: " + username));
+		return userRepository.findByUsername(username).map(userMapper::toUserDTO)
+				.orElseThrow(() -> new UserNotFoundException("Username not found: " + username));
 	}
 	public List<UserDTO> getSuggestedUsers(String currentUserId) {
 	    UserDTO userDTO = findById(currentUserId);
@@ -161,9 +160,7 @@ public class UserService {
 	public UserDTO changePassword(String currentPassword, String newPassword) {
 		var context = SecurityContextHolder.getContext();
 		String email = context.getAuthentication().getName();
-
 		User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found!"));
-
 		if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
 			throw new IllegalArgumentException("Incorrect old password!");
 		}

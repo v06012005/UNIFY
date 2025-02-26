@@ -1,9 +1,21 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import avatar from "@/public/images/testreel.jpg";
 import avatar2 from "@/public/images/testAvt.jpg";
 import Link from "next/link";
+import { fetchPostById } from "@/app/lib/dal";
+import { useParams } from "next/navigation";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  useDisclosure,
+} from "@heroui/react";
+
 const Caption = ({ text, maxLength = 100 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const toggleExpanded = () => setIsExpanded(!isExpanded);
@@ -33,31 +45,49 @@ const Hashtag = ({ content = "", to = "" }) => {
 };
 
 const PostDetail = () => {
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [post, setPost] = useState(null);
+  const { postId } = useParams();
+
+  useEffect(() => {
+    async function getPost() {
+
+      console.log(postId)
+      const post = await fetchPostById(postId);
+      setPost(post);
+      // setLoading(false);
+    }
+    getPost();
+  }, [])
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen  p-6">
+    <div className="flex flex-col items-center justify-center h-screen  p-6">
       <h1 className="font-bold text-3xl mb-8">Post Detail</h1>
 
       <div className="w-full max-w-4xl  ">
         <div className="flex items-center mb-4">
           <Image src={avatar} alt="Avatar" className="w-12 h-12 rounded-full" />
           <div className="ml-4">
-            <span className="block font-bold text-lg">TanVinh</span>
+            <span className="block font-bold text-lg">{post?.user?.username}</span>
             <span className="text-sm text-gray-400">• 5h</span>
           </div>
         </div>
 
         <div className="flex flex-col md:flex-row">
           <div className="w-full md:w-1/2 mb-6 md:mb-0 md:mr-6">
-            <Image
+            <div className="border rounded-md flex h-full cursor-pointer select-none" onClick={onOpen}>
+              <i className="fa-solid fa-photo-film fa-2xl m-auto"> Media</i>
+            </div>
+            {/* <Image
               src={avatar2}
               alt="Main display"
               className="rounded-lg shadow-lg w-full"
-            />
+            /> */}
           </div>
 
           <div className="w-full md:w-1/2">
             <Caption
-              text={`Lorem ipsum dolor sit amet consectetur adipisicing elit. Sed quibusdam, ex maiores amet alias dolor minima magnam ?`}
+              text={post?.captions ? post?.captions : ""}
             />
             <div className="mt-2 flex flex-wrap">
               <Hashtag content="#myhashtag"></Hashtag>
@@ -97,6 +127,48 @@ const PostDetail = () => {
           </div>
         </div>
       </div>
+      <Modal isOpen={isOpen} size="5xl" onOpenChange={onOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">Post Media</ModalHeader>
+              <ModalBody className="mt-4 grid grid-cols-4 gap-2 items-stretch">
+                {post?.media?.map((file) => {
+                  const isVideo = file.mediaType.includes("VIDEO");
+
+                  return (
+                    <div key={file.url} className="relative w-full h-full">
+                      {isVideo ? (
+                        <video
+                          src={file.url}
+                          controls
+                          className="w-full aspect-square h-full object-cover rounded-md border"
+                        />
+                      ) : (
+                        <Image
+                          src={file.url}
+                          alt="Preview"
+                          width={100}
+                          height={100}
+                          className="w-full aspect-square h-full object-cover rounded-md border"
+                        />
+                      )}
+                    </div>
+                  );
+                })}
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Close
+                </Button>
+                {/* <Button color="primary" onPress={onClose}>
+                  Action
+                </Button> */}
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </div>
   );
 };

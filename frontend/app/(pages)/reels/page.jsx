@@ -53,8 +53,158 @@ const Reels = () => {
       }
     };
 
+
     loadComments();
   }, [token]);
+
+    if (showPicker) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showPicker]);
+  /////////
+  const fetchComments = async () => {
+    if (!postId) {
+      console.error("postId is undefined");
+      return;
+    }
+
+    if (!token) {
+      console.error("Token không tồn tại");
+      return;
+    }
+
+    try {
+      console.log("Token in fetchComments:", token);
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/comments/reels/${postId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log("Status Code:", response.status);
+
+      if (response.ok) {
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const data = await response.json();
+          console.log("Data from server:", data);
+          setComments(data);
+        } else {
+          console.error("Response is not JSON");
+        }
+      } else {
+        const errorText = await response.text();
+        console.error("Server response:", errorText);
+
+        if (response.status === 401) {
+          console.error("LỖI khác (TOKEN đã hợp lệ)");
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+      alert("Failed to fetch comments. Please try again later.");
+    }
+  };
+  //////////
+  useEffect(() => {
+    fetchComments();
+  }, [postId]);
+
+  ////////////////
+  const handleCommentSubmit = async () => {
+    if (!user || !user.id) {
+      console.error("User is not logged in");
+      return;
+    }
+
+    try {
+      console.log("Token in handleCommentSubmit:", token);
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/comments`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            userId: user.id,
+            postId: postId,
+            content: comment,
+            parentId: null,
+          }),
+        }
+      );
+
+      console.log("Status Code:", response.status);
+      console.log("Response Headers:", response.headers);
+
+      const responseBody = await response.text();
+      console.log("Response Body:", responseBody);
+
+      if (response.status === 200 || response.status === 201) {
+        const newComment = JSON.parse(responseBody);
+        setComments((prevComments) => [...prevComments, newComment]);
+        setComment("");
+      } else {
+        console.error("Server response:", responseBody);
+        if (response.status === 401) {
+          console.error("LỖI khác (TOKEN đã hợp lệ)");
+        }
+      }
+    } catch (error) {
+      console.error("Error submitting comment:", error);
+      alert("Failed to submit comment. Please try again later.");
+    }
+  };
+  /////////////////
+
+  /////////
+  // const fetchComments = async () => {
+  //   if (!postId) {
+  //     console.error("postId is undefined");
+  //     return;
+  //   }
+
+  //   if (!token) {
+  //     console.error("Token không tồn tại");
+  //     return;
+  //   }
+
+  //   try {
+  //     console.log("Token in fetchComments:", token);
+  //     const response = await fetch(
+  //       `${process.env.NEXT_PUBLIC_API_URL}/comments/${postId}`,
+  //       {
+  //         method: "GET",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
+
+  //     if (response.ok) {
+  //       const contentType = response.headers.get("content-type");
+  //       if (contentType && contentType.includes("application/json")) {
+  //         const data = await response.json();
+  //         setComments(data);
+  //       } else {
+  //         console.error("Response is not JSON");
+  //       }
+  //     } else {
+  //       const errorText = await response.text();
+  //       console.error("Server response:", errorText);
+
 
   /////reels
   // const [videos, setVideos] = useState([]);
@@ -66,6 +216,7 @@ const Reels = () => {
   //     setVideos(videoPosts);
   //     setLoading(false);
   //   }
+
   //   fetchVideos();
   // }, []);
 
@@ -77,6 +228,73 @@ const Reels = () => {
   //   );
   // }
   ////
+
+
+  //   try {
+  //     console.log("Token in handleCommentSubmit:", token);
+  //     const response = await fetch(
+  //       `${process.env.NEXT_PUBLIC_API_URL}/comments`,
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //         body: JSON.stringify({
+  //           userId: user.id,
+  //           postId: postId,
+  //           content: comment,
+  //           parentId: null,
+  //         }),
+  //       }
+  //     );
+
+  //     console.log("Status Code:", response.status);
+  //     console.log("Response Headers:", response.headers);
+
+  //     const responseBody = await response.text();
+  //     console.log("Response Body:", responseBody);
+
+  //     if (response.status === 200 || response.status === 201) {
+  //       const newComment = JSON.parse(responseBody);
+  //       setComments((prevComments) => [newComment, ...prevComments]);
+  //       setComment("");
+  //     } else {
+  //       console.error("Server response:", responseBody);
+  //       if (response.status === 401) {
+  //         console.error("LỖI khác (TOKEN đã hợp lệ)");
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error("Error submitting comment:", error);
+  //     alert("Failed to submit comment. Please try again later.");
+  //   }
+  // };
+  /////////////////
+  //TEST//
+  useEffect(() => {
+    const loadComments = async () => {
+      const data = await fetchComments(postId, token);
+      setComments(data);
+    };
+    loadComments();
+  }, [postId, token]);
+
+  // const handleCommentSubmit = async () => {
+  //   if (!comment.trim()) return;
+
+  //   const newComment = await postComment(user.id, postId, comment, token);
+  //   if (newComment) {
+  //     setComments((prevComments) => [newComment, ...prevComments]);
+  //     setComment("");
+  //   }
+  // };
+  /////
+
+  const toggleMute = () => {
+    setIsMuted((prev) => !prev);
+  };
+
 
   const toggleComment = () => {
     setIsCommentOpen((prev) => !prev);
@@ -120,6 +338,7 @@ const Reels = () => {
 
   return (
     <>
+
       {/* {posts.map((post) => ( */}
       <div
         // key={post.id}
@@ -149,6 +368,7 @@ const Reels = () => {
           </div>
         </div>
 
+
         <div className="absolute top-2/3 right-4 transform -translate-y-1/2 flex flex-col items-center space-y-7 text-white text-2xl">
           <div className="flex flex-col items-center">
             <i
@@ -169,7 +389,6 @@ const Reels = () => {
             ></i>
             <span className="text-sm">47k</span>
           </div>
-
           <div className="flex flex-col items-center">
             <i
               onClick={handleOpen}

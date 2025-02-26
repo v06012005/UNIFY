@@ -66,6 +66,7 @@ const Caption = ({ text, maxLength = 100 }) => {
 const Slider = ({ srcs = [] }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   const prev = () => {
     const isFirst = currentIndex === 0;
@@ -83,6 +84,20 @@ const Slider = ({ srcs = [] }) => {
     setCurrentIndex(index);
   };
 
+  useEffect(() => {
+    setLoading(true);
+    setError(false);
+
+    const timeout = setTimeout(() => {
+      if (loading) {
+        setError(true);
+        setLoading(false);
+      }
+    }, 10000);
+
+    return () => clearTimeout(timeout);
+  }, [srcs, currentIndex]);
+
   return (
     <div className="max-w-[450px] w-full h-[550px] bg-cover relative mx-auto group">
       {loading && (
@@ -94,6 +109,12 @@ const Slider = ({ srcs = [] }) => {
           />
         </div>
       )}
+      {error && (
+        <div className="absolute text-red-500 inset-0 flex justify-center rounded-lg items-center bg-gray-200 dark:bg-gray-800">
+          <i className="fa-solid fa-triangle-exclamation"></i>
+          <p>This image/ video is no longer available!</p>
+        </div>
+      )}
       {srcs[currentIndex]?.mediaType === "IMAGE" && (
         <Image
           src={srcs[currentIndex].url}
@@ -103,7 +124,14 @@ const Slider = ({ srcs = [] }) => {
           } object-cover w-full h-full rounded-lg duration-500`}
           width={450}
           height={550}
-          onLoad={() => setLoading(false)}
+          onLoad={() => {
+            setLoading(false);
+            setError(false);
+          }}
+          onError={() => {
+            setLoading(false);
+            setError(true);
+          }}
         />
       )}
       {srcs[currentIndex]?.mediaType === "VIDEO" && (
@@ -150,7 +178,9 @@ const Post = () => {
       setPosts(homePosts);
       setLoading(false);
     }
+
     console.log(posts);
+
     getPosts();
   }, []);
 
@@ -164,7 +194,9 @@ const Post = () => {
 
   return (
     <>
+
       {posts.map((post) => (
+
         <div className="w-3/4 mb-8 mx-auto pb-8" key={post.id}>
           <User
             href="/profile"

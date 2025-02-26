@@ -29,6 +29,7 @@ public interface UserRepository extends JpaRepository<User, String> {
 	@Query("UPDATE User u SET u.password = :password WHERE u.email = :email")
 	void updatePasswordByEmail(@Param("email") String email, @Param("password") String password);
 	
+	    //Gợi ý
 	@Query("""
 		    SELECT DISTINCT u FROM User u
 		    LEFT JOIN Friendship f 
@@ -47,18 +48,22 @@ public interface UserRepository extends JpaRepository<User, String> {
 		""")
 		List<User> findUsersNotFriendsOrFollowing(@Param("currentUserId") String currentUserId);
 
+
+// Đang theo dõi
+	
 	@Query("""
 		    SELECT fo.userFollowing FROM Follower fo 
 		    WHERE fo.userFollower.id = :currentUserId
 		""")
 		List<User> findUsersFollowedBy(@Param("currentUserId") String currentUserId);
+//Theo dõi
 	
 	@Query("""
 		    SELECT fo.userFollower FROM Follower fo 
 		    WHERE fo.userFollowing.id = :currentUserId
 		""")
 		List<User> findUsersFollowingMe(@Param("currentUserId") String currentUserId);
-
+	//Bạn bè
 	@Query("""
 		    SELECT DISTINCT u FROM User u
 		    JOIN Friendship f 
