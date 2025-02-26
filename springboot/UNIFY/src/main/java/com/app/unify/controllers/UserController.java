@@ -47,7 +47,7 @@ public class UserController {
 	public UserDTO getUser(@PathVariable String id) {
 		return userService.findById(id);
 	}
-	
+
 	@GetMapping("/suggestions")
 	public ResponseEntity<List<UserDTO>> getSuggestedUsers(@RequestParam String currentUserId) {
 	    List<UserDTO> users = userService.getSuggestedUsers(currentUserId);
@@ -58,7 +58,7 @@ public class UserController {
 	    List<UserDTO> users = userService.findUsersFollowingMe(currentUserId);
 	    return ResponseEntity.ok(users);
 	}
-	
+
 	@GetMapping("/following")
 	public ResponseEntity<List<UserDTO>> findUsersFollowedBy(@RequestParam String currentUserId) {
 	    List<UserDTO> users = userService.findUsersFollowedBy(currentUserId);
@@ -87,19 +87,19 @@ public class UserController {
 			return ResponseEntity.status(500).body("An unexpected error occurred: " + e.getMessage());
 		}
 	}
-	
+
 	@PutMapping("/permDisable/{id}")
 	public ResponseEntity<?> permDisableUser(@PathVariable String id) {
 		userService.permanentlyDisableUser(id);
 		return ResponseEntity.ok("Permanently disable success");
 	}
-	
+
 	@PutMapping("/tempDisable/{id}")
 	public ResponseEntity<?> termDisableUser(@PathVariable String id) {
 		userService.temporarilyDisableUser(id);
 		return ResponseEntity.ok("Temporarily disable success");
 	}
-	
+
 	@PutMapping("/unlock/{id}")
 	public ResponseEntity<?> unlockUser(@PathVariable String id) {
 		userService.unlockUser(id);

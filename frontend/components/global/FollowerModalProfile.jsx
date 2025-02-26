@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSuggestedUsers } from "@/components/provider/SuggestedUsersProvider";
 import { useApp } from "@/components/provider/AppProvider";
@@ -11,10 +11,14 @@ const FollowerModal = ({ isOpen, onClose }) => {
   const router = useRouter();
   const { user } = useApp();
   const [searchTerm, setSearchTerm] = useState("");
+  const hasFetched = useRef(false);
 
   useEffect(() => {
-    getFollowerUsers();
-  }, []);
+    if (!hasFetched.current && (!followerUsers || followerUsers.length === 0)) {
+      getFollowerUsers();
+      hasFetched.current = true;
+    }
+  }, [followerUsers]);
 
   const handleClick = (username) => {
     if (!username) {

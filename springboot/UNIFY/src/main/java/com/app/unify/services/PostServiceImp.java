@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +13,7 @@ import com.app.unify.dto.global.PostDTO;
 import com.app.unify.entities.Post;
 import com.app.unify.exceptions.PostNotFoundException;
 import com.app.unify.mapper.PostMapper;
-import com.app.unify.mapper.ReportMapper;
-import com.app.unify.mapper.UserMapper;
 import com.app.unify.repositories.PostRepository;
-import com.app.unify.repositories.ReportRepository;
-import com.app.unify.repositories.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
@@ -34,9 +29,7 @@ public class PostServiceImp implements PostService {
 	@Override
 	public PostDTO createPost(PostDTO postDTO) {
 		Post post = mapper.toPost(postDTO);
-
 		postRepository.save(post);
-
 		return mapper.toPostDTO(post);
 	}
 
@@ -59,7 +52,6 @@ public class PostServiceImp implements PostService {
 	}
 
 	@Override
-
 	public List<PostDTO> getPostsTrending() {
 		List<Object[]> results = postRepository.findPostsWithInteractionCounts();
 		return results.stream().filter(Objects::nonNull).map(result -> mapper.toPostDTO((Post) result[0]))
