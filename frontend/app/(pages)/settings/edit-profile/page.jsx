@@ -6,8 +6,7 @@ import Image from "next/image";
 import { useApp } from "@/components/provider/AppProvider";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Cookies from "js-cookie";
-
-
+import { toast } from "@/hooks/use-toast";
 const Page = () => {
   const defaultAvatar = "/images/unify_icon_2.svg";
   const [avatar, setAvatar] = useState(defaultAvatar);
@@ -15,9 +14,7 @@ const Page = () => {
   const [daysInMonth, setDaysInMonth] = useState(31);
   const [errors, setErrors] = useState({});
   const { user, setUser } = useApp();
-
   const { logoutUser } = useApp();
-
   const [userData, setUserData] = useState({
     id: "",
     firstName: "",
@@ -61,9 +58,7 @@ const Page = () => {
   }, [user]);
 
   const handleGenderChange = (value) => {
-
     setGender(value);
-
   };
 
   useEffect(() => {
@@ -219,15 +214,25 @@ const Page = () => {
         const updatedUser = await response.json();
         setUser(updatedUser);
         setUserData(updatedUser);
-        alert("Profile updated successfully!");
+        toast({
+          title: "Profile update successful",
+          variant: "success",
+        });
       } else {
         const result = await response.text();
-        alert(`Error: ${result}`);
+        toast({
+          title: result,
+          variant: "error",
+        });
+
         setLoading(false);
       }
     } catch (error) {
       console.error("Error updating profile:", error);
-      alert("Something went wrong. Please try again.");
+      toast({
+        title: "Something went wrong. Please try again.",
+        variant: "warning",
+      });
       setLoading(false);
     } finally {
       setLoading(false);
@@ -311,12 +316,10 @@ const Page = () => {
               </button>
 
               <button
-
                 onClick={(e) => {
                   e.preventDefault();
                   logoutUser();
                 }}
-
                 className="bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition"
               >
                 Logout
@@ -481,7 +484,6 @@ const Page = () => {
           </div>
 
           <div className="m-5 flex gap-4 items-start">
-
             <div className="flex flex-col gap-4 basis-1/2">
               <label className="text-lg font-medium text-gray-700 dark:text-white">
                 Gender:
@@ -501,7 +503,6 @@ const Page = () => {
                 </label>
               </RadioGroup>
             </div>
-
 
             <div className="flex flex-col gap-4 basis-1/2">
               <label className="text-lg font-medium text-gray-700 dark:text-white">

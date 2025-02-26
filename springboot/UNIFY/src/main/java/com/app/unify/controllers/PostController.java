@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.unify.dto.global.PostDTO;
+import com.app.unify.entities.Post;
 import com.app.unify.services.PostService;
 
 // This controller is for user only
@@ -50,9 +52,20 @@ public class PostController {
 		postService.deletePostById(id);
 		return ResponseEntity.ok("Post deleted successfully!");
 	}
-	
-	@GetMapping("/{username}")
-	public List<PostDTO> getMyPosts(@PathVariable("username") String username) {
-		return postService.getMyPosts(username);
-	}
+
+//	@GetMapping("/username/{username}")
+//	public List<PostDTO> getMyPosts(@PathVariable("username") String username) {
+//		return postService.getMyPosts(username);
+//	}
+	 @GetMapping("/my")
+	    public ResponseEntity<List<PostDTO>> getMyPosts(@RequestParam String userId) {
+	        List<PostDTO> posts = postService.getMyPosts(userId);
+	        return ResponseEntity.ok(posts);
+	    }
+
+	    @GetMapping("/user")
+	    public ResponseEntity<List<PostDTO>> getPostsByUserId(@RequestParam String userId) {
+	        List<PostDTO> posts = postService.getPostsByUserId(userId);
+	        return ResponseEntity.ok(posts);
+	    }
 }

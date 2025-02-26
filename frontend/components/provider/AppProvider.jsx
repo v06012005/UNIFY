@@ -8,7 +8,6 @@ import React, {
   useContext,
 } from "react";
 import { redirect, useRouter, useParams } from "next/navigation";
-
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import axios from "axios";
@@ -133,19 +132,32 @@ export const AppProvider = ({ children }) => {
           headers: { "Content-Type": "application/json" },
         }
       );
+
       Cookies.set("token", response.data.token, {
         path: "/",
         sameSite: "Strict",
         secure: true,
         expires: 7,
       });
+
       getInfoUser().catch((error) => console.log(error));
+
       if (!isAdmin) {
         router.push("/");
+      } else {
+        router.push("/statistics/users");
       }
-      router.push("/statistics/users");
     } catch (error) {
-      console.error("Login failed:", error.response?.data || error.message);
+      if (
+        error.response &&
+        (error.response.status === 401 || error.response.status === 400)
+      ) {
+        throw new Error(
+          error.response.data?.message || "Invalid email or password."
+        );
+      }
+
+      throw new Error("Something went wrong. Please try again.");
     }
   };
 
@@ -208,12 +220,10 @@ export const AppProvider = ({ children }) => {
         const parsedBirthDay = parseBirthDay(data.birthDay);
   
         setUser({ ...data, birthDay: parsedBirthDay });
-
         
         if (router.pathname === "/profile" && data.username) {
           router.replace(`/user/${data.username}`);
         }
-
       }
     } catch (err) {
       console.error("Error fetching user info:", err);
@@ -260,31 +270,8 @@ export const AppProvider = ({ children }) => {
       }
     }
   };
-  const fetchUserPosts = async (userId) => {
-    try {
-      const token = Cookies.get("token");
-      const response = await fetch(`${API_URL}/posts/${id}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-  
-      if (!response.ok) {
-        throw new Error("Failed to fetch user posts");
-      }
-  
-      const posts = await response.json();
-      return posts;
-    } catch (error) {
-      console.error("Error fetching user posts:", error);
-      return [];
-    }
-  };
-  
 
-  const [userFromAPI, setUserFromAPI] = useState(null); 
+  const [userFromAPI, setUserFromAPI] = useState(null);
   useEffect(() => {
     if (userFromAPI?.username && userFromAPI === null) { 
       getUserInfoByUsername(userFromAPI.username)
@@ -308,10 +295,6 @@ export const AppProvider = ({ children }) => {
   useEffect(() => {
     getInfoUser().catch((error) => console.log(error));
   }, []);
-  useEffect(() => {
-    fetchUserPosts().catch((error) => console.log(error));
-  }, []);
-
 
   return (
     <SuggestedUsersProvider> {

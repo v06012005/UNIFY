@@ -1,9 +1,8 @@
-
 import React, { useRef, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useSuggestedUsers } from "@/components/provider/SuggestedUsersProvider";
-import { ChevronLeft, ChevronRight } from "lucide-react"; // Biểu tượng
+import { ChevronLeft, ChevronRight } from "lucide-react"; 
 
 const People = () => {
   const scrollRef = useRef(null);
@@ -49,7 +48,7 @@ const People = () => {
         </button>
       )}
 
-      <div ref={scrollRef} className="flex gap-11 overflow-x-auto scrollbar-hide scroll-smooth px-10">
+      <div ref={scrollRef} className="flex gap-11 justify-center overflow-x-auto scrollbar-hide scroll-smooth px-10">
         {loading ? (
           <p className="text-gray-500">Đang tải danh sách...</p>
         ) : suggestedUsers.length > 0 ? (
@@ -83,7 +82,6 @@ const People = () => {
           <ChevronRight size={20} />
         </button>
       )}
-
     </div>
   );
 };

@@ -73,7 +73,7 @@ const FollowButton = ({
       onPress={handleFollow}
       className={follow ? classFollowing : classFollow}
     >
-      {follow ? "Following" : "Follow"}
+      <span>{follow ? "Unfollow" : "Follow"}</span>
     </Button>
   );
 };

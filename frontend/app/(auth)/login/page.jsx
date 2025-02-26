@@ -15,7 +15,6 @@ import { useApp } from "@/components/provider/AppProvider";
 
 import { router } from "next/client";
 
-
 const LoginPage = () => {
   const { loginUser } = useApp();
 
@@ -35,6 +34,7 @@ const LoginPage = () => {
   const handleLogin = async () => {
     const newErrors = {};
 
+    // Kiểm tra lỗi từ frontend trước
     if (!formData.email.trim()) {
       newErrors.email = "Email is required";
     } else if (!/^[\w.-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$/.test(formData.email)) {
@@ -46,6 +46,7 @@ const LoginPage = () => {
     } else if (formData.password.length < 8) {
       newErrors.password = "Invalid password";
     }
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
@@ -54,8 +55,10 @@ const LoginPage = () => {
     try {
       await loginUser(formData.email, formData.password);
     } catch (error) {
-      console.error("Error:", error);
-      alert("Something went wrong. Please try again.");
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        server: error.message,
+      }));
     }
   };
 
@@ -110,7 +113,9 @@ const LoginPage = () => {
               <p className="text-red-500 text-sm">{errors.password}</p>
             )}
           </div>
-
+          {errors.server && (
+            <p className="text-red-500 text-sm">{errors.server}</p>
+          )}
           <Link href="/password/reset" className="place-self-center">
             Forgot password?
           </Link>
@@ -134,9 +139,7 @@ const LoginPage = () => {
               Sign up
             </Link>
           </div>
-          {errors.server && (
-            <p className="text-red-500 text-sm">{errors.server}</p>
-          )}
+
           <Button className="text-2xl mt-3 p-5" onClick={handleLogin}>
             Login
           </Button>
