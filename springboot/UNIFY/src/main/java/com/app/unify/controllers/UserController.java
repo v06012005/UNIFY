@@ -24,8 +24,8 @@ import com.app.unify.services.UserService;
 public class UserController {
 
 	@Autowired
-
 	UserService userService;
+
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
@@ -37,9 +37,7 @@ public class UserController {
 	@GetMapping("/my-info")
 	public UserDTO getMyInfo() {
 		return userService.getMyInfo();
-
-	}
-
+  }
 	@GetMapping("/username/{username}")
 	public UserDTO getUserByUsername(@PathVariable String username) {
 		return userService.findByUsername(username);
@@ -49,21 +47,34 @@ public class UserController {
 	public UserDTO getUser(@PathVariable String id) {
 		return userService.findById(id);
 	}
-
-
+	
 	@GetMapping("/suggestions")
-	public ResponseEntity<List<UserDTO>> getSuggestedUsers(@RequestParam String currentUsername) {
-		List<UserDTO> users = userService.getSuggestedUsers(currentUsername);
-		return ResponseEntity.ok(users);
-
+	public ResponseEntity<List<UserDTO>> getSuggestedUsers(@RequestParam String currentUserId) {
+	    List<UserDTO> users = userService.getSuggestedUsers(currentUserId);
+	    return ResponseEntity.ok(users);
 	}
-
+	@GetMapping("/follower")
+	public ResponseEntity<List<UserDTO>> findUsersFollowingMe(@RequestParam String currentUserId) {
+	    List<UserDTO> users = userService.findUsersFollowingMe(currentUserId);
+	    return ResponseEntity.ok(users);
+	}
+	
+	@GetMapping("/following")
+	public ResponseEntity<List<UserDTO>> findUsersFollowedBy(@RequestParam String currentUserId) {
+	    List<UserDTO> users = userService.findUsersFollowedBy(currentUserId);
+	    return ResponseEntity.ok(users);
+	}
+	@GetMapping("/friend")
+    public ResponseEntity<List<UserDTO>> getFriends(@RequestParam String currentUserId) {
+        List<UserDTO> friends = userService.getFriends(currentUserId);
+        return ResponseEntity.ok(friends);
+    }
 	@PostMapping
 	public UserDTO createUser(@RequestBody UserDTO userDto) {
 		return userService.createUser(userDto);
 	}
 
-	@PutMapping
+	@PutMapping()
 	public ResponseEntity<?> updateUser(@RequestBody UserDTO userDto) {
 		try {
 			UserDTO updatedUser = userService.updateUser(userDto);
@@ -75,7 +86,24 @@ public class UserController {
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body("An unexpected error occurred: " + e.getMessage());
 		}
-
+	}
+	
+	@PutMapping("/permDisable/{id}")
+	public ResponseEntity<?> permDisableUser(@PathVariable String id) {
+		userService.permanentlyDisableUser(id);
+		return ResponseEntity.ok("Permanently disable success");
+	}
+	
+	@PutMapping("/tempDisable/{id}")
+	public ResponseEntity<?> termDisableUser(@PathVariable String id) {
+		userService.temporarilyDisableUser(id);
+		return ResponseEntity.ok("Temporarily disable success");
+	}
+	
+	@PutMapping("/unlock/{id}")
+	public ResponseEntity<?> unlockUser(@PathVariable String id) {
+		userService.unlockUser(id);
+		return ResponseEntity.ok("Unlock success");
 	}
 
 	@DeleteMapping("/{id}")

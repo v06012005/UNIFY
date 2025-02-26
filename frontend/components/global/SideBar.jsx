@@ -144,10 +144,8 @@ const SideBar = () => {
               {user && (
                 <Link
                   title="Your profile"
-
                   href= {`/profile/${user.username}`}
                  // {`/profile/${user.username}`}
-
                   className="w-full flex h-full items-center"
                 >
                   <Image

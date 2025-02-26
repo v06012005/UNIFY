@@ -1,8 +1,10 @@
 package com.app.unify.services;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +14,14 @@ import com.app.unify.dto.global.PostDTO;
 import com.app.unify.entities.Post;
 import com.app.unify.exceptions.PostNotFoundException;
 import com.app.unify.mapper.PostMapper;
+import com.app.unify.mapper.ReportMapper;
+import com.app.unify.mapper.UserMapper;
 import com.app.unify.repositories.PostRepository;
+import com.app.unify.repositories.ReportRepository;
+import com.app.unify.repositories.UserRepository;
 
+import lombok.RequiredArgsConstructor;
+@RequiredArgsConstructor
 @Service
 public class PostServiceImp implements PostService {
 
@@ -63,16 +71,30 @@ public class PostServiceImp implements PostService {
 		postRepository.deleteById(id);
 	}
 
-
-	@Override
-	public List<PostDTO> getMyPosts(String username) {
-		return postRepository.getMyPosts(username).stream().map(mapper::toPostDTO).collect(Collectors.toList());
-	}
-
 	@Override
 	public List<PostDTO> getPostsByDate(LocalDateTime start, LocalDateTime end) {
 		return postRepository.getPostsByDate(start, end).stream().map(mapper::toPostDTO).collect(Collectors.toList());
 	}
+//	@Override
+//	public List<PostDTO> getMyPosts(String username) {
+//		return postRepository.getMyPosts(username);
+//	}
+
+	@Override
+    public List<PostDTO> getMyPosts(String userId) {
+        return postRepository.findMyPosts(userId)
+                .stream()
+                .map(mapper::toPostDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<PostDTO> getPostsByUserId(String userId) {
+        return postRepository.findPostsByUserId(userId)
+                .stream()
+                .map(mapper::toPostDTO)
+                .collect(Collectors.toList());
+    }
 
 
 }

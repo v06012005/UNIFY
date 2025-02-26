@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 @Entity
-@Table(name = "Reports")
+@Table(name = "reports")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
 @NoArgsConstructor
@@ -31,7 +31,6 @@ public class Report {
 	String id;
 
 	@ManyToOne
-	@MapsId("id")
 	@JoinColumn(name = "user_id", nullable = false)
 	User user;
 

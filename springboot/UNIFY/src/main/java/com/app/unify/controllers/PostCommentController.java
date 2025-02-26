@@ -59,7 +59,7 @@ public class PostCommentController {
     /**
      * API lấy danh sách bình luận của một bài viết
      */
-    @GetMapping("/reels/{postId}")
+    @GetMapping("/{postId}")
     public ResponseEntity<List<CommentDTO>> getCommentsByPostId(@PathVariable String postId) {
         List<CommentDTO> comments = postCommentService.getCommentsByPostId(postId);
         return ResponseEntity.ok(comments);
