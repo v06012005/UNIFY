@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useApp } from "@/components/provider/AppProvider";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Cookies from "js-cookie";
-import { toast } from "@/hooks/use-toast"; 
+import { toast } from "@/hooks/use-toast";
 const Page = () => {
   const defaultAvatar = "/images/unify_icon_2.svg";
   const [avatar, setAvatar] = useState(defaultAvatar);
@@ -216,15 +216,23 @@ const Page = () => {
         setUserData(updatedUser);
         toast({
           title: "Profile update successful",
+          variant: "success",
         });
       } else {
         const result = await response.text();
-        alert(`Error: ${result}`);
+        toast({
+          title: result,
+          variant: "error",
+        });
+
         setLoading(false);
       }
     } catch (error) {
       console.error("Error updating profile:", error);
-      alert("Something went wrong. Please try again.");
+      toast({
+        title: "Something went wrong. Please try again.",
+        variant: "warning",
+      });
       setLoading(false);
     } finally {
       setLoading(false);

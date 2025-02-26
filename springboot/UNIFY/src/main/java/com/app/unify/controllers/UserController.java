@@ -38,8 +38,7 @@ public class UserController {
 	@GetMapping("/my-info")
 	public UserDTO getMyInfo() {
 		return userService.getMyInfo();
-	}
-
+  }
 	@GetMapping("/username/{username}")
 	public UserDTO getUserByUsername(@PathVariable String username) {
 		return userService.findByUsername(username);
@@ -49,31 +48,28 @@ public class UserController {
 	public UserDTO getUser(@PathVariable String id) {
 		return userService.findById(id);
 	}
-
+	
 	@GetMapping("/suggestions")
 	public ResponseEntity<List<UserDTO>> getSuggestedUsers(@RequestParam String currentUserId) {
-		List<UserDTO> users = userService.getSuggestedUsers(currentUserId);
-		return ResponseEntity.ok(users);
+	    List<UserDTO> users = userService.getSuggestedUsers(currentUserId);
+	    return ResponseEntity.ok(users);
 	}
-
 	@GetMapping("/follower")
 	public ResponseEntity<List<UserDTO>> findUsersFollowingMe(@RequestParam String currentUserId) {
-		List<UserDTO> users = userService.findUsersFollowingMe(currentUserId);
-		return ResponseEntity.ok(users);
+	    List<UserDTO> users = userService.findUsersFollowingMe(currentUserId);
+	    return ResponseEntity.ok(users);
 	}
-
+	
 	@GetMapping("/following")
 	public ResponseEntity<List<UserDTO>> findUsersFollowedBy(@RequestParam String currentUserId) {
-		List<UserDTO> users = userService.findUsersFollowedBy(currentUserId);
-		return ResponseEntity.ok(users);
+	    List<UserDTO> users = userService.findUsersFollowedBy(currentUserId);
+	    return ResponseEntity.ok(users);
 	}
-
 	@GetMapping("/friend")
-	public ResponseEntity<List<UserDTO>> getFriends(@RequestParam String currentUserId) {
-		List<UserDTO> friends = userService.getFriends(currentUserId);
-		return ResponseEntity.ok(friends);
-	}
-
+    public ResponseEntity<List<UserDTO>> getFriends(@RequestParam String currentUserId) {
+        List<UserDTO> friends = userService.getFriends(currentUserId);
+        return ResponseEntity.ok(friends);
+    }
 	@PostMapping
 	public UserDTO createUser(@RequestBody UserDTO userDto) {
 		return userService.createUser(userDto);

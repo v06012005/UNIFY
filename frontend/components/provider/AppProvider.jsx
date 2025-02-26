@@ -270,8 +270,8 @@ export const AppProvider = ({ children }) => {
       }
     }
   };
- 
-  const [userFromAPI, setUserFromAPI] = useState(null); 
+
+  const [userFromAPI, setUserFromAPI] = useState(null);
   useEffect(() => {
     if (userFromAPI?.username && userFromAPI === null) { 
       getUserInfoByUsername(userFromAPI.username)
@@ -295,7 +295,6 @@ export const AppProvider = ({ children }) => {
   useEffect(() => {
     getInfoUser().catch((error) => console.log(error));
   }, []);
- 
 
   return (
     <SuggestedUsersProvider> {

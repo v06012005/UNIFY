@@ -18,5 +18,8 @@ public interface PostService {
 
 	void deletePostById(String id);
 
-	List<PostDTO> getMyPosts(String username);
+//	List<PostDTO> getMyPosts(String username);
+	 List<PostDTO> getMyPosts(String userId); 
+
+	    List<PostDTO> getPostsByUserId(String userId); 
 }
