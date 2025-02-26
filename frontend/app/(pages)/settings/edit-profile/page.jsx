@@ -194,9 +194,9 @@ const Page = () => {
         ...userData,
         birthDay: userData.birthDay
           ? `${userData.birthDay.year}-${userData.birthDay.month.padStart(
-              2,
-              "0"
-            )}-${userData.birthDay.day.padStart(2, "0")}`
+            2,
+            "0"
+          )}-${userData.birthDay.day.padStart(2, "0")}`
           : null,
       };
       console.log("Request data to send:", requestData);

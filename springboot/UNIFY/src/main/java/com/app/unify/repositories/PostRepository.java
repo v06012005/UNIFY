@@ -1,5 +1,6 @@
 package com.app.unify.repositories;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,6 +17,9 @@ public interface PostRepository extends JpaRepository<Post, String> {
 			+ "LEFT JOIN p.likedPosts lp " + "LEFT JOIN p.comments pc " + "GROUP BY p "
 			+ "ORDER BY interactionCount DESC")
 	List<Object[]> findPostsWithInteractionCounts();
+	
+	@Query(value = "FROM Post o WHERE o.postedAt BETWEEN ?1 AND ?2")
+	List<Post> getPostsByDate(LocalDateTime start, LocalDateTime end);
 
 	@Query(value = "FROM Post o WHERE o.user.username = ?1")
 	List<PostDTO> getMyPosts(String username);

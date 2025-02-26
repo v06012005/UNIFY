@@ -101,11 +101,10 @@ const Page = () => {
         <div className="p-4">
           <div className="flex justify-center border-b-2 border-gray-300">
             <button
-              className={`py-2 px-4 mr-5 font-bold flex items-center ${
-                activeTab === "post"
+              className={`py-2 px-4 mr-5 font-bold flex items-center ${activeTab === "post"
                   ? "text-blue-500 border-b-4 border-blue-500"
                   : "text-gray-500 dark:text-gray-200"
-              }`}
+                }`}
               onClick={() => setActiveTab("post")}
             >
               <NavButton iconClass="fa-solid fa-pen" />
@@ -113,11 +112,10 @@ const Page = () => {
             </button>
 
             <button
-              className={`py-2 px-4 mr-5 font-bold flex items-center ${
-                activeTab === "reel"
+              className={`py-2 px-4 mr-5 font-bold flex items-center ${activeTab === "reel"
                   ? "text-blue-500 border-b-4 border-blue-500"
                   : "text-gray-500 dark:text-gray-200"
-              }`}
+                }`}
               onClick={() => setActiveTab("reel")}
             >
               <NavButton iconClass="fa-solid fa-film" />
