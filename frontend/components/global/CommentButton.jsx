@@ -1,3 +1,4 @@
+"use client";
 import {
   Modal,
   ModalContent,
@@ -9,9 +10,31 @@ import {
 } from "@heroui/react";
 import CommentCard from "./CommentCard";
 import CommentForm from "./CommentForm";
+////////////
+import Cookies from "js-cookie";
+import React, { useState, useEffect } from "react";
+import { useApp } from "@/components/provider/AppProvider";
+import { fetchComments } from "app/api/service/commentService";
+import CommentItem from "@/components/comments/CommentItem";
+import CommentInput from "@/components/comments/CommentInput";
 
-export default function CommentButton({ children, className = "" }) {
+export default function CommentButton({ children, className = "", postId }) {
+
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  /////////////
+  const [comments, setComments] = useState([]);
+  const { user } = useApp();
+  const token = Cookies.get("token");
+  // const postId = "0de81a82-caa6-439c-a0bc-124a83b5ceaf";
+
+  useEffect(() => {
+    const loadComments = async () => {
+      const data = await fetchComments(postId, token);
+      setComments(data);
+    };
+    loadComments();
+  }, [postId, token]);
+  //////
 
   const handleOpen = () => {
     onOpen();
@@ -41,13 +64,12 @@ export default function CommentButton({ children, className = "" }) {
                 Comments
               </ModalHeader>
               <ModalBody>
-                <CommentCard />
-                <CommentCard />
-                <CommentCard />
-                <CommentCard />
+                {comments.map((comment) => (
+                  <CommentItem key={comment.id} comment={comment} />
+                ))}
               </ModalBody>
               <ModalFooter>
-                <CommentForm placeholder="Write your comment here" />
+                <CommentInput postId={postId} setComments={setComments} />
               </ModalFooter>
             </>
           )}

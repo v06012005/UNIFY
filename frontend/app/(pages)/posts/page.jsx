@@ -11,7 +11,7 @@ import PostSwitch from "@/components/global/PostSwitch";
 import { useEffect, useRef, useState } from "react";
 import { getUser, saveMedia, savePost } from "@/app/lib/dal";
 import { cn } from "@/lib/utils";
-import { addToast, ToastProvider } from "@heroui/toast";
+// import { addToast, ToastProvider } from "@heroui/toast";
 
 const User = ({ user }) => {
   return (

@@ -3,7 +3,7 @@
 import React from "react";
 import { Form, Input, Button } from "@heroui/react";
 import { axiosResult } from "@/app/api/cookie";
-
+import { toast } from "@/hooks/use-toast";
 const ChangePassword = () => {
   const [currentPassword, setCurrentPassword] = React.useState("");
   const [newPassword, setNewPassword] = React.useState("");
@@ -47,7 +47,10 @@ const ChangePassword = () => {
         setCurrentPassword("");
         setNewPassword("");
         setConfirmPassword("");
-        alert(result);
+        toast({
+          title: result,
+          variant: "success",
+        });
       }
     } catch (error) {
       setErrors({ form: error.message });
@@ -91,7 +94,6 @@ const ChangePassword = () => {
 
       return "Password changed successfully!";
     } catch (error) {
-      console.error("Error while changing password:", error.message);
       throw error;
     }
   };
@@ -103,16 +105,23 @@ const ChangePassword = () => {
       });
 
       if (response.ok) {
-        alert(
-          "You have entered the wrong password too many times (5 attempts). Please log in again to change your password!"
-        );
+        toast({
+          title: "You have entered the wrong password too many times (5 attempts). Please log in again to change your password!",
+          variant: "warning",
+        });
         window.location.href = "/login";
       } else {
-        alert("Logout failed. Please try again.");
+        toast({
+          title: "Logout failed. Please try again.",
+          variant: "warning",
+        });
       }
     } catch (error) {
       console.error("Error removing cookie:", error);
-      alert("An unexpected error occurred while logging out.");
+      toast({
+        title: "An unexpected error occurred while logging out.",
+        variant: "warning",
+      });
     }
   };
 
