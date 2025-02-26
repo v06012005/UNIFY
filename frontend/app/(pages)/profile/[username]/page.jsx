@@ -36,6 +36,7 @@ const Page = () => {
   const [userReels, setUserReels] = useState([]);
   const [savedItems, setSavedItems] = useState([]);
   const [taggedPosts, setTaggedPosts] = useState([]);
+  const params = useParams();
   const router = useRouter();
 
   const { user, setUser, getInfoUser } = useApp();
