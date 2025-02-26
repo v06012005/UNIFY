@@ -15,6 +15,7 @@ export const SuggestedUsersProvider = ({ children }) => {
   const [followerUsers, setFollowerUsers] = useState([]);
   const [friendUsers, setFriendUsers] = useState([]);
   const [followingUsers, setFollowingUsers] = useState([]);
+  const [postUsers, setPostUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentUserId, setCurrentUserId] = useState("");
 
@@ -177,7 +178,36 @@ export const SuggestedUsersProvider = ({ children }) => {
       setLoading(false);
     }
   }, [fetchUserInfo]);
+  //hàm lấy bài post theo người đăng nhập
+  const getPostUsers = useCallback(async () => {
+    try {
+      setLoading(true);
+      const token = Cookies.get("token");
+      if (!token) return;
 
+      const id = await fetchUserInfo();
+      if (!id) return;
+
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/posts/id/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setPostUsers(response.data || []);
+      console.log("Danh sách bài đăng:", response.data);
+    } catch (err) {
+      console.error(
+        "Lỗi khi lấy danh sách bài đăng:",
+        err.response?.data || err.message
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [fetchUserInfo]);
   useEffect(() => {
     fetchUserInfo().then((id) => {
       if (id) {
@@ -185,9 +215,17 @@ export const SuggestedUsersProvider = ({ children }) => {
         getFollowerUsers();
         getFollowingUsers();
         getFriendUsers();
+        getPostUsers();
       }
     });
-  }, [fetchUserInfo, getSuggestedUsers, getFollowerUsers, getFriendUsers, getFollowingUsers]);
+  }, [
+    fetchUserInfo,
+    getSuggestedUsers,
+    getFollowerUsers,
+    getFriendUsers,
+    getPostUsers,
+    getFollowingUsers,
+  ]);
 
   return (
     <SuggestedUsersContext.Provider
@@ -200,6 +238,8 @@ export const SuggestedUsersProvider = ({ children }) => {
         getFollowerUsers,
         friendUsers,
         getFriendUsers,
+        postUsers,
+        getPostUsers,
         loading,
       }}
     >
@@ -211,8 +251,9 @@ export const SuggestedUsersProvider = ({ children }) => {
 export const useSuggestedUsers = () => {
   const context = useContext(SuggestedUsersContext);
   if (!context) {
-
-    throw new Error("useSuggestedUsers phải được sử dụng trong SuggestedUsersProvider!");
+    throw new Error(
+      "useSuggestedUsers phải được sử dụng trong SuggestedUsersProvider!"
+    );
   }
   return context;
 };

@@ -48,7 +48,7 @@ const People = () => {
         </button>
       )}
 
-      <div ref={scrollRef} className="flex gap-11 overflow-x-auto scrollbar-hide scroll-smooth px-10">
+      <div ref={scrollRef} className="flex gap-11 justify-center overflow-x-auto scrollbar-hide scroll-smooth px-10">
         {loading ? (
           <p className="text-gray-500">Đang tải danh sách...</p>
         ) : suggestedUsers.length > 0 ? (

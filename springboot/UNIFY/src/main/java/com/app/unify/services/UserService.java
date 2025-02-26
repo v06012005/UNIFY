@@ -139,9 +139,7 @@ public class UserService {
 	public UserDTO changePassword(String currentPassword, String newPassword) {
 		var context = SecurityContextHolder.getContext();
 		String email = context.getAuthentication().getName();
-
 		User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found!"));
-
 		if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
 			throw new IllegalArgumentException("Incorrect old password!");
 		}
