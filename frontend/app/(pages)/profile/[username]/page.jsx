@@ -38,15 +38,13 @@ const Page = () => {
   const [taggedPosts, setTaggedPosts] = useState([]);
   const router = useRouter();
 
-
-  const params = useParams();
-
-
-
   const { user, setUser, getInfoUser } = useApp();
-
+  const fetchedOnce = useRef(false);
 
   useEffect(() => {
+    if (fetchedOnce.current) return;
+    fetchedOnce.current = true;
+
     const fetchUserInfo = async () => {
       try {
         const fetchedUser = await getInfoUser();
@@ -56,13 +54,8 @@ const Page = () => {
       }
     };
 
-    if (!user) {
-      fetchUserInfo();
-    }
-
-  }, [user, params]);
-
-
+    fetchUserInfo();
+  }, []);
 
   const handleClickView = () => {
     router.push("/settings/archive");
