@@ -210,17 +210,17 @@ export const AppProvider = ({ children }) => {
         console.error("Missing token! User not authenticated.");
         return;
       }
-  
+
       const response = await axios.get(`${API_URL}/users/my-info`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-  
+
       if (response.data) {
         const data = response.data;
         const parsedBirthDay = parseBirthDay(data.birthDay);
-  
+
         setUser({ ...data, birthDay: parsedBirthDay });
-        
+
         if (router.pathname === "/profile" && data.username) {
           router.replace(`/user/${data.username}`);
         }
@@ -231,7 +231,7 @@ export const AppProvider = ({ children }) => {
   };
   const parseBirthDay = (birthDay) => {
     if (!birthDay) return { month: "", day: "", year: "" };
-    
+
     const [year, month, day] = birthDay.split("-");
     return {
       month: month.padStart(2, "0"),
@@ -245,14 +245,20 @@ export const AppProvider = ({ children }) => {
         console.error("Lỗi: Không có username để gọi API!");
         return;
       }
-  
+
       const token = Cookies.get("token");
       console.log("Token gửi lên:", token);
       console.log("Fetching user info for:", username);
-      const response = await axios.get(`${API_URL}/users/username/${username}`, {
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-      });
-  
+      const response = await axios.get(
+        `${API_URL}/users/username/${username}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
       if (response.data) {
         console.log("Dữ liệu nhận được:", response.data);
         return response.data;
@@ -273,48 +279,48 @@ export const AppProvider = ({ children }) => {
 
   const [userFromAPI, setUserFromAPI] = useState(null);
   useEffect(() => {
-    if (userFromAPI?.username && userFromAPI === null) { 
+    if (userFromAPI?.username && userFromAPI === null) {
       getUserInfoByUsername(userFromAPI.username)
         .then((data) => {
           if (data) {
-            setUserFromAPI(data); 
+            setUserFromAPI(data);
           }
         })
         .catch((error) => console.log(error));
     }
   }, []);
 
-  
   const redirectToProfile = (username, type) => {
     if (router.pathname !== `/${type}/${username}`) {
       router.replace(`/${type}/${username}`, undefined, { scroll: false });
     }
   };
-  
-  
+
   useEffect(() => {
     getInfoUser().catch((error) => console.log(error));
   }, []);
 
   return (
-    <SuggestedUsersProvider> {
-    <UserContext.Provider
-      value={{
-        user,
-        setUser,
-        userFromAPI,
-        setUserFromAPI,
-        loginUser,
-        refreshToken,
-        logoutUser,
-        useChat,
-        getUserInfoByUsername,
-      }}
-    >
-      {children}
-    </UserContext.Provider>
-}
-</SuggestedUsersProvider>
+    <SuggestedUsersProvider>
+      {" "}
+      {
+        <UserContext.Provider
+          value={{
+            user,
+            setUser,
+            userFromAPI,
+            setUserFromAPI,
+            loginUser,
+            refreshToken,
+            logoutUser,
+            useChat,
+            getUserInfoByUsername,
+          }}
+        >
+          {children}
+        </UserContext.Provider>
+      }
+    </SuggestedUsersProvider>
   );
 };
 

@@ -1,5 +1,8 @@
 package com.app.unify.controllers;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +21,6 @@ import com.app.unify.dto.global.PostDTO;
 import com.app.unify.entities.Post;
 import com.app.unify.services.PostService;
 
-// This controller is for user only
-
 @RestController
 @RequestMapping("/posts")
 public class PostController {
@@ -37,7 +38,7 @@ public class PostController {
 		return postService.createPost(postDTO);
 	}
 
-	@GetMapping("/{id}")
+	@GetMapping("/post_detail/{id}")
 	public PostDTO getPost(@PathVariable("id") String id) {
 		return postService.getById(id);
 	}
@@ -52,7 +53,20 @@ public class PostController {
 		postService.deletePostById(id);
 		return ResponseEntity.ok("Post deleted successfully!");
 	}
-
+	
+	@GetMapping("/admin/list")
+	public List<PostDTO> getPostList() {
+		return postService.getAll();
+	}
+	
+	@GetMapping("/filter/{start}/{end}")
+	public List<PostDTO> getPostsByDate(@PathVariable("start") String start, @PathVariable("end") String end) {
+		LocalDate startDate = LocalDate.parse(start, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        LocalDateTime startDateTime = startDate.atStartOfDay();
+        LocalDate endDate = LocalDate.parse(end, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        LocalDateTime endDateTime = endDate.atStartOfDay();
+		return postService.getPostsByDate(startDateTime, endDateTime);
+	}
 //	@GetMapping("/username/{username}")
 //	public List<PostDTO> getMyPosts(@PathVariable("username") String username) {
 //		return postService.getMyPosts(username);

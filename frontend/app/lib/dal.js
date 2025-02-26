@@ -137,3 +137,93 @@ export const fetchPosts = async () => {
         return null
     }
 }
+
+export const fetchPostList = async () => {
+    const token = (await cookies()).get('token')?.value;
+
+    if (!token) {
+        redirect("/login");
+    }
+
+
+    try {
+        const response = await fetch("http://localhost:8080/posts/admin/list", {
+            method: "GET",
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            console.log("Failed to fetch posts");
+            return null;
+        }
+
+        const postlist = await response.json();
+        return postlist;
+    } catch (error) {
+        console.log('Failed to fetch posts: ' + error)
+        return null
+    }
+}
+
+export const fetchPostById = async (postId) => {
+    const token = (await cookies()).get('token')?.value;
+
+    if (!token) {
+        redirect("/login");
+    }
+
+
+    try {
+        const response = await fetch("http://localhost:8080/posts/post_detail/" + postId, {
+            method: "GET",
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            console.log("Failed to fetch posts");
+            return null;
+        }
+
+        const post = await response.json();
+        return post;
+    } catch (error) {
+        console.log('Failed to fetch posts: ' + error)
+        return null
+    }
+}
+
+export const fetchPostsByDate = async (start, end) => {
+    const token = (await cookies()).get('token')?.value;
+
+    if (!token) {
+        redirect("/login");
+    }
+
+
+    try {
+        const response = await fetch("http://localhost:8080/posts/filter/" + start + "/" + end, {
+            method: "GET",
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            console.log("Failed to fetch posts");
+            return null;
+        }
+
+        const postlist = await response.json();
+        return postlist;
+    } catch (error) {
+        console.log('Failed to fetch posts: ' + error)
+        return null
+    }
+}
