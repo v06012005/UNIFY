@@ -50,7 +50,7 @@ const People = () => {
 
       <div ref={scrollRef} className="flex gap-11 justify-center overflow-x-auto scrollbar-hide scroll-smooth px-10">
         {loading ? (
-          <p className="text-gray-500">Đang tải danh sách...</p>
+          <p className="text-gray-500">Loading...</p>
         ) : suggestedUsers.length > 0 ? (
           suggestedUsers.slice(0, 11).map((user, index) => (
             <div

@@ -71,14 +71,14 @@ public class PostServiceImp implements PostService {
 	}
 
 
-//	@Override
-//	public List<PostDTO> getMyPosts(String username) {
-//		return postRepository.getMyPosts(username);
-//	}
+	@Override
+	public List<PostDTO> getMyPostsByUsername(String username) {
+		return postRepository.getMyPosts(username);
+	}
 
 	@Override
-    public List<PostDTO> getMyPosts(String userId) {
-        return postRepository.findMyPosts(userId)
+    public List<PostDTO> getMyPosts(String username) {
+        return postRepository.findMyPosts(username)
                 .stream()
                 .map(mapper::toPostDTO)
                 .collect(Collectors.toList());
