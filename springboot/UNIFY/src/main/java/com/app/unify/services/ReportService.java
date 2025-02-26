@@ -3,21 +3,20 @@ package com.app.unify.services;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.app.unify.dto.global.ReportDTO;
-import com.app.unify.entities.Post;
 import com.app.unify.entities.Report;
 import com.app.unify.entities.User;
-import com.app.unify.exceptions.UserNotFoundException;
 import com.app.unify.mapper.ReportMapper;
 import com.app.unify.mapper.UserMapper;
 import com.app.unify.repositories.PostRepository;
 import com.app.unify.repositories.ReportRepository;
 import com.app.unify.repositories.UserRepository;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -60,9 +59,9 @@ public class ReportService {
 	    }
 
 	    Report report = reportMapper.toReport(reportDTO);
-	    report.setUser(user); 
+	    report.setUser(user);
 	    report.setReportedAt(LocalDateTime.now());
-	    report.setStatus(0); 
+	    report.setStatus(0);
 
 	    reportRepository.save(report);
 
