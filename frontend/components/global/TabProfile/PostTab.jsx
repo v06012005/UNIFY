@@ -1,9 +1,11 @@
+
 import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useApp } from "@/components/provider/AppProvider";
 import axios from "axios";
 import Cookies from "js-cookie";
+
 const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   return (
     <Link
@@ -20,6 +22,7 @@ const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
 const UserPosts = ({ username }) => {
   const [selectedPost, setSelectedPost] = useState(null);
   const [openList, setOpenList] = useState(false);
+
   const [selectedMedia, setSelectedMedia] = useState(null);
   const { user, getUserInfoByUsername } = useApp();
   const router = useRouter();
@@ -278,16 +281,19 @@ const UserPosts = ({ username }) => {
                     </div>
                   </div>
                 </div>
+
               </div>
 
               <div className="p-4 border-t">
                 <div className="flex items-center border-none pt-2">
+
                   <input
                     type="text"
                     placeholder="Add comment..."
                     className="flex-1 border-none focus:ring-0 focus:outline-none dark:bg-gray-900 caret-blue-500"
                   />
                   <button className="text-blue-500 font-bold ml-2">Save</button>
+
                 </div>
               </div>
             </div>

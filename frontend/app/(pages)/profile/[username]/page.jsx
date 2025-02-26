@@ -17,6 +17,7 @@ import Image from "next/image";
 import ProfileTabs from "@/components/global/TabProfile/Tabs";
 import { useApp } from "@/components/provider/AppProvider";
 import People from "@/components/global/TabProfile/People";
+
 const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   return (
     <Link
@@ -37,10 +38,14 @@ const Page = () => {
   const [taggedPosts, setTaggedPosts] = useState([]);
   const router = useRouter();
 
+
   const params = useParams();
 
 
+
   const { user, setUser, getInfoUser } = useApp();
+
+
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
@@ -56,6 +61,7 @@ const Page = () => {
     }
 
   }, [user, params]);
+
 
 
   const handleClickView = () => {

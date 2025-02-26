@@ -1,6 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-
+////////////
+import Cookies from "js-cookie";
+import { useApp } from "@/components/provider/AppProvider";
+import { fetchComments } from "app/api/service/commentService";
+import CommentItem from "@/components/comments/CommentItem";
+import CommentInput from "@/components/comments/CommentInput";
 const testPost = {
   id: 1,
 };
@@ -19,6 +24,20 @@ const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
 const UserReels = () => {
   const [selectedPost, setSelectedPost] = useState(null);
   const [openList, setOpenList] = useState(false);
+
+  /////////////
+  const [comments, setComments] = useState([]);
+  const { user } = useApp();
+  const token = Cookies.get("token");
+  const postId = "0de81a82-caa6-439c-a0bc-124a83b5ceaf";
+  useEffect(() => {
+    const loadComments = async () => {
+      const data = await fetchComments(postId, token);
+      setComments(data);
+    };
+    loadComments();
+  }, [postId, token]);
+  //////
   const handlePostClick = () => {
     setSelectedPost(testPost);
   };
@@ -95,46 +114,9 @@ const UserReels = () => {
               </div>
 
               <div className="flex-1 p-4 h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
-                <div className="flex items-start space-x-2 mb-2">
-                  <div className="w-8 h-8 rounded-full border-2 border-gray-300">
-                    <img
-                      src={`/images/avt.jpg`}
-                      alt="User Avatar"
-                      className="w-full h-full rounded-full object-cover"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <p className="text-sm leading-tight">
-                      <span className="font-bold mr-4">huynhdiz</span> Nghe nhạc
-                      nào mọi người!
-                    </p>
-                    <div className="flex">
-                      <span className="text-xs text-gray-500 mr-5">
-                        2 giờ trước
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-2 mb-2">
-                  <div className="w-8 h-8 rounded-full border-2 border-gray-300">
-                    <img
-                      src={`/images/avt.jpg`}
-                      alt="User Avatar"
-                      className="w-full h-full rounded-full object-cover"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <p className="text-sm leading-tight">
-                      <span className="font-bold mr-4">user2</span> Đẹp quá!
-                    </p>
-                    <div className="flex">
-                      <span className="text-xs text-gray-500 mr-5">
-                        2 giờ trước
-                      </span>
-                      <span className="text-xs text-gray-500">Reply</span>
-                    </div>
-                  </div>
-                </div>
+                {comments.map((comment) => (
+                  <CommentItem key={comment.id} comment={comment} />
+                ))}
               </div>
 
               <div className="p-4 border-t">
@@ -148,12 +130,7 @@ const UserReels = () => {
                 </div>
                 <p className="dark:text-gray-500">Thời gian</p>
                 <div className="flex items-center pt-2 ">
-                  <input
-                    type="text"
-                    placeholder="Comment..."
-                    className="flex-1 border-none focus:outline-none focus:ring-0 dark:bg-gray-900"
-                  />
-                  <button className="text-blue-500 font-bold ml-2">Đăng</button>
+                  <CommentInput postId={postId} setComments={setComments} />
                 </div>
               </div>
             </div>

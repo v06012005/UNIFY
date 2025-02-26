@@ -4,17 +4,17 @@ import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import avatar2 from "@/public/images/testAvt.jpg";
-import { Send, Smile } from "lucide-react";
-import Picker from "emoji-picker-react";
-import LikeButton from "@/components/global/LikeButton";
-import Reply from "@/components/comments/Reply";
-import Content from "@/components/comments/Content";
-import { useApp } from "@/components/provider/AppProvider";
+import { motion, AnimatePresence } from "framer-motion";
+//////////reels
+import PostReels from "@/components/global/PostReels";
+import { fetchPosts } from "@/app/lib/dal";
+import { Spinner } from "@heroui/react";
+////////////comment
 import Cookies from "js-cookie";
-import { formatDistanceToNow } from "date-fns";
-import { fetchComments, postComment } from "app/api/service/commentService";
-
-// 0de81a82-caa6-439c-a0bc-124a83b5ceaf  ID POST
+import { useApp } from "@/components/provider/AppProvider";
+import { fetchComments } from "app/api/service/commentService";
+import CommentItem from "@/components/comments/CommentItem";
+import CommentInput from "@/components/comments/CommentInput";
 
 import {
   Modal,
@@ -23,13 +23,12 @@ import {
   ModalBody,
   ModalFooter,
   useDisclosure,
-  Card,
-  CardFooter,
-  Button,
 } from "@heroui/react";
 
+/////////Slider
+
+
 const Reels = () => {
-  const reels = Array(1).fill(0);
   const [isMuted, setIsMuted] = useState(false);
   const [isCommentOpen, setIsCommentOpen] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
@@ -37,24 +36,26 @@ const Reels = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isFollow, setIsFollow] = useState(false);
   const [selectedAvatar, setSelectedAvatar] = useState(null);
-  const [showPicker, setShowPicker] = useState(false);
+  const postId = "0de81a82-caa6-439c-a0bc-124a83b5ceaf";
+  /////////////comment
   const [comments, setComments] = useState([]);
-  const [comment, setComment] = useState("");
-  const pickerRef = useRef(null);
-  const [isShown, setIsShown] = useState(false);
-
-  const [isCommentEmpty, setIsCommentEmpty] = useState(true);
-  ///////
   const { user } = useApp();
   const token = Cookies.get("token");
-
-  const postId = "0de81a82-caa6-439c-a0bc-124a83b5ceaf";
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (pickerRef.current && !pickerRef.current.contains(event.target)) {
-        setShowPicker(false);
+    if (!token) return;
+
+    const loadComments = async () => {
+      try {
+        const data = await fetchComments(postId, token);
+        setComments(data);
+      } catch (error) {
+        console.error("Failed to fetch comments:", error);
       }
     };
+
+
+    loadComments();
+  }, [token]);
 
     if (showPicker) {
       document.addEventListener("mousedown", handleClickOutside);
@@ -204,26 +205,30 @@ const Reels = () => {
   //       const errorText = await response.text();
   //       console.error("Server response:", errorText);
 
-  //       if (response.status === 401) {
-  //         console.error("LỖI khác (TOKEN đã hợp lệ)");
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching comments:", error);
-  //     alert("Failed to fetch comments. Please try again later.");
-  //   }
-  // };
-  //////////
-  // useEffect(() => {
-  //   fetchComments();
-  // }, [postId]);
 
-  ////////////////
-  // const handleCommentSubmit = async () => {
-  //   if (!user || !user.id) {
-  //     console.error("User is not logged in");
-  //     return;
+  /////reels
+  // const [videos, setVideos] = useState([]);
+  // const [loading, setLoading] = useState(true);
+  // useEffect(() => {
+  //   async function fetchVideos() {
+  //     const data = await fetchPosts();
+  //     const videoPosts = data.filter((post) => post.mediaType === "VIDEO");
+  //     setVideos(videoPosts);
+  //     setLoading(false);
   //   }
+
+  //   fetchVideos();
+  // }, []);
+
+  // if (loading) {
+  //   return (
+  //     <div className="flex justify-center items-center h-screen">
+  //       <Spinner color="primary" label="Loading..." labelColor="primary" />
+  //     </div>
+  //   );
+  // }
+  ////
+
 
   //   try {
   //     console.log("Token in handleCommentSubmit:", token);
@@ -290,6 +295,7 @@ const Reels = () => {
     setIsMuted((prev) => !prev);
   };
 
+
   const toggleComment = () => {
     setIsCommentOpen((prev) => !prev);
   };
@@ -299,7 +305,6 @@ const Reels = () => {
       setIsCommentOpen(false);
     }
   };
-
   const handleLike = () => {
     setIsLiked((prev) => !prev);
   };
@@ -331,169 +336,151 @@ const Reels = () => {
     setSelectedAvatar(index === selectedAvatar ? null : index);
   };
 
-  const handleClick = () => {
-    setIsShown(!isShown);
-  };
-
   return (
     <>
-      {reels.map((_, index) => (
-        <div
-          key={index}
-          className={`relative w-[450px] h-[700px] bg-gray-800 mx-auto rounded-2xl overflow-hidden m-5 transition-all duration-500 ${isCommentOpen ? "translate-x-[-150px]" : ""
-            }`}
-        >
-          <div className="absolute inset-0 bg-gray-700 flex justify-center items-center">
+
+      {/* {posts.map((post) => ( */}
+      <div
+        // key={post.id}
+        className={`relative w-[450px] h-[700px] bg-gray-800 mx-auto rounded-2xl overflow-hidden m-5 transition-all duration-500 ${
+          isCommentOpen ? "translate-x-[-150px]" : ""
+        }`}
+      >
+        <PostReels></PostReels>
+
+        <div className="absolute bottom-4 left-4 flex items-center space-x- text-white">
+          <Image
+            src={avatar2}
+            alt="User Avatar"
+            className="w-10 h-10 bg-gray-600 rounded-full"
+          ></Image>
+          <div className="flex items-center space-x-2">
+            <span className="font-medium pl-2">TanVinh</span>
             <button
-              onClick={toggleMute}
-              className="absolute top-2 right-2 z-10  text-white rounded-full p-2 transition "
-              aria-label={isMuted ? "Unmute Video" : "Mute Video"}
-            >
-              <i
-                className={`fa-solid ${isMuted ? "fa-volume-xmark" : "fa-volume-high"
-                  }`}
-              ></i>
-            </button>
-
-            <video
-              // autoPlay
-              muted={isMuted}
-              loop
-              className="w-full h-full object-cover relative z-0"
-            >
-              <source src="/videos/koniseg.mp4" type="video/mp4" />
-            </video>
-          </div>
-
-          <div className="absolute bottom-4 left-4 flex items-center space-x- text-white">
-            <Image
-              src={avatar2}
-              alt="User Avatar"
-              className="w-10 h-10 bg-gray-600 rounded-full"
-            ></Image>
-            <div className="flex items-center space-x-2">
-              <span className="font-medium">TanVinh</span>
-              <button
-                className="backdrop-blur-3xl text-sm p-4 py-1 rounded-2xl font-bold 
+              className="backdrop-blur-3xl text-sm p-4 py-1 rounded-2xl font-bold 
              transition-all duration-200 ease-in-out 
              active:scale-125
              hover:bg-gray-700 dark:hover:bg-gray-700"
-                onClick={folloWing}
-              >
-                {isFollow ? "Following" : "Follow"}
-              </button>
-            </div>
-          </div>
-
-          <div className="absolute top-2/3 right-4 transform -translate-y-1/2 flex flex-col items-center space-y-7 text-white text-2xl">
-            <div className="flex flex-col items-center">
-              <i
-                className={`fa-${isLiked ? "solid" : "regular"
-                  } fa-heart hover:opacity-50 focus:opacity-50 transition cursor-pointer ${isLiked ? "text-red-500" : "text-white"
-                  }`}
-                onClick={handleLike}
-              ></i>
-              <span className="text-sm">47k</span>
-            </div>
-
-            <div className="flex flex-col items-center">
-              <i
-                className="fa-regular fa-comment hover:opacity-50 focus:opacity-50 transition cursor-pointer"
-                onClick={toggleComment}
-              ></i>
-              <span className="text-sm">47k</span>
-            </div>
-
-            <div className="flex flex-col items-center">
-              <i
-                onClick={handleOpen}
-                className="fa-regular fa-paper-plane hover:opacity-50 focus:opacity-50 transition"
-              ></i>
-            </div>
-            <Modal
-              isDismissable={false}
-              scrollBehavior={"inside"}
-              size="2xl"
-              isKeyboardDismissDisabled={true}
-              isOpen={isOpen}
-              onOpenChange={onOpenChange}
+              onClick={folloWing}
             >
-              <ModalContent>
-                {(onClose) => (
-                  <>
-                    <ModalHeader className="flex flex-cols">
-                      <h1 className="font-bold text-2xl">Share</h1>
-                    </ModalHeader>
-                    <hr className="bg-gray-200"></hr>
-                    <ModalBody>
-                      <div className="mt-4">
-                        <Input
-                          placeholder={"Search..."}
-                          className={`w-full h-11 dark:border-white font-bold`}
-                        />
-                      </div>
-                      <div className="flex p-3 justify-around">
-                        {[1, 2, 3, 4].map((_, index) => (
-                          <div className="text-center" key={index}>
-                            <Image
-                              src={avatar2}
-                              alt={`avtshare-${index}`}
-                              className={`rounded-full w-20 h-20 cursor-pointer ${selectedAvatar === index
-                                  ? "ring-4 dark:ring-white"
-                                  : ""
-                                }`}
-                              onClick={() => handleAvatarClick(index)}
-                            />
-                            <p className="mt-2 font-bold text-lg truncate w-20">
-                              Tan Vinh
-                            </p>
-                            {selectedAvatar === index && (
-                              <button className="mt-2 px-4 py-2 bg-blue-500 text-white rounded">
-                                Send
-                              </button>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </ModalBody>
-                    <ModalFooter></ModalFooter>
-                  </>
-                )}
-              </ModalContent>
-            </Modal>
-            <div className="flex flex-col items-center">
-              <i
-                className={`fa-${isSaved ? "solid" : "regular"
-                  } fa-bookmark hover:opacity-50 focus:opacity-50 transition cursor-pointer`}
-                onClick={handleSave}
-              ></i>
-            </div>
-
-            <div className="flex flex-col items-center">
-              <i
-                className="fa-solid fa-ellipsis hover:opacity-50 focus:opacity-50 transition cursor-pointer"
-                onClick={togglePopup}
-              ></i>
-              {isPopupOpen && (
-                <div
-                  id="overmore"
-                  className="w-44 absolute top-56 right-10 transform -translate-y-1/2 backdrop-blur-xl p-4 rounded-lg shadow-lg text-white"
-                  onClick={closeMore}
-                >
-                  <ul className=" text-sm">
-                    <li className="cursor-pointer  hover:bg-zinc-800  font-bold  text-left p-2 rounded-sm">
-                      Copy link
-                    </li>
-                    <li className="cursor-pointer  hover:bg-zinc-800   font-bold  text-left p-2 rounded-sm">
-                      About this account
-                    </li>
-                  </ul>
-                </div>
-              )}
-            </div>
+              {isFollow ? "Following" : "Follow"}
+            </button>
           </div>
         </div>
-      ))}
+
+
+        <div className="absolute top-2/3 right-4 transform -translate-y-1/2 flex flex-col items-center space-y-7 text-white text-2xl">
+          <div className="flex flex-col items-center">
+            <i
+              className={`fa-${
+                isLiked ? "solid" : "regular"
+              } fa-heart hover:opacity-50 focus:opacity-50 transition cursor-pointer ${
+                isLiked ? "text-red-500" : "text-white"
+              }`}
+              onClick={handleLike}
+            ></i>
+            <span className="text-sm">47k</span>
+          </div>
+
+          <div className="flex flex-col items-center">
+            <i
+              className="fa-regular fa-comment hover:opacity-50 focus:opacity-50 transition cursor-pointer"
+              onClick={toggleComment}
+            ></i>
+            <span className="text-sm">47k</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <i
+              onClick={handleOpen}
+              className="fa-regular fa-paper-plane hover:opacity-50 focus:opacity-50 transition"
+            ></i>
+          </div>
+          <Modal
+            isDismissable={false}
+            scrollBehavior={"inside"}
+            size="2xl"
+            isKeyboardDismissDisabled={true}
+            isOpen={isOpen}
+            onOpenChange={onOpenChange}
+          >
+            <ModalContent>
+              {(onClose) => (
+                <>
+                  <ModalHeader className="flex flex-cols">
+                    <h1 className="font-bold text-2xl">Share</h1>
+                  </ModalHeader>
+                  <hr className="bg-gray-200"></hr>
+                  <ModalBody>
+                    <div className="mt-4">
+                      <Input
+                        placeholder={"Search..."}
+                        className={`w-full h-11 dark:border-white font-bold`}
+                      />
+                    </div>
+                    <div className="flex p-3 justify-around">
+                      {[1, 2, 3, 4].map((_, index) => (
+                        <div className="text-center" key={index}>
+                          <Image
+                            src={avatar2}
+                            alt={`avtshare-${index}`}
+                            className={`rounded-full w-20 h-20 cursor-pointer ${
+                              selectedAvatar === index
+                                ? "ring-4 dark:ring-white"
+                                : ""
+                            }`}
+                            onClick={() => handleAvatarClick(index)}
+                          />
+                          <p className="mt-2 font-bold text-lg truncate w-20">
+                            Tan Vinh
+                          </p>
+                          {selectedAvatar === index && (
+                            <button className="mt-2 px-4 py-2 bg-blue-500 text-white rounded">
+                              Send
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </ModalBody>
+                  <ModalFooter></ModalFooter>
+                </>
+              )}
+            </ModalContent>
+          </Modal>
+          <div className="flex flex-col items-center">
+            <i
+              className={`fa-${
+                isSaved ? "solid" : "regular"
+              } fa-bookmark hover:opacity-50 focus:opacity-50 transition cursor-pointer`}
+              onClick={handleSave}
+            ></i>
+          </div>
+
+          <div className="flex flex-col items-center">
+            <i
+              className="fa-solid fa-ellipsis hover:opacity-50 focus:opacity-50 transition cursor-pointer"
+              onClick={togglePopup}
+            ></i>
+            {isPopupOpen && (
+              <div
+                id="overmore"
+                className="w-44 absolute top-56 right-10 transform -translate-y-1/2 backdrop-blur-xl p-4 rounded-lg shadow-lg text-white"
+                onClick={closeMore}
+              >
+                <ul className=" text-sm">
+                  <li className="cursor-pointer  hover:bg-zinc-800  font-bold  text-left p-2 rounded-sm">
+                    Copy link
+                  </li>
+                  <li className="cursor-pointer  hover:bg-zinc-800   font-bold  text-left p-2 rounded-sm">
+                    About this account
+                  </li>
+                </ul>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+      {/* ))} */}
       {isCommentOpen && (
         <div
           id="overlay"
@@ -514,139 +501,10 @@ const Reels = () => {
               </div>
               <div className="flex-grow overflow-auto  ">
                 {comments.map((comment) => (
-                  <Card
-                    key={comment.id}
-                    className="overflow-visible border-none bg-transparent  shadow-none p-5 m-4"
-                  >
-                    <div className="">
-                      <div className="flex items-center">
-                        <Image
-                          src={avatar2}
-                          alt="User avatar"
-                          className="rounded-full w-12 h-12"
-                        />
-                        <h4 className="text-base font-bold truncate w-32 pl-2">
-                          {comment.username}
-                        </h4>
-                        <h4 className="text-xs font-bold truncate w-40 dark:text-gray-500">
-                          {comment.commentedAt &&
-                            !isNaN(new Date(comment.commentedAt).getTime())
-                            ? formatDistanceToNow(
-                              new Date(comment.commentedAt),
-                              { addSuffix: true }
-                            )
-                            : "Vừa xong"}
-                        </h4>
-                      </div>
-                      <div>
-                        <Content text={comment.content} />
-                      </div>
-                    </div>
-
-                    <CardFooter className="flex flex-row justify-end">
-                      <LikeButton className="!text-sm" />
-                      <Button
-                        size="sm"
-                        className="bg-transparent dark:text-white"
-                      >
-                        <i className="fa-solid fa-reply"></i>Reply
-                      </Button>
-                      <Button
-                        onPress={() => setIsShown(!isShown)} // Cập nhật trạng thái isShown
-                        size="sm"
-                        className="bg-transparent dark:text-white"
-                      >
-                        <i className="fa-solid fa-comments"></i>Show Replies
-                      </Button>
-                      <Button
-                        size="sm"
-                        className="bg-transparent dark:text-white"
-                        startContent={<i className="fa-solid fa-ellipsis"></i>}
-                      >
-                        More
-                      </Button>
-                    </CardFooter>
-
-                    {/* Kiểm tra nếu isShown là true thì hiển thị replies */}
-                    {isShown &&
-                      comment.replies &&
-                      comment.replies.length > 0 && (
-                        <div className="w-full flex flex-col items-end">
-                          {comment.replies.map((reply) => (
-                            <Reply key={reply.id} reply={reply} />
-                          ))}
-                        </div>
-                      )}
-                  </Card>
+                  <CommentItem key={comment.id} comment={comment} />
                 ))}
               </div>
-              <div className="flex items-center mt-3 text-white p-3 rounded-2xl w-full justify-center relative">
-                <Image
-                  src={avatar2}
-                  alt="Avatar"
-                  className="rounded-full w-10 h-10 mr-2"
-                />
-
-                <textarea
-                  placeholder="Add a comment..."
-                  maxLength={150}
-                  rows={1}
-                  value={comment}
-                  onChange={(e) => {
-                    setComment(e.target.value);
-                    setIsCommentEmpty(e.target.value.trim() === "");
-                  }}
-                  onInput={(e) => {
-                    e.target.style.height = "auto";
-                    const maxHeight =
-                      3 * parseFloat(getComputedStyle(e.target).lineHeight); // 3 dòng
-                    if (e.target.scrollHeight > maxHeight) {
-                      e.target.style.height = `${maxHeight}px`;
-                      e.target.style.overflowY = "auto"; // Hiện scroll
-                    } else {
-                      e.target.style.height = `${e.target.scrollHeight}px`;
-                      e.target.style.overflowY = "hidden";
-                    }
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      handleCommentSubmit();
-                    }
-                  }}
-                  className="bg-gray-700 text-white placeholder-gray-400 flex-grow py-2 px-4 rounded-2xl focus:outline-none resize-none"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPicker(!showPicker)}
-                  className="ml-2 text-gray-600 hover:text-gray-400"
-                >
-                  <Smile size={28} />
-                </button>
-                {showPicker && (
-                  <div
-                    ref={pickerRef}
-                    className="absolute bottom-20 right-12 z-50"
-                  >
-                    <Picker
-                      onEmojiClick={(emojiObject) => {
-                        const newComment = comment + emojiObject.emoji;
-                        setComment(newComment); // Cập nhật nội dung comment
-                        setIsCommentEmpty(newComment.trim() === ""); // Kiểm tra xem nội dung có trống không
-                      }}
-                    />
-                  </div>
-                )}
-                {!isCommentEmpty && (
-                  <button
-                    type="submit"
-                    onClick={handleCommentSubmit}
-                    className="ml-2 text-gray-600 hover:text-gray-400"
-                  >
-                    <Send size={28} />
-                  </button>
-                )}
-              </div>
+              <CommentInput postId={postId} setComments={setComments} />
             </div>
           </div>
         </div>
