@@ -42,7 +42,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			@NonNull FilterChain filterChain) throws ServletException, IOException {
 
 		String token = jwtUtil.getTokenFromRequest(request);
-
+		 System.out.println("Token JWT: " + token);
 		if (token == null || !StringUtils.hasText(token)) {
 			filterChain.doFilter(request, response);
 			return;

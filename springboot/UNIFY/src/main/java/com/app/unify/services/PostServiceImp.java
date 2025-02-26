@@ -1,5 +1,6 @@
 package com.app.unify.services;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -61,11 +62,17 @@ public class PostServiceImp implements PostService {
 	public void deletePostById(String id) {
 		postRepository.deleteById(id);
 	}
-	
-	
+
+
+	@Override
 	public List<PostDTO> getMyPosts(String username) {
-		return postRepository.getMyPosts(username);
+		return postRepository.getMyPosts(username).stream().map(mapper::toPostDTO).collect(Collectors.toList());
 	}
-	
+
+	@Override
+	public List<PostDTO> getPostsByDate(LocalDateTime start, LocalDateTime end) {
+		return postRepository.getPostsByDate(start, end).stream().map(mapper::toPostDTO).collect(Collectors.toList());
+	}
+
 
 }
