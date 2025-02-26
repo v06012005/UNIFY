@@ -122,6 +122,7 @@ export const AppProvider = ({ children }) => {
   });
   const [isAdmin, setIsAdmin] = useState(false);
   const router = useRouter();
+  const params = useParams();
 
   const loginUser = async (email, password) => {
     try {
@@ -267,8 +268,6 @@ export const AppProvider = ({ children }) => {
       console.error("Error fetching user info:", err);
       if (err.response) {
         console.error("Status Code:", err.response.status);
-        console.error("Response Data:", err.response.data);
-        console.error("Headers:", err.response.headers);
       } else if (err.request) {
         console.error("No response received from server", err.request);
       } else {
@@ -277,7 +276,9 @@ export const AppProvider = ({ children }) => {
     }
   };
 
+
   const [userFromAPI, setUserFromAPI] = useState(null);
+  
   useEffect(() => {
     if (userFromAPI?.username && userFromAPI === null) {
       getUserInfoByUsername(userFromAPI.username)
@@ -290,11 +291,6 @@ export const AppProvider = ({ children }) => {
     }
   }, []);
 
-  const redirectToProfile = (username, type) => {
-    if (router.pathname !== `/${type}/${username}`) {
-      router.replace(`/${type}/${username}`, undefined, { scroll: false });
-    }
-  };
 
   useEffect(() => {
     getInfoUser().catch((error) => console.log(error));

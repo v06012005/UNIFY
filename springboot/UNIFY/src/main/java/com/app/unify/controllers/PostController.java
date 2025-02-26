@@ -53,6 +53,7 @@ public class PostController {
 		postService.deletePostById(id);
 		return ResponseEntity.ok("Post deleted successfully!");
 	}
+
 	
 	@GetMapping("/admin/list")
 	public List<PostDTO> getPostList() {
@@ -71,6 +72,7 @@ public class PostController {
 //	public List<PostDTO> getMyPosts(@PathVariable("username") String username) {
 //		return postService.getMyPosts(username);
 //	}
+
 	 @GetMapping("/my")
 	    public ResponseEntity<List<PostDTO>> getMyPosts(@RequestParam String userId) {
 	        List<PostDTO> posts = postService.getMyPosts(userId);

@@ -18,7 +18,8 @@ export const SuggestedUsersProvider = ({ children }) => {
   const [postUsers, setPostUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentUserId, setCurrentUserId] = useState("");
-
+  
+ 
   // Hàm lấy thông tin user
   const fetchUserInfo = useCallback(async () => {
     try {
@@ -53,6 +54,7 @@ export const SuggestedUsersProvider = ({ children }) => {
       return null;
     }
   }, []);
+
 
   // Hàm lấy danh sách gợi ý
   const getSuggestedUsers = useCallback(async () => {
@@ -178,36 +180,7 @@ export const SuggestedUsersProvider = ({ children }) => {
       setLoading(false);
     }
   }, [fetchUserInfo]);
-  //hàm lấy bài post theo người đăng nhập
-  const getPostUsers = useCallback(async () => {
-    try {
-      setLoading(true);
-      const token = Cookies.get("token");
-      if (!token) return;
-
-      const id = await fetchUserInfo();
-      if (!id) return;
-
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/posts/id/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      setPostUsers(response.data || []);
-      console.log("Danh sách bài đăng:", response.data);
-    } catch (err) {
-      console.error(
-        "Lỗi khi lấy danh sách bài đăng:",
-        err.response?.data || err.message
-      );
-    } finally {
-      setLoading(false);
-    }
-  }, [fetchUserInfo]);
+ 
   useEffect(() => {
     fetchUserInfo().then((id) => {
       if (id) {
@@ -215,7 +188,6 @@ export const SuggestedUsersProvider = ({ children }) => {
         getFollowerUsers();
         getFollowingUsers();
         getFriendUsers();
-        getPostUsers();
       }
     });
   }, [
@@ -223,7 +195,6 @@ export const SuggestedUsersProvider = ({ children }) => {
     getSuggestedUsers,
     getFollowerUsers,
     getFriendUsers,
-    getPostUsers,
     getFollowingUsers,
   ]);
 
@@ -239,7 +210,7 @@ export const SuggestedUsersProvider = ({ children }) => {
         friendUsers,
         getFriendUsers,
         postUsers,
-        getPostUsers,
+        currentUserId,
         loading,
       }}
     >

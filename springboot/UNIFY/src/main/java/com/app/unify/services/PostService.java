@@ -17,9 +17,11 @@ public interface PostService {
 	List<PostDTO> getPostsTrending();
 
 	void deletePostById(String id);
+
 	
 	List<PostDTO> getPostsByDate(LocalDateTime start, LocalDateTime end);
 //	List<PostDTO> getMyPosts(String username);
+
 	 List<PostDTO> getMyPosts(String userId); 
 
 	    List<PostDTO> getPostsByUserId(String userId); 
