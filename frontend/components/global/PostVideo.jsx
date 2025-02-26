@@ -8,8 +8,11 @@ const PostVideo = ({ src }) => {
   return (
     <>
       <button
-        onClick={toggleMute}
-        className="absolute top-2 right-2 z-10  text-white rounded-full p-2 transition "
+        onClick={(e) => {
+          e.stopPropagation();
+          toggleMute();
+        }}
+        className="absolute top-2 right-2 z-10 text-white rounded-full p-2 transition"
         aria-label={isMuted ? "Unmute Video" : "Mute Video"}
       >
         <i
@@ -18,6 +21,7 @@ const PostVideo = ({ src }) => {
           }`}
         ></i>
       </button>
+
       <video
         key={src}
         className="w-full h-full object-cover rounded-lg"

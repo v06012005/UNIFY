@@ -5,7 +5,7 @@ import Image from "next/image";
 import dummy from "@/public/images/dummy.png";
 import avatar from "@/public/images/test1.png";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import LikeButton from "./LikeButton";
 import CommentButton from "./CommentButton";
 import ShareButton from "./ShareButton";
@@ -22,7 +22,9 @@ const User = ({ href = "", username = "", firstname = "", lastname = "" }) => {
         <Image src={avatar} alt="Avatar" className="rounded-full w-14 h-14" />
         <div className="ml-5">
           <p className="my-auto text-lg font-bold">@{username}</p>
-          <p className="my-auto">{firstname} {lastname}</p>
+          <p className="my-auto">
+            {firstname} {lastname}
+          </p>
         </div>
       </div>
     </Link>
@@ -47,7 +49,9 @@ const Caption = ({ text, maxLength = 100 }) => {
   return (
     <>
       <div className="my-3 leading-snug text-wrap">
-        {isExpanded || text.length < 100 ? text : `${text.slice(0, maxLength)}...`}
+        {isExpanded || text.length < 100
+          ? text
+          : `${text.slice(0, maxLength)}...`}
         <button
           onClick={toggleExpanded}
           className="text-gray-500 font-semibold ml-2"
@@ -62,7 +66,6 @@ const Caption = ({ text, maxLength = 100 }) => {
 const Slider = ({ srcs = [] }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
-
 
   const prev = () => {
     const isFirst = currentIndex === 0;
@@ -84,14 +87,20 @@ const Slider = ({ srcs = [] }) => {
     <div className="max-w-[450px] w-full h-[550px] bg-cover relative mx-auto group">
       {loading && (
         <div className="absolute inset-0 flex justify-center rounded-lg items-center bg-gray-200 dark:bg-gray-800">
-          <Spinner classNames={{ label: "text-foreground mt-4" }} label="Please wait..." variant="wave" />
+          <Spinner
+            classNames={{ label: "text-foreground mt-4" }}
+            label="Please wait..."
+            variant="wave"
+          />
         </div>
       )}
       {srcs[currentIndex]?.mediaType === "IMAGE" && (
         <Image
           src={srcs[currentIndex].url}
           alt="Image"
-          className={`transition-opacity duration-300 ${loading ? "opacity-0" : "opacity-100"} object-cover w-full h-full rounded-lg duration-500`}
+          className={`transition-opacity duration-300 ${
+            loading ? "opacity-0" : "opacity-100"
+          } object-cover w-full h-full rounded-lg duration-500`}
           width={450}
           height={550}
           onLoad={() => setLoading(false)}
@@ -119,8 +128,9 @@ const Slider = ({ srcs = [] }) => {
           <div
             key={index}
             onClick={() => goTo(index)}
-            className={`text-xs mx-[2px] cursor-pointer ${currentIndex === index ? "dark:text-white" : "text-gray-500"
-              }`}
+            className={`text-xs mx-[2px] cursor-pointer ${
+              currentIndex === index ? "dark:text-white" : "text-gray-500"
+            }`}
           >
             <i className="fa-solid fa-circle fa-xs "></i>
           </div>
@@ -140,9 +150,9 @@ const Post = () => {
       setPosts(homePosts);
       setLoading(false);
     }
-    console.log(posts)
+    console.log(posts);
     getPosts();
-  }, [])
+  }, []);
 
   if (loading) {
     return (
@@ -154,17 +164,20 @@ const Post = () => {
 
   return (
     <>
-      {posts.map(post => (
+      {posts.map((post) => (
         <div className="w-3/4 mb-8 mx-auto pb-8" key={post.id}>
-          <User href="/profile" username={post.user?.username} firstname={post.user?.firstName} lastname={post.user?.lastName} />
+          <User
+            href="/profile"
+            username={post.user?.username}
+            firstname={post.user?.firstName}
+            lastname={post.user?.lastName}
+          />
           <Slider srcs={post.media} />
           {/* <Image src={imageSrc} alt='Dummy' className='w-[450px] h-[550px] mb-2 object-cover mx-auto rounded-lg' width={450} height={550} /> */}
-          <Caption
-            text={post.captions}
-          />
+          <Caption text={post.captions} />
           <div className="flex text-xl">
             <LikeButton className="!text-xl" />
-            <CommentButton className="text-xl">
+            <CommentButton className="text-xl" postId={post.id}>
               <i className="fa-regular fa-comment"></i>47K
             </CommentButton>
             <ShareButton />
