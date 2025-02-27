@@ -209,7 +209,7 @@ const Page = () => {
             <ProfileTabs
               activeTab={activeTab}
               username={params.username}
-              userReels={userReels}
+              userReels={params.username}
               savedItems={savedItems}
               taggedPosts={taggedPosts}
             />

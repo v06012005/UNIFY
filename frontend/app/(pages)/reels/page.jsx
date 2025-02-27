@@ -41,31 +41,25 @@ const Reels = () => {
   const [comments, setComments] = useState([]);
   const { user } = useApp();
   const token = Cookies.get("token");
-  // useEffect(() => {
-  //   if (!token) return;
-  //
-  //   const loadComments = async () => {
-  //     try {
-  //       const data = await fetchComments(postId, token);
-  //       setComments(data);
-  //     } catch (error) {
-  //       console.error("Failed to fetch comments:", error);
-  //     }
-  //   };
-  //
-  //
-  //   loadComments();
-  // }, [token]);
-  //
-  //   if (showPicker) {
-  //     document.addEventListener("mousedown", handleClickOutside);
-  //   } else {
-  //     document.removeEventListener("mousedown", handleClickOutside);
-  //   }
-  //
-  //   return () => document.removeEventListener("mousedown", handleClickOutside);
-  // }, [showPicker]);
-  // /////////
+
+  useEffect(() => {
+    if (!token) return;
+
+    const loadComments = async () => {
+      try {
+        const data = await fetchComments(postId, token);
+        setComments(data);
+      } catch (error) {
+        console.error("Failed to fetch comments:", error);
+      }
+    };
+
+
+    loadComments();
+  }, [token]);
+
+   
+
   const fetchComments = async () => {
     if (!postId) {
       console.error("postId is undefined");

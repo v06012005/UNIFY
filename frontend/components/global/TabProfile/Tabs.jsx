@@ -4,12 +4,12 @@ import SavedItems from "@/components/global/TabProfile/SavedTab";
 import TaggedPosts from "@/components/global/TabProfile/TaggedTab";
 
 
-const ProfileTabs = ({ activeTab, username, userReels, savedItems, taggedPosts }) => {
+const ProfileTabs = ({ activeTab, username, savedItems, taggedPosts }) => {
 
   return (
     <div className="mt-4">
       {activeTab === "post" && <UserPosts username={username}/>}
-      {activeTab === "reel" && <UserReels reels={userReels} />}
+      {activeTab === "reel" && <UserReels username={username} />}
       {activeTab === "saved" && <SavedItems items={savedItems} />}
       {activeTab === "tagged" && <TaggedPosts taggedPosts={taggedPosts} />}
     </div>
