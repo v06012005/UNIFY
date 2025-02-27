@@ -29,48 +29,48 @@ public interface UserRepository extends JpaRepository<User, String> {
 	@Query("UPDATE User u SET u.password = :password WHERE u.email = :email")
 	void updatePasswordByEmail(@Param("email") String email, @Param("password") String password);
 
-	    //Gợi ý
+	// Gợi ý
 	@Query("""
-		    SELECT DISTINCT u FROM User u
-		    LEFT JOIN Friendship f
-		        ON (f.user.id = u.id OR f.friend.id = u.id)
-		        AND (f.user.id = :currentUserId OR f.friend.id = :currentUserId)
-		        AND f.friendshipStatus = 'ACCEPTED'
-		    LEFT JOIN Follower fo
-		        ON fo.userFollowing.id = u.id
-		        AND fo.userFollower.id = :currentUserId
-		    LEFT JOIN u.roles r
-		        ON r.name = 'ADMIN'
-		    WHERE u.id <> :currentUserId
-		    AND f.id IS NULL
-		    AND fo.id IS NULL
-		    AND r.id IS NULL
-		""")
-		List<User> findUsersNotFriendsOrFollowing(@Param("currentUserId") String currentUserId);
+			    SELECT DISTINCT u FROM User u
+			    LEFT JOIN Friendship f
+			        ON (f.user.id = u.id OR f.friend.id = u.id)
+			        AND (f.user.id = :currentUserId OR f.friend.id = :currentUserId)
+			        AND f.friendshipStatus = 'ACCEPTED'
+			    LEFT JOIN Follower fo
+			        ON fo.userFollowing.id = u.id
+			        AND fo.userFollower.id = :currentUserId
+			    LEFT JOIN u.roles r
+			        ON r.name = 'ADMIN'
+			    WHERE u.id <> :currentUserId
+			    AND f.id IS NULL
+			    AND fo.id IS NULL
+			    AND r.id IS NULL
+			""")
+	List<User> findUsersNotFriendsOrFollowing(@Param("currentUserId") String currentUserId);
 
-
-// Đang theo dõi
+	// Đang theo dõi
 
 	@Query("""
-		    SELECT fo.userFollowing FROM Follower fo
-		    WHERE fo.userFollower.id = :currentUserId
-		""")
-		List<User> findUsersFollowedBy(@Param("currentUserId") String currentUserId);
+			    SELECT fo.userFollowing FROM Follower fo
+			    WHERE fo.userFollower.id = :currentUserId
+			""")
+	List<User> findUsersFollowedBy(@Param("currentUserId") String currentUserId);
 //Theo dõi
 
 	@Query("""
-		    SELECT fo.userFollower FROM Follower fo
-		    WHERE fo.userFollowing.id = :currentUserId
-		""")
-		List<User> findUsersFollowingMe(@Param("currentUserId") String currentUserId);
-	//Bạn bè
+			    SELECT fo.userFollower FROM Follower fo
+			    WHERE fo.userFollowing.id = :currentUserId
+			""")
+	List<User> findUsersFollowingMe(@Param("currentUserId") String currentUserId);
+
+	// Bạn bè
 	@Query("""
-		    SELECT DISTINCT u FROM User u
-		    JOIN Friendship f
-		        ON (f.user.id = u.id OR f.friend.id = u.id)
-		    WHERE (f.user.id = :currentUserId OR f.friend.id = :currentUserId)
-		    AND f.friendshipStatus = 'ACCEPTED'
-		    AND u.id <> :currentUserId
-		""")
-		List<User> findFriendsByUserId(@Param("currentUserId") String currentUserId);
+			    SELECT DISTINCT u FROM User u
+			    JOIN Friendship f
+			        ON (f.user.id = u.id OR f.friend.id = u.id)
+			    WHERE (f.user.id = :currentUserId OR f.friend.id = :currentUserId)
+			    AND f.friendshipStatus = 'ACCEPTED'
+			    AND u.id <> :currentUserId
+			""")
+	List<User> findFriendsByUserId(@Param("currentUserId") String currentUserId);
 }

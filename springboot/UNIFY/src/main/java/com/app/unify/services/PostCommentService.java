@@ -14,6 +14,8 @@ import com.app.unify.repositories.PostCommentRepository;
 import com.app.unify.repositories.PostRepository;
 import com.app.unify.repositories.UserRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class PostCommentService {
 
@@ -86,4 +88,15 @@ public class PostCommentService {
 
         return dto;
     }
+    
+    @Transactional
+    public void deleteCommentById(String commentId) {
+        PostComment comment = postCommentRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy bình luận"));
+
+        postCommentRepository.delete(comment);
+    }
+    
+    
+
 }

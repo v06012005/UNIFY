@@ -1,10 +1,13 @@
-
 import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useApp } from "@/components/provider/AppProvider";
 import axios from "axios";
 import Cookies from "js-cookie";
+////////////comment
+import { fetchComments } from "app/api/service/commentService";
+import CommentItem from "@/components/comments/CommentItem";
+import CommentInput from "@/components/comments/CommentInput";
 
 const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   return (
@@ -19,22 +22,37 @@ const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   );
 };
 
-const UserPosts = ({ username }) => {
+const UserPosts = ({ username    }) => {
   const [selectedPost, setSelectedPost] = useState(null);
+  const [postToDelete, setPostToDelete] = useState(null);
   const [openList, setOpenList] = useState(false);
-
+  const [showModal, setShowModal] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState(null);
   const { user, getUserInfoByUsername } = useApp();
   const router = useRouter();
   const [postUsers, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const params = useParams();
+  /////////////comment
+  const [comments, setComments] = useState([]);
+  const token = Cookies.get("token");
+  // const postId = "0de81a82-caa6-439c-a0bc-124a83b5ceaf";
 
+  useEffect(() => {
+    if (selectedPost?.id) {
+      const loadComments = async () => {
+        const data = await fetchComments(selectedPost.id, token);
+        setComments(data);
+      };
+      loadComments();
+    }
+  }, [selectedPost, token]);
+  /////////
   const getPostUsers = async (username) => {
     try {
       const token = Cookies.get("token");
       if (!token) return;
- 
+
       getUserInfoByUsername(username)
         .then((data) => {
           if (data) {
@@ -61,6 +79,32 @@ const UserPosts = ({ username }) => {
       console.log(error);
     }
   };
+  const handleDeletePost = async (postId) => {
+    try {
+        const token = Cookies.get("token");
+        if (!token) return;
+
+        await axios.delete(
+            `${process.env.NEXT_PUBLIC_API_URL}/posts/${postId}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+
+        setPosts(posts.filter(post => post.id !== postId));
+        setShowModal(false);
+    } catch (error) {
+        console.error("Error deleting post:", error);
+    }
+};
+
+const openDeleteModal = (postId) => {
+    setPostToDelete(postId);
+    setShowModal(true);
+};
 
   useEffect(() => {
     if (username) {
@@ -149,13 +193,13 @@ const UserPosts = ({ username }) => {
       ) : (
         <p className="text-center text-gray-500 mt-4">Không có bài đăng nào.</p>
       )}
+   
       {selectedPost && (
         <div
           className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
           data-post-id={selectedPost.id}
         >
           <div className="bg-white dark:bg-gray-900 rounded-lg flex flex-row w-[1300px] h-[740px]">
-           
             <div className="w-1/2 relative">
               {selectedMedia ? (
                 selectedMedia.mediaType === "VIDEO" ? (
@@ -226,8 +270,10 @@ const UserPosts = ({ username }) => {
                 ></NavButton>
                 {openList && (
                   <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                    <div className="bg-white dark:bg-black rounded-lg shadow-lg w-72">
-                      <button className="w-full py-2 text-red-500 dark:hover:bg-gray-900 hover:bg-gray-100">
+                    <div key={selectedPost.id.id} className="bg-white dark:bg-black rounded-lg shadow-lg w-72">
+                      <button 
+                      onClick={() => openDeleteModal(selectedPost.id)}
+                      className="w-full py-2 text-red-500 dark:hover:bg-gray-900 hover:bg-gray-100">
                         Delete
                       </button>
                       <button className="w-full py-2 dark:hover:bg-gray-900 hover:bg-gray-100">
@@ -252,6 +298,32 @@ const UserPosts = ({ username }) => {
                     </div>
                   </div>
                 )}
+                {showModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white dark:bg-gray-900 rounded-lg p-6 w-full max-w-md">
+                        <h3 className="text-lg font-semibold mb-4">
+                            Confirm Delete
+                        </h3>
+                        <p className="text-gray-600 dark:text-gray-300 mb-6">
+                            Are you sure you want to delete this post?
+                        </p>
+                        <div className="flex justify-end gap-4">
+                            <button
+                                onClick={() => setShowModal(false)}
+                                className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={() => handleDeletePost(postToDelete)}
+                                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
               </div>
 
               <div className="flex-1 p-4 overflow-y-auto">
@@ -261,39 +333,19 @@ const UserPosts = ({ username }) => {
                   </span>
                   {selectedPost.captions}
                 </p>
-                <div className="flex items-start space-x-2 mb-2 mt-5">
-                  <div className="w-8 h-8 rounded-full border-2 border-gray-300">
-                    <img
-                      src={`/images/avt.jpg`}
-                      alt="User Avatar"
-                      className="w-full h-full rounded-full object-cover"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <p className="text-sm leading-tight">
-                      <span className="font-bold mr-4">user2</span> Đẹp quá!
-                    </p>
-                    <div className="flex">
-                      <span className="text-xs text-gray-500 mr-5">
-                        2 giờ trước
-                      </span>
-                      <span className="text-xs text-gray-500">Reply</span>
-                    </div>
-                  </div>
+                <div className=" items-start space-x-2 mb-2 mt-5">
+                  {comments.map((comment) => (
+                    <CommentItem key={comment.id} comment={comment} />
+                  ))}
                 </div>
-
               </div>
 
               <div className="p-4 border-t">
                 <div className="flex items-center border-none pt-2">
-
-                  <input
-                    type="text"
-                    placeholder="Add comment..."
-                    className="flex-1 border-none focus:ring-0 focus:outline-none dark:bg-gray-900 caret-blue-500"
+                  <CommentInput
+                    postId={selectedPost.id}
+                    setComments={setComments}
                   />
-                  <button className="text-blue-500 font-bold ml-2">Save</button>
-
                 </div>
               </div>
             </div>

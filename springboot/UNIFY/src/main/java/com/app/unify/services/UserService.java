@@ -11,10 +11,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.app.unify.dto.global.UserDTO;
+import com.app.unify.entities.Avatar;
 import com.app.unify.entities.Role;
 import com.app.unify.entities.User;
 import com.app.unify.exceptions.UserNotFoundException;
 import com.app.unify.mapper.UserMapper;
+import com.app.unify.repositories.AvatarRepository;
 import com.app.unify.repositories.RoleRepository;
 import com.app.unify.repositories.UserRepository;
 import com.app.unify.utils.EncryptPasswordUtil;
@@ -28,15 +30,16 @@ public class UserService {
 	private UserRepository userRepository;
 	private RoleRepository roleRepository;
 	private UserMapper userMapper;
-
+	private AvatarRepository avatarRepository;
 	private PasswordEncoder passwordEncoder;
 
 	@Autowired
 	public UserService(UserRepository userRepository, RoleRepository roleRepository, UserMapper userMapper,
-					   PasswordEncoder passwordEncoder) {
+			PasswordEncoder passwordEncoder, AvatarRepository avatarRepository) {
 		this.userRepository = userRepository;
 		this.roleRepository = roleRepository;
 		this.userMapper = userMapper;
+		this.avatarRepository = avatarRepository;
 		this.passwordEncoder = passwordEncoder;
 
 	}
@@ -48,9 +51,17 @@ public class UserService {
 
 	public UserDTO createUser(UserDTO userDto) {
 		userDto.setPassword(EncryptPasswordUtil.encryptPassword(userDto.getPassword()));
+		  
+
 		Role role = roleRepository.findByName("USER").orElseThrow(() -> new RuntimeException("Role not found !"));
 		userDto.setRoles(Collections.singleton(role));
-
+//		if (userDto.getAvatars() == null || userDto.getAvatars().isEmpty()) {
+//	        Avatar defaultAvatar = avatarRepository.findByUrl("default-avatar.png")
+//	                .orElse(null); 
+//	        if (defaultAvatar != null) {
+//	            userDto.setAvatars(Collections.singleton(defaultAvatar));
+//	        }
+//	    }
 		User user = userRepository.save(userMapper.toUser(userDto));
 		return userMapper.toUserDTO(user);
 	}
@@ -67,6 +78,14 @@ public class UserService {
 		Role role = roleRepository.findByName("USER").orElseThrow(() -> new RuntimeException("Role not found !"));
 		userDto.setPassword(userRepository.findById(userDto.getId())
 				.orElseThrow(() -> new UserNotFoundException("User not found !")).getPassword());
+		
+//		if (userDto.getAvatars() == null || userDto.getAvatars().isEmpty()) {
+//	        Avatar defaultAvatar = avatarRepository.findByUrl("unify_icon_2.svg")
+//	                .orElse(null); 
+//	        if (defaultAvatar != null) {
+//	            userDto.setAvatars(Collections.singleton(defaultAvatar));
+//	        }
+//	    }
 		userDto.setRoles(Collections.singleton(role));
 		User user = userRepository.save(userMapper.toUser(userDto));
 		return userMapper.toUserDTO(user);

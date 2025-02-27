@@ -174,6 +174,34 @@ const Page = () => {
     return errors;
   };
 
+  const handleChangeAvatar = (e) => {
+    const file = e.target.files[0]; // Chỉ lấy file đầu tiên (1 ảnh duy nhất)
+    const allowedTypes = ["image/png", "image/jpeg", "image/jpg", "image/gif"]; // Chỉ cho phép ảnh
+  
+    if (!file) return; // Nếu không có file, thoát
+  
+    // Kiểm tra loại file
+    if (!allowedTypes.includes(file.type)) {
+      toast({
+        title: "Invalid file type",
+        description: "Only images (png, jpeg, jpg, gif) are allowed.",
+        variant: "warning",
+      });
+      return;
+    }
+  
+    // Tạo bản xem trước (preview)
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setAvatar(reader.result); // Hiển thị ảnh tạm thời trên UI
+      setUserData((prevData) => ({
+        ...prevData,
+        avatar: file, // Lưu file gốc để gửi lên server
+      }));
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -200,6 +228,27 @@ const Page = () => {
           : null,
       };
       console.log("Request data to send:", requestData);
+      // Xử lý tải ảnh lên nếu có avatar mới
+    if (userData.avatar instanceof File) {
+      const formData = new FormData();
+      formData.append("file", userData.avatar); // Chỉ gửi 1 file
+
+      const uploadResponse = await fetch("/api/upload", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (!uploadResponse.ok) {
+        throw new Error("Failed to upload avatar");
+      }
+
+      const uploadData = await uploadResponse.json();
+      updatedUserData.avatar = uploadData.files[0].url; // Lấy URL từ server
+    }
+
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
         method: "PUT",
@@ -238,33 +287,17 @@ const Page = () => {
       setLoading(false);
     }
   };
+const handleDeleteAvatar = () => {
+  setAvatar(defaultAvatar);
+  setUserData((prevData) => ({
+    ...prevData,
+    avatar: null, // Đặt lại avatar về null để gửi lên server
+  }));
 
-  const handleChangeAvatar = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setAvatar(reader.result);
-        setUserData((prevData) => ({
-          ...prevData,
-          avatar: file,
-        }));
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleDeleteAvatar = () => {
-    setAvatar(defaultAvatar);
-    setUserData((prevData) => ({
-      ...prevData,
-      avatar: null,
-    }));
-
-    if (fileInputRef.current) {
-      fileInputRef.current.value = null;
-    }
-  };
+  if (fileInputRef.current) {
+    fileInputRef.current.value = null; // Reset input file
+  }
+};
 
   return (
     <div className="w-full">
@@ -301,6 +334,7 @@ const Page = () => {
                   id="avatar"
                   name="avatar"
                   type="file"
+                  
                   accept="image/*"
                   className="hidden"
                   ref={fileInputRef}
@@ -310,7 +344,11 @@ const Page = () => {
 
               <button
                 className="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition"
-                onClick={handleDeleteAvatar}
+               
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleDeleteAvatar();
+                }}
               >
                 Delete Avatar
               </button>
