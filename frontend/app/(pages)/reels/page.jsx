@@ -69,6 +69,14 @@ const Reels = () => {
     loadComments();
   }, [token]);
 
+  //TEST//
+  useEffect(() => {
+    const loadComments = async () => {
+      const data = await fetchComments(postId, token);
+      setComments(data);
+    };
+    loadComments();
+  }, [postId, token]);
 
   const toggleComment = () => {
     setIsCommentOpen((prev) => !prev);
