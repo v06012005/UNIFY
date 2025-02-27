@@ -41,12 +41,17 @@ export default {
               "scale(0.1) translateX(-50%, -50%) translateY(-50%, -50%)",
           },
         },
+        fadeInUp: {
+          '0%': { opacity: 0, transform: 'translateY(20px)' },
+          '100%': { opacity: 1, transform: 'translateY(0)' },
+        },
       },
       animation: {
         fadeScale: "fadeScale 5s ease-in-out",
         fadeOut: "fadeOut 5s ease-in-out",
         fadeInCenter: "fadeInCenter 0.3s ease-in-out",
         fadeOutCenter: "fadeOutCenter 0.3s ease-in-out",
+        fadeInUp: 'fadeInUp 0.5s ease-out forwards',
       },
       boxShadow: {
         "right-left": "10px 0px 15px 2px rgba(0, 0, 0, 0.3)",

@@ -48,6 +48,7 @@ public interface UserRepository extends JpaRepository<User, String> {
 			""")
 	List<User> findUsersNotFriendsOrFollowing(@Param("currentUserId") String currentUserId);
 
+
 	// Đang theo dõi
 
 	@Query("""
@@ -73,4 +74,5 @@ public interface UserRepository extends JpaRepository<User, String> {
 			    AND u.id <> :currentUserId
 			""")
 	List<User> findFriendsByUserId(@Param("currentUserId") String currentUserId);
+
 }

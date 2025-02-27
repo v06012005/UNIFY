@@ -41,6 +41,7 @@ const Reels = () => {
   const [comments, setComments] = useState([]);
   const { user } = useApp();
   const token = Cookies.get("token");
+
   useEffect(() => {
     if (!token) return;
 
@@ -58,7 +59,7 @@ const Reels = () => {
   }, [token]);
 
    
-  /////////
+
   const fetchComments = async () => {
     if (!postId) {
       console.error("postId is undefined");

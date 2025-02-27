@@ -1,6 +1,5 @@
 package com.app.unify.controllers;
 
-import java.security.Principal;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.unify.dto.global.ReportDTO;
-import com.app.unify.dto.global.UserDTO;
 import com.app.unify.entities.Report;
 import com.app.unify.services.ReportService;
 
@@ -57,5 +55,5 @@ public class ReportController {
 			return ResponseEntity.ok("Remove Report Successfully !");
 		}
 
-	    
+
 }
