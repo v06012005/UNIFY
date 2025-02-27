@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 import com.app.unify.dto.global.PostDTO;
@@ -67,9 +68,10 @@ public class PostServiceImp implements PostService {
 	}
 
 	@Override
-	public void deletePostById(String id) {
-		postRepository.deleteById(id);
-	}
+	@CacheEvict(value = "posts", key = "#id")
+    public void deletePostById(String id) {
+        postRepository.deleteById(id);
+    }
 
 	@Override
 	public List<PostDTO> getPostsByDate(LocalDateTime start, LocalDateTime end) {
@@ -89,13 +91,5 @@ public class PostServiceImp implements PostService {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public List<PostDTO> getPostsByUserId(String userId) {
-        return postRepository.findPostsByUserId(userId)
-                .stream()
-                .map(mapper::toPostDTO)
-                .collect(Collectors.toList());
-    }
-
-
+   
 }

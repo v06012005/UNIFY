@@ -57,14 +57,7 @@ const Reels = () => {
     loadComments();
   }, [token]);
 
-    if (showPicker) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [showPicker]);
+   
   /////////
   const fetchComments = async () => {
     if (!postId) {

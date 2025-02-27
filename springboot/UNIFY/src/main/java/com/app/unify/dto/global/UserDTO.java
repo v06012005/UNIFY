@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+import com.app.unify.entities.Avatar;
 import com.app.unify.entities.Role;
 
 import jakarta.validation.constraints.Email;
@@ -59,5 +60,6 @@ public class UserDTO {
 	private String currentPassword;
 	private String newPassword;
 	Set<Role> roles;
+//	Set<Avatar> avatars;
 
 }
