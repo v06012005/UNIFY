@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,7 +36,7 @@ public class PostCommentController {
                 request.getPostId(),
                 request.getContent(),
                 request.getParentId()
-              
+
             );
 
             // Chuyển đổi PostComment -> CommentDTO trước khi trả về
@@ -46,7 +45,7 @@ public class PostCommentController {
             responseDto.setUserId(savedComment.getUser().getId());
             responseDto.setPostId(savedComment.getPost().getId());
             responseDto.setContent(savedComment.getContent());
-          
+
 
             return ResponseEntity.ok(responseDto);
         } catch (IllegalArgumentException e) {
@@ -64,6 +63,6 @@ public class PostCommentController {
         List<CommentDTO> comments = postCommentService.getCommentsByPostId(postId);
         return ResponseEntity.ok(comments);
     }
-    
-   
+
+
 }

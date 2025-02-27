@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.unify.dto.global.PostDTO;
-import com.app.unify.entities.Post;
 import com.app.unify.services.PostService;
 
 @RestController
@@ -54,12 +53,12 @@ public class PostController {
 		return ResponseEntity.ok("Post deleted successfully!");
 	}
 
-	
+
 	@GetMapping("/admin/list")
 	public List<PostDTO> getPostList() {
 		return postService.getAll();
 	}
-	
+
 	@GetMapping("/filter/{start}/{end}")
 	public List<PostDTO> getPostsByDate(@PathVariable("start") String start, @PathVariable("end") String end) {
 		LocalDate startDate = LocalDate.parse(start, DateTimeFormatter.ofPattern("yyyy-MM-dd"));

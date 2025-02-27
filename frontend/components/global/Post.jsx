@@ -13,7 +13,7 @@ import CommentForm from "./CommentForm";
 import PostVideo from "./PostVideo";
 import { fetchPosts } from "@/app/lib/dal";
 import { useEffect } from "react";
-import { Spinner, user } from "@heroui/react";
+import { Spinner } from "@heroui/react";
 import { useApp } from "../provider/AppProvider";
 
 const User = ({ href = "", username = "", firstname = "", lastname = "" }) => {
