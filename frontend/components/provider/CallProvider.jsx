@@ -64,6 +64,18 @@ export const CallProvider = ({children}) => {
                         setReceiver(true);
                         setCaller(data.from);
                         setName(data.name);
+                        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/users/${data.from}`, {
+                            headers: {
+                                Authorization: `Bearer ${Cookies.get('token')}`,
+                            }
+                        })
+                            .then((response) => {
+                                const user = response.data;
+                                setNameReceiver(`${user.firstName} ${user.lastName}`);
+                            })
+                            .catch((error) => {
+                                console.error('Error fetching user info:', error);
+                            });
                         setCallerSignal(data.signalData);
                     } else if (data.type === "callAccepted") {
                         setCallEnded(false);
