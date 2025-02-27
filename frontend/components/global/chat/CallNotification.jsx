@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useCall } from "@/components/provider/CallProvider";
@@ -6,7 +5,6 @@ import { Phone, PhoneOff } from "lucide-react";
 import {useApp} from "@/components/provider/AppProvider";
 
 const CallNotification = () => {
-    const { receiver, callAccepted, leaveCall, nameReceiver } = useCall();
 
     const {user} = useApp()
 
@@ -37,7 +35,6 @@ const CallNotification = () => {
                         className="w-12 h-12 rounded-full border-2 border-blue-500"
                     />
                     <div className="flex-1">
-                        <p className="text-lg font-semibold text-white">{nameReceiver} đang gọi...</p>
                         <p className="text-sm text-gray-400">Cuộc gọi đến</p>
                     </div>
                 </div>
