@@ -22,7 +22,7 @@ const PostReels = ({ src }) => {
   return (
     <>
       <div
-        className="absolute inset-0 bg-gray-700 flex justify-center items-center"
+        className="absolute inset-0 bg-gray-700 flex justify-center items-center "
         onClick={togglePlayPause}
       >
         <button
