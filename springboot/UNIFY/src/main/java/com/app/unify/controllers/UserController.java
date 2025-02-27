@@ -24,7 +24,7 @@ import com.app.unify.services.UserService;
 public class UserController {
 
 	@Autowired
-	UserService userService;
+	private UserService userService;
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;

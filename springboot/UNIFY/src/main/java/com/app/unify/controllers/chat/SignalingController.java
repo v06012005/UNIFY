@@ -37,6 +37,7 @@ public class SignalingController {
                         .type("callAccepted")
                         .signalData(signalMessageDTO.getSignalData())
                         .from(signalMessageDTO.getFrom())
+                        .name(signalMessageDTO.getName())
                         .build()
         );
     }
