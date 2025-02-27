@@ -58,7 +58,7 @@ public class PostCommentService {
         return postCommentRepository.save(newComment);
     }
 
-     
+
     public List<CommentDTO> getCommentsByPostId(String postId) {
         List<PostComment> comments = postCommentRepository.findCommentsByPostIdWithUser(postId);
         return comments.stream()

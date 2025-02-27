@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.unify.dto.global.PostDTO;
+
 import com.app.unify.services.LikedPostService;
 import com.app.unify.services.MediaService;
 import com.app.unify.services.PostCommentService;
@@ -69,12 +70,12 @@ public class PostController {
 	    }
 	}
 
-	
+
 	@GetMapping("/admin/list")
 	public List<PostDTO> getPostList() {
 		return postService.getAll();
 	}
-	
+
 	@GetMapping("/filter/{start}/{end}")
 	public List<PostDTO> getPostsByDate(@PathVariable("start") String start, @PathVariable("end") String end) {
 		LocalDate startDate = LocalDate.parse(start, DateTimeFormatter.ofPattern("yyyy-MM-dd"));

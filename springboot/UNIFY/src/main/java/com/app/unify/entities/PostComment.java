@@ -49,14 +49,14 @@ public class PostComment {
     private User user;
 
     @Column(name = "commented_at", nullable = false)
-  
+
     private LocalDateTime commentedAt;
 
     @ManyToOne
     @JoinColumn(name = "parent_id")
-    @JsonBackReference  
+    @JsonBackReference
     private PostComment parent;
-    
+
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<PostComment> replies = new ArrayList<>();

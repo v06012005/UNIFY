@@ -17,7 +17,7 @@ public interface PostRepository extends JpaRepository<Post, String> {
 			+ "LEFT JOIN p.likedPosts lp " + "LEFT JOIN p.comments pc " + "GROUP BY p "
 			+ "ORDER BY interactionCount DESC")
 	List<Object[]> findPostsWithInteractionCounts();
-	
+
 	@Query(value = "FROM Post o WHERE o.postedAt BETWEEN ?1 AND ?2")
 	List<Post> getPostsByDate(LocalDateTime start, LocalDateTime end);
 

@@ -16,8 +16,11 @@ import com.app.unify.dto.global.PostDTO;
 import com.app.unify.dto.request.LikedPostRequest;
 import com.app.unify.services.LikedPostService;
 
+import lombok.RequiredArgsConstructor;
+
 @RestController
 @RequestMapping("/liked-posts")
+@RequiredArgsConstructor
 public class LikedPostController {
 
 	@Autowired
@@ -46,7 +49,7 @@ public class LikedPostController {
 		return ResponseEntity.ok("You liked this post !");
 	}
 
-	@DeleteMapping
+	@DeleteMapping("/delete/{userId}/{postId}")
 	public ResponseEntity<?> remove(@RequestBody LikedPostRequest request) {
 		likedPostService.deleteLikedPost(request);
 		return ResponseEntity.ok("You cancel like this post !");
