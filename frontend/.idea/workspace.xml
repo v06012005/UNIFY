@@ -6,9 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="1dc806c8-9b06-409a-84de-1db3bd7b8131" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(pages)/messages/page.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(pages)/messages/page.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/(pages)/video-call/page.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(pages)/video-call/page.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/controllers/chat/SignalingController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/controllers/chat/SignalingController.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -106,7 +104,7 @@
       <workItem from="1739604833173" duration="638000" />
       <workItem from="1740122328053" duration="26541000" />
       <workItem from="1740218303030" duration="9655000" />
-      <workItem from="1740303140392" duration="19798000" />
+      <workItem from="1740303140392" duration="22683000" />
     </task>
     <servers />
   </component>
