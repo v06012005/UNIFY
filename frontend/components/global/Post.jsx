@@ -13,7 +13,8 @@ import CommentForm from "./CommentForm";
 import PostVideo from "./PostVideo";
 import { fetchPosts } from "@/app/lib/dal";
 import { useEffect } from "react";
-import { Spinner } from "@heroui/react";
+import { Spinner, user } from "@heroui/react";
+import { useApp } from "../provider/AppProvider";
 
 const User = ({ href = "", username = "", firstname = "", lastname = "" }) => {
   return (
@@ -171,7 +172,7 @@ const Slider = ({ srcs = [] }) => {
 const Post = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const { user } = useApp();
   useEffect(() => {
     async function getPosts() {
       const homePosts = await fetchPosts();
@@ -194,9 +195,7 @@ const Post = () => {
 
   return (
     <>
-
       {posts.map((post) => (
-
         <div className="w-3/4 mb-8 mx-auto pb-8" key={post.id}>
           <User
             href="/profile"
@@ -208,7 +207,11 @@ const Post = () => {
           {/* <Image src={imageSrc} alt='Dummy' className='w-[450px] h-[550px] mb-2 object-cover mx-auto rounded-lg' width={450} height={550} /> */}
           <Caption text={post.captions} />
           <div className="flex text-xl">
-            <LikeButton className="!text-xl" />
+            <LikeButton
+              className="!text-xl"
+              userId={user.id}
+              postId={post.id}
+            />
             <CommentButton className="text-xl" postId={post.id}>
               <i className="fa-regular fa-comment"></i>47K
             </CommentButton>

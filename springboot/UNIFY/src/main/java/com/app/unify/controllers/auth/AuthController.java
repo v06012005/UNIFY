@@ -50,7 +50,6 @@ public class AuthController {
 	@PostMapping(URI + "/login")
 	public Object login(@RequestBody UserLoginDto userLoginDto) {
 		Authentication authentication;
-		System.out.println(userLoginDto.getEmail());
 		User user = userRepository.findByEmail(userLoginDto.getEmail())
 				.orElseThrow(() -> new UserNotFoundException("User not found !"));
 		if (userLoginDto.getEmail().equals(user.getEmail())
@@ -61,7 +60,7 @@ public class AuthController {
 
 			String tokenGenerated = jwtUtil.generateToken(userLoginDto.getEmail());
 			authenticationService.saveUserToken(user, tokenGenerated);
-			
+
 			return ResponseEntity.status(HttpStatus.OK).body(new TokenResponse(tokenGenerated));
 		}
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect email or password !");

@@ -39,6 +39,16 @@ public class LikedPostService {
 		this.likedPostMapper = likedPostMapper;
 		this.postMapper = postMapper;
 	}
+	
+	public Set<PostDTO> getListLikedPosts(String userId) {
+		User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found!"));
+		return user.getLikedPosts().stream().map(LikedPost::getPost).map(postMapper::toPostDTO)
+				.collect(Collectors.toSet());
+	}
+	
+	public boolean checkLiked(String userId, String postId) {
+		return likedPostRepository.existsByUserIdAndPostId(userId, postId);
+	}
 
 	public void createLikedPost(LikedPostRequest request) {
 		LikedPost likedPost = LikedPost.builder()
@@ -49,11 +59,18 @@ public class LikedPostService {
 				.build();
 		likedPostRepository.save(likedPost);
 	}
-
-	public Set<PostDTO> getListLikedPosts(String userId) {
-		User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found!"));
-		return user.getLikedPosts().stream().map(LikedPost::getPost).map(postMapper::toPostDTO)
-				.collect(Collectors.toSet());
+	
+	public void deleteLikedPost(LikedPostRequest request) {
+		LikedPost likedPost = LikedPost.builder()
+				.post(postRepository.findById(request.getPostId())
+						.orElseThrow(() -> new PostNotFoundException("Post not found !")))
+				.user(userRepository.findById(request.getUserId())
+						.orElseThrow(() -> new UserNotFoundException("User not found !")))
+				.build();
+		likedPostRepository.delete(likedPost);
 	}
-
+	
+	public int countLikePost(String postId) {
+		return likedPostRepository.countByPostId(postId);
+	}
 }

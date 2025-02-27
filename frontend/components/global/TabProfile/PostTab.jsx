@@ -1,10 +1,13 @@
-
 import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useApp } from "@/components/provider/AppProvider";
 import axios from "axios";
 import Cookies from "js-cookie";
+////////////comment
+import { fetchComments } from "app/api/service/commentService";
+import CommentItem from "@/components/comments/CommentItem";
+import CommentInput from "@/components/comments/CommentInput";
 
 const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   return (
@@ -19,7 +22,7 @@ const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   );
 };
 
-const UserPosts = ({ username }) => {
+const UserPosts = ({ username    }) => {
   const [selectedPost, setSelectedPost] = useState(null);
   const [postToDelete, setPostToDelete] = useState(null);
   const [openList, setOpenList] = useState(false);
@@ -30,12 +33,26 @@ const UserPosts = ({ username }) => {
   const [postUsers, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const params = useParams();
+  /////////////comment
+  const [comments, setComments] = useState([]);
+  const token = Cookies.get("token");
+  // const postId = "0de81a82-caa6-439c-a0bc-124a83b5ceaf";
 
+  useEffect(() => {
+    if (selectedPost?.id) {
+      const loadComments = async () => {
+        const data = await fetchComments(selectedPost.id, token);
+        setComments(data);
+      };
+      loadComments();
+    }
+  }, [selectedPost, token]);
+  /////////
   const getPostUsers = async (username) => {
     try {
       const token = Cookies.get("token");
       if (!token) return;
- 
+
       getUserInfoByUsername(username)
         .then((data) => {
           if (data) {
@@ -183,7 +200,6 @@ const openDeleteModal = (postId) => {
           data-post-id={selectedPost.id}
         >
           <div className="bg-white dark:bg-gray-900 rounded-lg flex flex-row w-[1300px] h-[740px]">
-           
             <div className="w-1/2 relative">
               {selectedMedia ? (
                 selectedMedia.mediaType === "VIDEO" ? (
@@ -317,39 +333,19 @@ const openDeleteModal = (postId) => {
                   </span>
                   {selectedPost.captions}
                 </p>
-                <div className="flex items-start space-x-2 mb-2 mt-5">
-                  <div className="w-8 h-8 rounded-full border-2 border-gray-300">
-                    <img
-                      src={`/images/avt.jpg`}
-                      alt="User Avatar"
-                      className="w-full h-full rounded-full object-cover"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <p className="text-sm leading-tight">
-                      <span className="font-bold mr-4">user2</span> Đẹp quá!
-                    </p>
-                    <div className="flex">
-                      <span className="text-xs text-gray-500 mr-5">
-                        2 giờ trước
-                      </span>
-                      <span className="text-xs text-gray-500">Reply</span>
-                    </div>
-                  </div>
+                <div className=" items-start space-x-2 mb-2 mt-5">
+                  {comments.map((comment) => (
+                    <CommentItem key={comment.id} comment={comment} />
+                  ))}
                 </div>
-
               </div>
 
               <div className="p-4 border-t">
                 <div className="flex items-center border-none pt-2">
-
-                  <input
-                    type="text"
-                    placeholder="Add comment..."
-                    className="flex-1 border-none focus:ring-0 focus:outline-none dark:bg-gray-900 caret-blue-500"
+                  <CommentInput
+                    postId={selectedPost.id}
+                    setComments={setComments}
                   />
-                  <button className="text-blue-500 font-bold ml-2">Save</button>
-
                 </div>
               </div>
             </div>

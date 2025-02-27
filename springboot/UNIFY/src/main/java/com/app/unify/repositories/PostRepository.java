@@ -23,7 +23,7 @@ public interface PostRepository extends JpaRepository<Post, String> {
 
 	@Query(value = "FROM Post o WHERE o.user.username = ?1")
 	List<PostDTO> getMyPosts(String username);
-	
+
     @Query("SELECT p FROM Post p WHERE p.user.id = :userId ORDER BY p.postedAt DESC")
     List<Post> findMyPosts(@Param("userId") String userId);
 
