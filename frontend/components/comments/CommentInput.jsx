@@ -3,48 +3,64 @@ import Image from "next/image";
 import { Smile, Send } from "lucide-react";
 import Picker from "emoji-picker-react";
 import avatar2 from "@/public/images/testAvt.jpg";
-import { postComment, fetchComments } from "app/api/service/commentService";
+import { postComment } from "app/api/service/commentService";
 import Cookies from "js-cookie";
 import { useApp } from "@/components/provider/AppProvider";
+
 const CommentInput = ({ postId, setComments }) => {
   const [comment, setComment] = useState("");
-
   const [isCommentEmpty, setIsCommentEmpty] = useState(true);
   const [showPicker, setShowPicker] = useState(false);
   const pickerRef = useRef(null);
   const { user } = useApp();
   const token = Cookies.get("token");
-  /////////////////
+
+  // Xử lý gửi comment
   const handleCommentSubmit = async () => {
     if (!comment.trim()) return;
 
-    const newComment = await postComment(user.id, postId, comment, token);
-    if (newComment) {
-      setComments((prevComments) => [
-        {
-          ...newComment,
-          username: user.username,
-        },
-        ...prevComments,
-      ]);
-      setComment("");
+    if (!postId || !user?.id) {
+      console.error("postId or user.id is null or undefined");
+      return;
+    }
+
+    try {
+      const newComment = await postComment(user.id, postId, comment, token);
+      if (newComment) {
+        setComments((prevComments) => [
+          {
+            ...newComment,
+            username: user.username,
+          },
+          ...prevComments,
+        ]);
+        setComment("");
+        setIsCommentEmpty(true);
+      }
+    } catch (error) {
+      console.error("Error submitting comment:", error);
     }
   };
-  /////////////
+
+  // Xử lý click bên ngoài để đóng emoji picker
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (pickerRef.current && !pickerRef.current.contains(event.target)) {
+      if (
+        pickerRef.current &&
+        !pickerRef.current.contains(event.target) &&
+        !event.target.closest("button")
+      ) {
         setShowPicker(false);
       }
     };
 
     if (showPicker) {
       document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
     }
 
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, [showPicker]);
 
   return (
@@ -67,10 +83,10 @@ const CommentInput = ({ postId, setComments }) => {
         onInput={(e) => {
           e.target.style.height = "auto";
           const maxHeight =
-            3 * parseFloat(getComputedStyle(e.target).lineHeight); // Giới hạn 3 dòng
+            3 * parseFloat(getComputedStyle(e.target).lineHeight);
           if (e.target.scrollHeight > maxHeight) {
             e.target.style.height = `${maxHeight}px`;
-            e.target.style.overflowY = "auto"; // Hiện scroll khi quá dài
+            e.target.style.overflowY = "auto";
           } else {
             e.target.style.height = `${e.target.scrollHeight}px`;
             e.target.style.overflowY = "hidden";
