@@ -34,6 +34,7 @@ const Reels = () => {
   const [comments, setComments] = useState([]);
   const { user } = useApp();
   const token = Cookies.get("token");
+
   const { isOpen, onOpen, onOpenChange } = useDisclosure(); //  hook này được gọi ở cấp cao nhất
 
   const postId = "0de81a82-caa6-439c-a0bc-124a83b5ceaf";
