@@ -132,7 +132,7 @@ const VideoCallPage = () => {
                                     <img
                                         src={!receiver ? 'https://file.hstatic.net/1000292100/file/img_1907_grande_e05accd5a03247069db4f3169cfb8b11_grande.jpg' : 'https://i.pinimg.com/1200x/d2/f7/7e/d2f77e1984d947d02785f5a966e309dc.jpg'}
                                         alt="Avatar" className="w-20 h-20 rounded-full"/>
-                                    <h3 className="text-4xl font-semibold">{!receiver ? nameReceiver : name}</h3>
+                                    <h3 className="text-4xl font-semibold">{nameReceiver}</h3>
                                 </div>
                             </div>
                         )}
@@ -147,7 +147,7 @@ const VideoCallPage = () => {
                     </div>
                 ) : receiver && !callAccepted ? (
                     <div className="text-center bg-gray-800 p-6 rounded-lg shadow-lg">
-                        <h1 className="text-2xl font-bold">{name} đang gọi bạn...</h1>
+                        <h1 className="text-2xl font-bold">{nameReceiver} đang gọi bạn...</h1>
                     </div>
                 ) : callEnded ? (
                     <div className="text-center bg-gray-800 p-8 rounded-lg shadow-lg">
@@ -234,7 +234,7 @@ const VideoCallPage = () => {
 
                 {receiver && !callAccepted && (
                     <div className="flex gap-4 items-center bg-gray-800 p-4 rounded-xl shadow-lg">
-                        <p className="text-lg font-medium">{name} đang gọi...</p>
+                        <p className="text-lg font-medium">{nameReceiver} đang gọi...</p>
                         <button
                             onClick={answerCall}
                             className="p-3 bg-green-600 hover:bg-green-700 rounded-full transition-colors"
