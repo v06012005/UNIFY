@@ -48,7 +48,6 @@ const LikeButton = ({ className = "", userId, postId }) => {
       console.error("Chưa đăng nhập");
       return;
     }
-    console.log("Token lấy từ Cookies:", token);
 
     setLoading(true);
 
@@ -57,14 +56,6 @@ const LikeButton = ({ className = "", userId, postId }) => {
       const res = isLiked
         ? `http://localhost:8080/liked-posts/delete/${userId}/${postId}`
         : "http://localhost:8080/liked-posts";
-      console.log(
-        "Gửi request:",
-        method,
-        "với userId:",
-        userId,
-        "postId:",
-        postId
-      );
 
       const response = await fetch(res, {
         method,
@@ -76,7 +67,6 @@ const LikeButton = ({ className = "", userId, postId }) => {
       });
 
       const result = await response.text();
-      console.log("Response từ server:", response.status, result);
 
       if (response.ok) {
         setIsLiked((prev) => !prev);

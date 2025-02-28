@@ -13,6 +13,7 @@ import { useApp } from "@/components/provider/AppProvider";
 import { fetchComments } from "app/api/service/commentService";
 import CommentItem from "@/components/comments/CommentItem";
 import CommentInput from "@/components/comments/CommentInput";
+import FollowButton from "@/components/ui/follow-button";
 import {
   Modal,
   ModalContent,
@@ -96,10 +97,6 @@ const Reels = () => {
     setIsSaved((prev) => !prev);
   };
 
-  const folloWing = () => {
-    setIsFollow((prev) => !prev);
-  };
-
   const togglePopup = () => {
     setIsPopupOpen((prev) => !prev);
   };
@@ -145,15 +142,13 @@ const Reels = () => {
             ></Image>
             <div className="flex items-center space-x-2">
               <span className="font-medium pl-2">{post.user?.username}</span>
-              <button
-                className="backdrop-blur-3xl text-sm p-4 py-1 rounded-2xl font-bold 
-             transition-all duration-200 ease-in-out 
-             active:scale-125
-             hover:bg-gray-700 dark:hover:bg-gray-700"
-                onClick={folloWing}
-              >
-                {isFollow ? "Following" : "Follow"}
-              </button>
+              <span className="text-white text-lg">•</span>
+              <FollowButton
+                userId={user?.id}
+                followingId={post.user?.id}
+                classFollowing="backdrop-blur-3xl text-sm p-4 py-1 rounded-2xl font-bold transition-all duration-200 ease-in-out active:scale-125 hover:bg-gray-700 dark:hover:bg-gray-400"
+                classFollow="backdrop-blur-3xl text-sm p-4 py-1 rounded-2xl font-bold transition-all duration-200 ease-in-out active:scale-125 hover:bg-gray-700 dark:hover:bg-gray-400"
+              />
             </div>
           </div>
           <div className="absolute top-2/3 right-4 transform -translate-y-1/2 flex flex-col items-center space-y-7 text-white text-2xl">
