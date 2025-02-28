@@ -64,12 +64,7 @@ public class LikedPostService {
 	@Transactional
 	public void deleteLikedPost(LikedPostRequest request) {
 		LikedPost likedPost = likedPostRepository.findByUserIdAndPostId(request.getUserId(), request.getPostId());
-		System.out.println("Like post id: " + likedPost.getId());
-		System.out.println("Like post post_id: " + likedPost.getPost().getId());
-		System.out.println("Like post user_id: " + likedPost.getUser().getId());
 		likedPostRepository.deleteByUserIdAndPostId(likedPost.getUser().getId(), likedPost.getPost().getId());
-		System.out.println("Post id: " + likedPost.getId());
-
 	}
 
 	public int countLikePost(String postId) {

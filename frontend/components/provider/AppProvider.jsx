@@ -185,7 +185,7 @@ export const AppProvider = ({ children }) => {
         expires: 7,
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -248,8 +248,11 @@ export const AppProvider = ({ children }) => {
       }
 
       const token = Cookies.get("token");
-      console.log("Token gửi lên:", token);
-      console.log("Fetching user info for:", username);
+      if (!token) {
+        console.error("Lỗi: Chưa đăng nhập!");
+        return;
+      }
+
       const response = await axios.get(
         `${API_URL}/users/username/${username}`,
         {

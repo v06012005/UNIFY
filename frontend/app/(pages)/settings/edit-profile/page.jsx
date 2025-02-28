@@ -213,8 +213,6 @@ const Page = () => {
 
     setLoading(true);
 
-    console.log("Submitting user data:", userData);
-
     try {
       const token = Cookies.get("token");
       console.log("Token:", token);

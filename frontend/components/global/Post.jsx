@@ -180,8 +180,6 @@ const Post = () => {
       setLoading(false);
     }
 
-    console.log(posts);
-
     getPosts();
   }, []);
 
