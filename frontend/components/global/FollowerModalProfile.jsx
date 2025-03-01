@@ -50,9 +50,9 @@ const FollowerModal = ({ isOpen, onClose }) => {
         />
         <ul className="h-[390px]  overflow-y-auto scrollbar-hide">
           {loading ? (
-            <p className="text-gray-500">Đang tải danh sách...</p>
+            <p className="text-gray-500">Loading...</p>
           ) : !filteredUsers || filteredUsers.length === 0 ? (
-            <p className="text-gray-500">Không có người theo dõi nào.</p>
+            <p className="text-gray-500">No followers.</p>
           ) : (
             filteredUsers.slice(0, 11).map((userData) => (
               <li

@@ -2,6 +2,7 @@ package com.app.unify.repositories;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -9,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.app.unify.dto.global.PostDTO;
 import com.app.unify.entities.Post;
+import com.app.unify.entities.Report;
 
 
 public interface PostRepository extends JpaRepository<Post, String> {
@@ -30,5 +32,7 @@ public interface PostRepository extends JpaRepository<Post, String> {
     @Query("SELECT p FROM Post p WHERE p.user.id = :userId ORDER BY p.postedAt DESC")
     List<Post> findPostsByUserId(@Param("userId") String userId);
 
+    Optional<Post> findById(String id);
+    
 
 }

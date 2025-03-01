@@ -83,9 +83,11 @@ const Reels = () => {
       } finally {
         setIsCommentsLoading(false);
       }
+
     },
     [token]
   );
+
 
   // Intersection Observer
   useEffect(() => {
