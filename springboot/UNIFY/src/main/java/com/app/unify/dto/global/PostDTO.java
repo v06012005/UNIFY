@@ -3,6 +3,7 @@ package com.app.unify.dto.global;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+import com.app.unify.entities.HashtagDetail;
 import com.app.unify.entities.Media;
 import com.app.unify.types.Audience;
 
@@ -35,5 +36,7 @@ public class PostDTO {
 	Boolean isLikeVisible = false;
 
 	Set<Media> media;
+	
+	Set<HashtagDetailDTO> hashtags;
 
 }

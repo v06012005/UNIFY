@@ -81,6 +81,10 @@ public class Post {
 	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JsonManagedReference
 	Set<LikedPost> likedPosts;
+	
+	@OneToMany(mappedBy = "post")
+	@JsonManagedReference
+	Set<HashtagDetail> hashtags;
 
 	@Override
 	public int hashCode() {
