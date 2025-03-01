@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSuggestedUsers } from "@/components/provider/SuggestedUsersProvider";
 import { useApp } from "@/components/provider/AppProvider";
@@ -12,10 +12,16 @@ const FollowingModal = ({ isOpen, onClose }) => {
   const router = useRouter();
   const { user } = useApp();
   const [searchTerm, setSearchTerm] = useState("");
+  const hasFetched = useRef(false);
 
   useEffect(() => {
-    getFollowingUsers();
-  }, []);
+    if (
+      !hasFetched.current &&
+      (!followingUsers || followingUsers.length === 0)
+    ) {
+      getFollowingUsers();
+    }
+  }, [followingUsers]);
 
   const handleClick = (username) => {
     if (!username) {
@@ -74,6 +80,8 @@ const FollowingModal = ({ isOpen, onClose }) => {
                   followingId={userData.id}
                   classFollow="bg-red-500 font-bold py-1 px-4 rounded-lg text-white text-md"
                   classFollowing="bg-gray-700 hover:bg-gray-600 font-bold py-1 px-4 rounded-lg text-white text-md"
+                  contentFollowing="Following"
+                  contentFollow="Follow"
                 />
               </li>
             ))

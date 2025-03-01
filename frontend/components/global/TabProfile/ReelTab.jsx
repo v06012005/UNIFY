@@ -52,14 +52,18 @@ const UserReels = ({ username }) => {
               .then((response) => {
                 setPosts(response.data || []);
                 setLoading(false);
+
                 console.log("Danh sách bài đăng của tôi:", response.data);
+
               })
               .catch((error) => console.log(error));
           }
         })
         .catch((error) => console.log(error));
     } catch (error) {
+
       console.log(error);
+
     }
   };
   const handleDeletePost = async (postId) => {
@@ -106,7 +110,8 @@ const openDeleteModal = (postId) => {
   const handlePostClick = (post) => {
     setSelectedPost(post);
     setSelectedMedia(post.media.length > 0 ? post.media[0] : null);
-    console.log("Post ID:", post.id);
+
+
   };
 
   const closeModal = () => {

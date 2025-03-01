@@ -6,6 +6,7 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 import AuthProvider from "@/components/provider/AuthProvider";
 import { ModalProvider } from "@/components/provider/ModalProvider";
 import { AppProvider } from "@/components/provider/AppProvider";
+import { FollowProvider } from "@/components/provider/FollowProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,7 +37,9 @@ export default async function RootLayout({ children }) {
       >
         <AuthProvider>
           <AppProvider>
-            <ModalProvider>{children}</ModalProvider>
+            <ModalProvider>
+              <FollowProvider>{children}</FollowProvider>
+            </ModalProvider>
           </AppProvider>
         </AuthProvider>
       </body>

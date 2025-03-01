@@ -51,13 +51,15 @@ public class UserService {
 
 	public UserDTO createUser(UserDTO userDto) {
 		userDto.setPassword(EncryptPasswordUtil.encryptPassword(userDto.getPassword()));
-		  
+
 
 		Role role = roleRepository.findByName("USER").orElseThrow(() -> new RuntimeException("Role not found !"));
 		userDto.setRoles(Collections.singleton(role));
 //		if (userDto.getAvatars() == null || userDto.getAvatars().isEmpty()) {
 //	        Avatar defaultAvatar = avatarRepository.findByUrl("default-avatar.png")
+
 //	                .orElse(null); 
+
 //	        if (defaultAvatar != null) {
 //	            userDto.setAvatars(Collections.singleton(defaultAvatar));
 //	        }
@@ -66,7 +68,7 @@ public class UserService {
 		return userMapper.toUserDTO(user);
 	}
 
-//	@PreAuthorize("hasRole('ADMIN')")
+	//	@PreAuthorize("hasRole('ADMIN')")
 	public UserDTO findById(String id) {
 		return userMapper.toUserDTO(
 				userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found !")));
@@ -78,10 +80,12 @@ public class UserService {
 		Role role = roleRepository.findByName("USER").orElseThrow(() -> new RuntimeException("Role not found !"));
 		userDto.setPassword(userRepository.findById(userDto.getId())
 				.orElseThrow(() -> new UserNotFoundException("User not found !")).getPassword());
+
 		
 //		if (userDto.getAvatars() == null || userDto.getAvatars().isEmpty()) {
 //	        Avatar defaultAvatar = avatarRepository.findByUrl("unify_icon_2.svg")
 //	                .orElse(null); 
+
 //	        if (defaultAvatar != null) {
 //	            userDto.setAvatars(Collections.singleton(defaultAvatar));
 //	        }
@@ -96,22 +100,22 @@ public class UserService {
 		User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found !"));
 		userRepository.delete(user);
 	}
-	
+
 	@PreAuthorize("hasRole('ADMIN')")
 	public void temporarilyDisableUser(String id) {
 		User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found !"));
 		user.setStatus(1);
 		userRepository.save(user);
 	}
-	
+
 	@PreAuthorize("hasRole('ADMIN')")
 	public void permanentlyDisableUser(String id) {
 		User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found !"));
 		user.setStatus(2);
 		userRepository.save(user);
 	}
-	
-	
+
+
 	@PreAuthorize("hasRole('ADMIN')")
 	public void unlockUser(String id) {
 		User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found !"));
@@ -131,49 +135,49 @@ public class UserService {
 				.orElseThrow(() -> new UserNotFoundException("Username not found: " + username));
 	}
 	public List<UserDTO> getSuggestedUsers(String currentUserId) {
-	    UserDTO userDTO = findById(currentUserId);
-	    if (userDTO == null) {
-	        return Collections.emptyList(); 
-	    }
-	    
-	    return userRepository.findUsersNotFriendsOrFollowing(userDTO.getId()) 
-	            .stream()
-	            .map(userMapper::toUserDTO)
-	            .collect(Collectors.toList());
+		UserDTO userDTO = findById(currentUserId);
+		if (userDTO == null) {
+			return Collections.emptyList();
+		}
+
+		return userRepository.findUsersNotFriendsOrFollowing(userDTO.getId())
+				.stream()
+				.map(userMapper::toUserDTO)
+				.collect(Collectors.toList());
 	}
 
 
 	public List<UserDTO> findUsersFollowingMe(String currentUserId) {
-	    UserDTO userDTO = findById(currentUserId);
-	    if (userDTO == null) {
-	        return Collections.emptyList(); 
-	    }
-	    return userRepository.findUsersFollowingMe(userDTO.getId())
-	            .stream()
-	            .map(userMapper::toUserDTO)
-	            .collect(Collectors.toList());
+		UserDTO userDTO = findById(currentUserId);
+		if (userDTO == null) {
+			return Collections.emptyList();
+		}
+		return userRepository.findUsersFollowingMe(userDTO.getId())
+				.stream()
+				.map(userMapper::toUserDTO)
+				.collect(Collectors.toList());
 	}
 	public List<UserDTO> findUsersFollowedBy(String currentUserId) {
-	    UserDTO userDTO = findById(currentUserId);
-	    if (userDTO == null) {
-	        return Collections.emptyList(); 
-	    }
-	    
-	    return userRepository.findUsersFollowedBy(userDTO.getId())
-	            .stream()
-	            .map(userMapper::toUserDTO)
-	            .collect(Collectors.toList());
+		UserDTO userDTO = findById(currentUserId);
+		if (userDTO == null) {
+			return Collections.emptyList();
+		}
+
+		return userRepository.findUsersFollowedBy(userDTO.getId())
+				.stream()
+				.map(userMapper::toUserDTO)
+				.collect(Collectors.toList());
 	}
 	public List<UserDTO> getFriends(String currentUserId) {
-	    UserDTO userDTO = findById(currentUserId);
-	    if (userDTO == null) {
-	        return Collections.emptyList(); 
-	    }
-	    
-	    return userRepository.findFriendsByUserId(userDTO.getId())
-	            .stream()
-	            .map(userMapper::toUserDTO)
-	            .collect(Collectors.toList());
+		UserDTO userDTO = findById(currentUserId);
+		if (userDTO == null) {
+			return Collections.emptyList();
+		}
+
+		return userRepository.findFriendsByUserId(userDTO.getId())
+				.stream()
+				.map(userMapper::toUserDTO)
+				.collect(Collectors.toList());
 	}
 
 	public UserDTO changePassword(String currentPassword, String newPassword) {

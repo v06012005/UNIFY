@@ -2,7 +2,7 @@ package com.app.unify.entities;
 
 import java.util.Objects;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -33,7 +33,7 @@ public class LikedPost {
 
 	@ManyToOne
 	@JoinColumn(name = "post_id", referencedColumnName = "id", nullable = false)
-	@JsonIgnore
+	@JsonBackReference
 	Post post;
 
 	@ManyToOne
@@ -44,5 +44,4 @@ public class LikedPost {
 	public int hashCode() {
 		return Objects.hash(id);
 	}
-
 }

@@ -178,7 +178,9 @@ const Page = () => {
     const file = e.target.files[0]; // Chỉ lấy file đầu tiên (1 ảnh duy nhất)
     const allowedTypes = ["image/png", "image/jpeg", "image/jpg", "image/gif"]; // Chỉ cho phép ảnh
 
+  
     if (!file) return; // Nếu không có file, thoát
+  
 
     // Kiểm tra loại file
     if (!allowedTypes.includes(file.type)) {
@@ -213,8 +215,6 @@ const Page = () => {
 
     setLoading(true);
 
-    console.log("Submitting user data:", userData);
-
     try {
       const token = Cookies.get("token");
       console.log("Token:", token);
@@ -229,6 +229,7 @@ const Page = () => {
       };
       console.log("Request data to send:", requestData);
       // Xử lý tải ảnh lên nếu có avatar mới
+
       if (userData.avatar instanceof File) {
         const formData = new FormData();
         formData.append("file", userData.avatar); // Chỉ gửi 1 file
@@ -248,6 +249,7 @@ const Page = () => {
         const uploadData = await uploadResponse.json();
         updatedUserData.avatar = uploadData.files[0].url; // Lấy URL từ server
       }
+
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
         method: "PUT",
@@ -298,6 +300,7 @@ const Page = () => {
     }
   };
 
+
   return (
     <div className="w-full">
       <div className="h-screen overflow-y-auto">
@@ -333,6 +336,7 @@ const Page = () => {
                   id="avatar"
                   name="avatar"
                   type="file"
+                  
                   accept="image/*"
                   className="hidden"
                   ref={fileInputRef}
@@ -342,6 +346,7 @@ const Page = () => {
 
               <button
                 className="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition"
+
                 onClick={(e) => {
                   e.preventDefault();
                   handleDeleteAvatar();
@@ -644,3 +649,5 @@ const Page = () => {
 };
 
 export default Page;
+
+

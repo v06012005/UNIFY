@@ -2,7 +2,6 @@ package com.app.unify.dto.global;
 
 import java.time.LocalDateTime;
 
-
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
@@ -16,6 +15,8 @@ public class ReportDTO {
 	    private String entityType;
 	    private LocalDateTime reportedAt;
 	    private Integer status;
+
 	    private Object reportedEntity;
 	
+
 }

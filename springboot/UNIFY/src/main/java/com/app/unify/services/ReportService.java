@@ -5,10 +5,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.app.unify.dto.global.ReportDTO;
+
 import com.app.unify.dto.global.UserDTO;
 import com.app.unify.entities.Post;
 import com.app.unify.entities.PostComment;
@@ -17,13 +19,16 @@ import com.app.unify.entities.User;
 import com.app.unify.exceptions.ReportException;
 import com.app.unify.mapper.CommentMapper;
 import com.app.unify.mapper.PostMapper;
+
 import com.app.unify.mapper.ReportMapper;
 import com.app.unify.mapper.UserMapper;
 import com.app.unify.repositories.PostCommentRepository;
 import com.app.unify.repositories.PostRepository;
 import com.app.unify.repositories.ReportRepository;
 import com.app.unify.repositories.UserRepository;
+
 import com.app.unify.types.EntityType;
+
 
 import lombok.RequiredArgsConstructor;
 
@@ -172,7 +177,7 @@ public class ReportService {
             throw new ReportException("Invalid report status: " + status);
         }
     }
-    
+
 	public ReportDTO updateReportStatus(String reportId, Integer status) {
 		Report report = reportRepository.findById(reportId)
 				.orElseThrow(() -> new ReportException("Report not found!"));

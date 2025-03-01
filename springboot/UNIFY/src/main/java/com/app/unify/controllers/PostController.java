@@ -19,16 +19,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.unify.dto.global.PostDTO;
+
 import com.app.unify.services.LikedPostService;
 import com.app.unify.services.MediaService;
 import com.app.unify.services.PostCommentService;
 import com.app.unify.services.PostService;
 
 import lombok.RequiredArgsConstructor;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/posts")
 public class PostController {
+
 
 	@Autowired
 	private PostService postService;
@@ -40,20 +43,22 @@ public class PostController {
 		return postService.getPostsTrending();
 	}
 
-	@PostMapping
-	public PostDTO createPost(@RequestBody PostDTO postDTO) {
-		return postService.createPost(postDTO);
-	}
 
-	@GetMapping("/post_detail/{id}")
-	public PostDTO getPost(@PathVariable("id") String id) {
-		return postService.getById(id);
-	}
+    @PostMapping
+    public PostDTO createPost(@RequestBody PostDTO postDTO) {
+        return postService.createPost(postDTO);
+    }
 
-	@PutMapping
-	public PostDTO updatePost(@RequestBody PostDTO postDTO) {
-		return postService.updatePost(postDTO);
-	}
+    @GetMapping("/post_detail/{id}")
+    public PostDTO getPost(@PathVariable("id") String id) {
+        return postService.getById(id);
+    }
+
+    @PutMapping
+    public PostDTO updatePost(@RequestBody PostDTO postDTO) {
+        return postService.updatePost(postDTO);
+    }
+
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<String> deletePost(@PathVariable("id") String id) {
@@ -69,30 +74,30 @@ public class PostController {
 	    }
 	}
 
-	
-	@GetMapping("/admin/list")
-	public List<PostDTO> getPostList() {
-		return postService.getAll();
-	}
-	
-	@GetMapping("/filter/{start}/{end}")
-	public List<PostDTO> getPostsByDate(@PathVariable("start") String start, @PathVariable("end") String end) {
-		LocalDate startDate = LocalDate.parse(start, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+
+    @GetMapping("/admin/list")
+    public List<PostDTO> getPostList() {
+        return postService.getAll();
+    }
+
+    @GetMapping("/filter/{start}/{end}")
+    public List<PostDTO> getPostsByDate(@PathVariable("start") String start, @PathVariable("end") String end) {
+        LocalDate startDate = LocalDate.parse(start, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         LocalDateTime startDateTime = startDate.atStartOfDay();
         LocalDate endDate = LocalDate.parse(end, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         LocalDateTime endDateTime = endDate.atStartOfDay();
-		return postService.getPostsByDate(startDateTime, endDateTime);
-	}
+        return postService.getPostsByDate(startDateTime, endDateTime);
+    }
 //	@GetMapping("/username/{username}")
 //	public List<PostDTO> getMyPosts(@PathVariable("username") String username) {
 //		return postService.getMyPosts(username);
 //	}
 
-	 @GetMapping("/my")
-	    public ResponseEntity<List<PostDTO>> getMyPosts(@RequestParam String userId) {
-	        List<PostDTO> posts = postService.getMyPosts(userId);
-	        return ResponseEntity.ok(posts);
-	    }
 
-	  
+    @GetMapping("/my")
+    public ResponseEntity<List<PostDTO>> getMyPosts(@RequestParam String userId) {
+        List<PostDTO> posts = postService.getMyPosts(userId);
+        return ResponseEntity.ok(posts);
+    }
 }

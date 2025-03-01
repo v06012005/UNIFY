@@ -185,7 +185,9 @@ export const AppProvider = ({ children }) => {
         expires: 7,
       });
     } catch (error) {
+
       console.log(error);
+
     }
   };
 
@@ -248,8 +250,10 @@ export const AppProvider = ({ children }) => {
       }
 
       const token = Cookies.get("token");
+
       console.log("Token gửi lên:", token);
       console.log("Fetching user info for:", username);
+
       const response = await axios.get(
         `${API_URL}/users/username/${username}`,
         {
@@ -276,9 +280,8 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-
   const [userFromAPI, setUserFromAPI] = useState(null);
-  
+
   useEffect(() => {
     if (userFromAPI?.username && userFromAPI === null) {
       getUserInfoByUsername(userFromAPI.username)
@@ -290,7 +293,6 @@ export const AppProvider = ({ children }) => {
         .catch((error) => console.log(error));
     }
   }, []);
-
 
   useEffect(() => {
     getInfoUser().catch((error) => console.log(error));

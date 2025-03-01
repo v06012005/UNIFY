@@ -16,20 +16,21 @@ import com.app.unify.services.MediaService;
 @RestController
 @RequestMapping("/media")
 public class MediaController {
-	@Autowired
-	private MediaService mediaService;
+
+    @Autowired
+    private MediaService mediaService;
 //	@PostMapping
 //	public MediaDTO save(MediaDTO mediaDTO) {
 //		return mediaService.create(mediaDTO);
 //	}
 
-	@PostMapping
-	public List<MediaDTO> saveAll(@RequestBody List<MediaDTO> mediaDTOs) {
-		return mediaService.saveAllByPostId(mediaDTOs);
-	}
+    @PostMapping
+    public List<MediaDTO> saveAll(@RequestBody List<MediaDTO> mediaDTOs) {
+        return mediaService.saveAllByPostId(mediaDTOs);
+    }
 
-	@GetMapping("/{postId}")
-	public List<MediaDTO> getMediaByPostId(@PathVariable("postId") String postId) {
-		return mediaService.findByPostId(postId);
-	}
+    @GetMapping("/{postId}")
+    public List<MediaDTO> getMediaByPostId(@PathVariable("postId") String postId) {
+        return mediaService.findByPostId(postId);
+    }
 }

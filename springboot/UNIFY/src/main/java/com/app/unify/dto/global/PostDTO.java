@@ -4,8 +4,6 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 import com.app.unify.entities.Media;
-import com.app.unify.entities.PostComment;
-import com.app.unify.entities.User;
 import com.app.unify.types.Audience;
 
 import lombok.AccessLevel;

@@ -30,6 +30,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 public class Report {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	String id;
