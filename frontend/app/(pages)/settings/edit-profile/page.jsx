@@ -249,7 +249,6 @@ const Page = () => {
       updatedUserData.avatar = uploadData.files[0].url; // Lấy URL từ server
     }
 
-
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
         method: "PUT",
         headers: {
@@ -647,3 +646,5 @@ const handleDeleteAvatar = () => {
 };
 
 export default Page;
+
+
