@@ -1,14 +1,9 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-// import "./lib/fontawesome"
 import Head from "next/head";
 import "@fortawesome/fontawesome-free/css/all.min.css";
-import AuthProvider from "@/components/provider/AuthProvider";
-import { ModalProvider } from "@/components/provider/ModalProvider";
-import { AppProvider } from "@/components/provider/AppProvider";
-import { FollowProvider } from "@/components/provider/FollowProvider";
-import { ReportProvider } from "@/components/provider/ReportProvider";
-import { SuggestedUsersProvider } from "@/components/provider/SuggestedUsersProvider";
+import RootProviders from "@/components/provider/RootProviders";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -25,30 +20,23 @@ export const metadata = {
 };
 
 export default async function RootLayout({ children }) {
-  return (
-    <html lang="en" suppressHydrationWarning>
-      <Head>
-        <link
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-          rel="stylesheet"
-        />
-      </Head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} flex w-full antialiased`}
-      >
-        <AuthProvider>
-          <ReportProvider>
-<SuggestedUsersProvider>
-          <AppProvider>
-            <ModalProvider>
 
-              <FollowProvider>{children}</FollowProvider>
-            </ModalProvider>
-          </AppProvider>
-          </SuggestedUsersProvider>
-          </ReportProvider>
-        </AuthProvider>
-      </body>
-    </html>
+    return (
+          <html lang="en" suppressHydrationWarning>
+          <Head>
+              <link
+                  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+                  rel="stylesheet"
+              />
+              <title>Unify</title>
+          </Head>
+          <body
+              className={`${geistSans.variable} ${geistMono.variable} flex w-full antialiased`}
+          >
+         <RootProviders>
+             {children}
+         </RootProviders>
+          </body>
+          </html>
   );
 }

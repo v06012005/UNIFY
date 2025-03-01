@@ -2,7 +2,6 @@
 
 import React from "react";
 import Image from "next/image";
-import dummy from "@/public/images/dummy.png";
 import avatar from "@/public/images/test1.png";
 import Link from "next/link";
 import { useState, useRef } from "react";
@@ -15,6 +14,7 @@ import { fetchPosts } from "@/app/lib/dal";
 import { useEffect } from "react";
 import { Spinner } from "@heroui/react";
 import { useApp } from "../provider/AppProvider";
+import {useQuery} from "@tanstack/react-query";
 
 const User = ({ href = "", username = "", firstname = "", lastname = "" }) => {
   return (
@@ -170,20 +170,15 @@ const Slider = ({ srcs = [] }) => {
 };
 
 const Post = () => {
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
+
   const { user } = useApp();
-  useEffect(() => {
-    async function getPosts() {
-      const homePosts = await fetchPosts();
-      setPosts(homePosts);
-      setLoading(false);
-    }
 
-    getPosts();
-  }, []);
+  const {data: posts, isPending } = useQuery({
+    queryKey: ["posts"],
+    queryFn: fetchPosts,
+  });
 
-  if (loading) {
+  if (isPending) {
     return (
       <div className="flex justify-center items-center h-screen">
         <Spinner color="primary" label="Loading..." labelColor="primary" />
