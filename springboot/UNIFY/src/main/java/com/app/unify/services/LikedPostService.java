@@ -18,6 +18,7 @@ import com.app.unify.repositories.LikedPostRepository;
 import com.app.unify.repositories.PostRepository;
 import com.app.unify.repositories.UserRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -60,14 +61,12 @@ public class LikedPostService {
 		likedPostRepository.save(likedPost);
 	}
 
+
+	@Transactional
+
 	public void deleteLikedPost(LikedPostRequest request) {
-		LikedPost likedPost = LikedPost.builder()
-				.post(postRepository.findById(request.getPostId())
-						.orElseThrow(() -> new PostNotFoundException("Post not found !")))
-				.user(userRepository.findById(request.getUserId())
-						.orElseThrow(() -> new UserNotFoundException("User not found !")))
-				.build();
-		likedPostRepository.delete(likedPost);
+		LikedPost likedPost = likedPostRepository.findByUserIdAndPostId(request.getUserId(), request.getPostId());
+		likedPostRepository.deleteByUserIdAndPostId(likedPost.getUser().getId(), likedPost.getPost().getId());
 	}
 
 	public int countLikePost(String postId) {

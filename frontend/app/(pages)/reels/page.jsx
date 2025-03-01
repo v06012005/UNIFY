@@ -15,6 +15,7 @@ import CaptionWithMore from "@/components/global/CaptionWithMore";
 import { useDisclosure } from "@heroui/react";
 import avatar2 from "@/public/images/testAvt.jpg";
 
+
 const Reels = () => {
   const [isCommentOpen, setIsCommentOpen] = useState(false);
   const [toolStates, setToolStates] = useState({});
@@ -94,7 +95,6 @@ const Reels = () => {
           const video = entry.target;
           const postId = video.dataset.postId;
           const isManuallyPaused = pausedStates[postId];
-
           if (entry.isIntersecting && !isManuallyPaused) {
             video.play();
           } else {
@@ -109,6 +109,7 @@ const Reels = () => {
       },
       { threshold: 0.7 }
     );
+
 
     videoRefs.current.forEach((video, index) => {
       if (video && videoPosts[index]) {
@@ -138,6 +139,7 @@ const Reels = () => {
     }));
   };
 
+
   const handleLike = (postId) => toggleToolState(postId, "isLiked");
   const handleSave = (postId) => toggleToolState(postId, "isSaved");
   const togglePopup = (postId) => toggleToolState(postId, "isPopupOpen");
@@ -156,6 +158,7 @@ const Reels = () => {
     loadComments(postId);
     setCurrentPostId(postId);
     setIsCommentOpen((prev) => !prev);
+
   };
 
   const closeComment = (e) => {
@@ -224,6 +227,7 @@ const Reels = () => {
                 />
               )
           )}
+
           <div className="absolute bottom-4 left-4 flex flex-col text-white">
             <div className="flex items-center">
               <Image
@@ -247,6 +251,7 @@ const Reels = () => {
             </div>
             <div className="mt-2 w-[350px]">
               <CaptionWithMore text={post.captions} />
+
             </div>
           </div>
           <div className="absolute top-2/3 right-4 transform -translate-y-1/2 flex flex-col items-center space-y-7 text-white text-2xl">

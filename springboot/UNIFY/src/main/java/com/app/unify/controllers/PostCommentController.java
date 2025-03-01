@@ -76,7 +76,4 @@ public class PostCommentController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi hệ thống: " + e.getMessage());
         }
     }
-
-
-
 }
