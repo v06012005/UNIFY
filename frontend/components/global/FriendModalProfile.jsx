@@ -37,9 +37,9 @@ const FriendModal = ({ isOpen, onClose }) => {
         />
         <ul className='h-[390px]  overflow-y-auto scrollbar-hide'>
           {loading ? (
-            <p className="text-gray-500">Đang tải danh sách...</p>
+            <p className="text-gray-500">Loading...</p>
           ) : !friendUsers || friendUsers.length === 0 ? ( 
-            <p className="text-gray-500">Kết bạn để chia sẻ thêm nhiều điều thú vị.</p>
+            <p className="text-gray-500">Make friends to share more interesting things.</p>
           ) : (
             friendUsers.slice(0, 11).map((user) => (
               <li
