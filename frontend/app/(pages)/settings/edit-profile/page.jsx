@@ -213,8 +213,6 @@ const Page = () => {
 
     setLoading(true);
 
-    console.log("Submitting user data:", userData);
-
     try {
       const token = Cookies.get("token");
       console.log("Token:", token);
@@ -248,7 +246,6 @@ const Page = () => {
       const uploadData = await uploadResponse.json();
       updatedUserData.avatar = uploadData.files[0].url; // Lấy URL từ server
     }
-
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
         method: "PUT",
@@ -647,3 +644,5 @@ const handleDeleteAvatar = () => {
 };
 
 export default Page;
+
+

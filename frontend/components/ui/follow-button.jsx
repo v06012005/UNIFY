@@ -19,12 +19,12 @@ const FollowButton = ({
   const follow = followingStatus[followingId] || false;
 
   return (
-    <Button
+    <button
       onPress={() => toggleFollow(userId, followingId, follow)}
       className={follow ? classFollowing : classFollow}
     >
       <span>{follow ? "Unfollow" : "Follow"}</span>
-    </Button>
+    </button>
   );
 };
 

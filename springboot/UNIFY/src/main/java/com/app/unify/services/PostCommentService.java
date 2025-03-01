@@ -58,7 +58,7 @@ public class PostCommentService {
         return postCommentRepository.save(newComment);
     }
 
-     
+
     public List<CommentDTO> getCommentsByPostId(String postId) {
         List<PostComment> comments = postCommentRepository.findCommentsByPostIdWithUser(postId);
         return comments.stream()
@@ -88,7 +88,7 @@ public class PostCommentService {
 
         return dto;
     }
-    
+
     @Transactional
     public void deleteCommentById(String commentId) {
         PostComment comment = postCommentRepository.findById(commentId)
@@ -96,7 +96,7 @@ public class PostCommentService {
 
         postCommentRepository.delete(comment);
     }
-    
-    
+
+
 
 }

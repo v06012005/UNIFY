@@ -33,7 +33,6 @@ const UserManagementPage = () => {
           throw new Error("Không có quyền truy cập hoặc lỗi hệ thống");
         }
         const data = await response.json();
-        console.log("API: ", data)
         if (data.length === 0) {
           console.warn("API không trả về người dùng nào.");
         }

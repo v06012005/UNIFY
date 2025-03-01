@@ -14,7 +14,7 @@ const ChangePassword = () => {
   const getPasswordError = (value) => {
     if (value.length < 8) {
       return "Password must be at least 8 characters long";
-    }  else if (!/[!@#$%^&*(),.?":{}|<>]/.test(value)) {
+    } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(value)) {
       return "Password must contain at least one special character";
     }
     return null;
@@ -106,7 +106,8 @@ const ChangePassword = () => {
 
       if (response.ok) {
         toast({
-          title: "You have entered the wrong password too many times (5 attempts). Please log in again to change your password!",
+          title:
+            "You have entered the wrong password too many times (5 attempts). Please log in again to change your password!",
           variant: "warning",
         });
         window.location.href = "/login";
@@ -142,7 +143,7 @@ const ChangePassword = () => {
           <Input
             id="current-password"
             name="currentPassword"
-             type="password"
+            type="password"
             value={currentPassword}
             onChange={(e) => setCurrentPassword(e.target.value)}
             placeholder="Enter your current password"

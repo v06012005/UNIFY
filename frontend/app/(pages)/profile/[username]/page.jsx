@@ -100,7 +100,7 @@ const Page = () => {
                   className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer"
                   onClick={toggleFriend}
                 >
-                  0 Friend
+                  Friend
                 </p>
 
                 <FriendModal isOpen={isFriendOpen} onClose={toggleFriend} />
@@ -118,7 +118,7 @@ const Page = () => {
                   className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer"
                   onClick={toggleFollower}
                 >
-                  0 Follower
+                  Follower
                 </p>
 
                 <FollowerModal
@@ -141,7 +141,7 @@ const Page = () => {
                   className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer"
                   onClick={toggleFollowing}
                 >
-                  0 Following
+                  Following
                 </p>
 
                 <FollowingModal

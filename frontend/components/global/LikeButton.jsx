@@ -21,7 +21,7 @@ const LikeButton = ({ className = "", userId, postId }) => {
           {
             method: "GET",
             headers: {
-              Authorization: `Bearer ${token}`, // Thêm token vào request
+              Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
           }
@@ -42,7 +42,7 @@ const LikeButton = ({ className = "", userId, postId }) => {
     fetchLikeCount();
   }, [postId, isLiked]);
 
-  const handleLike = async () => {
+  const handleClick = async () => {
     const token = Cookies.get("token");
     if (!token) {
       console.error("Chưa đăng nhập");
@@ -53,7 +53,11 @@ const LikeButton = ({ className = "", userId, postId }) => {
 
     try {
       const method = isLiked ? "DELETE" : "POST";
-      const response = await fetch("http://localhost:8080/liked-posts", {
+      const res = isLiked
+        ? `http://localhost:8080/liked-posts/delete/${userId}/${postId}`
+        : "http://localhost:8080/liked-posts";
+
+      const response = await fetch(res, {
         method,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -62,11 +66,13 @@ const LikeButton = ({ className = "", userId, postId }) => {
         body: JSON.stringify({ userId, postId }),
       });
 
+      const result = await response.text();
+
       if (response.ok) {
-        setIsLiked(!isLiked);
+        setIsLiked((prev) => !prev);
         setLikeCount((prev) => (isLiked ? prev - 1 : prev + 1));
       } else {
-        console.error("Lỗi API like/unlike: ", await response.text());
+        console.error("Lỗi API like/unlike: ", result);
       }
     } catch (error) {
       console.error("Lỗi khi like/unlike: ", error);
@@ -77,7 +83,7 @@ const LikeButton = ({ className = "", userId, postId }) => {
 
   return (
     <Button
-      onPress={handleLike}
+      onPress={handleClick}
       className={`bg-transparent dark:text-white ${className}`}
     >
       <i

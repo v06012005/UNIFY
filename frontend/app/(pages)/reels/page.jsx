@@ -1,10 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useRef, useEffect } from "react";
-import { Input } from "@/components/ui/input";
-import avatar2 from "@/public/images/testAvt.jpg";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect, useRef, useCallback } from "react";
+import ShareReels from "@/components/global/ShareReels";
 import PostReels from "@/components/global/PostReels";
 import { fetchPosts } from "@/app/lib/dal";
 import { Spinner } from "@heroui/react";
@@ -13,31 +11,26 @@ import { useApp } from "@/components/provider/AppProvider";
 import { fetchComments } from "app/api/service/commentService";
 import CommentItem from "@/components/comments/CommentItem";
 import CommentInput from "@/components/comments/CommentInput";
-import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  useDisclosure,
-} from "@heroui/react";
+import CaptionWithMore from "@/components/global/CaptionWithMore";
+import { useDisclosure } from "@heroui/react";
+import avatar2 from "@/public/images/testAvt.jpg";
+
 
 const Reels = () => {
   const [isCommentOpen, setIsCommentOpen] = useState(false);
-  const [isLiked, setIsLiked] = useState(false);
-  const [isSaved, setIsSaved] = useState(false);
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [isFollow, setIsFollow] = useState(false);
-  const [selectedAvatar, setSelectedAvatar] = useState(null);
+  const [toolStates, setToolStates] = useState({});
+  const [selectedAvatars, setSelectedAvatars] = useState([]);
   const [videoPosts, setVideoPosts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [comments, setComments] = useState([]);
+  const [commentsByPost, setCommentsByPost] = useState({});
+  const [currentPostId, setCurrentPostId] = useState(null);
+  const [pausedStates, setPausedStates] = useState({});
+  const [isCommentsLoading, setIsCommentsLoading] = useState(false);
   const { user } = useApp();
   const token = Cookies.get("token");
-
-  const { isOpen, onOpen, onOpenChange } = useDisclosure(); //  hook này được gọi ở cấp cao nhất
-
-  const postId = "0de81a82-caa6-439c-a0bc-124a83b5ceaf";
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const containerRef = useRef(null);
+  const videoRefs = useRef([]);
 
   // Fetch video posts
   useEffect(() => {
@@ -47,63 +40,159 @@ const Reels = () => {
         post.media.some((media) => media.mediaType === "VIDEO")
       );
       setVideoPosts(filteredPosts);
+      setPausedStates(
+        filteredPosts.reduce((acc, post) => ({ ...acc, [post.id]: false }), {})
+      );
+      setToolStates(
+        filteredPosts.reduce(
+          (acc, post) => ({
+            ...acc,
+            [post.id]: {
+              isLiked: false,
+              isSaved: false,
+              isPopupOpen: false,
+              isFollow: false,
+            },
+          }),
+          {}
+        )
+      );
+      setCommentsByPost(
+        filteredPosts.reduce((acc, post) => ({ ...acc, [post.id]: [] }), {})
+      );
       setLoading(false);
     }
-
     getVideoPosts();
   }, []);
 
-  // Fetch comments
-  useEffect(() => {
-    if (!token) return;
-
-    const loadComments = async () => {
+  // Fetch comments cho một post cụ thể
+  const loadComments = useCallback(
+    async (postId) => {
+      if (!token || !postId) return;
+      setIsCommentsLoading(true);
       try {
         const data = await fetchComments(postId, token);
-        setComments(data);
+        console.log(`Fetched comments for post ${postId}:`, data);
+        setCommentsByPost((prev) => ({
+          ...prev,
+          [postId]: data,
+        }));
       } catch (error) {
-        console.error("Failed to fetch comments:", error);
+        console.error(`Failed to fetch comments for post ${postId}:`, error);
+        setCommentsByPost((prev) => ({ ...prev, [postId]: [] }));
+      } finally {
+        setIsCommentsLoading(false);
       }
+    },
+    [token]
+  );
+
+  // Intersection Observer
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const video = entry.target;
+          const postId = video.dataset.postId;
+          const isManuallyPaused = pausedStates[postId];
+          if (entry.isIntersecting && !isManuallyPaused) {
+            video.play();
+          } else {
+            video.pause();
+            if (!isManuallyPaused) video.currentTime = 0;
+            setToolStates((prev) => ({
+              ...prev,
+              [postId]: { ...prev[postId], isPopupOpen: false },
+            }));
+          }
+        });
+      },
+      { threshold: 0.7 }
+    );
+
+
+    videoRefs.current.forEach((video, index) => {
+      if (video && videoPosts[index]) {
+        video.dataset.postId = videoPosts[index].id;
+        observer.observe(video);
+      }
+    });
+
+    return () => {
+      videoRefs.current.forEach((video) => {
+        if (video) observer.unobserve(video);
+      });
     };
+  }, [videoPosts, pausedStates]);
 
-    loadComments();
-  }, [token]);
+  const handlePauseChange = useCallback((postId, isPaused) => {
+    setPausedStates((prev) => ({ ...prev, [postId]: isPaused }));
+  }, []);
 
-  const toggleComment = () => {
+  const toggleToolState = (postId, key) => {
+    setToolStates((prev) => ({
+      ...prev,
+      [postId]: {
+        ...prev[postId],
+        [key]: !prev[postId][key],
+      },
+    }));
+  };
+
+
+  const handleLike = (postId) => toggleToolState(postId, "isLiked");
+  const handleSave = (postId) => toggleToolState(postId, "isSaved");
+  const togglePopup = (postId) => toggleToolState(postId, "isPopupOpen");
+  const folloWing = (postId) => toggleToolState(postId, "isFollow");
+
+  const closeMore = (e, postId) => {
+    if (e.target.id === "overmore") {
+      setToolStates((prev) => ({
+        ...prev,
+        [postId]: { ...prev[postId], isPopupOpen: false },
+      }));
+    }
+  };
+
+  const toggleComment = (postId) => {
+    loadComments(postId);
+    setCurrentPostId(postId);
     setIsCommentOpen((prev) => !prev);
+
   };
 
   const closeComment = (e) => {
     if (e.target.id === "overlay") {
       setIsCommentOpen(false);
+      setCurrentPostId(null);
+      setIsCommentsLoading(false);
     }
   };
 
-  const handleLike = () => {
-    setIsLiked((prev) => !prev);
-  };
-
-  const handleSave = () => {
-    setIsSaved((prev) => !prev);
-  };
-
-  const folloWing = () => {
-    setIsFollow((prev) => !prev);
-  };
-
-  const togglePopup = () => {
-    setIsPopupOpen((prev) => !prev);
-  };
-
-  const closeMore = (a) => {
-    if (a.target.id === "overmore") {
-      setIsPopupOpen(false);
+  const handleShare = () => {
+    if (selectedAvatars.length > 0) {
+      console.log("Sharing to:", selectedAvatars);
+      onOpenChange(false);
     }
   };
 
-  const handleAvatarClick = (index) => {
-    setSelectedAvatar(index === selectedAvatar ? null : index);
-  };
+  const updateComments = useCallback(
+    (postId, newComment) => {
+      setCommentsByPost((prev) => {
+        const currentComments = Array.isArray(prev[postId]) ? prev[postId] : [];
+        const updatedComments = [
+          { ...newComment, username: user?.username || "Unknown" },
+          ...currentComments,
+        ];
+        console.log(`Updated comments for post ${postId}:`, updatedComments);
+        return {
+          ...prev,
+          [postId]: updatedComments,
+        };
+      });
+    },
+    [user]
+  );
 
   if (loading) {
     return (
@@ -112,144 +201,110 @@ const Reels = () => {
       </div>
     );
   }
-
   return (
-    <>
-      {videoPosts.map((post) => (
+    <div
+      ref={containerRef}
+      className="h-screen w-full overflow-y-scroll snap-y snap-mandatory scrollbar-hide shadow-lg"
+    >
+      {videoPosts.map((post, index) => (
         <div
           key={post.id}
-          className={`relative w-[450px] h-[700px] bg-gray-800 mx-auto rounded-2xl overflow-hidden m-5 transition-all duration-500 ${
-            isCommentOpen ? "translate-x-[-150px]" : ""
-          }`}
+          className={`relative w-[450px] h-[700px] mx-auto rounded-b-xl overflow-hidden m-5 snap-start flex-shrink-0 ${
+            isCommentOpen ? "translate-x-[-150px]" : "translate-x-0"
+          } transition-transform duration-400 ease-in-out`}
         >
           {post.media.map(
-            (media, index) =>
+            (media, mediaIndex) =>
               media.mediaType === "VIDEO" && (
-                <PostReels key={index} src={media.url} />
+                <PostReels
+                  key={mediaIndex}
+                  src={media.url}
+                  ref={(el) => (videoRefs.current[index] = el)}
+                  loop
+                  onPauseChange={(isPaused) =>
+                    handlePauseChange(post.id, isPaused)
+                  }
+                />
               )
           )}
-          <div className="absolute bottom-4 left-4 flex items-center space-x- text-white">
-            <Image
-              src={avatar2}
-              alt="User Avatar"
-              className="w-10 h-10 bg-gray-600 rounded-full"
-            ></Image>
-            <div className="flex items-center space-x-2">
-              <span className="font-medium pl-2">{post.user?.username}</span>
-              <button
-                className="backdrop-blur-3xl text-sm p-4 py-1 rounded-2xl font-bold 
-             transition-all duration-200 ease-in-out 
-             active:scale-125
-             hover:bg-gray-700 dark:hover:bg-gray-700"
-                onClick={folloWing}
-              >
-                {isFollow ? "Following" : "Follow"}
-              </button>
+
+          <div className="absolute bottom-4 left-4 flex flex-col text-white">
+            <div className="flex items-center">
+              <Image
+                src={avatar2}
+                alt="User Avatar"
+                className="w-10 h-10 bg-gray-600 rounded-full"
+              />
+              <div className="flex items-center space-x-2 pl-2">
+                <span className="font-medium">{post.user?.username}</span>
+                <span className="text-white text-lg">•</span>
+                <button
+                  className="backdrop-blur-lg text-sm p-4 py-1 rounded-2xl font-bold 
+                  transition-all duration-200 ease-in-out 
+                  active:scale-125
+                  hover:bg-gray-400 dark:hover:bg-gray-400 border border-gray-300"
+                  onClick={() => folloWing(post.id)}
+                >
+                  {toolStates[post.id]?.isFollow ? "Following" : "Follow"}
+                </button>
+              </div>
+            </div>
+            <div className="mt-2 w-[350px]">
+              <CaptionWithMore text={post.captions} />
+
             </div>
           </div>
           <div className="absolute top-2/3 right-4 transform -translate-y-1/2 flex flex-col items-center space-y-7 text-white text-2xl">
             <div className="flex flex-col items-center">
               <i
                 className={`fa-${
-                  isLiked ? "solid" : "regular"
+                  toolStates[post.id]?.isLiked ? "solid" : "regular"
                 } fa-heart hover:opacity-50 focus:opacity-50 transition cursor-pointer ${
-                  isLiked ? "text-red-500" : "text-white"
+                  toolStates[post.id]?.isLiked ? "text-red-500" : "text-white"
                 }`}
-                onClick={handleLike}
-              ></i>
+                onClick={() => handleLike(post.id)}
+              />
               <span className="text-sm">47k</span>
             </div>
-
             <div className="flex flex-col items-center">
               <i
                 className="fa-regular fa-comment hover:opacity-50 focus:opacity-50 transition cursor-pointer"
-                onClick={toggleComment}
-              ></i>
-              <span className="text-sm">47k</span>
+                onClick={() => toggleComment(post.id)}
+              />
+              <span className="text-sm">
+                {commentsByPost[post.id]?.length || 0}
+              </span>
             </div>
             <div className="flex flex-col items-center">
               <i
                 onClick={onOpen}
                 className="fa-regular fa-paper-plane hover:opacity-50 focus:opacity-50 transition"
-              ></i>
+              />
             </div>
-            <Modal
-              isDismissable={false}
-              scrollBehavior={"inside"}
-              size="2xl"
-              isKeyboardDismissDisabled={true}
-              isOpen={isOpen}
-              onOpenChange={onOpenChange}
-            >
-              <ModalContent>
-                {(onClose) => (
-                  <>
-                    <ModalHeader className="flex flex-cols">
-                      <h1 className="font-bold text-2xl">Share</h1>
-                    </ModalHeader>
-                    <hr className="bg-gray-200"></hr>
-                    <ModalBody>
-                      <div className="mt-4">
-                        <Input
-                          placeholder={"Search..."}
-                          className={`w-full h-11 dark:border-white font-bold`}
-                        />
-                      </div>
-                      <div className="flex p-3 justify-around">
-                        {[1, 2, 3, 4].map((_, index) => (
-                          <div className="text-center" key={index}>
-                            <Image
-                              src={avatar2}
-                              alt={`avtshare-${index}`}
-                              className={`rounded-full w-20 h-20 cursor-pointer ${
-                                selectedAvatar === index
-                                  ? "ring-4 dark:ring-white"
-                                  : ""
-                              }`}
-                              onClick={() => handleAvatarClick(index)}
-                            />
-                            <p className="mt-2 font-bold text-lg truncate w-20">
-                              Tan Vinh
-                            </p>
-                            {selectedAvatar === index && (
-                              <button className="mt-2 px-4 py-2 bg-blue-500 text-white rounded">
-                                Send
-                              </button>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </ModalBody>
-                    <ModalFooter></ModalFooter>
-                  </>
-                )}
-              </ModalContent>
-            </Modal>
             <div className="flex flex-col items-center">
               <i
                 className={`fa-${
-                  isSaved ? "solid" : "regular"
+                  toolStates[post.id]?.isSaved ? "solid" : "regular"
                 } fa-bookmark hover:opacity-50 focus:opacity-50 transition cursor-pointer`}
-                onClick={handleSave}
-              ></i>
+                onClick={() => handleSave(post.id)}
+              />
             </div>
-
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center relative">
               <i
                 className="fa-solid fa-ellipsis hover:opacity-50 focus:opacity-50 transition cursor-pointer"
-                onClick={togglePopup}
-              ></i>
-              {isPopupOpen && (
+                onClick={() => togglePopup(post.id)}
+              />
+              {toolStates[post.id]?.isPopupOpen && (
                 <div
                   id="overmore"
-                  className="w-44 absolute top-56 right-10 transform -translate-y-1/2 backdrop-blur-xl p-4 rounded-lg shadow-lg text-white"
-                  onClick={closeMore}
+                  className="w-44 absolute top-[-98] right-10 mt-2 backdrop-blur-xl p-4 rounded-lg shadow-lg text-white border border-gray-300 z-50"
+                  onClick={(e) => closeMore(e, post.id)}
                 >
-                  <ul className=" text-sm">
-                    <li className="cursor-pointer  hover:bg-zinc-800  font-bold  text-left p-2 rounded-sm">
+                  <ul className="text-sm">
+                    <li className="cursor-pointer hover:bg-zinc-500 font-bold text-left p-2 rounded-sm">
                       Copy link
                     </li>
-                    <li className="cursor-pointer  hover:bg-zinc-800   font-bold  text-left p-2 rounded-sm">
+                    <li className="cursor-pointer hover:bg-slate-500 font-bold text-left p-2 rounded-sm">
                       About this account
                     </li>
                   </ul>
@@ -259,35 +314,54 @@ const Reels = () => {
           </div>
         </div>
       ))}
-      {isCommentOpen && (
+
+      <ShareReels
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        selectedAvatars={selectedAvatars}
+        setSelectedAvatars={setSelectedAvatars}
+        handleShare={handleShare}
+      />
+      {isCommentOpen && currentPostId && (
         <div
           id="overlay"
-          className="fixed top-0 left-0 w-full h-full bg-opacity-50 z-20  "
+          className={`fixed top-0 left-0 w-full h-full z-20 transition-opacity duration-300 ease-in-out ${
+            isCommentOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+          }`}
           onClick={closeComment}
         >
           <div
-            className="fixed top-0 right-0 h-full transition-all duration-300"
-            style={{
-              transform: isCommentOpen ? "translateX(0)" : "translateX(100%)",
-            }}
+            className={`fixed top-0 right-0 h-full w-[450px] transition-transform duration-300 ease-in-out ${
+              isCommentOpen ? "translate-x-0" : "translate-x-full"
+            }`}
           >
-            <div className=" h-full flex flex-col p-4 border   border-l ">
-              <div className="flex items-center justify-between dark:text-white mb-4">
-                <h2 className="text-2xl text-center font-bold mb-2">
-                  Comments
-                </h2>
+            <div className="h-full flex flex-col p-4 border-l border-gray-700">
+              <div className="flex items-center justify-between text-white mb-4">
+                <h2 className="text-2xl text-center font-bold">Comments</h2>
               </div>
-              <div className="flex-grow overflow-auto  ">
-                {comments.map((comment) => (
-                  <CommentItem key={comment.id} comment={comment} />
-                ))}
+              <div className="flex-grow overflow-auto">
+                {isCommentsLoading ? (
+                  <p>Loading comments...</p>
+                ) : Array.isArray(commentsByPost[currentPostId]) &&
+                  commentsByPost[currentPostId].length > 0 ? (
+                  commentsByPost[currentPostId].map((comment) => (
+                    <CommentItem key={comment.id} comment={comment} />
+                  ))
+                ) : (
+                  <p>No comments yet</p>
+                )}
               </div>
-              <CommentInput postId={postId} setComments={setComments} />
+              <CommentInput
+                postId={currentPostId}
+                setComments={(newComments) =>
+                  updateComments(currentPostId, newComments)
+                }
+              />
             </div>
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 
