@@ -1,15 +1,15 @@
-import {createContext, useContext, useEffect, useRef, useState} from "react";
-import {useApp} from "@/components/provider/AppProvider";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { useApp } from "@/components/provider/AppProvider";
 import SockJS from "sockjs-client";
 import Cookies from "js-cookie";
-import {Client} from "@stomp/stompjs";
+import { Client } from "@stomp/stompjs";
 import Peer from "simple-peer";
-import {usePathname} from "next/navigation";
+import { usePathname } from "next/navigation";
 import axios from "axios";
 
 const CallContext = createContext(null);
 
-export const CallProvider = ({children}) => {
+export const CallProvider = ({ children }) => {
 
     const [me, setMe] = useState("");
     const [stream, setStream] = useState(null);
@@ -43,7 +43,7 @@ export const CallProvider = ({children}) => {
         if (user) {
             setMe(user.id);
             setName(`${user.firstName} ${user.lastName}`);
-            if(path === '/video-call') {
+            if (path === '/video-call') {
                 getLocalStream();
             }
             const sockJS = new SockJS(
@@ -88,7 +88,7 @@ export const CallProvider = ({children}) => {
                         })
                             .then((response) => {
                                 const user = response.data;
-                               setNameReceiver(`${user.firstName} ${user.lastName}`);
+                                setNameReceiver(`${user.firstName} ${user.lastName}`);
                             })
                             .catch((error) => {
                                 console.error('Error fetching user info:', error);
@@ -109,10 +109,10 @@ export const CallProvider = ({children}) => {
                     } else if (data.type === "onMic") {
                         isOnCameraRef.current = true;
                         setIsOffMicrophone(false);
-                    }else if(data.type === 'endCall'){
-                        if(btnRef.current){
+                    } else if (data.type === 'endCall') {
+                        if (btnRef.current) {
                             btnRef.current.click();
-                        }else {
+                        } else {
                             leaveCall();
                         }
                     }
@@ -149,12 +149,12 @@ export const CallProvider = ({children}) => {
     }, [callStartTime, callAccepted, callEnded]);
 
 
-    const getLocalStream =  () => {
+    const getLocalStream = () => {
 
         navigator.mediaDevices
             .getUserMedia({ video: true, audio: true })
             .then((localStream) => {
-                localStream.getVideoTracks()[0].enabled =  toggleCamera;
+                localStream.getVideoTracks()[0].enabled = toggleCamera;
                 setStream(localStream);
                 if (myScreen.current) {
                     myScreen.current.srcObject = localStream;
@@ -168,72 +168,76 @@ export const CallProvider = ({children}) => {
     const callUser = (id) => {
 
 
-        const peer = new Peer({
-            initiator: true,
-            trickle: false,
-            stream: stream,
-        });
-
-        peer.on("signal", (data) => {
-            stompClientRef.current.publish({
-                destination: "/app/call",
-                body: JSON.stringify({
-                    userToCall: id,
-                    signalData: data,
-                    from: me,
-                    name: name,
-                }),
+        if (stompClientRef.current) {
+            const peer = new Peer({
+                initiator: true,
+                trickle: false,
+                stream: stream,
             });
-        });
 
-        peer.on("stream", (remoteStream) => {
-            if (receiverScreen.current) {
-                if(isOnCameraRef.current) {
-                    setIsOffMicrophone(remoteStream.getAudioTracks()[0].enabled);
-                    remoteStream.getVideoTracks()[0].enabled = isOnCameraRef.current;
+            peer.on("signal", (data) => {
+                stompClientRef.current.publish({
+                    destination: "/app/call",
+                    body: JSON.stringify({
+                        userToCall: id,
+                        signalData: data,
+                        from: me,
+                        name: name,
+                    }),
+                });
+            });
+
+            peer.on("stream", (remoteStream) => {
+                if (receiverScreen.current) {
+                    if (isOnCameraRef.current) {
+                        setIsOffMicrophone(remoteStream.getAudioTracks()[0].enabled);
+                        remoteStream.getVideoTracks()[0].enabled = isOnCameraRef.current;
+                    }
+                    receiverScreen.current.srcObject = remoteStream;
                 }
-                receiverScreen.current.srcObject = remoteStream;
-            }
-        });
+            });
 
-        connectionRef.current = peer;
+            connectionRef.current = peer;
+        }
     };
 
     const answerCall = () => {
 
 
-        setCallAccepted(true);
-        setCallStartTime(Date.now());
+        if (stompClientRef.current) {
+            setCallAccepted(true);
+            setCallStartTime(Date.now());
 
-        const peer = new Peer({
-            initiator: false,
-            trickle: false,
-            stream: stream,
-        });
-
-        peer.on("signal", (data) => {
-            stompClientRef.current.publish({
-                destination: "/app/answer",
-                body: JSON.stringify({
-                    to: caller,
-                    signalData: data,
-                    from: me,
-                }),
+            const peer = new Peer({
+                initiator: false,
+                trickle: false,
+                stream: stream,
             });
-        });
 
-        peer.on("stream", (remoteStream) => {
-            if (receiverScreen.current) {
-                if(isOnCameraRef.current) {
-                    setIsOffMicrophone(remoteStream.getAudioTracks()[0].enabled);
-                    remoteStream.getVideoTracks()[0].enabled = isOnCameraRef.current;
+            peer.on("signal", (data) => {
+                stompClientRef.current.publish({
+                    destination: "/app/answer",
+                    body: JSON.stringify({
+                        to: caller,
+                        signalData: data,
+                        from: me,
+                    }),
+                });
+            });
+
+            peer.on("stream", (remoteStream) => {
+                if (receiverScreen.current) {
+                    if (isOnCameraRef.current) {
+                        setIsOffMicrophone(remoteStream.getAudioTracks()[0].enabled);
+                        remoteStream.getVideoTracks()[0].enabled = isOnCameraRef.current;
+                    }
+                    receiverScreen.current.srcObject = remoteStream;
                 }
-                receiverScreen.current.srcObject = remoteStream;
-            }
-        });
+            });
 
-        peer.signal(callerSignal);
-        connectionRef.current = peer;
+            peer.signal(callerSignal);
+            connectionRef.current = peer;
+        }
     };
 
 
@@ -250,13 +254,13 @@ export const CallProvider = ({children}) => {
 
     const leaveCall = () => {
         stompClientRef.current.publish({
-                destination: "/app/toggle",
-                body: JSON.stringify({
-                    type:"endCall",
-                    from: me,
-                    userToCall: caller ? caller : idToCall,
-                    to: caller ? caller : idToCall
-                }),
+            destination: "/app/toggle",
+            body: JSON.stringify({
+                type: "endCall",
+                from: me,
+                userToCall: caller ? caller : idToCall,
+                to: caller ? caller : idToCall
+            }),
         });
         disconnection();
         getLocalStream();
@@ -271,7 +275,7 @@ export const CallProvider = ({children}) => {
                     type: videoTrack.enabled ? "onCamera" : "offCamera",
                     from: me,
                     userToCall: caller ? caller : idToCall,
-                    to: caller ? caller: idToCall
+                    to: caller ? caller : idToCall
                 }),
             });
             videoTrack.enabled = !videoTrack.enabled;
@@ -288,7 +292,7 @@ export const CallProvider = ({children}) => {
                     type: audioTrack.enabled ? "onMic" : "offMic",
                     from: me,
                     userToCall: caller ? caller : idToCall,
-                    to: caller ? caller: idToCall
+                    to: caller ? caller : idToCall
                 }),
             })
             audioTrack.enabled = !audioTrack.enabled;
