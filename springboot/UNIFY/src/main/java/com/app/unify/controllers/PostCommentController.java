@@ -33,11 +33,10 @@ public class PostCommentController {
     public ResponseEntity<?> addComment(@RequestBody CommentDTO request) {
         try {
             PostComment savedComment = postCommentService.saveComment(
-                request.getUserId(),
-                request.getPostId(),
-                request.getContent(),
-                request.getParentId()
-
+                    request.getUserId(),
+                    request.getPostId(),
+                    request.getContent(),
+                    request.getParentId()
             );
 
             // Chuyển đổi PostComment -> CommentDTO trước khi trả về
@@ -46,7 +45,6 @@ public class PostCommentController {
             responseDto.setUserId(savedComment.getUser().getId());
             responseDto.setPostId(savedComment.getPost().getId());
             responseDto.setContent(savedComment.getContent());
-
 
             return ResponseEntity.ok(responseDto);
         } catch (IllegalArgumentException e) {
