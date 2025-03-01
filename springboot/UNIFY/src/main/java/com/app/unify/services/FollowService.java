@@ -98,4 +98,10 @@ public class FollowService {
 	public long countFollowing(String userId) {
 		return followRepository.countByUserFollowerId(userId);
 	}
+
+	public boolean isFriend(String userId1, String userId2) {
+		boolean user1FollowsUser2 = isFollowing(userId1, userId2);
+		boolean user2FollowsUser1 = isFollowing(userId2, userId1);
+		return user1FollowsUser2 && user2FollowsUser1;
+	}
 }

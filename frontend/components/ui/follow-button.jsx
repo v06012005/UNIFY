@@ -20,10 +20,10 @@ const FollowButton = ({
 
   return (
     <button
-      onPress={() => toggleFollow(userId, followingId, follow)}
+      onClick={() => toggleFollow(userId, followingId, follow)}
       className={follow ? classFollowing : classFollow}
     >
-      <span>{follow ? "Unfollow" : "Follow"}</span>
+      <span>{follow ? "Following" : "Follow"}</span>
     </button>
   );
 };
