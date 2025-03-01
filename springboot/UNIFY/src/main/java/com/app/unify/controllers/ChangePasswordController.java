@@ -19,35 +19,35 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 public class ChangePasswordController {
-	@Autowired
-	UserService userService;
-	@Autowired
-	private PasswordEncoder passwordEncoder;
-	@Autowired
-	private ChangePasswordService changePasswordService;
 
-	@PostMapping("/change-password")
-	public ResponseEntity<?> changePassword(@RequestBody UserDTO userDto, HttpServletRequest request) {
-		String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-		int failedAttempts = changePasswordService.getFailedAttempts(userEmail);
+    @Autowired
+    UserService userService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private ChangePasswordService changePasswordService;
 
-		if (failedAttempts >= 5) {
-			changePasswordService.clearFailedAttempts(userEmail);
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-					.body(Map.of("message", "Too many failed attempts! Please log in again.", "action", "logout"));
-		}
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(@RequestBody UserDTO userDto, HttpServletRequest request) {
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        int failedAttempts = changePasswordService.getFailedAttempts(userEmail);
 
-		try {
-			userService.changePassword(userDto.getCurrentPassword(), userDto.getNewPassword());
-			changePasswordService.clearFailedAttempts(userEmail);
-			return ResponseEntity.ok(Map.of("message", "Password changed successfully!"));
-		} catch (IllegalArgumentException e) {
-			changePasswordService.incrementFailedAttempts(userEmail);
-			return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(Map.of("message", "An error occurred!"));
-		}
-	}
+        if (failedAttempts >= 5) {
+            changePasswordService.clearFailedAttempts(userEmail);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Too many failed attempts! Please log in again.", "action", "logout"));
+        }
 
+        try {
+            userService.changePassword(userDto.getCurrentPassword(), userDto.getNewPassword());
+            changePasswordService.clearFailedAttempts(userEmail);
+            return ResponseEntity.ok(Map.of("message", "Password changed successfully!"));
+        } catch (IllegalArgumentException e) {
+            changePasswordService.incrementFailedAttempts(userEmail);
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "An error occurred!"));
+        }
+    }
 }
