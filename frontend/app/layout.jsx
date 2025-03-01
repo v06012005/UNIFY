@@ -1,12 +1,14 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+// import "./lib/fontawesome"
 import Head from "next/head";
 import "@fortawesome/fontawesome-free/css/all.min.css";
-import RootProviders from "@/components/provider/RootProviders";
-import React, {Suspense} from "react";
-import Spinner from "@/components/loading/Spinner";
-import Logo from "@/public/images/unify_1.svg"
-
+import AuthProvider from "@/components/provider/AuthProvider";
+import { ModalProvider } from "@/components/provider/ModalProvider";
+import { AppProvider } from "@/components/provider/AppProvider";
+import { FollowProvider } from "@/components/provider/FollowProvider";
+import { ReportProvider } from "@/components/provider/ReportProvider";
+import { SuggestedUsersProvider } from "@/components/provider/SuggestedUsersProvider";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -23,29 +25,30 @@ export const metadata = {
 };
 
 export default async function RootLayout({ children }) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <Head>
+        <link
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+          rel="stylesheet"
+        />
+      </Head>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} flex w-full antialiased`}
+      >
+        <AuthProvider>
+          <ReportProvider>
+<SuggestedUsersProvider>
+          <AppProvider>
+            <ModalProvider>
 
-    return (
-          <html lang="en" suppressHydrationWarning>
-          <Head>
-              <link
-                  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-                  rel="stylesheet"
-              />
-          </Head>
-          <body
-              className={`${geistSans.variable} ${geistMono.variable} flex w-full`}
-          >
-        <Suspense fallback={
-            <div className="grid w-full bg-gray-300 h-screen place-items-center">
-                <div className="flex flex-col items-center gap-4">
-                    <img src={Logo.src} alt="logo" className="w-80"/>
-                    <Spinner/>
-                </div>
-            </div>
-        }>
-            <RootProviders>{children}</RootProviders>
-        </Suspense>
-          </body>
-          </html>
-    );
+              <FollowProvider>{children}</FollowProvider>
+            </ModalProvider>
+          </AppProvider>
+          </SuggestedUsersProvider>
+          </ReportProvider>
+        </AuthProvider>
+      </body>
+    </html>
+  );
 }
