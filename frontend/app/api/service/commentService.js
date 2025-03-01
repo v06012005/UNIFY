@@ -46,6 +46,9 @@ export const postComment = async (userId, postId, content, token, parentId = nul
   if (!userId) {
     throw new Error("User is not logged in");
   }
+  if (!postId || !content || !token) {
+    throw new Error("Missing required parameters: postId, content, or token");
+  }
 
   try {
     const response = await fetch(`${API_URL}/comments`, {
@@ -63,13 +66,16 @@ export const postComment = async (userId, postId, content, token, parentId = nul
     });
 
     if (response.ok) {
-      return await response.json(); // Trả về dữ liệu bình luận nếu thành công
+      const data = await response.json();
+      console.log("Comment posted successfully:", data); // Debug
+      return data;
     } else {
       const errorText = await response.text();
-      throw new Error(`Server error: ${errorText}`);
+      console.error("Server responded with error:", response.status, errorText);
+      throw new Error(`Server error: ${response.status} - ${errorText}`);
     }
   } catch (error) {
-    console.error("Error submitting comment:", error);
-    throw new Error("Failed to submit comment");
+    console.error("Error submitting comment:", error.message);
+    throw error;  
   }
 };

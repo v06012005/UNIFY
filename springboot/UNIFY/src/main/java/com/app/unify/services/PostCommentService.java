@@ -88,7 +88,7 @@ public class PostCommentService {
 
         return dto;
     }
-    
+
     @Transactional
     public void deleteCommentById(String commentId) {
         PostComment comment = postCommentRepository.findById(commentId)
@@ -96,7 +96,7 @@ public class PostCommentService {
 
         postCommentRepository.delete(comment);
     }
-    
-    
+
+
 
 }

@@ -64,7 +64,7 @@ public class PostCommentController {
         List<CommentDTO> comments = postCommentService.getCommentsByPostId(postId);
         return ResponseEntity.ok(comments);
     }
-    
+
     @DeleteMapping("/{commentId}")
     public ResponseEntity<?> deleteComment(@PathVariable String commentId) {
         try {

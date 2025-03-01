@@ -62,7 +62,7 @@ public class PostController {
 //	    	postCommentService.deleteCommentsByPostId(id);
 //	    	likedService.delete(id);
 //	    	mediaService.deleteById(id);
-            postService.deletePostById(id); 
+            postService.deletePostById(id);
             return ResponseEntity.ok("Post deleted successfully!");
 	    } catch (Exception e) {
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -95,5 +95,5 @@ public class PostController {
 	        return ResponseEntity.ok(posts);
 	    }
 
-	  
+
 }

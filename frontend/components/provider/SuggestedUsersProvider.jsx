@@ -55,7 +55,6 @@ export const SuggestedUsersProvider = ({ children }) => {
     }
   }, []);
 
-
   // Hàm lấy danh sách gợi ý
   const getSuggestedUsers = useCallback(async () => {
     try {
@@ -228,3 +227,5 @@ export const useSuggestedUsers = () => {
   }
   return context;
 };
+
+

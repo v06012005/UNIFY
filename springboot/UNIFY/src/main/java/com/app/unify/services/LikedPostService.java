@@ -61,7 +61,9 @@ public class LikedPostService {
 		likedPostRepository.save(likedPost);
 	}
 
+
 	@Transactional
+
 	public void deleteLikedPost(LikedPostRequest request) {
 		LikedPost likedPost = likedPostRepository.findByUserIdAndPostId(request.getUserId(), request.getPostId());
 		likedPostRepository.deleteByUserIdAndPostId(likedPost.getUser().getId(), likedPost.getPost().getId());

@@ -11,38 +11,31 @@ const CommentInput = ({ postId, setComments }) => {
   const [comment, setComment] = useState("");
   const [isCommentEmpty, setIsCommentEmpty] = useState(true);
   const [showPicker, setShowPicker] = useState(false);
+  const [error, setError] = useState(null);
   const pickerRef = useRef(null);
   const { user } = useApp();
   const token = Cookies.get("token");
 
-  // Xử lý gửi comment
   const handleCommentSubmit = async () => {
     if (!comment.trim()) return;
 
-    if (!postId || !user?.id) {
-      console.error("postId or user.id is null or undefined");
+    if (!postId || !user?.id || !token) {
+      setError("Missing required data to submit comment.");
       return;
     }
 
     try {
       const newComment = await postComment(user.id, postId, comment, token);
-      if (newComment) {
-        setComments((prevComments) => [
-          {
-            ...newComment,
-            username: user.username,
-          },
-          ...prevComments,
-        ]);
-        setComment("");
-        setIsCommentEmpty(true);
-      }
+      console.log("Comment posted successfully:", newComment);
+      setComments(newComment); // Chỉ gửi comment mới lên Reels
+      setComment("");
+      setIsCommentEmpty(true);
+      setError(null);
     } catch (error) {
-      console.error("Error submitting comment:", error);
+      setError(error.message);
     }
   };
 
-  // Xử lý click bên ngoài để đóng emoji picker
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -70,7 +63,6 @@ const CommentInput = ({ postId, setComments }) => {
         alt="Avatar"
         className="rounded-full w-10 h-10 mr-2"
       />
-
       <textarea
         placeholder="Add a comment..."
         maxLength={150}
@@ -93,14 +85,13 @@ const CommentInput = ({ postId, setComments }) => {
           }
         }}
         onKeyDown={(e) => {
-          if (e.key === "Enter") {
+          if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
             handleCommentSubmit();
           }
         }}
         className="bg-gray-700 text-white placeholder-gray-400 flex-grow py-2 px-4 rounded-2xl focus:outline-none resize-none"
       />
-
       <button
         type="button"
         onClick={() => setShowPicker(!showPicker)}
@@ -108,7 +99,6 @@ const CommentInput = ({ postId, setComments }) => {
       >
         <Smile size={28} />
       </button>
-
       {showPicker && (
         <div ref={pickerRef} className="absolute bottom-20 right-12 z-50">
           <Picker
@@ -120,7 +110,6 @@ const CommentInput = ({ postId, setComments }) => {
           />
         </div>
       )}
-
       {!isCommentEmpty && (
         <button
           type="submit"
@@ -129,6 +118,9 @@ const CommentInput = ({ postId, setComments }) => {
         >
           <Send size={28} />
         </button>
+      )}
+      {error && (
+        <div className="absolute top-[-30px] text-red-500 text-sm">{error}</div>
       )}
     </div>
   );
