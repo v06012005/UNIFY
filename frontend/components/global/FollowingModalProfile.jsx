@@ -77,9 +77,11 @@ const FollowingModal = ({ isOpen, onClose }) => {
                 </div>
                 <FollowButton
                   userId={user.id}
-followingId={userData.id}
+                  followingId={userData.id}
                   classFollow="bg-red-500 font-bold py-1 px-4 rounded-lg text-white text-md"
                   classFollowing="bg-gray-700 hover:bg-gray-600 font-bold py-1 px-4 rounded-lg text-white text-md"
+                  contentFollowing="Following"
+                  contentFollow="Follow"
                 />
               </li>
             ))

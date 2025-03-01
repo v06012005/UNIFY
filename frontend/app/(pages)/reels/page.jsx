@@ -14,6 +14,7 @@ import CommentInput from "@/components/comments/CommentInput";
 import CaptionWithMore from "@/components/global/CaptionWithMore";
 import { useDisclosure } from "@heroui/react";
 import avatar2 from "@/public/images/testAvt.jpg";
+import FollowButton from "@/components/ui/follow-button";
 
 
 const Reels = () => {
@@ -238,15 +239,15 @@ const Reels = () => {
               <div className="flex items-center space-x-2 pl-2">
                 <span className="font-medium">{post.user?.username}</span>
                 <span className="text-white text-lg">•</span>
-                <button
-                  className="backdrop-blur-lg text-sm p-4 py-1 rounded-2xl font-bold 
-                  transition-all duration-200 ease-in-out 
-                  active:scale-125
-                  hover:bg-gray-400 dark:hover:bg-gray-400 border border-gray-300"
-                  onClick={() => folloWing(post.id)}
-                >
-                  {toolStates[post.id]?.isFollow ? "Following" : "Follow"}
-                </button>
+                <FollowButton
+                  classFollow="backdrop-blur-lg text-sm p-4 py-1 rounded-2xl font-bold transition-all duration-200 ease-in-out active:scale-125 hover:bg-gray-400 dark:hover:bg-gray-400 border border-gray-300"
+                  classFollowing="backdrop-blur-lg text-sm p-4 py-1 rounded-2xl font-bold transition-all duration-200 ease-in-out active:scale-125 bg-gray-400 dark:bg-gray-400 border border-gray-300"
+                  contentFollow="Follow"
+                  contentFollowing="Following"
+                  userId={user.id}
+                  followingId={post.user.id}
+                />
+            
               </div>
             </div>
             <div className="mt-2 w-[350px]">
