@@ -5,13 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1dc806c8-9b06-409a-84de-1db3bd7b8131" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/components/provider/CallProvider.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/global/chat/CallNotification.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/(pages)/layout.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(pages)/layout.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(pages)/messages/page.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(pages)/messages/page.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/(pages)/video-call/page.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(pages)/video-call/page.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/provider/AppProvider.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/provider/AppProvider.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tailwind.config.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/tailwind.config.mjs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/global/chat/Message.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/global/chat/Message.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/provider/CallProvider.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/provider/CallProvider.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/controllers/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/controllers/UserController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/controllers/auth/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/controllers/auth/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/controllers/chat/SignalingController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/controllers/chat/SignalingController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/entities/Report.java" beforeDir="false" afterPath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/entities/Report.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/services/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/services/UserService.java" afterDir="false" />
     </list>
@@ -112,7 +115,9 @@
       <workItem from="1740122328053" duration="26541000" />
       <workItem from="1740218303030" duration="9655000" />
       <workItem from="1740303140392" duration="22683000" />
-      <workItem from="1740478200155" duration="20307000" />
+      <workItem from="1740478200155" duration="21002000" />
+      <workItem from="1740557203603" duration="3473000" />
+      <workItem from="1740565690856" duration="40439000" />
     </task>
     <servers />
   </component>
