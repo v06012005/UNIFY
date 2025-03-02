@@ -84,6 +84,7 @@ const SideBar = () => {
           <NotificationModal
             isNotificationOpen={isNotificationOpen}
             modalRef={modalRef}
+            userId={user?.id}
           />
           <ul className="text-3xl flex flex-col justify-center grow w-full">
             <li className="h-16">

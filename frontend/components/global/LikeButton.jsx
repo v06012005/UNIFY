@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Button } from "@heroui/react";
 import useLikedPost from "@/hooks/useLikedPost";
 import Cookies from "js-cookie";
@@ -7,6 +7,7 @@ const LikeButton = ({ className = "", userId, postId }) => {
   const [isLiked, setIsLiked] = useLikedPost(userId, postId);
   const [loading, setLoading] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
+  const lastClickRef = useRef(0);
 
   useEffect(() => {
     const fetchLikeCount = async () => {
@@ -43,6 +44,13 @@ const LikeButton = ({ className = "", userId, postId }) => {
   }, [postId, isLiked]);
 
   const handleClick = async () => {
+    const now = Date.now();
+    if (now - lastClickRef.current < 1000) {
+      console.warn("Click quá nhanh, vui lòng chờ một chút");
+      return;
+    }
+    lastClickRef.current = now;
+
     const token = Cookies.get("token");
     if (!token) {
       console.error("Chưa đăng nhập");
@@ -85,12 +93,12 @@ const LikeButton = ({ className = "", userId, postId }) => {
     <Button
       onPress={handleClick}
       className={`bg-transparent dark:text-white ${className}`}
+      disabled={loading}
     >
       <i
         className={`${
           isLiked ? "fa-solid text-red-500" : "fa-regular"
         } fa-heart transition ease-in-out duration-300`}
-        disabled={loading}
       ></i>
       {likeCount}
     </Button>
