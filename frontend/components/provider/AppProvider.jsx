@@ -312,6 +312,7 @@ export const AppProvider = ({ children }) => {
             refreshToken,
             logoutUser,
             useChat,
+            getInfoUser,
             getUserInfoByUsername,
           }}
         >

@@ -7,6 +7,7 @@ import { useApp } from "@/components/provider/AppProvider";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Cookies from "js-cookie";
 import { toast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
 const Page = () => {
   const defaultAvatar = "/images/unify_icon_2.svg";
   const [avatar, setAvatar] = useState(defaultAvatar);
@@ -15,6 +16,7 @@ const Page = () => {
   const [errors, setErrors] = useState({});
   const { user, setUser } = useApp();
   const { logoutUser } = useApp();
+  const { toast } = useToast();
   const [userData, setUserData] = useState({
     id: "",
     firstName: "",
@@ -32,7 +34,6 @@ const Page = () => {
     biography: "",
   });
 
-  const [gender, setGender] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -56,9 +57,10 @@ const Page = () => {
       setGender(user.gender || false);
     }
   }, [user]);
-
+  const [gender, setGender] = useState("");
   const handleGenderChange = (value) => {
     setGender(value);
+    setUserData((prev) => ({ ...prev, gender: value })); 
   };
 
   useEffect(() => {
@@ -228,11 +230,10 @@ const Page = () => {
           : null,
       };
       console.log("Request data to send:", requestData);
-      // Xử lý tải ảnh lên nếu có avatar mới
 
       if (userData.avatar instanceof File) {
         const formData = new FormData();
-        formData.append("file", userData.avatar); // Chỉ gửi 1 file
+        formData.append("file", userData.avatar); 
 
         const uploadResponse = await fetch("/api/upload", {
           method: "POST",
@@ -247,7 +248,7 @@ const Page = () => {
         }
 
         const uploadData = await uploadResponse.json();
-        updatedUserData.avatar = uploadData.files[0].url; // Lấy URL từ server
+        updatedUserData.avatar = uploadData.files[0].url; 
       }
 
 
