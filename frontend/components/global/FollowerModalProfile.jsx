@@ -1,7 +1,7 @@
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useSuggestedUsers } from "@/components/provider/SuggestedUsersProvider";
+import { SuggestedUsersProvider, useSuggestedUsers } from "@/components/provider/SuggestedUsersProvider";
 import { useApp } from "@/components/provider/AppProvider";
 import FollowButton from "../ui/follow-button";
 const FollowerModal = ({ isOpen, onClose }) => {

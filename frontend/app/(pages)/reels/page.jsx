@@ -17,6 +17,8 @@ import avatar2 from "@/public/images/testAvt.jpg";
 import FollowButton from "@/components/ui/follow-button";
 import LikeButton from "@/components/global/LikeButton";
 
+import { useReports } from "@/components/provider/ReportProvider";
+import { addToast, ToastProvider } from "@heroui/toast";
 const Reels = () => {
   const [isCommentOpen, setIsCommentOpen] = useState(false);
   const [toolStates, setToolStates] = useState({});
@@ -36,6 +38,7 @@ const Reels = () => {
   const currentUserId = user?.id;
   const [replyingTo, setReplyingTo] = useState(null);
   // Fetch video posts
+  const { createPostReport, createUserReport, createCommentReport } = useReports();
   useEffect(() => {
     async function getVideoPosts() {
       const homePosts = await fetchPosts();
@@ -90,6 +93,43 @@ const Reels = () => {
     [token]
   );
 
+  const handleReportPost = useCallback(async (postId) => {
+    const report = await createPostReport(postId);
+  
+    if (report?.error) {
+      const errorMessage = report.error;
+      console.warn("Failed to report post:", errorMessage);
+  
+      if (errorMessage === "You have reported this post before.") {
+        addToast({
+          title: "Fail to report post",
+          description: "You have reported this post before.",
+          timeout: 3000,
+          shouldShowTimeoutProgess: true,
+          color: "warning",
+        });
+      } else {
+        addToast({
+          title: "Encountered an error",
+          description: "Error: " + errorMessage,
+          timeout: 3000,
+          shouldShowTimeoutProgess: true,
+          color: "danger",
+        });
+      }
+      return;
+    }
+  
+    console.log("Post reported successfully:", report);
+    addToast({
+      title: "Success",
+      description: "Report post successful.",
+      timeout: 3000,
+      shouldShowTimeoutProgess: true,
+      color: "success",
+    });
+  }, [createPostReport]);
+  
   // Intersection Observer
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -238,6 +278,8 @@ const Reels = () => {
     );
   }
   return (
+    <>
+    <ToastProvider placement={"top-right"} />
     <div
       ref={containerRef}
       className="h-screen w-full overflow-y-scroll snap-y snap-mandatory scrollbar-hide shadow-lg"
@@ -339,8 +381,8 @@ const Reels = () => {
                   onClick={(e) => closeMore(e, post.id)}
                 >
                   <ul className="text-sm">
-                    <li className="cursor-pointer hover:bg-zinc-500 font-bold text-left p-2 rounded-sm text-red-500">
-                      ReportReport
+                  <li className="cursor-pointer hover:bg-slate-500 font-bold text-left p-2 rounded-sm text-red-500" onClick={() => handleReportPost(post.id)} >
+                      Report
                     </li>
                     <li className="cursor-pointer hover:bg-zinc-500 font-bold text-left p-2 rounded-sm">
                       Copy link
@@ -348,6 +390,7 @@ const Reels = () => {
                     <li className="cursor-pointer hover:bg-slate-500 font-bold text-left p-2 rounded-sm">
                       About this account
                     </li>
+                   
                   </ul>
                 </div>
               )}
@@ -418,6 +461,7 @@ const Reels = () => {
         </div>
       )}
     </div>
+    </>
   );
 };
 
