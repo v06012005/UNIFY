@@ -12,12 +12,8 @@ import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { SuggestedUsersProvider } from "./SuggestedUsersProvider";
-import {dehydrate, HydrationBoundary, useQuery} from "@tanstack/react-query";
-import {getQueryClient} from "@/components/client/QueryClient";
-import { supabase } from "@/supbaseConfig";
-import { v4 as uuidv4 } from "uuid";
-
+import { getQueryClient } from "../client/QueryClient";
+import { useQuery } from "@tanstack/react-query";
 const useChat = (user, chatPartner) => {
 
   const [chatMessages, setChatMessages] = useState([]);
@@ -38,7 +34,7 @@ const useChat = (user, chatPartner) => {
     }
   };
 
-  const {data, isLoading } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["messages", user?.id, chatPartner],
     queryFn: fetchMessages,
     enabled: !!user?.id && !!chatPartner,
@@ -80,36 +76,19 @@ const useChat = (user, chatPartner) => {
     }
   }, [user.id, chatPartner, isLoading]);
 
-  const sendMessage = async (content, files) => {
+  const sendMessage = (content) => {
     if (stompClientRef.current?.connected && user.id) {
-      let fileUrls = [];
-
-      if (files.length > 0) {
-        for (const file of files) {
-          const fileExt = file.name.split(".").pop();
-          const fileName = `${user.id}.${fileExt}`;
-
-          const { data, error } = await supabase.storage
-              .from("files")
-              .upload(fileName, file, {
-                cacheControl: "3600",
-                upsert: false,
-              });
-
-          fileUrls.push(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/files/${fileName}`);
-        }
-      }
-
       const message = {
         sender: user.id,
         receiver: chatPartner,
-        content: content || "",
+        content,
         timestamp: new Date().toISOString(),
-        fileUrls: fileUrls,
       };
 
       setChatMessages((prev) =>
-          [...prev, message].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
+        [...prev, message].sort(
+          (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+        )
       );
 
       stompClientRef.current.publish({
@@ -177,7 +156,7 @@ export const AppProvider = ({ children }) => {
       const userInfo = await getInfoUser();
       if (userInfo) {
         setIsAdmin(userInfo.roles[0].id === 1);
-        if (isAdmin) {
+        if (userInfo.roles[0].id === 1) {
           router.push("/statistics/users");
         } else {
           router.push("/");
@@ -334,29 +313,22 @@ export const AppProvider = ({ children }) => {
   }, []);
 
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <SuggestedUsersProvider>
-        {" "}
-        {
-          <UserContext.Provider
-              value={{
-                user,
-                setUser,
-                userFromAPI,
-                setUserFromAPI,
-                loginUser,
-                refreshToken,
-                logoutUser,
-                useChat,
-                getInfoUser,
-                getUserInfoByUsername,
-              }}
-          >
-            {children}
-          </UserContext.Provider>
-        }
-      </SuggestedUsersProvider>
-    </HydrationBoundary>
+    <UserContext.Provider
+      value={{
+        user,
+        setUser,
+        userFromAPI,
+        setUserFromAPI,
+        loginUser,
+        refreshToken,
+        logoutUser,
+        useChat,
+        getInfoUser,
+        getUserInfoByUsername,
+      }}
+    >
+      {children}
+    </UserContext.Provider>
   );
 };
 
