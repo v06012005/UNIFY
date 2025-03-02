@@ -5,17 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1dc806c8-9b06-409a-84de-1db3bd7b8131" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/app/lib/get-query-client.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/loading/Spinner.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/reels/ReelsList.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/client/QueryClient.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/(pages)/reels/page.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(pages)/reels/page.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/layout.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/layout.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/page.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/page.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/global/Post.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/global/Post.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/global/SideBar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/global/SideBar.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/provider/AppProvider.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/provider/AppProvider.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/provider/RootProviders.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/provider/RootProviders.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/services/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/services/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/reels/ReelsList.jsx" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

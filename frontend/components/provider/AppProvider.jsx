@@ -12,8 +12,10 @@ import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { getQueryClient } from "../client/QueryClient";
-import { useQuery } from "@tanstack/react-query";
+import { SuggestedUsersProvider } from "./SuggestedUsersProvider";
+import {dehydrate, HydrationBoundary, useQuery} from "@tanstack/react-query";
+import {getQueryClient} from "@/components/client/QueryClient";
+
 const useChat = (user, chatPartner) => {
 
   const [chatMessages, setChatMessages] = useState([]);
@@ -34,7 +36,7 @@ const useChat = (user, chatPartner) => {
     }
   };
 
-  const { data, isLoading } = useQuery({
+  const {data, isLoading } = useQuery({
     queryKey: ["messages", user?.id, chatPartner],
     queryFn: fetchMessages,
     enabled: !!user?.id && !!chatPartner,
@@ -156,7 +158,7 @@ export const AppProvider = ({ children }) => {
       const userInfo = await getInfoUser();
       if (userInfo) {
         setIsAdmin(userInfo.roles[0].id === 1);
-        if (userInfo.roles[0].id === 1) {
+        if (isAdmin) {
           router.push("/statistics/users");
         } else {
           router.push("/");
@@ -313,22 +315,29 @@ export const AppProvider = ({ children }) => {
   }, []);
 
   return (
-    <UserContext.Provider
-      value={{
-        user,
-        setUser,
-        userFromAPI,
-        setUserFromAPI,
-        loginUser,
-        refreshToken,
-        logoutUser,
-        useChat,
-        getInfoUser,
-        getUserInfoByUsername,
-      }}
-    >
-      {children}
-    </UserContext.Provider>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <SuggestedUsersProvider>
+        {" "}
+        {
+          <UserContext.Provider
+              value={{
+                user,
+                setUser,
+                userFromAPI,
+                setUserFromAPI,
+                loginUser,
+                refreshToken,
+                logoutUser,
+                useChat,
+                getInfoUser,
+                getUserInfoByUsername,
+              }}
+          >
+            {children}
+          </UserContext.Provider>
+        }
+      </SuggestedUsersProvider>
+    </HydrationBoundary>
   );
 };
 

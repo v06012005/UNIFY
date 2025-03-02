@@ -174,7 +174,6 @@ const Post = () => {
 
   const { user } = useApp();
 
-
   const {data: posts, isLoading } = useQuery({
     queryKey: ["posts"],
     queryFn: fetchPosts,
