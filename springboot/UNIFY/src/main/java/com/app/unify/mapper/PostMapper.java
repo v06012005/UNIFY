@@ -1,17 +1,16 @@
 package com.app.unify.mapper;
 
-
-import org.mapstruct.Mapper;
-
 import com.app.unify.dto.global.PostDTO;
 import com.app.unify.dto.response.PostsDataResponse;
 import com.app.unify.entities.Post;
+import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface PostMapper {
-	Post toPost(PostDTO postDTO);
 
-	PostsDataResponse toPostsDataResponse(Post post);
+    Post toPost(PostDTO postDTO);
 
-	PostDTO toPostDTO(Post post);
+    PostsDataResponse toPostsDataResponse(Post post);
+
+    PostDTO toPostDTO(Post post);
 }

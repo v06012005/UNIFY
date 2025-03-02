@@ -141,12 +141,14 @@ export const AppProvider = ({ children }) => {
         expires: 7,
       });
 
-      getInfoUser().catch((error) => console.log(error));
-
-      if (!isAdmin) {
-        router.push("/");
-      } else {
-        router.push("/statistics/users");
+      const userInfo = await getInfoUser();
+      if (userInfo) {
+        setIsAdmin(userInfo.roles[0].id === 1);
+        if (isAdmin) {
+          router.push("/statistics/users");
+        } else {
+          router.push("/");
+        }
       }
     } catch (error) {
       if (
@@ -185,9 +187,7 @@ export const AppProvider = ({ children }) => {
         expires: 7,
       });
     } catch (error) {
-
       console.log(error);
-
     }
   };
 
@@ -211,7 +211,7 @@ export const AppProvider = ({ children }) => {
       const token = Cookies.get("token");
       if (!token) {
         console.error("Missing token! User not authenticated.");
-        return;
+        return null;
       }
 
       const response = await axios.get(`${API_URL}/users/my-info`, {
@@ -227,11 +227,15 @@ export const AppProvider = ({ children }) => {
         if (router.pathname === "/profile" && data.username) {
           router.replace(`/user/${data.username}`);
         }
+
+        return data;
       }
     } catch (err) {
       console.error("Error fetching user info:", err);
+      return null;
     }
   };
+
   const parseBirthDay = (birthDay) => {
     if (!birthDay) return { month: "", day: "", year: "" };
 
@@ -242,6 +246,7 @@ export const AppProvider = ({ children }) => {
       year,
     };
   };
+
   const getUserInfoByUsername = async (username) => {
     try {
       if (!username) {
