@@ -12,7 +12,7 @@ import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { SuggestedUsersProvider } from "./SuggestedUsersProvider";
+
 const useChat = (user, chatPartner) => {
   const [chatMessages, setChatMessages] = useState([]);
   const stompClientRef = useRef(null);
@@ -304,9 +304,7 @@ export const AppProvider = ({ children }) => {
   }, []);
 
   return (
-    <SuggestedUsersProvider>
-      {" "}
-      {
+   
         <UserContext.Provider
           value={{
             user,
@@ -323,8 +321,7 @@ export const AppProvider = ({ children }) => {
         >
           {children}
         </UserContext.Provider>
-      }
-    </SuggestedUsersProvider>
+     
   );
 };
 

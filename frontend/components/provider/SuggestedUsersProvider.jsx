@@ -1,10 +1,5 @@
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useCallback,
-} from "react";
+"use client";
+import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 
@@ -15,18 +10,16 @@ export const SuggestedUsersProvider = ({ children }) => {
   const [followerUsers, setFollowerUsers] = useState([]);
   const [friendUsers, setFriendUsers] = useState([]);
   const [followingUsers, setFollowingUsers] = useState([]);
-  const [postUsers, setPostUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentUserId, setCurrentUserId] = useState("");
-  
- 
+  const [error, setError] = useState(null);
+  const [isDataLoaded, setIsDataLoaded] = useState(false); 
+
   const fetchUserInfo = useCallback(async () => {
     try {
       const token = Cookies.get("token");
       if (!token) {
-        console.error(
-          "Không tìm thấy token! Người dùng có thể chưa đăng nhập."
-        );
+        console.error("No token found! User might not be logged in.");
         return null;
       }
 
@@ -38,34 +31,27 @@ export const SuggestedUsersProvider = ({ children }) => {
       );
 
       if (!response.data || !response.data.id) {
-        console.error("Không lấy được id từ API /users/my-info!");
+        console.error("No ID retrieved from /users/my-info API!");
         return null;
       }
 
-      console.log("Lấy được id từ API:", response.data.id);
       setCurrentUserId(response.data.id);
       return response.data.id;
     } catch (err) {
-      console.error(
-        "Lỗi khi lấy thông tin người dùng:",
-        err.response?.data || err.message
-      );
+      console.error("Error fetching user info:", err.response?.data || err.message);
+      if (err.response?.status === 401) {
+        Cookies.remove("token");
+        window.location.href = "/login";
+      }
       return null;
     }
   }, []);
 
-  // Hàm lấy danh sách gợi ý
-  const getSuggestedUsers = useCallback(async () => {
+  const getSuggestedUsers = useCallback(async (userId) => {
     try {
-      setLoading(true);
       const token = Cookies.get("token");
-      if (!token) return;
-
-      const id = await fetchUserInfo();
-      if (!id) return;
-
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/users/suggestions?currentUserId=${id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/users/suggestions?currentUserId=${userId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -74,29 +60,16 @@ export const SuggestedUsersProvider = ({ children }) => {
         }
       );
       setSuggestedUsers(response.data || []);
-      console.log("Danh sách gợi ý:", response.data);
     } catch (err) {
-      console.error(
-        "Lỗi khi lấy danh sách gợi ý:",
-        err.response?.data || err.message
-      );
-    } finally {
-      setLoading(false);
+      setError(err.response?.data?.message || "Failed to fetch suggested users");
     }
-  }, [fetchUserInfo]);
+  }, []);
 
-  // Hàm lấy danh sách người theo dõi
-  const getFollowerUsers = useCallback(async () => {
+  const getFollowerUsers = useCallback(async (userId) => {
     try {
-      setLoading(true);
       const token = Cookies.get("token");
-      if (!token) return;
-
-      const id = await fetchUserInfo();
-      if (!id) return;
-
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/users/follower?currentUserId=${id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/users/follower?currentUserId=${userId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -104,30 +77,17 @@ export const SuggestedUsersProvider = ({ children }) => {
           },
         }
       );
-
       setFollowerUsers(response.data || []);
-      console.log("Danh sách người theo dõi:", response.data);
     } catch (err) {
-      console.error(
-        "Lỗi khi lấy danh sách người theo dõi:",
-        err.response?.data || err.message
-      );
-    } finally {
-      setLoading(false);
+      setError(err.response?.data?.message || "Failed to fetch followers");
     }
-  }, [fetchUserInfo]);
-  //Hàm lấy danh sách người đang theo dõi
-  const getFollowingUsers = useCallback(async () => {
+  }, []);
+
+  const getFollowingUsers = useCallback(async (userId) => {
     try {
-      setLoading(true);
       const token = Cookies.get("token");
-      if (!token) return;
-
-      const id = await fetchUserInfo();
-      if (!id) return;
-
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/users/following?currentUserId=${id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/users/following?currentUserId=${userId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -135,30 +95,17 @@ export const SuggestedUsersProvider = ({ children }) => {
           },
         }
       );
-
       setFollowingUsers(response.data || []);
-      console.log("Danh sách người đang theo dõi:", response.data);
     } catch (err) {
-      console.error(
-        "Lỗi khi lấy danh sách người đang theo dõi:",
-        err.response?.data || err.message
-      );
-    } finally {
-      setLoading(false);
+      setError(err.response?.data?.message || "Failed to fetch following users");
     }
-  }, [fetchUserInfo]);
-  //Hàm lấy danh sách bạn bè
-  const getFriendUsers = useCallback(async () => {
+  }, []);
+
+  const getFriendUsers = useCallback(async (userId) => {
     try {
-      setLoading(true);
       const token = Cookies.get("token");
-      if (!token) return;
-
-      const id = await fetchUserInfo();
-      if (!id) return;
-
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/users/friend?currentUserId=${id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/users/friend?currentUserId=${userId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -166,35 +113,45 @@ export const SuggestedUsersProvider = ({ children }) => {
           },
         }
       );
-
       setFriendUsers(response.data || []);
-      console.log("Danh sách bạn bè:", response.data);
     } catch (err) {
-      console.error(
-        "Lỗi khi lấy danh sách bạn bè:",
-        err.response?.data || err.message
-      );
+      setError(err.response?.data?.message || "Failed to fetch friends");
+    }
+  }, []);
+
+  const loadAllData = useCallback(async () => {
+    if (isDataLoaded) return; 
+
+    setLoading(true);
+    setError(null);
+    try {
+      const id = await fetchUserInfo();
+      if (id) {
+        await Promise.all([
+          getSuggestedUsers(id),
+          getFollowerUsers(id),
+          getFollowingUsers(id),
+          getFriendUsers(id),
+        ]);
+        setIsDataLoaded(true); 
+      }
+    } catch (err) {
+      setError(err.message || "Failed to load data");
     } finally {
       setLoading(false);
     }
-  }, [fetchUserInfo]);
- 
-  useEffect(() => {
-    fetchUserInfo().then((id) => {
-      if (id) {
-        getSuggestedUsers();
-        getFollowerUsers();
-        getFollowingUsers();
-        getFriendUsers();
-      }
-    });
   }, [
     fetchUserInfo,
     getSuggestedUsers,
     getFollowerUsers,
-    getFriendUsers,
     getFollowingUsers,
+    getFriendUsers,
+    isDataLoaded,
   ]);
+
+  useEffect(() => {
+    loadAllData();
+  }, [loadAllData]); 
 
   return (
     <SuggestedUsersContext.Provider
@@ -207,9 +164,9 @@ export const SuggestedUsersProvider = ({ children }) => {
         getFollowerUsers,
         friendUsers,
         getFriendUsers,
-        postUsers,
         currentUserId,
         loading,
+        error,
       }}
     >
       {children}
@@ -220,11 +177,7 @@ export const SuggestedUsersProvider = ({ children }) => {
 export const useSuggestedUsers = () => {
   const context = useContext(SuggestedUsersContext);
   if (!context) {
-    throw new Error(
-      "useSuggestedUsers phải được sử dụng trong SuggestedUsersProvider!"
-    );
+    throw new Error("useSuggestedUsers must be used within SuggestedUsersProvider!");
   }
   return context;
 };
-
-
