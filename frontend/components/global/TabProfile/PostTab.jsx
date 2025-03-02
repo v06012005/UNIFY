@@ -64,6 +64,7 @@ const UserPosts = ({ username }) => {
     if (selectedPost && selectedPost.id) {
       loadComments(selectedPost.id);
     }
+
   }, [selectedPost, loadComments]);
 
   const handleNewComment = (newComment) => {
@@ -79,6 +80,7 @@ const UserPosts = ({ username }) => {
       });
     }
   };
+
 
   const getPostUsers = async (username) => {
     try {
@@ -234,12 +236,12 @@ const UserPosts = ({ username }) => {
                   <video
                     src={selectedMedia.url}
                     controls
-                    className="w-full h-full object-cover rounded-tl-lg rounded-bl-lg"
+                    className="w-full h-full object-contain rounded-tl-lg rounded-bl-lg"
                   />
                 ) : (
                   <img
                     src={selectedMedia.url}
-                    className="w-full h-full object-cover rounded-tl-lg rounded-bl-lg"
+                    className="w-full h-full object-contain rounded-tl-lg rounded-bl-lg"
                   />
                 )
               ) : (
@@ -300,7 +302,9 @@ const UserPosts = ({ username }) => {
                 {openList && (
                   <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                     <div
+
                       key={selectedPost.id}
+
                       className="bg-white dark:bg-black rounded-lg shadow-lg w-72"
                     >
                       <button

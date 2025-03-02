@@ -7,13 +7,22 @@ import org.springframework.stereotype.Repository;
 
 import com.app.unify.entities.Report;
 
+import com.app.unify.types.EntityType;
+
+import java.util.List;
+import java.util.Optional;
+
+
 @Repository
 public interface ReportRepository extends JpaRepository<Report, String> {
-    List<Report> findByStatus(Integer status);
+    List<Report> findByStatusIn(List<Integer> statuses);
 
-    @Override
-	Optional<Report> findById(String id);
-    boolean existsByUser_IdAndReportedId(String userId, String reportedId);
+    List<Report> findByReportedId(String reportedId);
+    Optional<Report> findById(String id);
+    List<Report> findByEntityType(EntityType entityType);
+    boolean existsByUserIdAndReportedIdAndEntityType(String userId, String reportedId, EntityType entityType);
+    List<Report> findByStatusAndEntityType(Integer status, EntityType entityType);
+    
 
 }
 

@@ -12,7 +12,11 @@ public class ReportDTO {
 	 private String id;
 	    private String userId;
 	    private String reportedId;
+	    private String entityType;
 	    private LocalDateTime reportedAt;
 	    private Integer status;
+
+	    private Object reportedEntity;
+	
 
 }

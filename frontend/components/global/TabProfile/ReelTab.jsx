@@ -101,13 +101,18 @@ const UserReels = ({ username }) => {
               .then((response) => {
                 setPosts(response.data || []);
                 setLoading(false);
+
+                console.log("Danh sách bài đăng của tôi:", response.data);
+
               })
               .catch((error) => console.log(error));
           }
         })
         .catch((error) => console.log(error));
     } catch (error) {
-      console.error(error);
+
+      console.log(error);
+
     }
   };
 
@@ -152,6 +157,8 @@ const UserReels = ({ username }) => {
   const handlePostClick = (post) => {
     setSelectedPost(post);
     setSelectedMedia(post.media.length > 0 ? post.media[0] : null);
+
+
   };
 
   const closeModal = () => {

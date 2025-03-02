@@ -20,7 +20,6 @@ export const SuggestedUsersProvider = ({ children }) => {
   const [currentUserId, setCurrentUserId] = useState("");
   
  
-  // Hàm lấy thông tin user
   const fetchUserInfo = useCallback(async () => {
     try {
       const token = Cookies.get("token");

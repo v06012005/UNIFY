@@ -85,9 +85,11 @@ const Reels = () => {
       } finally {
         setIsCommentsLoading(false);
       }
+
     },
     [token]
   );
+
 
   // Intersection Observer
   useEffect(() => {
@@ -274,10 +276,16 @@ const Reels = () => {
                 <span className="font-medium">{post.user?.username}</span>
                 <span className="text-white text-lg">•</span>
                 <FollowButton
+                  classFollow="backdrop-blur-lg text-sm p-4 py-1 rounded-2xl font-bold transition-all duration-200 ease-in-out active:scale-125 hover:bg-gray-400 dark:hover:bg-gray-400 border border-gray-300"
+                  classFollowing="backdrop-blur-lg text-sm p-4 py-1 rounded-2xl font-bold transition-all duration-200 ease-in-out active:scale-125 bg-gray-400 dark:bg-gray-400 border border-gray-300"
+                  contentFollow="Follow"
+                  contentFollowing="Following"
                   userId={user.id}
                   followingId={post.user.id}
+
                   classFollow="backdrop-blur-lg text-sm p-4 py-1 rounded-2xl font-bold transition-all duration-200 ease-in-out active:scale-125 hover:bg-gray-500 dark:hover:bg-gray-400 border border-gray-300"
                   classFollowing="backdrop-blur-lg text-sm p-4 py-1 rounded-2xl font-bold transition-all duration-200 ease-in-out active:scale-125 hover:bg-gray-500 dark:hover:bg-gray-400 border border-gray-300"
+
                 />
               </div>
             </div>
