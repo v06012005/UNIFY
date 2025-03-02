@@ -8,34 +8,61 @@ import {
   Button,
   useDisclosure,
 } from "@heroui/react";
-import CommentCard from "./CommentCard";
-import CommentForm from "./CommentForm";
-////////////commentcomment
 import Cookies from "js-cookie";
-import React, { useState, useEffect } from "react";
-import { useApp } from "@/components/provider/AppProvider";
+/////
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { fetchComments } from "app/api/service/commentService";
 import CommentItem from "@/components/comments/CommentItem";
 import CommentInput from "@/components/comments/CommentInput";
+import { useApp } from "@/components/provider/AppProvider"; 
 
 export default function CommentButton({ children, className = "", postId }) {
-
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  /////////////
   const [comments, setComments] = useState([]);
-  const { user } = useApp();
+  const [isCommentsLoading, setIsCommentsLoading] = useState(false);
   const token = Cookies.get("token");
-  // const postId = "0de81a82-caa6-439c-a0bc-124a83b5ceaf";
+  const commentsContainerRef = useRef(null);
+  const { user } = useApp(); // Thêm useApp để lấy user
+
+  const loadComments = useCallback(
+    async (postId) => {
+      if (!token || !postId) return;
+      setIsCommentsLoading(true);
+      try {
+        const data = await fetchComments(postId, token);
+        console.log(`Fetched comments for post ${postId}:`, data);
+        setComments(data);
+      } catch (error) {
+        console.error(`Failed to fetch comments for post ${postId}:`, error);
+        setComments([]);
+      } finally {
+        setIsCommentsLoading(false);
+      }
+    },
+    [token]
+  );
 
   useEffect(() => {
-    const loadComments = async () => {
-      const data = await fetchComments(postId, token);
-      setComments(data);
-    };
-    loadComments();
-  }, [postId, token]);
-  //////
+    if (isOpen && postId) {
+      loadComments(postId);
+    }
+  }, [isOpen, postId, loadComments]);
 
+  const handleNewComment = (newComment) => {
+    // Đồng bộ với Reels: thêm username trực tiếp
+    const enrichedComment = {
+      ...newComment,
+      username: user?.username || "Unknown", // Thêm username phẳng
+    };
+    setComments((prevComments) => [enrichedComment, ...prevComments]);
+    if (commentsContainerRef.current) {
+      commentsContainerRef.current.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }
+  };
+//////////////////
   const handleOpen = () => {
     onOpen();
   };
@@ -63,13 +90,20 @@ export default function CommentButton({ children, className = "", postId }) {
               <ModalHeader className="flex flex-col gap-1">
                 Comments
               </ModalHeader>
-              <ModalBody>
-                {comments.map((comment) => (
-                  <CommentItem key={comment.id} comment={comment} />
-                ))}
+              <ModalBody ref={commentsContainerRef}>
+                {console.log("Comments in CommentButton:", comments)}
+                {isCommentsLoading ? (
+                  <p>Loading comments...</p>
+                ) : comments.length > 0 ? (
+                  comments.map((comment) => (
+                    <CommentItem key={comment.id} comment={comment} />
+                  ))
+                ) : (
+                  <p>No comments yet.</p>
+                )}
               </ModalBody>
               <ModalFooter>
-                <CommentInput postId={postId} setComments={setComments} />
+                <CommentInput postId={postId} setComments={handleNewComment} />
               </ModalFooter>
             </>
           )}

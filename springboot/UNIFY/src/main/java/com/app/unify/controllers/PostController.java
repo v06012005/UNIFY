@@ -32,16 +32,17 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/posts")
 public class PostController {
 
-    @Autowired
-    private PostService postService;
-    private final PostCommentService postCommentService;
+
+	@Autowired
+	private PostService postService;
+	private final PostCommentService postCommentService;
     private final LikedPostService likedService;
     private final MediaService mediaService;
+	@GetMapping
+	public List<PostDTO> getAllPosts() {
+		return postService.getPostsTrending();
+	}
 
-    @GetMapping
-    public List<PostDTO> getAllPosts() {
-        return postService.getPostsTrending();
-    }
 
     @PostMapping
     public PostDTO createPost(@RequestBody PostDTO postDTO) {
@@ -58,19 +59,22 @@ public class PostController {
         return postService.updatePost(postDTO);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deletePost(@PathVariable("id") String id) {
-        try {
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<String> deletePost(@PathVariable("id") String id) {
+	    try {
 //	    	postCommentService.deleteCommentsByPostId(id);
 //	    	likedService.delete(id);
 //	    	mediaService.deleteById(id);
-            postService.deletePostById(id);
+            postService.deletePostById(id); 
             return ResponseEntity.ok("Post deleted successfully!");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error deleting post: " + e.getMessage());
-        }
-    }
+	    } catch (Exception e) {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                           .body("Error deleting post: " + e.getMessage());
+	    }
+	}
+
+
 
     @GetMapping("/admin/list")
     public List<PostDTO> getPostList() {
@@ -89,6 +93,7 @@ public class PostController {
 //	public List<PostDTO> getMyPosts(@PathVariable("username") String username) {
 //		return postService.getMyPosts(username);
 //	}
+
 
     @GetMapping("/my")
     public ResponseEntity<List<PostDTO>> getMyPosts(@RequestParam String userId) {

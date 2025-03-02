@@ -9,6 +9,8 @@ const FollowButton = ({
   followingId,
   classFollowing = "",
   classFollow = "",
+  contentFollowing = "",
+  contentFollow = "",
 }) => {
   const { followingStatus, checkFollowing, toggleFollow } = useFollow();
 
@@ -23,7 +25,7 @@ const FollowButton = ({
       onClick={() => toggleFollow(userId, followingId, follow)}
       className={follow ? classFollowing : classFollow}
     >
-      <span>{follow ? "Following" : "Follow"}</span>
+      <span>{follow ? contentFollowing : contentFollow}</span>
     </button>
   );
 };

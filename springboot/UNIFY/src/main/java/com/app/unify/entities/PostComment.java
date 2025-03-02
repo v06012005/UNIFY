@@ -56,9 +56,7 @@ public class PostComment {
     @JoinColumn(name = "parent_id")
     @JsonBackReference
     private PostComment parent;
-
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<PostComment> replies = new ArrayList<>();
 
 
