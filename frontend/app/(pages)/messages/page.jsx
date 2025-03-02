@@ -4,31 +4,29 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import Message from "@/components/global/chat/Message";
 import { useApp } from "@/components/provider/AppProvider";
- 
 import { useState, useRef, useEffect } from "react";
 import Picker from "emoji-picker-react";
 import { Smile, Send, Plus } from "lucide-react";
- 
-const Page = () => {
 
+const Page = () => {
   const { user, useChat } = useApp();
-  const chatPartner = user.id === "58d8ce36-2c82-4d75-b71b-9d34a3370b16" ?  "3fc0aee5-b110-4788-80a8-7c571e244a13"  : "58d8ce36-2c82-4d75-b71b-9d34a3370b16";
+  const chatPartner =
+    user.id === "58d8ce36-2c82-4d75-b71b-9d34a3370b16"
+      ? "3fc0aee5-b110-4788-80a8-7c571e244a13"
+      : "58d8ce36-2c82-4d75-b71b-9d34a3370b16";
   const { chatMessages, sendMessage } = useChat(user, chatPartner);
   const [newMessage, setNewMessage] = useState("");
- 
   const [showPicker, setShowPicker] = useState(false);
   const pickerRef = useRef(null);
-  const messagesEndRef = useRef(null)
-  const avatar = 'https://file.hstatic.net/1000292100/file/img_1907_grande_e05accd5a03247069db4f3169cfb8b11_grande.jpg';
-
-
+  const messagesEndRef = useRef(null);
+  const avatar =
+    "https://file.hstatic.net/1000292100/file/img_1907_grande_e05accd5a03247069db4f3169cfb8b11_grande.jpg";
   useEffect(() => {
-      if(messagesEndRef.current){
-        messagesEndRef.current?.scrollIntoView({ behavior: 'instant' });
-      }
+    if (messagesEndRef.current) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
+    }
   }, [chatMessages]);
 
- 
   const handleSendMessage = () => {
     if (newMessage.trim() === "") return;
     sendMessage(newMessage);
@@ -36,21 +34,21 @@ const Page = () => {
   };
 
   const handleCall = () => {
-      const callWindow = window.open(
-          "/video-call",
-          "CallWindow",
-          `width=1200,height=600,left=${(window.screen.width - 1200) / 2},top=${(window.screen.height - 600) / 3}`
-      );
-      if (callWindow) {
-        callWindow.onload = () => {
-          callWindow.postMessage({ chatPartner }, window.location.origin);
-        };
-      }
+    const callWindow = window.open(
+      "/video-call",
+      "CallWindow",
+      `width=1200,height=600,left=${(window.screen.width - 1200) / 2},top=${
+        (window.screen.height - 600) / 3
+      }`
+    );
+    if (callWindow) {
+      callWindow.onload = () => {
+        callWindow.postMessage({ chatPartner }, window.location.origin);
+      };
+    }
   };
 
- 
   useEffect(() => {
-
     const handleClickOutside = (event) => {
       if (pickerRef.current && !pickerRef.current.contains(event.target)) {
         setShowPicker(false);
@@ -95,25 +93,35 @@ const Page = () => {
               >
                 <div className="flex items-center">
                   <img
-                    src={ user.id === '58d8ce36-2c82-4d75-b71b-9d34a3370b16' ? 'https://i.pinimg.com/1200x/d2/f7/7e/d2f77e1984d947d02785f5a966e309dc.jpg' : 'https://file.hstatic.net/1000292100/file/img_1907_grande_e05accd5a03247069db4f3169cfb8b11_grande.jpg'}
+                    src={
+                      user.id === "58d8ce36-2c82-4d75-b71b-9d34a3370b16"
+                        ? "https://i.pinimg.com/1200x/d2/f7/7e/d2f77e1984d947d02785f5a966e309dc.jpg"
+                        : "https://file.hstatic.net/1000292100/file/img_1907_grande_e05accd5a03247069db4f3169cfb8b11_grande.jpg"
+                    }
                     alt="Avatar"
                     className="rounded-full w-12 h-12"
                   />
                   <div className="ml-4">
                     <h4 className="text-lg font-medium truncate w-23">
-                      {
-                        user.id !== '58d8ce36-2c82-4d75-b71b-9d34a3370b16' ? 'Tấn Vinh' : 'Minh Đang'
-                      }
+                      {user.id !== "58d8ce36-2c82-4d75-b71b-9d34a3370b16"
+                        ? "Tấn Vinh"
+                        : "Minh Đang"}
                     </h4>
                     <p className="text-sm text-gray-300 truncate w-60">
-                      {chatMessages && chatMessages[chatMessages.length - 1]?.content}
+                      {chatMessages &&
+                        chatMessages[chatMessages.length - 1]?.content}
                     </p>
                   </div>
                 </div>
-                <span className="text-sm text-gray-400">{new Date(chatMessages && chatMessages[chatMessages.length - 1]?.timestamp).toLocaleTimeString("vi-VN", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}</span>
+                <span className="text-sm text-gray-400">
+                  {new Date(
+                    chatMessages &&
+                      chatMessages[chatMessages.length - 1]?.timestamp
+                  ).toLocaleTimeString("vi-VN", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </span>
               </div>
             ))}
           </div>
@@ -122,19 +130,26 @@ const Page = () => {
           <div className="flex p-4 w-full">
             <div className="flex grow">
               <img
-                src={user.id === '58d8ce36-2c82-4d75-b71b-9d34a3370b16' ? 'https://i.pinimg.com/1200x/d2/f7/7e/d2f77e1984d947d02785f5a966e309dc.jpg' : 'https://file.hstatic.net/1000292100/file/img_1907_grande_e05accd5a03247069db4f3169cfb8b11_grande.jpg'}
+                src={
+                  user.id === "58d8ce36-2c82-4d75-b71b-9d34a3370b16"
+                    ? "https://i.pinimg.com/1200x/d2/f7/7e/d2f77e1984d947d02785f5a966e309dc.jpg"
+                    : "https://file.hstatic.net/1000292100/file/img_1907_grande_e05accd5a03247069db4f3169cfb8b11_grande.jpg"
+                }
                 alt="Avatar"
                 className="rounded-full w-14 h-14"
               />
               <div className="ml-5">
                 <h4 className="text-lg font-medium truncate w-60">
-                  {
-                    user.id !== '58d8ce36-2c82-4d75-b71b-9d34a3370b16' ? 'Tấn Vinh' : 'Minh Đang'
-                  }
+                  {user.id !== "58d8ce36-2c82-4d75-b71b-9d34a3370b16"
+                    ? "Tấn Vinh"
+                    : "Minh Đang"}
                 </h4>
-                <p className="text-lg text-gray-500 truncate w-40"> {
-                  user.id !== '58d8ce36-2c82-4d75-b71b-9d34a3370b16' ? 'TanVinh' : 'MinhDang'
-                }</p>
+                <p className="text-lg text-gray-500 truncate w-40">
+                  {" "}
+                  {user.id !== "58d8ce36-2c82-4d75-b71b-9d34a3370b16"
+                    ? "TanVinh"
+                    : "MinhDang"}
+                </p>
               </div>
             </div>
             <div className="flex w-1/3 items-center justify-end text-2xl">
@@ -158,11 +173,8 @@ const Page = () => {
 
           <div className="h-3/4 overflow-y-scroll">
             <h2 className="text-center m-3">23:48, 20/01/2025</h2>
-
-            <Message messages={chatMessages} messagesEndRef={messagesEndRef}/>
-
-            <div ref={messagesEndRef}/>
-
+            <Message messages={chatMessages} messagesEndRef={messagesEndRef} />
+            <div ref={messagesEndRef} />
           </div>
 
           <div className="flex items-center mt-3 bg-gray-800 text-white p-3 rounded-2xl w-full justify-center">

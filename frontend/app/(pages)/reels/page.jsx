@@ -15,6 +15,7 @@ import CaptionWithMore from "@/components/global/CaptionWithMore";
 import { useDisclosure } from "@heroui/react";
 import avatar2 from "@/public/images/testAvt.jpg";
 import FollowButton from "@/components/ui/follow-button";
+import LikeButton from "@/components/global/LikeButton";
 
 const Reels = () => {
   const [isCommentOpen, setIsCommentOpen] = useState(false);
@@ -85,11 +86,9 @@ const Reels = () => {
       } finally {
         setIsCommentsLoading(false);
       }
-
     },
     [token]
   );
-
 
   // Intersection Observer
   useEffect(() => {
@@ -276,16 +275,12 @@ const Reels = () => {
                 <span className="font-medium">{post.user?.username}</span>
                 <span className="text-white text-lg">•</span>
                 <FollowButton
-                  classFollow="backdrop-blur-lg text-sm p-4 py-1 rounded-2xl font-bold transition-all duration-200 ease-in-out active:scale-125 hover:bg-gray-400 dark:hover:bg-gray-400 border border-gray-300"
-                  classFollowing="backdrop-blur-lg text-sm p-4 py-1 rounded-2xl font-bold transition-all duration-200 ease-in-out active:scale-125 bg-gray-400 dark:bg-gray-400 border border-gray-300"
                   contentFollow="Follow"
                   contentFollowing="Following"
                   userId={user.id}
                   followingId={post.user.id}
-
                   classFollow="backdrop-blur-lg text-sm p-4 py-1 rounded-2xl font-bold transition-all duration-200 ease-in-out active:scale-125 hover:bg-gray-500 dark:hover:bg-gray-400 border border-gray-300"
                   classFollowing="backdrop-blur-lg text-sm p-4 py-1 rounded-2xl font-bold transition-all duration-200 ease-in-out active:scale-125 hover:bg-gray-500 dark:hover:bg-gray-400 border border-gray-300"
-
                 />
               </div>
             </div>
@@ -295,7 +290,7 @@ const Reels = () => {
           </div>
           <div className="absolute top-2/3 right-4 transform -translate-y-1/2 flex flex-col items-center space-y-7 text-white text-2xl">
             <div className="flex flex-col items-center">
-              <i
+              {/* <i
                 className={`fa-${
                   toolStates[post.id]?.isLiked ? "solid" : "regular"
                 } fa-heart hover:opacity-50 focus:opacity-50 transition cursor-pointer ${
@@ -303,7 +298,11 @@ const Reels = () => {
                 }`}
                 onClick={() => handleLike(post.id)}
               />
-              <span className="text-sm">47k</span>
+              <span className="text-sm">47k</span> */}
+              <LikeButton
+              userId={user.id}
+              postId={post.id}
+              />
             </div>
             <div className="flex flex-col items-center">
               <i
