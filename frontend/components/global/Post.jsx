@@ -14,6 +14,7 @@ import { fetchPosts } from "@/app/lib/dal";
 import { useEffect } from "react";
 import { Spinner } from "@heroui/react";
 import { useApp } from "../provider/AppProvider";
+import {getQueryClient} from "@/app/lib/get-query-client";
 import {useQuery} from "@tanstack/react-query";
 
 const User = ({ href = "", username = "", firstname = "", lastname = "" }) => {
@@ -173,12 +174,13 @@ const Post = () => {
 
   const { user } = useApp();
 
-  const {data: posts, isPending } = useQuery({
+
+  const {data: posts, isLoading } = useQuery({
     queryKey: ["posts"],
     queryFn: fetchPosts,
   });
 
-  if (isPending) {
+  if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
         <Spinner color="primary" label="Loading..." labelColor="primary" />
