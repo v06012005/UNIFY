@@ -3,33 +3,28 @@
 import React from "react";
 import { FollowNotification } from "@/components/ui/follow_notification.jsx";
 import { TagNotification } from "@/components/ui/tag_notification";
+import useNotification from "@/hooks/useNotification";
 
-const NotificationModal = ({ isNotificationOpen, modalRef }) => {
-  const notifications = Array.from({ length: 9 }, (_, index) => ({
-    id: index + 1,
-    type: index % 2 === 0 ? "follow" : "tag",
-    isSeen: index > 3,
-    timestamp: Date.now() - index * 1000 * 60 * 5,
-  }));
+const NotificationModal = ({ isNotificationOpen, modalRef, userId }) => {
+  const { notifications } = useNotification(userId);
 
-  // Sắp xếp thông báo theo thời gian
-  const sortedNotifications = notifications.sort(
-    (a, b) => b.timestamp - a.timestamp
+  const sortedNotifications = [...notifications].sort(
+    (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
   );
 
-  // Render notifications
   const renderNotification = (notification) => {
-    switch (notification.type) {
+    switch (notification.type.toLowerCase()) {
       case "follow":
         return (
           <FollowNotification
             key={notification.id}
-            isSeen={notification.isSeen}
+            isSeen={notification.isRead}
+            sender={notification.sender} // Pass the sender prop
           />
         );
       case "tag":
         return (
-          <TagNotification key={notification.id} isSeen={notification.isSeen} />
+          <TagNotification key={notification.id} isSeen={notification.isRead} />
         );
       default:
         return null;
@@ -41,9 +36,7 @@ const NotificationModal = ({ isNotificationOpen, modalRef }) => {
       <div
         ref={modalRef}
         className={`bg-white dark:bg-black text-black dark:text-white shadow-lg max-w-md h-screen overflow-hidden ${
-          isNotificationOpen
-            ? "animate-fadeScale"
-            : "animate-fadeOut"
+          isNotificationOpen ? "animate-fadeScale" : "animate-fadeOut"
         } transition-all ease-in-out duration-300`}
         style={{
           width: isNotificationOpen ? 448 : 0,
@@ -52,14 +45,20 @@ const NotificationModal = ({ isNotificationOpen, modalRef }) => {
         <h1 className="font-bold text-2xl mb-4 px-5 pt-5">Notifications</h1>
 
         <div className="overflow-y-auto space-y-1 pr-2 max-h-full h-[94%] pb-5 pl-5">
-          {sortedNotifications.map((notification, index) => (
-            <React.Fragment key={notification.id}>
-              {renderNotification(notification)}
-              {index < sortedNotifications.length - 1 && (
-                <hr className="border-t border-gray-300 dark:border-gray-600" />
-              )}
-            </React.Fragment>
-          ))}
+          {sortedNotifications.length > 0 ? (
+            sortedNotifications.map((notification, index) => (
+              <React.Fragment key={notification.id}>
+                {renderNotification(notification)}
+                {index < sortedNotifications.length - 1 && (
+                  <hr className="border-t border-gray-300 dark:border-gray-600" />
+                )}
+              </React.Fragment>
+            ))
+          ) : (
+            <p className="text-center text-gray-400 dark:text-gray-600 mt-10">
+              No notifications yet
+            </p>
+          )}
         </div>
       </div>
     </div>
