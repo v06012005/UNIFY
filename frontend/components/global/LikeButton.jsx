@@ -90,8 +90,8 @@ const LikeButton = ({ className = "", userId, postId }) => {
   };
 
   return (
-    <Button
-      onPress={handleClick}
+    <button
+      onClick={handleClick}
       className={`bg-transparent dark:text-white ${className}`}
       disabled={loading}
     >
@@ -100,8 +100,8 @@ const LikeButton = ({ className = "", userId, postId }) => {
           isLiked ? "fa-solid text-red-500" : "fa-regular"
         } fa-heart transition ease-in-out duration-300`}
       ></i>
-      {likeCount}
-    </Button>
+      <span className="text-xl">{likeCount}</span>
+    </button>
   );
 };
 

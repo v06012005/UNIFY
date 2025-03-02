@@ -289,7 +289,6 @@ const Reels = () => {
             </div>
           </div>
           <div className="absolute top-2/3 right-4 transform -translate-y-1/2 flex flex-col items-center space-y-7 text-white text-2xl">
-            <div className="flex flex-col items-center">
               {/* <i
                 className={`fa-${
                   toolStates[post.id]?.isLiked ? "solid" : "regular"
@@ -302,8 +301,8 @@ const Reels = () => {
               <LikeButton
               userId={user.id}
               postId={post.id}
+              className="flex flex-col items-center"
               />
-            </div>
             <div className="flex flex-col items-center">
               <i
                 className="fa-regular fa-comment hover:opacity-50 focus:opacity-50 transition cursor-pointer"

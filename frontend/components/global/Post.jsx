@@ -206,7 +206,7 @@ const Post = () => {
           <Caption text={post.captions} />
           <div className="flex text-xl">
             <LikeButton
-              className="!text-xl"
+              className="!text-xl hover:opacity-50 focus:opacity-50 transition space-x-2"
               userId={user.id}
               postId={post.id}
             />

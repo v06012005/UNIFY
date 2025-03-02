@@ -1,11 +1,10 @@
-// Code: Lấy thông báo từ server và cập nhật thông báo mới khi có thông báo mới
-// Đoạn code này sẽ lấy thông báo từ server và cập nhật thông báo mới khi có thông báo mới.
-//
-import { useEffect, useRef, useState } from "react";
-import axios from "axios";
-import Cookies from "js-cookie";
-import SockJS from "sockjs-client"; // Ensure correct import of SockJS
-import { Client } from "@stomp/stompjs"; // Ensure correct import of Client
+"use client";
+
+const { useState, useRef, useEffect } = require("react");
+const axios = require("axios");
+const Cookies = require("js-cookie");
+const { Client } = require("@stomp/stompjs");
+const SockJS = require("sockjs-client");
 
 const useNotification = (userId) => {
   const [notifications, setNotifications] = useState([]);
@@ -14,7 +13,7 @@ const useNotification = (userId) => {
   const fetchNotifications = async () => {
     try {
       const token = Cookies.get("token");
-      console.log("Token:", token); // Debug to check if token has value
+      console.log("Token:", token); // Debug token
       if (!token) {
         throw new Error("No token found");
       }
@@ -43,7 +42,7 @@ const useNotification = (userId) => {
 
       const token = Cookies.get("token");
       if (!token) {
-        console.error("No token found");
+        console.error("No token found for WebSocket");
         return;
       }
 
@@ -53,29 +52,29 @@ const useNotification = (userId) => {
       const client = new Client({
         webSocketFactory: () => socket,
         onConnect: () => {
-          console.log("Notifications WebSocket connected");
+          console.log("✅ WebSocket connected successfully");
           client.subscribe(`/user/${userId}/queue/notifications`, (message) => {
             const newNotification = JSON.parse(message.body);
             setNotifications((prev) => [...prev, newNotification]);
           });
         },
         onStompError: (frame) => {
-          console.error("Notifications STOMP Error:", frame.headers?.message || frame);
+          console.error("❌ STOMP Error:", frame.headers?.message || frame);
         },
         onDisconnect: () => {
-          console.log(
-            "Notifications WebSocket disconnected, attempting to reconnect..."
-          );
+          console.log("❌ WebSocket disconnected");
         },
       });
       client.activate();
       stompClient.current = client;
     }
+
     return () => {
       stompClient.current?.deactivate();
     };
   }, [userId]);
+
   return { notifications };
 };
 
-export default useNotification;
+module.exports = useNotification;
