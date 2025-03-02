@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useApp } from "@/components/provider/AppProvider";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { useDisclosure } from "@heroui/react"; // Thêm import useDisclosure
 ////////////comment
 import { fetchComments } from "app/api/service/commentService";
 import CommentItem from "@/components/comments/CommentItem";
@@ -22,7 +23,7 @@ const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   );
 };
 
-const UserPosts = ({ username    }) => {
+const UserPosts = ({ username }) => {
   const [selectedPost, setSelectedPost] = useState(null);
   const [postToDelete, setPostToDelete] = useState(null);
   const [openList, setOpenList] = useState(false);
@@ -35,19 +36,50 @@ const UserPosts = ({ username    }) => {
   const params = useParams();
   /////////////comment
   const [comments, setComments] = useState([]);
+  const [isCommentsLoading, setIsCommentsLoading] = useState(false);
   const token = Cookies.get("token");
-  // const postId = "0de81a82-caa6-439c-a0bc-124a83b5ceaf";
+  const commentsContainerRef = useRef(null);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-  useEffect(() => {
-    if (selectedPost?.id) {
-      const loadComments = async () => {
-        const data = await fetchComments(selectedPost.id, token);
+  const loadComments = useCallback(
+    async (postId) => {
+      if (!token || !postId) return;
+      setIsCommentsLoading(true);
+      try {
+        const data = await fetchComments(postId, token);
+        console.log(`Fetched comments for post ${postId}:`, data);
         setComments(data);
-      };
-      loadComments();
+      } catch (error) {
+        console.error(`Failed to fetch comments for post ${postId}:`, error);
+        setComments([]);
+      } finally {
+        setIsCommentsLoading(false);
+      }
+    },
+    [token]
+  );
+
+  // Sửa useEffect để dùng selectedPost.id và trigger khi modal mở
+  useEffect(() => {
+    if (selectedPost && selectedPost.id) {
+      loadComments(selectedPost.id);
     }
-  }, [selectedPost, token]);
-  /////////
+  }, [selectedPost, loadComments]);
+
+  const handleNewComment = (newComment) => {
+    const enrichedComment = {
+      ...newComment,
+      username: user?.username || "Unknown", 
+    };
+    setComments((prevComments) => [enrichedComment, ...prevComments]);
+    if (commentsContainerRef.current) {
+      commentsContainerRef.current.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }
+  };
+
   const getPostUsers = async (username) => {
     try {
       const token = Cookies.get("token");
@@ -56,7 +88,7 @@ const UserPosts = ({ username    }) => {
       getUserInfoByUsername(username)
         .then((data) => {
           if (data) {
-            const response = axios
+            axios
               .get(
                 `${process.env.NEXT_PUBLIC_API_URL}/posts/my?userId=${data.id}`,
                 {
@@ -78,32 +110,30 @@ const UserPosts = ({ username    }) => {
       console.error(error);
     }
   };
+
   const handleDeletePost = async (postId) => {
     try {
-        const token = Cookies.get("token");
-        if (!token) return;
+      const token = Cookies.get("token");
+      if (!token) return;
 
-        await axios.delete(
-            `${process.env.NEXT_PUBLIC_API_URL}/posts/${postId}`,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-            }
-        );
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/posts/${postId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
-        setPosts(posts.filter(post => post.id !== postId));
-        setShowModal(false);
+      setPosts(posts.filter((post) => post.id !== postId));
+      setShowModal(false);
     } catch (error) {
-        console.error("Error deleting post:", error);
+      console.error("Error deleting post:", error);
     }
-};
+  };
 
-const openDeleteModal = (postId) => {
+  const openDeleteModal = (postId) => {
     setPostToDelete(postId);
     setShowModal(true);
-};
+  };
 
   useEffect(() => {
     if (username) {
@@ -191,7 +221,7 @@ const openDeleteModal = (postId) => {
       ) : (
         <p className="text-center text-gray-500 mt-4">Không có bài đăng nào.</p>
       )}
-   
+
       {selectedPost && (
         <div
           className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
@@ -233,6 +263,7 @@ const openDeleteModal = (postId) => {
                       {item.mediaType === "VIDEO" ? (
                         <video
                           src={item.url}
+                          
                           className="w-full h-full object-cover rounded"
                         />
                       ) : (
@@ -265,13 +296,17 @@ const openDeleteModal = (postId) => {
                   onClick={() => setOpenList(true)}
                   className="text-gray-500 hover:text-black"
                   content="•••"
-                ></NavButton>
+                />
                 {openList && (
                   <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                    <div key={selectedPost.id.id} className="bg-white dark:bg-black rounded-lg shadow-lg w-72">
-                      <button 
-                      onClick={() => openDeleteModal(selectedPost.id)}
-                      className="w-full py-2 text-red-500 dark:hover:bg-gray-900 hover:bg-gray-100">
+                    <div
+                      key={selectedPost.id}
+                      className="bg-white dark:bg-black rounded-lg shadow-lg w-72"
+                    >
+                      <button
+                        onClick={() => openDeleteModal(selectedPost.id)}
+                        className="w-full py-2 text-red-500 dark:hover:bg-gray-900 hover:bg-gray-100"
+                      >
                         Delete
                       </button>
                       <button className="w-full py-2 dark:hover:bg-gray-900 hover:bg-gray-100">
@@ -286,7 +321,6 @@ const openDeleteModal = (postId) => {
                       <button className="w-full py-2 dark:hover:bg-gray-900 hover:bg-gray-100">
                         Go to Post
                       </button>
-
                       <button
                         onClick={() => setOpenList(false)}
                         className="w-full py-2 text-gray-400 hover:bg-gray-700"
@@ -297,64 +331,74 @@ const openDeleteModal = (postId) => {
                   </div>
                 )}
                 {showModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white dark:bg-gray-900 rounded-lg p-6 w-full max-w-md">
-                        <h3 className="text-lg font-semibold mb-4">
-                            Confirm Delete
-                        </h3>
-                        <p className="text-gray-600 dark:text-gray-300 mb-6">
-                            Are you sure you want to delete this post?
-                        </p>
-                        <div className="flex justify-end gap-4">
-                            <button
-                                onClick={() => setShowModal(false)}
-                                className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={() => handleDeletePost(postToDelete)}
-                                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
-                            >
-                                Delete
-                            </button>
-                        </div>
+                      <h3 className="text-lg font-semibold mb-4">
+                        Confirm Delete
+                      </h3>
+                      <p className="text-gray-600 dark:text-gray-300 mb-6">
+                        Are you sure you want to delete this post?
+                      </p>
+                      <div className="flex justify-end gap-4">
+                        <button
+                          onClick={() => setShowModal(false)}
+                          className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={() => handleDeletePost(postToDelete)}
+                          className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </div>
-                </div>
-            )}
+                  </div>
+                )}
               </div>
 
-              <div className="flex-1 p-4 overflow-y-auto">
+              <div
+                className="flex-1 p-4 overflow-y-auto"
+                ref={commentsContainerRef}
+              >
                 <p className="text-sm leading-tight">
                   <span className="font-bold mr-4">
                     {selectedPost.user?.username}
                   </span>
                   {selectedPost.captions}
                 </p>
-                <div className=" items-start space-x-2 mb-2 mt-5">
-                  {comments.map((comment) => (
-                    <CommentItem key={comment.id} comment={comment} />
-                  ))}
+                <div className="items-start space-x-2 mb-2 mt-5">
+                  {console.log("Comments in UserPosts:", comments)}
+                  {isCommentsLoading ? (
+                    <p>Loading comments...</p>
+                  ) : comments.length > 0 ? (
+                    comments.map((comment) => (
+                      <CommentItem key={comment.id} comment={comment} />
+                    ))
+                  ) : (
+                    <p>No comments yet.</p>
+                  )}
                 </div>
               </div>
 
               <div className="p-4 border-t">
                 <div className="flex items-center border-none pt-2">
                   <CommentInput
-                    postId={selectedPost.id}
-                    setComments={setComments}
+                    postId={selectedPost.id} // Sửa thành selectedPost.id
+                    setComments={handleNewComment}
                   />
                 </div>
               </div>
             </div>
-          </div>
 
-          <button
-            className="absolute top-4 right-4 text-white text-2xl font-bold"
-            onClick={closeModal}
-          >
-            &times;
-          </button>
+            <button
+              className="absolute top-4 right-4 text-white text-2xl font-bold"
+              onClick={closeModal}
+            >
+              ×
+            </button>
+          </div>
         </div>
       )}
     </div>

@@ -9,8 +9,12 @@ import Content from "@/components/comments/Content";
 import LikeButton from "@/components/global/LikeButton";
 import avatar2 from "@/public/images/testAvt.jpg";
 
-//////////
-const CommentItem = ({ comment }) => {
+const CommentItem = ({
+  comment,
+  currentUserId,
+  onReplySubmit,
+  onReplyClick,
+}) => {
   const [isShown, setIsShown] = useState(false);
 
   return (
@@ -26,9 +30,9 @@ const CommentItem = ({ comment }) => {
             className="rounded-full w-12 h-12"
           />
           <h4 className="text-base font-bold truncate w-28 pl-2">
-            {comment.username}
+            {comment.username || "Unknown"}
           </h4>
-          <h4 className="text-xs  truncate w-32 dark:text-gray-500">
+          <h4 className="text-xs truncate w-32 dark:text-gray-500">
             {comment.commentedAt &&
             !isNaN(new Date(comment.commentedAt).getTime())
               ? formatDistanceToNow(new Date(comment.commentedAt), {
@@ -42,9 +46,13 @@ const CommentItem = ({ comment }) => {
         </div>
       </div>
 
-      <CardFooter className="flex flex-row justify-end ">
+      <CardFooter className="flex flex-row justify-end">
         <LikeButton className="!text-sm" />
-        <Button size="sm" className="bg-transparent dark:text-white">
+        <Button
+          size="sm"
+          className="bg-transparent dark:text-white"
+          onClick={onReplyClick} // Đảm bảo gọi đúng
+        >
           <i className="fa-solid fa-reply"></i> Reply
         </Button>
         <Button
@@ -66,7 +74,12 @@ const CommentItem = ({ comment }) => {
       {isShown && comment.replies && comment.replies.length > 0 && (
         <div className="w-full flex flex-col items-end">
           {comment.replies.map((reply) => (
-            <Reply key={reply.id} reply={reply} />
+            <Reply
+              key={reply.id}
+              reply={reply}
+              currentUserId={currentUserId}
+              onReplySubmit={onReplySubmit}
+            />
           ))}
         </div>
       )}

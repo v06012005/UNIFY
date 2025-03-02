@@ -13,8 +13,7 @@ import com.app.unify.entities.PostComment;
 
 @Repository
 public interface PostCommentRepository extends JpaRepository<PostComment, String> {
-
-	@Query("SELECT c FROM PostComment c JOIN FETCH c.user WHERE c.post.id = :postId")
+    @Query("SELECT c FROM PostComment c JOIN FETCH c.user WHERE c.post.id = :postId")
     List<PostComment> findCommentsByPostIdWithUser(@Param("postId") String postId);
 
     List<PostComment> findByPostId(String postId);
@@ -22,6 +21,11 @@ public interface PostCommentRepository extends JpaRepository<PostComment, String
     List<PostComment> findByPostIdAndParentIsNull(String postId);
     List<PostComment> findByParent(PostComment parent);
 
+    // Thêm query mới để fetch replies lồng nhau
+    @Query("SELECT DISTINCT pc FROM PostComment pc LEFT JOIN FETCH pc.replies r WHERE pc.post.id = :postId AND pc.parent IS NULL")
+    List<PostComment> findTopLevelCommentsWithReplies(@Param("postId") String postId);
 
-
+    // Query để lấy replies của một parent
+    @Query("SELECT DISTINCT pc FROM PostComment pc LEFT JOIN FETCH pc.replies r WHERE pc.parent = :parent")
+    List<PostComment> findByParentWithReplies(@Param("parent") PostComment parent);
 }

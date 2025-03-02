@@ -31,7 +31,9 @@ const Reels = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const containerRef = useRef(null);
   const videoRefs = useRef([]);
-
+  ////////////// ReplyReply
+  const currentUserId = user?.id;
+  const [replyingTo, setReplyingTo] = useState(null);
   // Fetch video posts
   useEffect(() => {
     async function getVideoPosts() {
@@ -151,8 +153,8 @@ const Reels = () => {
       }));
     }
   };
-
   const toggleComment = (postId) => {
+    console.log("Toggling comments for post:", postId);
     loadComments(postId);
     setCurrentPostId(postId);
     setIsCommentOpen((prev) => !prev);
@@ -173,10 +175,46 @@ const Reels = () => {
     }
   };
 
+  ///Reply comment
+  const handleReplySubmit = (newComment) => {
+    updateComments(currentPostId, newComment);
+    setReplyingTo(null); // Reset sau khi submit
+  };
+
+  const handleReplyClick = (comment) => {
+    setReplyingTo(comment); // Set bình luận đang reply
+    console.log("Replying to:", comment); // Debug
+  };
+  const handleCancelReply = () => {
+    setReplyingTo(null); // Reset khi nhấn Cancel
+  };
+  ////
   const updateComments = useCallback(
     (postId, newComment) => {
       setCommentsByPost((prev) => {
         const currentComments = Array.isArray(prev[postId]) ? prev[postId] : [];
+
+        // Nếu comment có parentId, thêm vào replies của comment cha
+        if (newComment.parentId) {
+          const updatedComments = currentComments.map((comment) => {
+            if (comment.id === newComment.parentId) {
+              return {
+                ...comment,
+                replies: [
+                  { ...newComment, username: user?.username || "Unknown" },
+                  ...(comment.replies || []),
+                ],
+              };
+            }
+            return comment;
+          });
+          return {
+            ...prev,
+            [postId]: updatedComments,
+          };
+        }
+
+        // Nếu không có parentId, thêm vào danh sách gốc
         const updatedComments = [
           { ...newComment, username: user?.username || "Unknown" },
           ...currentComments,
@@ -190,7 +228,7 @@ const Reels = () => {
     },
     [user]
   );
-
+  ////////
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -238,8 +276,8 @@ const Reels = () => {
                 <FollowButton
                   userId={user.id}
                   followingId={post.user.id}
-                  classFollow="backdrop-blur-lg text-sm p-4 py-1 rounded-2xl font-bold transition-all duration-200 ease-in-out active:scale-125 hover:bg-gray-400 dark:hover:bg-gray-400 border border-gray-300"
-                  classFollowing="backdrop-blur-lg text-sm p-4 py-1 rounded-2xl font-bold transition-all duration-200 ease-in-out active:scale-125 bg-gray-400 dark:bg-gray-400 text-white"
+                  classFollow="backdrop-blur-lg text-sm p-4 py-1 rounded-2xl font-bold transition-all duration-200 ease-in-out active:scale-125 hover:bg-gray-500 dark:hover:bg-gray-400 border border-gray-300"
+                  classFollowing="backdrop-blur-lg text-sm p-4 py-1 rounded-2xl font-bold transition-all duration-200 ease-in-out active:scale-125 hover:bg-gray-500 dark:hover:bg-gray-400 border border-gray-300"
                 />
               </div>
             </div>
@@ -294,6 +332,9 @@ const Reels = () => {
                   onClick={(e) => closeMore(e, post.id)}
                 >
                   <ul className="text-sm">
+                    <li className="cursor-pointer hover:bg-zinc-500 font-bold text-left p-2 rounded-sm text-red-500">
+                      ReportReport
+                    </li>
                     <li className="cursor-pointer hover:bg-zinc-500 font-bold text-left p-2 rounded-sm">
                       Copy link
                     </li>
@@ -329,19 +370,32 @@ const Reels = () => {
             }`}
           >
             <div className="h-full flex flex-col p-4 border-l border-gray-700">
-              <div className="flex items-center justify-between text-white mb-4">
+              <div className="flex items-center justify-between dark:text-white mb-4">
                 <h2 className="text-2xl text-center font-bold">Comments</h2>
               </div>
               <div className="flex-grow overflow-auto">
+                {console.log("Current Post ID:", currentPostId)}
+                {console.log(
+                  "Comments for current post:",
+                  commentsByPost[currentPostId]
+                )}
                 {isCommentsLoading ? (
-                  <p>Loading comments...</p>
+                  <Spinner />
                 ) : Array.isArray(commentsByPost[currentPostId]) &&
                   commentsByPost[currentPostId].length > 0 ? (
                   commentsByPost[currentPostId].map((comment) => (
-                    <CommentItem key={comment.id} comment={comment} />
+                    <CommentItem
+                      key={comment.id}
+                      comment={comment}
+                      currentUserId={currentUserId}
+                      onReplySubmit={handleReplySubmit}
+                      onReplyClick={() => handleReplyClick(comment)} // Set bình luận đang reply
+                    />
                   ))
                 ) : (
-                  <p>No comments yet</p>
+                  <p className="text-red-500 font-bold">
+                    Comments are disabled for this post
+                  </p>
                 )}
               </div>
               <CommentInput
@@ -349,6 +403,8 @@ const Reels = () => {
                 setComments={(newComments) =>
                   updateComments(currentPostId, newComments)
                 }
+                parentComment={replyingTo} // Truyền bình luận đang reply
+                onCancelReply={handleCancelReply}
               />
             </div>
           </div>
