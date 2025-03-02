@@ -229,11 +229,14 @@ const Post = () => {
             <Hashtag content="#myhashtag"></Hashtag> */}
           </div>
           <div className="mt-2">
-            <CommentButton className="text-black hover:text-gray-500 text-md animate-none transition-none dark:text-gray-400 dark:hover:text-white">
+            <CommentButton
+              postId={post.id}
+              className="text-black hover:text-gray-500 text-md animate-none transition-none dark:text-gray-400 dark:hover:text-white"
+            >
               View all comments
             </CommentButton>
           </div>
-          <CommentForm />
+          {/* <CommentForm /> */}
         </div>
       ))}
     </>

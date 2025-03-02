@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { Smile, Send } from "lucide-react";
@@ -7,7 +9,12 @@ import { postComment } from "app/api/service/commentService";
 import Cookies from "js-cookie";
 import { useApp } from "@/components/provider/AppProvider";
 
-const CommentInput = ({ postId, setComments }) => {
+const CommentInput = ({
+  postId,
+  setComments,
+  parentComment,
+  onCancelReply,
+}) => {
   const [comment, setComment] = useState("");
   const [isCommentEmpty, setIsCommentEmpty] = useState(true);
   const [showPicker, setShowPicker] = useState(false);
@@ -15,6 +22,16 @@ const CommentInput = ({ postId, setComments }) => {
   const pickerRef = useRef(null);
   const { user } = useApp();
   const token = Cookies.get("token");
+
+  useEffect(() => {
+    if (parentComment) {
+      setComment(`@${parentComment.username} `);
+      setIsCommentEmpty(false);
+    } else {
+      setComment("");
+      setIsCommentEmpty(true);
+    }
+  }, [parentComment]);
 
   const handleCommentSubmit = async () => {
     if (!comment.trim()) return;
@@ -25,15 +42,31 @@ const CommentInput = ({ postId, setComments }) => {
     }
 
     try {
-      const newComment = await postComment(user.id, postId, comment, token);
+      const newComment = await postComment(
+        user.id,
+        postId,
+        comment,
+        token,
+        parentComment ? parentComment.id : null
+      );
       console.log("Comment posted successfully:", newComment);
-      setComments(newComment); // Chỉ gửi comment mới lên Reels
-      setComment("");
-      setIsCommentEmpty(true);
+      const enrichedComment = {
+        ...newComment,
+        username: user?.username || "Unknown",
+      };
+      setComments(enrichedComment);
+      setComment(parentComment ? `@${parentComment.username} ` : ""); // Giữ @username nếu còn reply
+      setIsCommentEmpty(!parentComment);
       setError(null);
     } catch (error) {
       setError(error.message);
     }
+  };
+
+  const handleCancel = () => {
+    setComment(""); // Reset textarea
+    setIsCommentEmpty(true);
+    if (onCancelReply) onCancelReply(); // Gọi hàm reset replyingTo
   };
 
   useEffect(() => {
@@ -64,13 +97,20 @@ const CommentInput = ({ postId, setComments }) => {
         className="rounded-full w-10 h-10 mr-2"
       />
       <textarea
-        placeholder="Add a comment..."
+        placeholder={
+          parentComment
+            ? `Reply to @${parentComment.username}...`
+            : "Add a comment..."
+        }
         maxLength={150}
         rows={1}
         value={comment}
         onChange={(e) => {
           setComment(e.target.value);
-          setIsCommentEmpty(e.target.value.trim() === "");
+          setIsCommentEmpty(
+            e.target.value.trim() ===
+              (parentComment ? `@${parentComment.username} ` : "")
+          );
         }}
         onInput={(e) => {
           e.target.style.height = "auto";
@@ -105,19 +145,33 @@ const CommentInput = ({ postId, setComments }) => {
             onEmojiClick={(emojiObject) => {
               const newComment = comment + emojiObject.emoji;
               setComment(newComment);
-              setIsCommentEmpty(newComment.trim() === "");
+              setIsCommentEmpty(
+                newComment.trim() ===
+                  (parentComment ? `@${parentComment.username} ` : "")
+              );
             }}
           />
         </div>
       )}
       {!isCommentEmpty && (
-        <button
-          type="submit"
-          onClick={handleCommentSubmit}
-          className="ml-2 text-gray-600 hover:text-gray-400"
-        >
-          <Send size={28} />
-        </button>
+        <>
+          <button
+            type="submit"
+            onClick={handleCommentSubmit}
+            className="ml-2 text-gray-600 hover:text-gray-400"
+          >
+            <Send size={28} />
+          </button>
+          {parentComment && (
+            <button
+              type="button"
+              onClick={handleCancel}
+              className="ml-2 text-gray-600 hover:text-gray-400"
+            >
+              Cancel
+            </button>
+          )}
+        </>
       )}
       {error && (
         <div className="absolute top-[-30px] text-red-500 text-sm">{error}</div>

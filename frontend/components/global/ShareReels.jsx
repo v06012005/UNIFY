@@ -33,7 +33,7 @@ const ShareReels = ({
       isOpen={isOpen}
       onOpenChange={onOpenChange}
       backdrop="blur"
-      className="relative z-50 bg-white dark:bg-gray-800"
+      className="relative z-50 bg-white dark:bg-neutral-900"
       classNames={{
         backdrop: "bg-gray-900/50 backdrop-blur-md",
       }}

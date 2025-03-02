@@ -37,34 +37,66 @@ public class PostCommentService {
         }
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy người dùng"));
+            .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy người dùng"));
 
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy bài viết"));
+            .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy bài viết"));
+        
+        if (post.getIsCommentVisible()) {
+            throw new IllegalArgumentException("This post has comments disabled");
+        }
+        if (post.getStatus() == 0) {
+            throw new IllegalArgumentException("Bài viết không khả dụng để bình luận");
+        }
 
         PostComment parent = null;
         if (parentId != null && !parentId.isEmpty()) {
             parent = postCommentRepository.findById(parentId)
-                    .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy bình luận cha"));
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy bình luận cha"));
         }
 
         PostComment newComment = PostComment.builder()
-                .user(user)
-                .post(post)
-                .content(content)
-                .parent(parent)
-                .build();
+            .user(user)
+            .post(post)
+            .content(content)
+            .parent(parent)
+            .build();
 
         return postCommentRepository.save(newComment);
     }
 
 
+    
+    
     public List<CommentDTO> getCommentsByPostId(String postId) {
-        List<PostComment> comments = postCommentRepository.findCommentsByPostIdWithUser(postId);
-        return comments.stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
+        Post post = postRepository.findById(postId)
+            .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy bài viết"));
+        if (post.getIsCommentVisible()) {
+            return List.of(); 
+        }
+
+        List<PostComment> rootComments = postCommentRepository.findTopLevelCommentsWithReplies(postId);
+        for (PostComment root : rootComments) {
+            loadRepliesRecursively(root);
+        }
+        return rootComments.stream()
+            .map(this::convertToDto)
+            .collect(Collectors.toList());
     }
+
+    private void loadRepliesRecursively(PostComment comment) {
+        List<PostComment> replies = postCommentRepository.findByParentWithReplies(comment);
+        comment.setReplies(replies);
+        for (PostComment reply : replies) {
+            loadRepliesRecursively(reply);
+        }
+    }
+//    public List<CommentDTO> getCommentsByPostId(String postId) {
+//        List<PostComment> comments = postCommentRepository.findCommentsByPostIdWithUser(postId);
+//        return comments.stream()
+//            .map(this::convertToDto)
+//            .collect(Collectors.toList());
+//    }
 
     /**
      * Chuyển đổi từ PostComment thành CommentDTO
