@@ -51,18 +51,14 @@ const User = ({ href = "" }) => {
   );
 };
 
+
 export default async function Home() {
 
   const session = await verifySession();
+
   const queryClient = getQueryClient();
 
-  await queryClient.prefetchQuery({
-    queryKey: ["posts"],
-    queryFn: fetchPosts,
-  })
-
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
       <RootLayout>
         <div className="flex">
           <div className="basis-3/4 border-r py-8 h-screen overflow-y-scroll no-scrollbar">
@@ -113,6 +109,5 @@ export default async function Home() {
           </div>
         </div>
       </RootLayout>
-    </HydrationBoundary>
   );
 }
