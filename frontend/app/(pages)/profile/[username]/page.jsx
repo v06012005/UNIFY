@@ -39,24 +39,10 @@ const Page = () => {
   const params = useParams();
   const router = useRouter();
 
-  const { user, setUser, getInfoUser } = useApp();
+  const { user } = useApp();
   const fetchedOnce = useRef(false);
 
-  useEffect(() => {
-    if (fetchedOnce.current) return;
-    fetchedOnce.current = true;
-
-    const fetchUserInfo = async () => {
-      try {
-        const fetchedUser = await getInfoUser();
-        setUser(fetchedUser);
-      } catch (error) {
-        console.error("Error fetching user info:", error);
-      }
-    };
-
-    fetchUserInfo();
-  }, []);
+ 
 
   const handleClickView = () => {
     router.push("/settings/archive");

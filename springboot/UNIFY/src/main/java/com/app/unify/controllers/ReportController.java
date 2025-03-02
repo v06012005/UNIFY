@@ -33,10 +33,10 @@ public class ReportController {
 	private final ReportService reportService;
 	private final UserRepository userRepository;
 	private final ReportRepository reportRepository;
-	@GetMapping("/status/{status}")
-	public ResponseEntity<?> getReportsByStatus(@PathVariable int status) {
+	@GetMapping("/status")
+	public ResponseEntity<?> getReportsByStatuses(@RequestParam List<Integer> statuses) {
 	    try {
-	        List<ReportDTO> reports = reportService.getReportsByStatus(status);
+	        List<ReportDTO> reports = reportService.getReportsByStatuses(statuses);
 	        return ResponseEntity.ok(reports);
 	    } catch (IllegalArgumentException e) {
 	        Map<String, String> errorResponse = new HashMap<>();
@@ -44,6 +44,7 @@ public class ReportController {
 	        return ResponseEntity.badRequest().body(errorResponse); 
 	    }
 	}
+
 	@GetMapping("/{id}")
 	public ReportDTO getReport(@PathVariable String id) {
 		return reportService.findById(id);

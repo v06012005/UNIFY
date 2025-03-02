@@ -15,7 +15,7 @@ import java.util.Optional;
 
 @Repository
 public interface ReportRepository extends JpaRepository<Report, String> {
-    List<Report> findByStatus(Integer status);
+    List<Report> findByStatusIn(List<Integer> statuses);
 
     List<Report> findByReportedId(String reportedId);
     Optional<Report> findById(String id);

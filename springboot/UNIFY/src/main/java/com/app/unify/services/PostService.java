@@ -25,6 +25,4 @@ public interface PostService {
 	List<PostDTO> getMyPosts(String userId);
 
 
-	 List<PostDTO> getMyPosts(String userId); 
-
 }

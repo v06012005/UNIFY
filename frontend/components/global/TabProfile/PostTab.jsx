@@ -22,7 +22,7 @@ const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   );
 };
 
-const UserPosts = ({ username    }) => {
+const UserPosts = ({ username }) => {
   const [selectedPost, setSelectedPost] = useState(null);
   const [postToDelete, setPostToDelete] = useState(null);
   const [openList, setOpenList] = useState(false);
@@ -47,7 +47,6 @@ const UserPosts = ({ username    }) => {
       loadComments();
     }
   }, [selectedPost, token]);
-  /////////
   const getPostUsers = async (username) => {
     try {
       const token = Cookies.get("token");
@@ -80,30 +79,27 @@ const UserPosts = ({ username    }) => {
   };
   const handleDeletePost = async (postId) => {
     try {
-        const token = Cookies.get("token");
-        if (!token) return;
+      const token = Cookies.get("token");
+      if (!token) return;
 
-        await axios.delete(
-            `${process.env.NEXT_PUBLIC_API_URL}/posts/${postId}`,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-            }
-        );
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/posts/${postId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
-        setPosts(posts.filter(post => post.id !== postId));
-        setShowModal(false);
+      setPosts(posts.filter((post) => post.id !== postId));
+      setShowModal(false);
     } catch (error) {
-        console.error("Error deleting post:", error);
+      console.error("Error deleting post:", error);
     }
-};
+  };
 
-const openDeleteModal = (postId) => {
+  const openDeleteModal = (postId) => {
     setPostToDelete(postId);
     setShowModal(true);
-};
+  };
 
   useEffect(() => {
     if (username) {
@@ -191,7 +187,7 @@ const openDeleteModal = (postId) => {
       ) : (
         <p className="text-center text-gray-500 mt-4">Không có bài đăng nào.</p>
       )}
-   
+
       {selectedPost && (
         <div
           className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
@@ -204,12 +200,12 @@ const openDeleteModal = (postId) => {
                   <video
                     src={selectedMedia.url}
                     controls
-                    className="w-full h-full object-cover rounded-tl-lg rounded-bl-lg"
+                    className="w-full h-full object-contain rounded-tl-lg rounded-bl-lg"
                   />
                 ) : (
                   <img
                     src={selectedMedia.url}
-                    className="w-full h-full object-cover rounded-tl-lg rounded-bl-lg"
+                    className="w-full h-full object-contain rounded-tl-lg rounded-bl-lg"
                   />
                 )
               ) : (
@@ -268,10 +264,14 @@ const openDeleteModal = (postId) => {
                 ></NavButton>
                 {openList && (
                   <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                    <div key={selectedPost.id.id} className="bg-white dark:bg-black rounded-lg shadow-lg w-72">
-                      <button 
-                      onClick={() => openDeleteModal(selectedPost.id)}
-                      className="w-full py-2 text-red-500 dark:hover:bg-gray-900 hover:bg-gray-100">
+                    <div
+                      key={selectedPost.id.id}
+                      className="bg-white dark:bg-black rounded-lg shadow-lg w-72"
+                    >
+                      <button
+                        onClick={() => openDeleteModal(selectedPost.id)}
+                        className="w-full py-2 text-red-500 dark:hover:bg-gray-900 hover:bg-gray-100"
+                      >
                         Delete
                       </button>
                       <button className="w-full py-2 dark:hover:bg-gray-900 hover:bg-gray-100">
@@ -297,31 +297,31 @@ const openDeleteModal = (postId) => {
                   </div>
                 )}
                 {showModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white dark:bg-gray-900 rounded-lg p-6 w-full max-w-md">
-                        <h3 className="text-lg font-semibold mb-4">
-                            Confirm Delete
-                        </h3>
-                        <p className="text-gray-600 dark:text-gray-300 mb-6">
-                            Are you sure you want to delete this post?
-                        </p>
-                        <div className="flex justify-end gap-4">
-                            <button
-                                onClick={() => setShowModal(false)}
-                                className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={() => handleDeletePost(postToDelete)}
-                                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
-                            >
-                                Delete
-                            </button>
-                        </div>
+                      <h3 className="text-lg font-semibold mb-4">
+                        Confirm Delete
+                      </h3>
+                      <p className="text-gray-600 dark:text-gray-300 mb-6">
+                        Are you sure you want to delete this post?
+                      </p>
+                      <div className="flex justify-end gap-4">
+                        <button
+                          onClick={() => setShowModal(false)}
+                          className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={() => handleDeletePost(postToDelete)}
+                          className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </div>
-                </div>
-            )}
+                  </div>
+                )}
               </div>
 
               <div className="flex-1 p-4 overflow-y-auto">

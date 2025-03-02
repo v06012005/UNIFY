@@ -158,9 +158,9 @@ public class ReportService {
         reportDTO.setReportedEntity(getReportedEntity(report.getReportedId(), report.getEntityType()));
         return reportDTO;
     }
-    public List<ReportDTO> getReportsByStatus(int status) {
-        validateStatus(status);
-        List<Report> reports = reportRepository.findByStatus(status);
+    public List<ReportDTO> getReportsByStatuses(List<Integer> statuses) {
+        validateStatuses(statuses);
+        List<Report> reports = reportRepository.findByStatusIn(statuses);
 
         return reports.stream()
                       .map(report -> {
@@ -171,12 +171,14 @@ public class ReportService {
                       .collect(Collectors.toList());
     }
 
-
-    private void validateStatus(int status) {
-        if (status < PENDING || status > CANCELED) {
-            throw new ReportException("Invalid report status: " + status);
+    private void validateStatuses(List<Integer> statuses) {
+        for (int status : statuses) {
+            if (status < PENDING || status > CANCELED) {
+                throw new ReportException("Invalid report status: " + status);
+            }
         }
     }
+
 
 	public ReportDTO updateReportStatus(String reportId, Integer status) {
 		Report report = reportRepository.findById(reportId)
