@@ -90,7 +90,7 @@ export const CallProvider = ({children}) => {
                         })
                             .then((response) => {
                                 const user = response.data;
-                               setNameReceiver(`${user.firstName} ${user.lastName}`);
+                                setNameReceiver(`${user.firstName} ${user.lastName}`);
                             })
                             .catch((error) => {
                                 console.error('Error fetching user info:', error);
@@ -136,11 +136,12 @@ export const CallProvider = ({children}) => {
         }
     }, [user, path]);
 
-
     useEffect(() => {
         const handleMessage = (event) => {
             if (event.origin !== window.location.origin) return;
             const { action, caller, signal, nameReceiver } = event.data;
+            console.log("Received postMessage in CallProvider:", event.data);
+
             if (action === "answer" && signal && caller && !callAccepted) {
                 console.log("Setting callerSignal from postMessage:", signal);
                 setReceiver(true);
@@ -154,19 +155,6 @@ export const CallProvider = ({children}) => {
         return () => window.removeEventListener("message", handleMessage);
     }, [callAccepted]);
 
-    useEffect(() => {
-        const handleMessage = (event) => {
-            if (event.origin !== window.location.origin) return;
-            const { toggleCamera, stream } = event.data;
-            if (toggleCamera && stream) {
-                setStream(stream);
-                setToggleCamera(true);
-            }
-        };
-
-        window.addEventListener("message", handleMessage);
-        return () => window.removeEventListener("message", handleMessage);
-    }, [toggleCamera], stream);
 
 
     useEffect(() => {
@@ -237,40 +225,40 @@ export const CallProvider = ({children}) => {
 
     const answerCall = () => {
 
-           if(callerSignal && stompClientRef.current){
-               setCallAccepted(true);
-               setCallStartTime(Date.now());
+        if(callerSignal && stompClientRef.current){
+            setCallAccepted(true);
+            setCallStartTime(Date.now());
 
-               const peer = new Peer({
-                   initiator: false,
-                   trickle: false,
-                   stream: stream,
-               });
+            const peer = new Peer({
+                initiator: false,
+                trickle: false,
+                stream: stream,
+            });
 
-               peer.on("signal", (data) => {
-                   stompClientRef.current.publish({
-                       destination: "/app/answer",
-                       body: JSON.stringify({
-                           to: caller,
-                           signalData: data,
-                           from: me,
-                       }),
-                   });
-               });
+            peer.on("signal", (data) => {
+                stompClientRef.current.publish({
+                    destination: "/app/answer",
+                    body: JSON.stringify({
+                        to: caller,
+                        signalData: data,
+                        from: me,
+                    }),
+                });
+            });
 
-               peer.on("stream", (remoteStream) => {
-                   if (receiverScreen.current) {
-                       if(isOnCameraRef.current) {
-                           setIsOffMicrophone(remoteStream.getAudioTracks()[0].enabled);
-                           remoteStream.getVideoTracks()[0].enabled = isOnCameraRef.current;
-                       }
-                       receiverScreen.current.srcObject = remoteStream;
-                   }
-               });
+            peer.on("stream", (remoteStream) => {
+                if (receiverScreen.current) {
+                    if(isOnCameraRef.current) {
+                        setIsOffMicrophone(remoteStream.getAudioTracks()[0].enabled);
+                        remoteStream.getVideoTracks()[0].enabled = isOnCameraRef.current;
+                    }
+                    receiverScreen.current.srcObject = remoteStream;
+                }
+            });
 
-               peer.signal(callerSignal);
-               connectionRef.current = peer;
-           }
+            peer.signal(callerSignal);
+            connectionRef.current = peer;
+        }
     };
 
 
@@ -288,13 +276,13 @@ export const CallProvider = ({children}) => {
 
     const leaveCall = () => {
         stompClientRef.current.publish({
-                destination: "/app/toggle",
-                body: JSON.stringify({
-                    type:"endCall",
-                    from: me,
-                    userToCall: caller ? caller : idToCall,
-                    to: caller ? caller : idToCall
-                }),
+            destination: "/app/toggle",
+            body: JSON.stringify({
+                type:"endCall",
+                from: me,
+                userToCall: caller ? caller : idToCall,
+                to: caller ? caller : idToCall
+            }),
         });
         disconnection();
         getLocalStream();
@@ -350,7 +338,6 @@ export const CallProvider = ({children}) => {
             name,
             setName,
             toggleCamera,
-            setToggleCamera,
             toggleMicrophone,
             isOffCamera,
             isOffMicrophone,

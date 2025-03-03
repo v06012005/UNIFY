@@ -7,7 +7,7 @@ import {useEffect, useState} from "react";
 
 const CallNotification = () => {
 
-    const { receiver, leaveCall, name, callerSignal, caller, callEnded, nameReceiver, callAccepted } = useCall();
+    const { receiver, leaveCall, callerSignal, caller, callEnded, nameReceiver, callAccepted } = useCall();
     const [accepted, setAccepted] = useState(false);
 
     const {user} = useApp()
@@ -17,7 +17,7 @@ const CallNotification = () => {
     }, [callEnded]);
 
 
-    if (!receiver || callAccepted || callEnded || accepted) return null;
+    if (!receiver || callAccepted || accepted) return null;
 
     const handleAnswer = () => {
         const callWindow = window.open(
