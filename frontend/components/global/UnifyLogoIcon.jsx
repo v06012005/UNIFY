@@ -22,7 +22,7 @@ const UnifyLogoIcon = () => {
       alt="UNIFY logo"
       width={100}
       height={100}
-      className="mx-auto flex-none h-20 w-20"
+      className="mx-auto flex-none h-16 w-16"
     />
   );
 };

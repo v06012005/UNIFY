@@ -5,7 +5,8 @@ import React, {
   useState,
   useEffect,
   useRef,
-  useContext, useMemo,
+  useContext,
+  useMemo,
 } from "react";
 import { redirect, useRouter, useParams } from "next/navigation";
 import { Client } from "@stomp/stompjs";
@@ -13,8 +14,8 @@ import SockJS from "sockjs-client";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { getQueryClient } from "../client/QueryClient";
+import { useQuery } from "@tanstack/react-query";
 const useChat = (user, chatPartner) => {
-
   const [chatMessages, setChatMessages] = useState([]);
   const stompClientRef = useRef(null);
 
@@ -98,7 +99,6 @@ const useChat = (user, chatPartner) => {
   };
 
   return { chatMessages, sendMessage };
-
 };
 
 export default useChat;
@@ -111,7 +111,6 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const UserContext = createContext(null);
 
 export const AppProvider = ({ children }) => {
-
   const queryClient = getQueryClient();
 
   const [user, setUser] = useState({

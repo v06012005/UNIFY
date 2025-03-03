@@ -67,7 +67,7 @@ const Page = () => {
   return (
     <div className="ml-auto">
       <div className="flex w-full">
-        <div className="h-screen basis-1/3 flex flex-col">
+        <div className="h-screen basis-1/3 flex flex-col ">
           <div className="dark:bg-black shadow-md px-9 py-4 sticky top-0 z-10">
             <div className="flex justify-between items-center mb-4">
               <h1 className="text-4xl font-bold dark:text-white ">Message</h1>
@@ -80,7 +80,7 @@ const Page = () => {
             <div className="mb-4">
               <Input
                 placeholder={"Search..."}
-                className={`w-[400px] h-12 dark:border-white font-bold`}
+                className={`w-[400px] h-12  font-bold dark:border-neutral-600`}
               />
             </div>
           </div>
@@ -89,7 +89,7 @@ const Page = () => {
             {[...Array(1)].map((_, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between bg-gray-800 text-white p-4 rounded-lg w-full max-w-md mt-4"
+                className="flex items-center justify-between bg-gray-700 hover:bg-gray-600 text-white p-4 rounded-lg w-full max-w-md mt-4"
               >
                 <div className="flex items-center">
                   <img
@@ -113,7 +113,7 @@ const Page = () => {
                     </p>
                   </div>
                 </div>
-                <span className="text-sm text-gray-400">
+                <span className="text-sm text-zinc-400">
                   {new Date(
                     chatMessages &&
                       chatMessages[chatMessages.length - 1]?.timestamp
@@ -126,7 +126,7 @@ const Page = () => {
             ))}
           </div>
         </div>
-        <div className="ml-5 h-screen basis-2/3 mr-5  ">
+        <div className="ml-5 h-screen basis-2/3 mr-5 border-l-1 dark:border-neutral-700">
           <div className="flex p-4 w-full">
             <div className="flex grow">
               <img
@@ -169,7 +169,7 @@ const Page = () => {
               </Link>
             </div>
           </div>
-          <hr className=" border-1 dark:border-gray-300" />
+          <hr className=" dark:border-neutral-700" />
 
           <div className="h-3/4 overflow-y-scroll">
             <h2 className="text-center m-3">23:48, 20/01/2025</h2>
@@ -177,7 +177,7 @@ const Page = () => {
             <div ref={messagesEndRef} />
           </div>
 
-          <div className="flex items-center mt-3 bg-gray-800 text-white p-3 rounded-2xl w-full justify-center">
+          <div className="flex items-center mt-3 ml-3 dark:bg-black border-1 dark:border-neutral-700 text-white p-3 rounded-2xl w-full justify-center">
             <img
               src={avatar}
               alt="Avatar"
@@ -185,7 +185,7 @@ const Page = () => {
             />
             <button
               onClick={() => document.getElementById("fileInput").click()}
-              className="text-gray-400 hover:text-gray-300 mr-3 ml-3"
+              className="text-neutral-500 hover:text-gray-300 mr-3 ml-3"
             >
               <Plus size={28} />
             </button>
@@ -194,7 +194,7 @@ const Page = () => {
             <input
               type="text"
               placeholder="Type your message here..."
-              className="bg-gray-700 text-white placeholder-gray-400 flex-grow py-2 px-4 rounded-3xl focus:outline-none"
+              className="dark:bg-black border-1 dark:border-neutral-700 dark:text-white dark:placeholder-gray-200 text-black flex-grow py-2 px-4 rounded-3xl focus:outline-none"
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyDown={(e) => {
@@ -207,7 +207,7 @@ const Page = () => {
             <button
               type="button"
               onClick={() => setShowPicker(!showPicker)}
-              className="ml-2 text-gray-400 hover:text-gray-300"
+              className="ml-2 dark:text-neutral-400 hover:text-gray-700 text-zinc-500 dark:hover:text-zinc-200"
             >
               <Smile size={28} />
             </button>
@@ -227,7 +227,7 @@ const Page = () => {
             {newMessage.trim() && (
               <button
                 onClick={handleSendMessage}
-                className="ml-2 text-blue-600 hover:text-white"
+                className="ml-2 text-blue-500 hover:text-blue-400"
               >
                 <Send size={30} />
               </button>

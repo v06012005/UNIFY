@@ -8,7 +8,6 @@ const useLikedPost = (userId, postId) => {
     const checkLikedStatus = async () => {
       const token = Cookies.get("token");
       if (!token) return;
-
       try {
         const response = await fetch(
           `http://localhost:8080/liked-posts/is-liked/${userId}/${postId}`,

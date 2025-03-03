@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Button } from "@heroui/react";
 import useLikedPost from "@/hooks/useLikedPost";
 import Cookies from "js-cookie";
 
@@ -96,8 +95,9 @@ const LikeButton = ({ className = "", classText = "", userId, postId }) => {
       disabled={loading}
     >
       <i
-        className={`${isLiked ? "fa-solid text-red-500" : "fa-regular"
-          } fa-heart transition ease-in-out duration-300`}
+        className={`${
+          isLiked ? "fa-solid text-red-500" : "fa-regular"
+        } fa-heart transition ease-in-out duration-300`}
       ></i>
       <span className={classText}>{likeCount}</span>
     </button>

@@ -15,7 +15,7 @@ import { useEffect } from "react";
 import { Spinner } from "@heroui/react";
 import { useApp } from "../provider/AppProvider";
 import { getQueryClient } from "@/app/lib/get-query-client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import Slider from "./Slider";
 
@@ -67,10 +67,9 @@ const Caption = ({ text, maxLength = 100 }) => {
   );
 };
 
-
 const Post = () => {
   const { user } = useApp();
-
+  const [commentsByPost, setCommentsByPost] = useState({});
   const { data: posts, isLoading } = useQuery({
     queryKey: ["posts"],
     queryFn: fetchPosts,
@@ -105,7 +104,7 @@ const Post = () => {
               classText="text-xl"
             />
             <CommentButton className="text-xl" postId={post.id}>
-              <i className="fa-regular fa-comment"></i>47K
+              <i className="fa-regular fa-comment"></i>20
             </CommentButton>
             <ShareButton />
           </div>
@@ -125,7 +124,7 @@ const Post = () => {
           <div className="mt-2">
             <CommentButton
               postId={post.id}
-              className="text-black hover:text-gray-500 text-md animate-none transition-none dark:text-gray-400 dark:hover:text-white"
+              className="text-black hover:text-gray-500 text-md animate-none transition-none dark:text-zinc-400 dark:hover:text-white"
             >
               View all comments
             </CommentButton>

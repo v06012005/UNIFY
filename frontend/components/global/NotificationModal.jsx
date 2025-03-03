@@ -6,7 +6,8 @@ import { TagNotification } from "@/components/ui/tag_notification";
 import useNotification from "@/hooks/useNotification";
 
 const NotificationModal = ({ isNotificationOpen, modalRef, userId }) => {
-  const { notifications, markNotificationAsRead, markAllNotificationsAsRead } = useNotification(userId);
+  const { notifications, markNotificationAsRead, markAllNotificationsAsRead } =
+    useNotification(userId);
 
   const sortedNotifications = [...notifications].sort(
     (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
@@ -34,12 +35,12 @@ const NotificationModal = ({ isNotificationOpen, modalRef, userId }) => {
   };
 
   return (
-    <div className="fixed left-20 bg-black bg-opacity-50 flex justify-start">
+    <div className="fixed left-20 bg-black border-l-1 dark:border-neutral-700 bg-opacity-50 flex justify-start">
       <div
         ref={modalRef}
         className={`bg-white dark:bg-black text-black dark:text-white shadow-lg max-w-md h-screen overflow-hidden ${
           isNotificationOpen ? "animate-fadeScale" : "animate-fadeOut"
-        } transition-all ease-in-out duration-300 border-r dark:border-gray-700`}
+        } transition-all ease-in-out duration-300  dark:border-neutral-700`}
         style={{
           width: isNotificationOpen ? 448 : 0,
         }}

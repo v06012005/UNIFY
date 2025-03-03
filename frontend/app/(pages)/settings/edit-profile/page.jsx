@@ -180,9 +180,7 @@ const Page = () => {
     const file = e.target.files[0]; // Chỉ lấy file đầu tiên (1 ảnh duy nhất)
     const allowedTypes = ["image/png", "image/jpeg", "image/jpg", "image/gif"]; // Chỉ cho phép ảnh
 
-
     if (!file) return; // Nếu không có file, thoát
-
 
     // Kiểm tra loại file
     if (!allowedTypes.includes(file.type)) {
@@ -224,9 +222,9 @@ const Page = () => {
         ...userData,
         birthDay: userData.birthDay
           ? `${userData.birthDay.year}-${userData.birthDay.month.padStart(
-            2,
-            "0"
-          )}-${userData.birthDay.day.padStart(2, "0")}`
+              2,
+              "0"
+            )}-${userData.birthDay.day.padStart(2, "0")}`
           : null,
       };
       console.log("Request data to send:", requestData);
@@ -250,7 +248,6 @@ const Page = () => {
         const uploadData = await uploadResponse.json();
         updatedUserData.avatar = uploadData.files[0].url;
       }
-
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
         method: "PUT",
@@ -301,12 +298,11 @@ const Page = () => {
     }
   };
 
-
   return (
     <div className="w-full">
       <div className="h-screen overflow-y-auto">
         <form onSubmit={handleSubmit}>
-          <div className="flex m-5 bg-gray-200 dark:bg-gray-800 rounded-xl items-center pr-5">
+          <div className="flex m-5 bg-gray-200 dark:bg-neutral-800 rounded-xl items-center pr-5">
             <div className="flex-shrink-0 p-2">
               <div className="w-[100px] h-[100px] rounded-full border-2 border-gray-300 overflow-hidden">
                 <Image
@@ -337,7 +333,6 @@ const Page = () => {
                   id="avatar"
                   name="avatar"
                   type="file"
-
                   accept="image/*"
                   className="hidden"
                   ref={fileInputRef}
@@ -347,7 +342,6 @@ const Page = () => {
 
               <button
                 className="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition"
-
                 onClick={(e) => {
                   e.preventDefault();
                   handleDeleteAvatar();
@@ -650,5 +644,3 @@ const Page = () => {
 };
 
 export default Page;
-
-

@@ -14,84 +14,95 @@ const UserPosts = ({ username }) => {
   const { getUserInfoByUsername } = useApp();
   const token = Cookies.get("token");
 
-  const getPostUsers = useCallback(async (username) => {
-    setLoading(true);
-    try {
-      if (!token) {
-        addToast({
-          title: "Error",
-          description: "Please log in to view posts.",
-          timeout: 3000,
-          shouldShowTimeoutProgess: true,
-          color: "danger",
-        });
-        return;
-      }
-
-      const userData = await getUserInfoByUsername(username);
-      if (!userData?.id) {
-        addToast({
-          title: "Error",
-          description: "User not found.",
-          timeout: 3000,
-          shouldShowTimeoutProgess: true,
-          color: "danger",
-        });
-        return;
-      }
-
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/posts/my?userId=${userData.id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+  const getPostUsers = useCallback(
+    async (username) => {
+      setLoading(true);
+      try {
+        if (!token) {
+          addToast({
+            title: "Error",
+            description: "Please log in to view posts.",
+            timeout: 3000,
+            shouldShowTimeoutProgess: true,
+            color: "danger",
+          });
+          return;
         }
-      );
-      setPosts(response.data || []);
-    } catch (error) {
-      addToast({
-        title: "Error",
-        description: "Failed to fetch posts: " + (error.message || "Unknown error"),
-        timeout: 3000,
-        shouldShowTimeoutProgess: true,
-        color: "danger",
-      });
-    } finally {
-      setLoading(false);
-    }
-  }, [token, getUserInfoByUsername]);
 
-  const handleDeletePost = useCallback(async (postId) => {
-    try {
-      if (!token) return;
+        const userData = await getUserInfoByUsername(username);
+        if (!userData?.id) {
+          addToast({
+            title: "Error",
+            description: "User not found.",
+            timeout: 3000,
+            shouldShowTimeoutProgess: true,
+            color: "danger",
+          });
+          return;
+        }
 
-      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/posts/${postId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/posts/my?userId=${userData.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        setPosts(response.data || []);
+      } catch (error) {
+        addToast({
+          title: "Error",
+          description:
+            "Failed to fetch posts: " + (error.message || "Unknown error"),
+          timeout: 3000,
+          shouldShowTimeoutProgess: true,
+          color: "danger",
+        });
+      } finally {
+        setLoading(false);
+      }
+    },
+    [token, getUserInfoByUsername]
+  );
 
-      setPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId));
-      addToast({
-        title: "Success",
-        description: "Post deleted successfully.",
-        timeout: 3000,
-        shouldShowTimeoutProgess: true,
-        color: "success",
-      });
-    } catch (error) {
-      addToast({
-        title: "Error",
-        description: "Failed to delete post: " + (error.message || "Unknown error"),
-        timeout: 3000,
-        shouldShowTimeoutProgess: true,
-        color: "danger",
-      });
-    }
-  }, [token]);
+  const handleDeletePost = useCallback(
+    async (postId) => {
+      try {
+        if (!token) return;
+
+        await axios.delete(
+          `${process.env.NEXT_PUBLIC_API_URL}/posts/${postId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        setPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId));
+        addToast({
+          title: "Success",
+          description: "Post deleted successfully.",
+          timeout: 3000,
+          shouldShowTimeoutProgess: true,
+          color: "success",
+        });
+      } catch (error) {
+        addToast({
+          title: "Error",
+          description:
+            "Failed to delete post: " + (error.message || "Unknown error"),
+          timeout: 3000,
+          shouldShowTimeoutProgess: true,
+          color: "danger",
+        });
+      }
+    },
+    [token]
+  );
 
   useEffect(() => {
     if (username && username.trim() !== "") {
@@ -113,7 +124,11 @@ const UserPosts = ({ username }) => {
     <div>
       {loading ? (
         <div className="flex justify-center items-center h-screen">
-          <Spinner color="primary" label="Loading posts..." labelColor="primary" />
+          <Spinner
+            color="primary"
+            label="Loading posts..."
+            labelColor="primary"
+          />
         </div>
       ) : memoizedPostUsers.length > 0 ? (
         <div className="grid grid-cols-4 gap-3">
@@ -132,7 +147,6 @@ const UserPosts = ({ username }) => {
                     <video
                       src={post.media[0].url}
                       className="w-full h-full object-cover cursor-pointer"
-                      controls
                       onClick={() => handlePostClick(post)}
                     />
                   ) : (
@@ -173,7 +187,10 @@ const UserPosts = ({ username }) => {
       ) : (
         <div className="text-center text-gray-500 mt-4">
           <p>No posts available.</p>
-          <button onClick={() => getPostUsers(username)} className="text-blue-500">
+          <button
+            onClick={() => getPostUsers(username)}
+            className="text-blue-500"
+          >
             Try again
           </button>
         </div>
