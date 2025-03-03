@@ -36,63 +36,51 @@ const Reels = () => {
     const currentUserId = user?.id;
     const [replyingTo, setReplyingTo] = useState(null);
 
-    const {data: posts, isLoading} = useQuery({
-       queryKey: ["posts"],
-       queryFn: fetchPosts,
-    });
 
-    useEffect(() => {
-        async function getVideoPosts() {
-           if(!isLoading){
-               const filteredPosts = posts.filter((post) =>
-                   post.media.some((media) => media.mediaType === "VIDEO")
-               );
-               setVideoPosts(filteredPosts);
-               setPausedStates(
-                   filteredPosts.reduce((acc, post) => ({ ...acc, [post.id]: false }), {})
-               );
-               setToolStates(
-                   filteredPosts.reduce(
-                       (acc, post) => ({
-                           ...acc,
-                           [post.id]: {
-                               isLiked: false,
-                               isSaved: false,
-                               isPopupOpen: false,
-                               isFollow: false,
-                           },
-                       }),
-                       {}
-                   )
-               );
-               setCommentsByPost(
-                   filteredPosts.reduce((acc, post) => ({ ...acc, [post.id]: [] }), {})
-               );
-           }
-        }
-        getVideoPosts();
-    }, []);
+  // Fetch comments cho một post cụ thể
+  const loadComments = useCallback(
+    async (postId) => {
+      if (!token || !postId) return;
+      setIsCommentsLoading(true);
+      try {
+        const data = await fetchComments(postId, token);
+        console.log(`Fetched comments for post ${postId}:`, data);
+        setCommentsByPost((prev) => ({
+          ...prev,
+          [postId]: data,
+        }));
+      } catch (error) {
+        console.error(`Failed to fetch comments for post ${postId}:`, error);
+        setCommentsByPost((prev) => ({ ...prev, [postId]: [] }));
+      } finally {
+        setIsCommentsLoading(false);
+      }
+    },
+    [token]
+  );
 
-    // Fetch comments cho một post cụ thể
-    const loadComments = useCallback(
-        async (postId) => {
-            if (!token || !postId) return;
-            setIsCommentsLoading(true);
-            try {
-                const data = await fetchComments(postId, token);
-                console.log(`Fetched comments for post ${postId}:`, data);
-                setCommentsByPost((prev) => ({
-                    ...prev,
-                    [postId]: data,
-                }));
-            } catch (error) {
-                console.error(`Failed to fetch comments for post ${postId}:`, error);
-                setCommentsByPost((prev) => ({ ...prev, [postId]: [] }));
-            } finally {
-                setIsCommentsLoading(false);
-            }
-        },
-        [token]
+  // Intersection Observer
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const video = entry.target;
+          const postId = video.dataset.postId;
+          const isManuallyPaused = pausedStates[postId];
+          if (entry.isIntersecting && !isManuallyPaused) {
+            video.play();
+          } else {
+            video.pause();
+            if (!isManuallyPaused) video.currentTime = 0;
+            setToolStates((prev) => ({
+              ...prev,
+              [postId]: { ...prev[postId], isPopupOpen: false },
+            }));
+          }
+        });
+      },
+      { threshold: 0.7 }
+
     );
 
     // Intersection Observer
@@ -244,6 +232,7 @@ const Reels = () => {
     }
     return (
         <div
+
             ref={containerRef}
             className="h-screen w-full overflow-y-scroll snap-y snap-mandatory scrollbar-hide shadow-lg"
         >
@@ -370,6 +359,7 @@ const Reels = () => {
             />
             {isCommentOpen && currentPostId && (
                 <div
+
                     id="overlay"
                     className={`fixed top-0 left-0 w-full h-full z-20 transition-opacity duration-300 ease-in-out ${
                         isCommentOpen ? "opacity-100" : "opacity-0 pointer-events-none"
@@ -420,10 +410,13 @@ const Reels = () => {
                             />
                         </div>
                     </div>
+
                 </div>
             )}
         </div>
+
     );
+
 };
 
 export default Reels;

@@ -19,7 +19,7 @@ const Reply = ({ reply }) => {
             <Image
               src={avatar2}
               alt="User avatar"
-              className="rounded-full w-12 h-12"
+              className="rounded-full w-11 h-11"
             />
             <h4 className="text-base font-bold truncate w-28 pl-2">
               {reply.username}

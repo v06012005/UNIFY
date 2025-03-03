@@ -72,7 +72,7 @@ export const postComment = async (userId, postId, content, token, parentId = nul
     } else {
       const errorText = await response.text();
       console.error("Server responded with error:", response.status, errorText);
-      throw new Error(`Server error: ${response.status} - ${errorText}`);
+      throw new Error(`${errorText}`);
     }
   } catch (error) {
     console.error("Error submitting comment:", error.message);

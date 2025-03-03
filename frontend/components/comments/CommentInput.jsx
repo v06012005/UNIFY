@@ -55,7 +55,7 @@ const CommentInput = ({
         username: user?.username || "Unknown",
       };
       setComments(enrichedComment);
-      setComment(parentComment ? `@${parentComment.username} ` : ""); // Giữ @username nếu còn reply
+      setComment(parentComment ? `@${parentComment.username} ` : ""); // Giữ @username 
       setIsCommentEmpty(!parentComment);
       setError(null);
     } catch (error) {

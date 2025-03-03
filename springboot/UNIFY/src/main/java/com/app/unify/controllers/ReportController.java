@@ -2,7 +2,6 @@ package com.app.unify.controllers;
 
 
 import java.util.HashMap;
-
 import java.util.List;
 import java.util.Map;
 
@@ -18,10 +17,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.unify.dto.global.ReportDTO;
-
 import com.app.unify.repositories.ReportRepository;
 import com.app.unify.repositories.UserRepository;
-
 import com.app.unify.services.ReportService;
 
 import lombok.RequiredArgsConstructor;
@@ -41,14 +38,14 @@ public class ReportController {
 	    } catch (IllegalArgumentException e) {
 	        Map<String, String> errorResponse = new HashMap<>();
 	        errorResponse.put("error", e.getMessage());
-	        return ResponseEntity.badRequest().body(errorResponse); 
+	        return ResponseEntity.badRequest().body(errorResponse);
 	    }
 	}
 
 	@GetMapping("/{id}")
 	public ReportDTO getReport(@PathVariable String id) {
 		return reportService.findById(id);
-		
+
 	}
 	@PostMapping("/post")
     public ResponseEntity<ReportDTO> createPostReport(@RequestParam String reportedId) {
@@ -73,7 +70,7 @@ public class ReportController {
 	        return ResponseEntity.ok(updatedReport);
 	    }
 
-	    
+
 
 		@DeleteMapping("/{id}")
 		public ResponseEntity<String> removeReport(@PathVariable String id) {
@@ -81,6 +78,6 @@ public class ReportController {
 			return ResponseEntity.ok("Remove Report Successfully !");
 		}
 
-	    
+
 
 }

@@ -11,7 +11,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.app.unify.dto.global.UserDTO;
-import com.app.unify.entities.Avatar;
 import com.app.unify.entities.Role;
 import com.app.unify.entities.User;
 import com.app.unify.exceptions.UserNotFoundException;
@@ -58,7 +57,7 @@ public class UserService {
 //		if (userDto.getAvatars() == null || userDto.getAvatars().isEmpty()) {
 //	        Avatar defaultAvatar = avatarRepository.findByUrl("default-avatar.png")
 
-//	                .orElse(null); 
+//	                .orElse(null);
 
 //	        if (defaultAvatar != null) {
 //	            userDto.setAvatars(Collections.singleton(defaultAvatar));
@@ -81,10 +80,10 @@ public class UserService {
 		userDto.setPassword(userRepository.findById(userDto.getId())
 				.orElseThrow(() -> new UserNotFoundException("User not found !")).getPassword());
 
-		
+
 //		if (userDto.getAvatars() == null || userDto.getAvatars().isEmpty()) {
 //	        Avatar defaultAvatar = avatarRepository.findByUrl("unify_icon_2.svg")
-//	                .orElse(null); 
+//	                .orElse(null);
 
 //	        if (defaultAvatar != null) {
 //	            userDto.setAvatars(Collections.singleton(defaultAvatar));
