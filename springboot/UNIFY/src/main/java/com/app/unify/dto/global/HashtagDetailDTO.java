@@ -15,7 +15,7 @@ import lombok.experimental.FieldDefaults;
 public class HashtagDetailDTO {
 	String id;
 	
-	Post post;
+	PostDTO post;
 	
 	HashtagDTO hashtag;
 }

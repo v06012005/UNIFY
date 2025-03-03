@@ -5,6 +5,8 @@ import CommentItem from "@/components/comments/CommentItem";
 import CommentInput from "@/components/comments/CommentInput";
 import Cookies from "js-cookie";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { fetchPostById } from "@/app/lib/dal";
 const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   return (
     <Link
@@ -23,6 +25,34 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
   const [selectedMedia, setSelectedMedia] = useState(post?.media?.[0] || null);
   const [comments, setComments] = useState([]);
   const token = Cookies.get("token");
+
+  const [myPost, setMyPost] = useState([]);
+
+  useEffect(() => {
+    async function fetchPost() {
+      try {
+        const res = await fetchPostById(post?.id)
+        setMyPost(res);
+      } catch (error) {
+        console.error("Failed to fetch posts:", error);
+      }
+    }
+
+    fetchPost();
+  }, []);
+
+  const transformHashtags = (text) => {
+    return text.split(/(\#[a-zA-Z0-9_]+)/g).map((part, index) => {
+      if (part.startsWith("#")) {
+        return (
+          <Link key={index} href={`/hashtag/${part.substring(1)}`} className="text-blue-500 hover:underline">
+            {part}
+          </Link>
+        );
+      }
+      return part;
+    });
+  };
 
   const loadComments = useCallback(async () => {
     if (!post?.id || !token) return;
@@ -49,6 +79,8 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
   };
 
   if (!post) return null;
+
+
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -129,9 +161,9 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
                   >
                     Delete
                   </button>
-                  <Link href={`/posts/${post.id}`} className="w-full py-2 dark:hover:bg-gray-900 hover:bg-gray-100">
+                  <button onClick={() => { redirect(`/posts/${post.id}`) }} className="w-full py-2 dark:hover:bg-gray-900 hover:bg-gray-100">
                     Update
-                  </Link>
+                  </button>
                   <button className="w-full py-2 dark:hover:bg-gray-900 hover:bg-gray-100">
                     Share
                   </button>
@@ -174,10 +206,10 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
           </div>
 
           <div className="flex-1 p-4 overflow-y-auto">
-            <p className="text-sm leading-tight">
+            <div className="text-sm leading-tight">
               <span className="font-bold mr-4">{post.user?.username}</span>
-              {post.captions}
-            </p>
+              {transformHashtags(post.captions)}
+            </div>
             <div className="items-start space-x-2 mb-2 mt-5">
               {comments.map((comment) => (
                 <CommentItem key={comment.id} comment={comment} />

@@ -5,10 +5,10 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.app.unify.dto.global.HashtagDTO;
 import com.app.unify.entities.Hashtag;
-import com.app.unify.exceptions.PostNotFoundException;
 import com.app.unify.mapper.HashtagMapper;
 import com.app.unify.repositories.HashtagRepository;
 
@@ -55,10 +55,15 @@ public class HashtagServiceImpl implements HashtagService {
 	}
 
 	@Override
+	@Transactional
 	public List<HashtagDTO> saveAll(List<HashtagDTO> hashtagDTOs) {
-		List<Hashtag> hashtags = mapper.toHashtagList(hashtagDTOs);
-		List<Hashtag> savedHashtag = hashtagRepository.saveAll(hashtags);
-		return mapper.toHashtagDTOList(savedHashtag);
+		List<Hashtag> hashtags = hashtagDTOs.stream()
+		        .map(dto -> hashtagRepository.findByContent(dto.getContent()) 
+		            .orElseGet(() -> mapper.toHashtag(dto)))
+		        .collect(Collectors.toList());
+
+		    List<Hashtag> savedHashtags = hashtagRepository.saveAll(hashtags);
+		    return savedHashtags.stream().map(mapper::toHashtagDTO).collect(Collectors.toList());
 	}
 
 }

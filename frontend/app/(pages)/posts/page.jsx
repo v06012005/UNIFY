@@ -193,12 +193,13 @@ const Page = () => {
           });
           return;
         }
+
         const hashtagDetails = savedHashtags.map(h => ({
           hashtag: h,
           post: post
         }));
 
-        if (hashtagDetails > 0) {
+        if (hashtagDetails.length > 0) {
           const savedDetails = await insertHashtagDetails(hashtagDetails);
           if (!savedDetails) {
             addToast({

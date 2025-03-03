@@ -1,10 +1,10 @@
 package com.app.unify.services;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.app.unify.dto.global.HashtagDetailDTO;
 import com.app.unify.entities.HashtagDetail;
@@ -30,6 +30,7 @@ public class HashtagDetailServiceImpl implements HashtagDetailService {
 	}
 
 	@Override
+	@Transactional
 	public List<HashtagDetailDTO> saveAll(List<HashtagDetailDTO> hashtagDetailDTOs) {
 		List<HashtagDetail> hashtags = mapper.toHashtagDetailList(hashtagDetailDTOs);
 		List<HashtagDetail> savedHashtag = hashtagDetailRepository.saveAll(hashtags);

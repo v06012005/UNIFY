@@ -1,5 +1,7 @@
 package com.app.unify.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,7 +17,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 @Entity
-@Table(name = "HashtagDetails")
+@Table(name = "hashtag_details")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
 @NoArgsConstructor
@@ -25,12 +27,14 @@ public class HashtagDetail {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	String id;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "post_id", nullable = false)
+	@JsonIgnore
 	Post post;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "hashtag_id", nullable = false)
+	@JsonIgnore
 	Hashtag hashtag;
 }
