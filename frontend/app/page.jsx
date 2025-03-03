@@ -53,8 +53,6 @@ const User = ({ href = "" }) => {
 export default async function Home() {
   const session = await verifySession();
 
-  const queryClient = getQueryClient();
-
   return (
     <RootLayout>
       <div className="flex">

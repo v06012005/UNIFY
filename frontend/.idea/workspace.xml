@@ -6,10 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="1dc806c8-9b06-409a-84de-1db3bd7b8131" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(pages)/video-call/page.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(pages)/video-call/page.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/global/chat/CallNotification.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/global/chat/CallNotification.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/provider/CallProvider.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/provider/CallProvider.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/entities/PostComment.java" beforeDir="false" afterPath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/entities/PostComment.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,7 +34,7 @@
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;rebase__video__call&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;rebase__chat&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;D:/Unify/UNIFY/frontend/public/images&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,

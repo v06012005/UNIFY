@@ -144,12 +144,12 @@ const VideoCallPage = () => {
                     </div>
                 ) : receiver && !callAccepted ? (
                     <div className="text-center bg-gray-800 p-6 rounded-lg shadow-lg">
-                        <h1 className="text-2xl font-bold">{nameReceiver} đang gọi bạn...</h1>
+                        <h1 className="text-2xl font-bold">{nameReceiver} calling...</h1>
                     </div>
                 ) : callEnded ? (
                     <div className="text-center bg-gray-800 p-8 rounded-lg shadow-lg">
-                        <h1 className="text-3xl font-bold mb-4">Cuộc gọi đã kết thúc</h1>
-                        <p className="text-xl">Thời lượng cuộc gọi: {formatDuration(callDuration)}</p>
+                        <h1 className="text-3xl font-bold mb-4">Call ended</h1>
+                        <p className="text-xl">Call duration: {formatDuration(callDuration)}</p>
                         <button
                             onClick={() => window.close()}
                             className="mt-6 p-2 bg-red-600 hover:bg-red-700 rounded-full transition-colors"
@@ -231,7 +231,7 @@ const VideoCallPage = () => {
 
                 {receiver && !callAccepted && (
                     <div className="opacity-0 flex gap-4 items-center bg-gray-800 p-4 rounded-xl shadow-lg">
-                        <p className="text-lg font-medium">{nameReceiver} đang gọi...</p>
+                        <p className="text-lg font-medium">{nameReceiver} calling...</p>
                         <button
                             onClick={answerCall}
                              ref={btnAnswerRef}
