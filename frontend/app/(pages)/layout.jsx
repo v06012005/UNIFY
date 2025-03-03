@@ -4,7 +4,7 @@ import SideBar from "../../components/global/SideBar";
 import { HeroUIProvider } from "@heroui/react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import {usePathname} from "next/navigation";
-import {CallProvider, useCall} from "@/components/provider/CallProvider";
+import {CallProvider} from "@/components/provider/CallProvider";
 import CallNotification from "@/components/global/chat/CallNotification";
 
 const RootLayout = ({ children }) => {

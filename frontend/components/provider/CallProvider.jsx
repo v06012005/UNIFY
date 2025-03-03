@@ -1,3 +1,5 @@
+"use client"
+
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { useApp } from "@/components/provider/AppProvider";
 import SockJS from "sockjs-client";
@@ -132,7 +134,28 @@ export const CallProvider = ({ children }) => {
                 client.deactivate();
             };
         }
-    }, [user]);
+    }, [user, path]);
+
+    useEffect(() => {
+        const handleMessage = (event) => {
+            if (event.origin !== window.location.origin) return;
+            const { action, caller, signal, nameReceiver } = event.data;
+            console.log("Received postMessage in CallProvider:", event.data);
+
+            if (action === "answer" && signal && caller && !callAccepted) {
+                console.log("Setting callerSignal from postMessage:", signal);
+                setReceiver(true);
+                setCaller(caller);
+                setCallerSignal(signal);
+                setNameReceiver(nameReceiver);
+            }
+        };
+
+        window.addEventListener("message", handleMessage);
+        return () => window.removeEventListener("message", handleMessage);
+    }, [callAccepted]);
+
+
 
     useEffect(() => {
         let interval;
@@ -150,7 +173,6 @@ export const CallProvider = ({ children }) => {
 
 
     const getLocalStream = () => {
-
         navigator.mediaDevices
             .getUserMedia({ video: true, audio: true })
             .then((localStream) => {
@@ -167,8 +189,7 @@ export const CallProvider = ({ children }) => {
 
     const callUser = (id) => {
 
-
-        if (stompClientRef.current) {
+        if (typeof window !== 'undefined' && id) {
             const peer = new Peer({
                 initiator: true,
                 trickle: false,
@@ -199,12 +220,12 @@ export const CallProvider = ({ children }) => {
 
             connectionRef.current = peer;
         }
+
     };
 
     const answerCall = () => {
 
-
-        if (stompClientRef.current) {
+        if (callerSignal && stompClientRef.current) {
             setCallAccepted(true);
             setCallStartTime(Date.now());
 
@@ -249,6 +270,7 @@ export const CallProvider = ({ children }) => {
         setCallAccepted(false);
         if (connectionRef.current) {
             connectionRef.current.destroy();
+            connectionRef.current = null;
         }
     };
 
@@ -308,6 +330,7 @@ export const CallProvider = ({ children }) => {
             caller,
             callerSignal,
             callAccepted,
+            setCallAccepted,
             idToCall,
             setIdToCall,
             callEnded,

@@ -23,6 +23,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+
+import com.app.unify.dto.global.PostDTO;
+import com.app.unify.services.LikedPostService;
+import com.app.unify.services.MediaService;
+import com.app.unify.services.PostCommentService;
+import com.app.unify.services.PostService;
+
+import lombok.RequiredArgsConstructor;
+
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/posts")

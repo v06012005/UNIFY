@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-import com.app.unify.entities.Avatar;
 import com.app.unify.entities.Role;
 
 import jakarta.validation.constraints.Email;
