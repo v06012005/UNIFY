@@ -1,7 +1,7 @@
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useSuggestedUsers } from "@/components/provider/SuggestedUsersProvider";
+import { SuggestedUsersProvider, useSuggestedUsers } from "@/components/provider/SuggestedUsersProvider";
 import { useApp } from "@/components/provider/AppProvider";
 import FollowButton from "../ui/follow-button";
 const FollowerModal = ({ isOpen, onClose }) => {
@@ -78,7 +78,7 @@ const FollowerModal = ({ isOpen, onClose }) => {
                   classFollow="bg-red-500 font-bold py-1 px-4 rounded-lg text-white text-md"
                   classFollowing="bg-gray-700 hover:bg-gray-600 font-bold py-1 px-4 rounded-lg text-white text-md"
                   contentFollow="Follow"
-                  contentFollowing="Following"
+                  contentFollowing="Unfollow"
                 />
               </li>
             ))

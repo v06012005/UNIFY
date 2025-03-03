@@ -1,13 +1,13 @@
 package com.app.unify.mapper;
 
+import com.app.unify.dto.global.ReportDTO;
+import com.app.unify.entities.Report;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import com.app.unify.dto.global.ReportDTO;
-import com.app.unify.entities.Report;
-
 @Mapper(componentModel = "spring", uses = {UserMapper.class, PostMapper.class, CommentMapper.class})
 public interface ReportMapper {
+
     @Mapping(target = "user", ignore = true)
     @Mapping(target = "entityType", ignore = true)
     Report toReport(ReportDTO reportDTO);

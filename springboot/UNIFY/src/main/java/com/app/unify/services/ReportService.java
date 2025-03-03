@@ -4,6 +4,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+
 import org.springframework.stereotype.Service;
 
 import com.app.unify.dto.global.ReportDTO;
@@ -122,11 +125,11 @@ public class ReportService {
         String userId = reportDTO.getUserId();
         String reportedId = reportDTO.getReportedId();
         if (isSelfReport(userId, reportedId, entityType)) {
-            throw new ReportException("Bạn không thể báo cáo chính mình.");
+            throw new IllegalArgumentException("You cannot self-report.");
         }
 
         if (reportRepository.existsByUserIdAndReportedIdAndEntityType(userId, reportedId, entityType)) {
-            throw new ReportException("Bạn đã báo cáo nội dung này rồi.");
+            throw new ReportException("You have reported this post before.");
         }
 
         User user = userRepository.findById(userId)
@@ -141,7 +144,6 @@ public class ReportService {
         Report savedReport = reportRepository.save(report);
         return reportMapper.toReportDTO(savedReport);
     }
-
 
     public ReportDTO findById(String id) {
         Report report = reportRepository.findById(id)
@@ -184,7 +186,7 @@ public class ReportService {
 		Report updatedReport = reportRepository.save(report);
 		return reportMapper.toReportDTO(updatedReport);
 	}
-//	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasRole('ADMIN')")
 	public void removeReport(String reportId) {
 	    Report report = reportRepository.findById(reportId)
 	            .orElseThrow(() -> new ReportException("Report not found!"));

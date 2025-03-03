@@ -5,7 +5,7 @@ import React, {
   useState,
   useEffect,
   useRef,
-  useContext,
+  useContext, useMemo,
 } from "react";
 import { redirect, useRouter, useParams } from "next/navigation";
 import { Client } from "@stomp/stompjs";
@@ -13,7 +13,11 @@ import SockJS from "sockjs-client";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { SuggestedUsersProvider } from "./SuggestedUsersProvider";
+import {dehydrate, HydrationBoundary, useQuery} from "@tanstack/react-query";
+import {getQueryClient} from "@/components/client/QueryClient";
+
 const useChat = (user, chatPartner) => {
+
   const [chatMessages, setChatMessages] = useState([]);
   const stompClientRef = useRef(null);
 
@@ -25,16 +29,22 @@ const useChat = (user, chatPartner) => {
           headers: { Authorization: `Bearer ${Cookies.get("token")}` },
         }
       );
-      setChatMessages(response.data);
+      return response.data;
     } catch (error) {
       console.error("❌ Error fetching messages:", error);
+      return [];
     }
   };
 
-  useEffect(() => {
-    if (user.id && chatPartner) {
-      fetchMessages();
+  const {data, isLoading } = useQuery({
+    queryKey: ["messages", user?.id, chatPartner],
+    queryFn: fetchMessages,
+    enabled: !!user?.id && !!chatPartner,
+  });
 
+  useEffect(() => {
+    if (user.id && chatPartner && !isLoading) {
+      setChatMessages(data || []);
       if (!stompClientRef.current) {
         const socket = new SockJS(
           `${process.env.NEXT_PUBLIC_API_URL}/ws?token=${Cookies.get("token")}`
@@ -66,7 +76,7 @@ const useChat = (user, chatPartner) => {
         stompClientRef.current = client;
       }
     }
-  }, [user.id, chatPartner]);
+  }, [user.id, chatPartner, isLoading]);
 
   const sendMessage = (content) => {
     if (stompClientRef.current?.connected && user.id) {
@@ -91,6 +101,7 @@ const useChat = (user, chatPartner) => {
   };
 
   return { chatMessages, sendMessage };
+
 };
 
 export default useChat;
@@ -103,6 +114,9 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const UserContext = createContext(null);
 
 export const AppProvider = ({ children }) => {
+
+  const queryClient = getQueryClient();
+
   const [user, setUser] = useState({
     id: "",
     firstName: "",
@@ -141,12 +155,14 @@ export const AppProvider = ({ children }) => {
         expires: 7,
       });
 
-      getInfoUser().catch((error) => console.log(error));
-
-      if (!isAdmin) {
-        router.push("/");
-      } else {
-        router.push("/statistics/users");
+      const userInfo = await getInfoUser();
+      if (userInfo) {
+        setIsAdmin(userInfo.roles[0].id === 1);
+        if (isAdmin) {
+          router.push("/statistics/users");
+        } else {
+          router.push("/");
+        }
       }
     } catch (error) {
       if (
@@ -185,9 +201,7 @@ export const AppProvider = ({ children }) => {
         expires: 7,
       });
     } catch (error) {
-
       console.log(error);
-
     }
   };
 
@@ -211,7 +225,7 @@ export const AppProvider = ({ children }) => {
       const token = Cookies.get("token");
       if (!token) {
         console.error("Missing token! User not authenticated.");
-        return;
+        return null;
       }
 
       const response = await axios.get(`${API_URL}/users/my-info`, {
@@ -227,11 +241,15 @@ export const AppProvider = ({ children }) => {
         if (router.pathname === "/profile" && data.username) {
           router.replace(`/user/${data.username}`);
         }
+
+        return data;
       }
     } catch (err) {
       console.error("Error fetching user info:", err);
+      return null;
     }
   };
+
   const parseBirthDay = (birthDay) => {
     if (!birthDay) return { month: "", day: "", year: "" };
 
@@ -242,6 +260,7 @@ export const AppProvider = ({ children }) => {
       year,
     };
   };
+
   const getUserInfoByUsername = async (username) => {
     try {
       if (!username) {
@@ -283,6 +302,7 @@ export const AppProvider = ({ children }) => {
   const [userFromAPI, setUserFromAPI] = useState(null);
 
   useEffect(() => {
+    getInfoUser().catch((error) => console.log(error));
     if (userFromAPI?.username && userFromAPI === null) {
       getUserInfoByUsername(userFromAPI.username)
         .then((data) => {
@@ -294,32 +314,30 @@ export const AppProvider = ({ children }) => {
     }
   }, []);
 
-  useEffect(() => {
-    getInfoUser().catch((error) => console.log(error));
-  }, []);
-
   return (
-    <SuggestedUsersProvider>
-      {" "}
-      {
-        <UserContext.Provider
-          value={{
-            user,
-            setUser,
-            userFromAPI,
-            setUserFromAPI,
-            loginUser,
-            refreshToken,
-            logoutUser,
-            useChat,
-            getInfoUser,
-            getUserInfoByUsername,
-          }}
-        >
-          {children}
-        </UserContext.Provider>
-      }
-    </SuggestedUsersProvider>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <SuggestedUsersProvider>
+        {" "}
+        {
+          <UserContext.Provider
+              value={{
+                user,
+                setUser,
+                userFromAPI,
+                setUserFromAPI,
+                loginUser,
+                refreshToken,
+                logoutUser,
+                useChat,
+                getInfoUser,
+                getUserInfoByUsername,
+              }}
+          >
+            {children}
+          </UserContext.Provider>
+        }
+      </SuggestedUsersProvider>
+    </HydrationBoundary>
   );
 };
 

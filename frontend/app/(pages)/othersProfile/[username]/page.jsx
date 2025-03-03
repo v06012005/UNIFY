@@ -1,19 +1,14 @@
 "use client";
 
 import React, {
-  createContext,
   useState,
   useEffect,
-  useRef,
-  useCallback,
-  useContext,
 } from "react";
 import { useParams, usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import ProfileTabs from "@/components/global/TabProfile/Tabs";
 import { useApp } from "@/components/provider/AppProvider";
-import People from "@/components/global/TabProfile/People";
 import FollowButton from "@/components/ui/follow-button";
 
 const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
@@ -75,9 +70,13 @@ const Page = () => {
               <div className="flex flex-col mx-10 items-center w-200">
                 <FollowButton
                   userId={user.id}
+                  contentFollow={'Follow'}
+                  contentFollowing={'Following'}
                   followingId={userInfo.id}
                   classFollow="bg-red-500 font-bold py-2 px-8 rounded-lg w-full text-white text-md"
                   classFollowing="bg-gray-700 hover:bg-gray-600 font-bold py-2 px-8 rounded-lg w-full text-white text-md"
+                  contentFollow="Follow"
+                  contentFollowing="Unfollow"
                 />
                 <p className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer">
                   Follower
