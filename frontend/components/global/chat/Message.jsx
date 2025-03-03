@@ -67,23 +67,16 @@ const Message = ({ messages, messagesEndRef }) => {
                                     {message.fileUrls.map((fileUrl, fileIndex) => {
                                         const fileName = fileUrl.split("/").pop().split("?")[0];
                                         const fileExtension = fileName.split(".").pop().toLowerCase();
-
                                         return (
                                             <div key={fileIndex} className="flex flex-col items-start">
                                                 {["jpg", "jpeg", "png", "gif", "webp"].includes(fileExtension) ? (
-                                                    <img
-                                                        src={fileUrl}
-                                                        alt={`attachment-${fileIndex}`}
-                                                        className="max-w-32 rounded-lg shadow-md"
-                                                        onLoad={() => handleMediaLoad(messagesEndRef)}
-                                                    />
-                                                ) : ["mp4", "webm", "ogg"].includes(fileExtension) ? (
-                                                    <video
-                                                        src={fileUrl}
-                                                        controls
-                                                        className="max-w-xs rounded-lg shadow-md"
-                                                        onLoadedData={() => handleMediaLoad(messagesEndRef)}
-                                                    />
+                                                    <a href={fileUrl} target={`_blan`}>
+                                                        <img src={fileUrl} alt={`attachment-${fileIndex}`}
+                                                             className="max-w-40 rounded-lg shadow-md"
+                                                             onLoad={() => handleMediaLoad(messagesEndRef)}/>
+                                                    </a>
+                                                ) : ["mp4", "webm", "ogg", "mp3"].includes(fileExtension) ? (
+                                                    <video src={fileUrl} controls className="max-w-xs rounded-lg shadow-md" onLoadedData={() => handleMediaLoad(messagesEndRef)} />
                                                 ) : ["mp3", "wav", "ogg"].includes(fileExtension) ? (
                                                     <audio controls className="w-full" onLoadedData={() => handleMediaLoad(messagesEndRef)}>
                                                         <source src={fileUrl} type="audio/mpeg" />
@@ -99,6 +92,7 @@ const Message = ({ messages, messagesEndRef }) => {
                                                         {getFileIcon(fileExtension)}
                                                         <span>{getFileName(fileUrl)}</span>
                                                     </a>
+
                                                 )}
                                             </div>
                                         );
