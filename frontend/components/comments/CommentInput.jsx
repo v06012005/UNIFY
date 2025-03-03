@@ -109,7 +109,7 @@ const CommentInput = ({
           setComment(e.target.value);
           setIsCommentEmpty(
             e.target.value.trim() ===
-              (parentComment ? `@${parentComment.username} ` : "")
+            (parentComment ? `@${parentComment.username} ` : "")
           );
         }}
         onInput={(e) => {
@@ -147,7 +147,7 @@ const CommentInput = ({
               setComment(newComment);
               setIsCommentEmpty(
                 newComment.trim() ===
-                  (parentComment ? `@${parentComment.username} ` : "")
+                (parentComment ? `@${parentComment.username} ` : "")
               );
             }}
           />
@@ -172,6 +172,9 @@ const CommentInput = ({
             </button>
           )}
         </>
+      )}
+      {error && (
+        <div className="absolute top-[-30px] text-red-500 text-sm">{error}</div>
       )}
       {error && (
         <div className="absolute top-[-30px] text-red-500 text-sm">{error}</div>

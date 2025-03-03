@@ -5,24 +5,54 @@ import CommentItem from "@/components/comments/CommentItem";
 import CommentInput from "@/components/comments/CommentInput";
 import Cookies from "js-cookie";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { fetchPostById } from "@/app/lib/dal";
 const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
-    return (
-      <Link
-        className="flex h-full items-center text-center"
-        href={href}
-        onClick={onClick}
-      >
-        <i className={`${iconClass}`}></i>
-        <span className="">{content}</span>
-      </Link>
-    );
-  };
+  return (
+    <Link
+      className="flex h-full items-center text-center"
+      href={href}
+      onClick={onClick}
+    >
+      <i className={`${iconClass}`}></i>
+      <span className="">{content}</span>
+    </Link>
+  );
+};
 const PostDetailModal = ({ post, onClose, onDelete }) => {
   const [openList, setOpenList] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState(post?.media?.[0] || null);
   const [comments, setComments] = useState([]);
   const token = Cookies.get("token");
+
+  const [myPost, setMyPost] = useState([]);
+
+  useEffect(() => {
+    async function fetchPost() {
+      try {
+        const res = await fetchPostById(post?.id)
+        setMyPost(res);
+      } catch (error) {
+        console.error("Failed to fetch posts:", error);
+      }
+    }
+
+    fetchPost();
+  }, []);
+
+  const transformHashtags = (text) => {
+    return text.split(/(\#[a-zA-Z0-9_]+)/g).map((part, index) => {
+      if (part.startsWith("#")) {
+        return (
+          <Link key={index} href={`/explore/${part.substring(1)}`} className="text-blue-500 hover:underline">
+            {part}
+          </Link>
+        );
+      }
+      return part;
+    });
+  };
 
   const loadComments = useCallback(async () => {
     if (!post?.id || !token) return;
@@ -49,6 +79,8 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
   };
 
   if (!post) return null;
+
+
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -80,9 +112,8 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
               {post.media.map((item, index) => (
                 <div
                   key={index}
-                  className={`w-16 h-16 cursor-pointer border-2 ${
-                    selectedMedia?.url === item.url ? "border-blue-500" : "border-transparent"
-                  }`}
+                  className={`w-16 h-16 cursor-pointer border-2 ${selectedMedia?.url === item.url ? "border-blue-500" : "border-transparent"
+                    }`}
                   onClick={() => setSelectedMedia(item)}
                 >
                   {item.mediaType === "VIDEO" ? (
@@ -130,7 +161,7 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
                   >
                     Delete
                   </button>
-                  <button className="w-full py-2 dark:hover:bg-gray-900 hover:bg-gray-100">
+                  <button onClick={() => { redirect(`/posts/${post.id}`) }} className="w-full py-2 dark:hover:bg-gray-900 hover:bg-gray-100">
                     Update
                   </button>
                   <button className="w-full py-2 dark:hover:bg-gray-900 hover:bg-gray-100">
@@ -175,10 +206,10 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
           </div>
 
           <div className="flex-1 p-4 overflow-y-auto">
-            <p className="text-sm leading-tight">
+            <div className="text-sm leading-tight">
               <span className="font-bold mr-4">{post.user?.username}</span>
-              {post.captions}
-            </p>
+              {transformHashtags(post.captions)}
+            </div>
             <div className="items-start space-x-2 mb-2 mt-5">
               {comments.map((comment) => (
                 <CommentItem key={comment.id} comment={comment} />

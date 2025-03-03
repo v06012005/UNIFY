@@ -96,9 +96,8 @@ const LikeButton = ({ className = "", userId, postId }) => {
       disabled={loading}
     >
       <i
-        className={`${
-          isLiked ? "fa-solid text-red-500" : "fa-regular"
-        } fa-heart transition ease-in-out duration-300`}
+        className={`${isLiked ? "fa-solid text-red-500" : "fa-regular"
+          } fa-heart transition ease-in-out duration-300`}
       ></i>
       <span className="text-xl">{likeCount}</span>
     </button>
