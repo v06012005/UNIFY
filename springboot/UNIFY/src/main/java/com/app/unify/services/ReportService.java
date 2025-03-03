@@ -4,14 +4,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.http.HttpStatus;
-
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.app.unify.dto.global.ReportDTO;
-
-import com.app.unify.dto.global.UserDTO;
 import com.app.unify.entities.Post;
 import com.app.unify.entities.PostComment;
 import com.app.unify.entities.Report;
@@ -19,16 +14,13 @@ import com.app.unify.entities.User;
 import com.app.unify.exceptions.ReportException;
 import com.app.unify.mapper.CommentMapper;
 import com.app.unify.mapper.PostMapper;
-
 import com.app.unify.mapper.ReportMapper;
 import com.app.unify.mapper.UserMapper;
 import com.app.unify.repositories.PostCommentRepository;
 import com.app.unify.repositories.PostRepository;
 import com.app.unify.repositories.ReportRepository;
 import com.app.unify.repositories.UserRepository;
-
 import com.app.unify.types.EntityType;
-
 
 import lombok.RequiredArgsConstructor;
 
@@ -80,8 +72,8 @@ public class ReportService {
         }
     }
 
-    public ReportDTO createPostReport(String reportedId) { 
-        String userId = userService.getMyInfo().getId(); 
+    public ReportDTO createPostReport(String reportedId) {
+        String userId = userService.getMyInfo().getId();
         ReportDTO reportDTO = new ReportDTO();
         reportDTO.setUserId(userId);
         reportDTO.setReportedId(reportedId);
@@ -110,16 +102,16 @@ public class ReportService {
         switch (entityType) {
             case POST:
                 return postRepository.findById(reportedId)
-                        .map(Post::getUser) 
+                        .map(Post::getUser)
                         .filter(ownerId -> ownerId.equals(userId))
                         .isPresent();
             case COMMENT:
                 return commentRepository.findById(reportedId)
-                        .map(PostComment::getUser) 
+                        .map(PostComment::getUser)
                         .filter(ownerId -> ownerId.equals(userId))
                         .isPresent();
             case USER:
-                return userId.equals(reportedId); 
+                return userId.equals(reportedId);
             default:
                 return false;
         }

@@ -23,7 +23,7 @@ const PostReels = forwardRef(({ src, muted, loop, onPauseChange }, ref) => {
       }
       setIsPaused((prev) => {
         const newPaused = !prev;
-        onPauseChange(newPaused); // Chỉ gọi khi người dùng tương tác
+        onPauseChange(newPaused);
         return newPaused;
       });
     }

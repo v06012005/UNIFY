@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.unify.dto.global.PostDTO;
-
 import com.app.unify.services.LikedPostService;
 import com.app.unify.services.MediaService;
 import com.app.unify.services.PostCommentService;
@@ -66,7 +65,7 @@ public class PostController {
 //	    	postCommentService.deleteCommentsByPostId(id);
 //	    	likedService.delete(id);
 //	    	mediaService.deleteById(id);
-            postService.deletePostById(id); 
+            postService.deletePostById(id);
             return ResponseEntity.ok("Post deleted successfully!");
 	    } catch (Exception e) {
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

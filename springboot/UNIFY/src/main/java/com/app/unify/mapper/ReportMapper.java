@@ -13,6 +13,6 @@ public interface ReportMapper {
     Report toReport(ReportDTO reportDTO);
 
     @Mapping(target = "userId", source = "user.id")
-    @Mapping(target = "reportedEntity", ignore = true) 
+    @Mapping(target = "reportedEntity", ignore = true)
     ReportDTO toReportDTO(Report report);
 }

@@ -85,11 +85,9 @@ const Reels = () => {
       } finally {
         setIsCommentsLoading(false);
       }
-
     },
     [token]
   );
-
 
   // Intersection Observer
   useEffect(() => {
@@ -246,7 +244,7 @@ const Reels = () => {
       {videoPosts.map((post, index) => (
         <div
           key={post.id}
-          className={`relative w-[450px] h-[700px] mx-auto rounded-b-xl overflow-hidden m-5 snap-start flex-shrink-0 ${
+          className={`relative w-[450px] h-[700px] mx-auto rounded-b-xl overflow-hidden m-7 snap-start flex-shrink-0 ${
             isCommentOpen ? "translate-x-[-150px]" : "translate-x-0"
           } transition-transform duration-400 ease-in-out`}
         >
@@ -258,6 +256,7 @@ const Reels = () => {
                   src={media.url}
                   ref={(el) => (videoRefs.current[index] = el)}
                   loop
+                  muted
                   onPauseChange={(isPaused) =>
                     handlePauseChange(post.id, isPaused)
                   }
@@ -276,16 +275,12 @@ const Reels = () => {
                 <span className="font-medium">{post.user?.username}</span>
                 <span className="text-white text-lg">•</span>
                 <FollowButton
-                  classFollow="backdrop-blur-lg text-sm p-4 py-1 rounded-2xl font-bold transition-all duration-200 ease-in-out active:scale-125 hover:bg-gray-400 dark:hover:bg-gray-400 border border-gray-300"
-                  classFollowing="backdrop-blur-lg text-sm p-4 py-1 rounded-2xl font-bold transition-all duration-200 ease-in-out active:scale-125 bg-gray-400 dark:bg-gray-400 border border-gray-300"
                   contentFollow="Follow"
                   contentFollowing="Following"
                   userId={user.id}
                   followingId={post.user.id}
-
                   classFollow="backdrop-blur-lg text-sm p-4 py-1 rounded-2xl font-bold transition-all duration-200 ease-in-out active:scale-125 hover:bg-gray-500 dark:hover:bg-gray-400 border border-gray-300"
                   classFollowing="backdrop-blur-lg text-sm p-4 py-1 rounded-2xl font-bold transition-all duration-200 ease-in-out active:scale-125 hover:bg-gray-500 dark:hover:bg-gray-400 border border-gray-300"
-
                 />
               </div>
             </div>
@@ -336,12 +331,12 @@ const Reels = () => {
               {toolStates[post.id]?.isPopupOpen && (
                 <div
                   id="overmore"
-                  className="w-44 absolute top-[-98] right-10 mt-2 backdrop-blur-xl p-4 rounded-lg shadow-lg text-white border border-gray-300 z-50"
+                  className="w-44 absolute top-[-135] right-10 mt-2 backdrop-blur-xl p-4 rounded-lg shadow-lg text-white border border-gray-300 z-50 "
                   onClick={(e) => closeMore(e, post.id)}
                 >
                   <ul className="text-sm">
                     <li className="cursor-pointer hover:bg-zinc-500 font-bold text-left p-2 rounded-sm text-red-500">
-                      ReportReport
+                      Report
                     </li>
                     <li className="cursor-pointer hover:bg-zinc-500 font-bold text-left p-2 rounded-sm">
                       Copy link
@@ -401,8 +396,8 @@ const Reels = () => {
                     />
                   ))
                 ) : (
-                  <p className="text-red-500 font-bold">
-                    Comments are disabled for this post
+                  <p className="text-gray-500 font-bold">
+                    Be the first to comment on this post
                   </p>
                 )}
               </div>
