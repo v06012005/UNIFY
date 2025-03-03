@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { useSuggestedUsers } from "@/components/provider/SuggestedUsersProvider";
+import { SuggestedUsersProvider, useSuggestedUsers } from "@/components/provider/SuggestedUsersProvider";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const People = () => {
@@ -94,5 +94,11 @@ const People = () => {
     </div>
   );
 };
-
+// const PeopleList = () => {
+//   return (
+//     <SuggestedUsersProvider>
+//       <People />
+//     </SuggestedUsersProvider>
+//   );
+// };
 export default People;

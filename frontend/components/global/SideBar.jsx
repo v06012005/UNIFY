@@ -84,6 +84,7 @@ const SideBar = () => {
           <NotificationModal
             isNotificationOpen={isNotificationOpen}
             modalRef={modalRef}
+            userId={user?.id}
           />
           <ul className="text-3xl flex flex-col justify-center grow w-full">
             <li className="h-16">
@@ -144,8 +145,7 @@ const SideBar = () => {
               {user && (
                 <Link
                   title="Your profile"
-                  href= {`/profile/${user.username}`}
-                 // {`/profile/${user.username}`}
+                  href={`/profile/${user.username}`}
                   className="w-full flex h-full items-center"
                 >
                   <Image

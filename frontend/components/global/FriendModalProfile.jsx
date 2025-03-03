@@ -1,4 +1,6 @@
-import Image from 'next/image';
+"use client";
+
+import Image from "next/image";
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSuggestedUsers } from "@/components/provider/SuggestedUsersProvider";
@@ -7,7 +9,7 @@ const FriendModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   const { friendUsers, getFriendUsers, loading } = useSuggestedUsers();
-  const router = useRouter(); 
+  const router = useRouter();
 
   useEffect(() => {
     getFriendUsers();
@@ -35,11 +37,13 @@ const FriendModal = ({ isOpen, onClose }) => {
           placeholder="Search ..."
           className="w-full border rounded-full px-4 py-1  dark:bg-black dark:border-gray-600"
         />
-        <ul className='h-[390px]  overflow-y-auto scrollbar-hide'>
+        <ul className="h-[390px]  overflow-y-auto scrollbar-hide">
           {loading ? (
-            <p className="text-gray-500">Đang tải danh sách...</p>
+
+            <p className="text-gray-500">Loading...</p>
           ) : !friendUsers || friendUsers.length === 0 ? ( 
-            <p className="text-gray-500">Kết bạn để chia sẻ thêm nhiều điều thú vị.</p>
+            <p className="text-gray-500">Make friends to share more interesting things.</p>
+
           ) : (
             friendUsers.slice(0, 11).map((user) => (
               <li

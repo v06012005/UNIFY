@@ -39,24 +39,10 @@ const Page = () => {
   const params = useParams();
   const router = useRouter();
 
-  const { user, setUser, getInfoUser } = useApp();
+  const { user } = useApp();
   const fetchedOnce = useRef(false);
 
-  useEffect(() => {
-    if (fetchedOnce.current) return;
-    fetchedOnce.current = true;
-
-    const fetchUserInfo = async () => {
-      try {
-        const fetchedUser = await getInfoUser();
-        setUser(fetchedUser);
-      } catch (error) {
-        console.error("Error fetching user info:", error);
-      }
-    };
-
-    fetchUserInfo();
-  }, []);
+ 
 
   const handleClickView = () => {
     router.push("/settings/archive");
@@ -100,7 +86,7 @@ const Page = () => {
                   className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer"
                   onClick={toggleFriend}
                 >
-                  0 Friend
+                  Friend
                 </p>
 
                 <FriendModal isOpen={isFriendOpen} onClose={toggleFriend} />
@@ -118,7 +104,7 @@ const Page = () => {
                   className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer"
                   onClick={toggleFollower}
                 >
-                  0 Follower
+                  Follower
                 </p>
 
                 <FollowerModal
@@ -141,7 +127,7 @@ const Page = () => {
                   className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer"
                   onClick={toggleFollowing}
                 >
-                  0 Following
+                  Following
                 </p>
 
                 <FollowingModal

@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { Smile, Send } from "lucide-react";
@@ -7,42 +9,66 @@ import { postComment } from "app/api/service/commentService";
 import Cookies from "js-cookie";
 import { useApp } from "@/components/provider/AppProvider";
 
-const CommentInput = ({ postId, setComments }) => {
+const CommentInput = ({
+  postId,
+  setComments,
+  parentComment,
+  onCancelReply,
+}) => {
   const [comment, setComment] = useState("");
   const [isCommentEmpty, setIsCommentEmpty] = useState(true);
   const [showPicker, setShowPicker] = useState(false);
+  const [error, setError] = useState(null);
   const pickerRef = useRef(null);
   const { user } = useApp();
   const token = Cookies.get("token");
 
-  // Xử lý gửi comment
+  useEffect(() => {
+    if (parentComment) {
+      setComment(`@${parentComment.username} `);
+      setIsCommentEmpty(false);
+    } else {
+      setComment("");
+      setIsCommentEmpty(true);
+    }
+  }, [parentComment]);
+
   const handleCommentSubmit = async () => {
     if (!comment.trim()) return;
 
-    if (!postId || !user?.id) {
-      console.error("postId or user.id is null or undefined");
+    if (!postId || !user?.id || !token) {
+      setError("Missing required data to submit comment.");
       return;
     }
 
     try {
-      const newComment = await postComment(user.id, postId, comment, token);
-      if (newComment) {
-        setComments((prevComments) => [
-          {
-            ...newComment,
-            username: user.username,
-          },
-          ...prevComments,
-        ]);
-        setComment("");
-        setIsCommentEmpty(true);
-      }
+      const newComment = await postComment(
+        user.id,
+        postId,
+        comment,
+        token,
+        parentComment ? parentComment.id : null
+      );
+      console.log("Comment posted successfully:", newComment);
+      const enrichedComment = {
+        ...newComment,
+        username: user?.username || "Unknown",
+      };
+      setComments(enrichedComment);
+      setComment(parentComment ? `@${parentComment.username} ` : ""); // Giữ @username nếu còn reply
+      setIsCommentEmpty(!parentComment);
+      setError(null);
     } catch (error) {
-      console.error("Error submitting comment:", error);
+      setError(error.message);
     }
   };
 
-  // Xử lý click bên ngoài để đóng emoji picker
+  const handleCancel = () => {
+    setComment(""); // Reset textarea
+    setIsCommentEmpty(true);
+    if (onCancelReply) onCancelReply(); // Gọi hàm reset replyingTo
+  };
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -70,15 +96,21 @@ const CommentInput = ({ postId, setComments }) => {
         alt="Avatar"
         className="rounded-full w-10 h-10 mr-2"
       />
-
       <textarea
-        placeholder="Add a comment..."
+        placeholder={
+          parentComment
+            ? `Reply to @${parentComment.username}...`
+            : "Add a comment..."
+        }
         maxLength={150}
         rows={1}
         value={comment}
         onChange={(e) => {
           setComment(e.target.value);
-          setIsCommentEmpty(e.target.value.trim() === "");
+          setIsCommentEmpty(
+            e.target.value.trim() ===
+              (parentComment ? `@${parentComment.username} ` : "")
+          );
         }}
         onInput={(e) => {
           e.target.style.height = "auto";
@@ -93,14 +125,13 @@ const CommentInput = ({ postId, setComments }) => {
           }
         }}
         onKeyDown={(e) => {
-          if (e.key === "Enter") {
+          if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
             handleCommentSubmit();
           }
         }}
         className="bg-gray-700 text-white placeholder-gray-400 flex-grow py-2 px-4 rounded-2xl focus:outline-none resize-none"
       />
-
       <button
         type="button"
         onClick={() => setShowPicker(!showPicker)}
@@ -108,27 +139,42 @@ const CommentInput = ({ postId, setComments }) => {
       >
         <Smile size={28} />
       </button>
-
       {showPicker && (
         <div ref={pickerRef} className="absolute bottom-20 right-12 z-50">
           <Picker
             onEmojiClick={(emojiObject) => {
               const newComment = comment + emojiObject.emoji;
               setComment(newComment);
-              setIsCommentEmpty(newComment.trim() === "");
+              setIsCommentEmpty(
+                newComment.trim() ===
+                  (parentComment ? `@${parentComment.username} ` : "")
+              );
             }}
           />
         </div>
       )}
-
       {!isCommentEmpty && (
-        <button
-          type="submit"
-          onClick={handleCommentSubmit}
-          className="ml-2 text-gray-600 hover:text-gray-400"
-        >
-          <Send size={28} />
-        </button>
+        <>
+          <button
+            type="submit"
+            onClick={handleCommentSubmit}
+            className="ml-2 text-gray-600 hover:text-gray-400"
+          >
+            <Send size={28} />
+          </button>
+          {parentComment && (
+            <button
+              type="button"
+              onClick={handleCancel}
+              className="ml-2 text-gray-600 hover:text-gray-400"
+            >
+              Cancel
+            </button>
+          )}
+        </>
+      )}
+      {error && (
+        <div className="absolute top-[-30px] text-red-500 text-sm">{error}</div>
       )}
     </div>
   );

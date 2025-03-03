@@ -7,7 +7,8 @@ import AuthProvider from "@/components/provider/AuthProvider";
 import { ModalProvider } from "@/components/provider/ModalProvider";
 import { AppProvider } from "@/components/provider/AppProvider";
 import { FollowProvider } from "@/components/provider/FollowProvider";
-
+import { ReportProvider } from "@/components/provider/ReportProvider";
+import { SuggestedUsersProvider } from "@/components/provider/SuggestedUsersProvider";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -36,11 +37,16 @@ export default async function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} flex w-full antialiased`}
       >
         <AuthProvider>
+          <ReportProvider>
+<SuggestedUsersProvider>
           <AppProvider>
             <ModalProvider>
+
               <FollowProvider>{children}</FollowProvider>
             </ModalProvider>
           </AppProvider>
+          </SuggestedUsersProvider>
+          </ReportProvider>
         </AuthProvider>
       </body>
     </html>

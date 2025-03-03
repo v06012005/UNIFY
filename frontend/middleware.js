@@ -11,15 +11,13 @@ export default async function middleware(req) {
     const isPublicRoute = publicRoutes.includes(path)
     const isProtectedRoute = protectedRoutes.some(p => path.startsWith(p))
 
-    console.log(isProtectedRoute)
-
     // 3. Decrypt the session from the cookie
     const session = await verifySession();
-    console.log(isProtectedRoute)
+
     if (isProtectedRoute && session?.isAuth) {
         const user = await getUser();
-        if (user?.roles[0]?.id === 2) {
-            return NextResponse.redirect(new URL('/', req.nextUrl))
+        if (user?.roles[0]?.id === 2) { // Assuming role id 2 is for USER
+            return NextResponse.redirect(new URL('/page-not-found', req.nextUrl))
         }
     }
 
@@ -27,7 +25,7 @@ export default async function middleware(req) {
         return NextResponse.redirect(new URL('/', req.nextUrl))
     }
 
-    // // 5. Redirect to /login if the user is not authenticated
+    // 5. Redirect to /login if the user is not authenticated
     if (!isPublicRoute && !session?.isAuth) {
         return NextResponse.redirect(new URL('/login', req.nextUrl))
     }

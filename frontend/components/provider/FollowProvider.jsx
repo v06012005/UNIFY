@@ -8,7 +8,7 @@ export const FollowProvider = ({ children }) => {
   const [followingStatus, setFollowingStatus] = useState({});
 
   const checkFollowing = async (userId, followingId) => {
-    if (followingStatus[followingId] !== undefined) return; // Đã có trong cache
+    if (followingStatus[followingId] !== undefined) return;
 
     const token = Cookies.get("token");
     if (!token) return;
@@ -62,14 +62,14 @@ export const FollowProvider = ({ children }) => {
         console.error("Lỗi follow/unfollow:", await response.text());
         setFollowingStatus((prev) => ({
           ...prev,
-          [followingId]: currentStatus, // Rollback nếu lỗi
+          [followingId]: currentStatus,
         }));
       }
     } catch (error) {
       console.error("Lỗi khi follow/unfollow:", error);
       setFollowingStatus((prev) => ({
         ...prev,
-        [followingId]: currentStatus, // Rollback nếu lỗi
+        [followingId]: currentStatus,
       }));
     }
   };

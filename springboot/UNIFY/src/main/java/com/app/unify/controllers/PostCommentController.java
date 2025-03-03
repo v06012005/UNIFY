@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,17 +37,8 @@ public class PostCommentController {
                 request.getPostId(),
                 request.getContent(),
                 request.getParentId()
-              
             );
-
-            // Chuyển đổi PostComment -> CommentDTO trước khi trả về
-            CommentDTO responseDto = new CommentDTO();
-            responseDto.setId(savedComment.getId());
-            responseDto.setUserId(savedComment.getUser().getId());
-            responseDto.setPostId(savedComment.getPost().getId());
-            responseDto.setContent(savedComment.getContent());
-          
-
+            CommentDTO responseDto = new CommentDTO(savedComment); // Dùng constructor
             return ResponseEntity.ok(responseDto);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -65,7 +55,7 @@ public class PostCommentController {
         List<CommentDTO> comments = postCommentService.getCommentsByPostId(postId);
         return ResponseEntity.ok(comments);
     }
-    
+
     @DeleteMapping("/{commentId}")
     public ResponseEntity<?> deleteComment(@PathVariable String commentId) {
         try {
@@ -77,7 +67,4 @@ public class PostCommentController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi hệ thống: " + e.getMessage());
         }
     }
-    
-    
-   
 }

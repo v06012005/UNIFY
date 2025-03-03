@@ -35,9 +35,7 @@ public class UserService {
 
 	@Autowired
 	public UserService(UserRepository userRepository, RoleRepository roleRepository, UserMapper userMapper,
-
 			PasswordEncoder passwordEncoder, AvatarRepository avatarRepository) {
-
 		this.userRepository = userRepository;
 		this.roleRepository = roleRepository;
 		this.userMapper = userMapper;
@@ -53,13 +51,15 @@ public class UserService {
 
 	public UserDTO createUser(UserDTO userDto) {
 		userDto.setPassword(EncryptPasswordUtil.encryptPassword(userDto.getPassword()));
-		  
+
 
 		Role role = roleRepository.findByName("USER").orElseThrow(() -> new RuntimeException("Role not found !"));
 		userDto.setRoles(Collections.singleton(role));
 //		if (userDto.getAvatars() == null || userDto.getAvatars().isEmpty()) {
 //	        Avatar defaultAvatar = avatarRepository.findByUrl("default-avatar.png")
+
 //	                .orElse(null); 
+
 //	        if (defaultAvatar != null) {
 //	            userDto.setAvatars(Collections.singleton(defaultAvatar));
 //	        }
@@ -80,10 +80,12 @@ public class UserService {
 		Role role = roleRepository.findByName("USER").orElseThrow(() -> new RuntimeException("Role not found !"));
 		userDto.setPassword(userRepository.findById(userDto.getId())
 				.orElseThrow(() -> new UserNotFoundException("User not found !")).getPassword());
+
 		
 //		if (userDto.getAvatars() == null || userDto.getAvatars().isEmpty()) {
 //	        Avatar defaultAvatar = avatarRepository.findByUrl("unify_icon_2.svg")
 //	                .orElse(null); 
+
 //	        if (defaultAvatar != null) {
 //	            userDto.setAvatars(Collections.singleton(defaultAvatar));
 //	        }

@@ -69,7 +69,7 @@ const Page = () => {
                   {userInfo.username}
                 </h3>
                 <p className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer">
-                  44 posts
+                  posts
                 </p>
               </div>
               <div className="flex flex-col mx-10 items-center w-200">
@@ -78,9 +78,11 @@ const Page = () => {
                   followingId={userInfo.id}
                   classFollow="bg-red-500 font-bold py-2 px-8 rounded-lg w-full text-white text-md"
                   classFollowing="bg-gray-700 hover:bg-gray-600 font-bold py-2 px-8 rounded-lg w-full text-white text-md"
+                  contentFollow="Follow"
+                  contentFollowing="Unfollow"
                 />
                 <p className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer">
-                  0 Follower
+                  Follower
                 </p>
               </div>
               <div className="flex flex-col mx-10 items-center w-200">
@@ -89,7 +91,7 @@ const Page = () => {
                   <span>Message</span>
                 </div>
                 <p className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer">
-                  0 Following
+                  Following
                 </p>
               </div>
             </div>

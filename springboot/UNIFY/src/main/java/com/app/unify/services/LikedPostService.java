@@ -18,6 +18,7 @@ import com.app.unify.repositories.LikedPostRepository;
 import com.app.unify.repositories.PostRepository;
 import com.app.unify.repositories.UserRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -39,13 +40,13 @@ public class LikedPostService {
 		this.likedPostMapper = likedPostMapper;
 		this.postMapper = postMapper;
 	}
-	
+
 	public Set<PostDTO> getListLikedPosts(String userId) {
 		User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found!"));
 		return user.getLikedPosts().stream().map(LikedPost::getPost).map(postMapper::toPostDTO)
 				.collect(Collectors.toSet());
 	}
-	
+
 	public boolean checkLiked(String userId, String postId) {
 		return likedPostRepository.existsByUserIdAndPostId(userId, postId);
 	}
@@ -59,17 +60,15 @@ public class LikedPostService {
 				.build();
 		likedPostRepository.save(likedPost);
 	}
-	
+
+
+	@Transactional
+
 	public void deleteLikedPost(LikedPostRequest request) {
-		LikedPost likedPost = LikedPost.builder()
-				.post(postRepository.findById(request.getPostId())
-						.orElseThrow(() -> new PostNotFoundException("Post not found !")))
-				.user(userRepository.findById(request.getUserId())
-						.orElseThrow(() -> new UserNotFoundException("User not found !")))
-				.build();
-		likedPostRepository.delete(likedPost);
+		LikedPost likedPost = likedPostRepository.findByUserIdAndPostId(request.getUserId(), request.getPostId());
+		likedPostRepository.deleteByUserIdAndPostId(likedPost.getUser().getId(), likedPost.getPost().getId());
 	}
-	
+
 	public int countLikePost(String postId) {
 		return likedPostRepository.countByPostId(postId);
 	}

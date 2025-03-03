@@ -2,7 +2,7 @@ package com.app.unify.entities;
 
 import java.util.Objects;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,7 +11,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,9 +19,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 @Entity
-@Table(name = "LikedPosts", uniqueConstraints = {
-	    @UniqueConstraint(columnNames = { "user_id", "post_id" })
-	})
+@Table(name = "LikedPosts")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
 @NoArgsConstructor
@@ -36,7 +33,7 @@ public class LikedPost {
 
 	@ManyToOne
 	@JoinColumn(name = "post_id", referencedColumnName = "id", nullable = false)
-	@JsonIgnore
+	@JsonBackReference
 	Post post;
 
 	@ManyToOne

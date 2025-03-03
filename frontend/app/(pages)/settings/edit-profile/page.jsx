@@ -7,6 +7,7 @@ import { useApp } from "@/components/provider/AppProvider";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Cookies from "js-cookie";
 import { toast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
 const Page = () => {
   const defaultAvatar = "/images/unify_icon_2.svg";
   const [avatar, setAvatar] = useState(defaultAvatar);
@@ -15,6 +16,7 @@ const Page = () => {
   const [errors, setErrors] = useState({});
   const { user, setUser } = useApp();
   const { logoutUser } = useApp();
+  const { toast } = useToast();
   const [userData, setUserData] = useState({
     id: "",
     firstName: "",
@@ -32,7 +34,6 @@ const Page = () => {
     biography: "",
   });
 
-  const [gender, setGender] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -56,9 +57,10 @@ const Page = () => {
       setGender(user.gender || false);
     }
   }, [user]);
-
+  const [gender, setGender] = useState("");
   const handleGenderChange = (value) => {
     setGender(value);
+    setUserData((prev) => ({ ...prev, gender: value })); 
   };
 
   useEffect(() => {
@@ -177,9 +179,11 @@ const Page = () => {
   const handleChangeAvatar = (e) => {
     const file = e.target.files[0]; // Chỉ lấy file đầu tiên (1 ảnh duy nhất)
     const allowedTypes = ["image/png", "image/jpeg", "image/jpg", "image/gif"]; // Chỉ cho phép ảnh
+
   
     if (!file) return; // Nếu không có file, thoát
   
+
     // Kiểm tra loại file
     if (!allowedTypes.includes(file.type)) {
       toast({
@@ -189,7 +193,7 @@ const Page = () => {
       });
       return;
     }
-  
+
     // Tạo bản xem trước (preview)
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -213,8 +217,6 @@ const Page = () => {
 
     setLoading(true);
 
-    console.log("Submitting user data:", userData);
-
     try {
       const token = Cookies.get("token");
       console.log("Token:", token);
@@ -222,32 +224,32 @@ const Page = () => {
         ...userData,
         birthDay: userData.birthDay
           ? `${userData.birthDay.year}-${userData.birthDay.month.padStart(
-            2,
-            "0"
-          )}-${userData.birthDay.day.padStart(2, "0")}`
+              2,
+              "0"
+            )}-${userData.birthDay.day.padStart(2, "0")}`
           : null,
       };
       console.log("Request data to send:", requestData);
-      // Xử lý tải ảnh lên nếu có avatar mới
-    if (userData.avatar instanceof File) {
-      const formData = new FormData();
-      formData.append("file", userData.avatar); // Chỉ gửi 1 file
 
-      const uploadResponse = await fetch("/api/upload", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      });
+      if (userData.avatar instanceof File) {
+        const formData = new FormData();
+        formData.append("file", userData.avatar); 
 
-      if (!uploadResponse.ok) {
-        throw new Error("Failed to upload avatar");
+        const uploadResponse = await fetch("/api/upload", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        });
+
+        if (!uploadResponse.ok) {
+          throw new Error("Failed to upload avatar");
+        }
+
+        const uploadData = await uploadResponse.json();
+        updatedUserData.avatar = uploadData.files[0].url; 
       }
-
-      const uploadData = await uploadResponse.json();
-      updatedUserData.avatar = uploadData.files[0].url; // Lấy URL từ server
-    }
 
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
@@ -287,17 +289,18 @@ const Page = () => {
       setLoading(false);
     }
   };
-const handleDeleteAvatar = () => {
-  setAvatar(defaultAvatar);
-  setUserData((prevData) => ({
-    ...prevData,
-    avatar: null, // Đặt lại avatar về null để gửi lên server
-  }));
+  const handleDeleteAvatar = () => {
+    setAvatar(defaultAvatar);
+    setUserData((prevData) => ({
+      ...prevData,
+      avatar: null, // Đặt lại avatar về null để gửi lên server
+    }));
 
-  if (fileInputRef.current) {
-    fileInputRef.current.value = null; // Reset input file
-  }
-};
+    if (fileInputRef.current) {
+      fileInputRef.current.value = null; // Reset input file
+    }
+  };
+
 
   return (
     <div className="w-full">
@@ -344,7 +347,7 @@ const handleDeleteAvatar = () => {
 
               <button
                 className="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition"
-               
+
                 onClick={(e) => {
                   e.preventDefault();
                   handleDeleteAvatar();
@@ -527,16 +530,16 @@ const handleDeleteAvatar = () => {
                 Gender:
               </label>
               <RadioGroup
-                value={gender === true ? "male" : "female"}
-                onValueChange={(value) => handleGenderChange(value === "male")}
+                value={gender === true ? "Male" : "Female"}
+                onValueChange={(value) => handleGenderChange(value === "Male")}
                 className="flex items-center gap-4"
               >
                 <label className="flex items-center gap-1 dark:text-gray-400 mr-10">
-                  <RadioGroupItem value="female" id="female" />
+                  <RadioGroupItem value="Female" id="female" />
                   Female
                 </label>
                 <label className="flex items-center gap-1 dark:text-gray-400">
-                  <RadioGroupItem value="male" id="male" />
+                  <RadioGroupItem value="Male" id="male" />
                   Male
                 </label>
               </RadioGroup>
@@ -647,3 +650,5 @@ const handleDeleteAvatar = () => {
 };
 
 export default Page;
+
+

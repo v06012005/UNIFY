@@ -56,8 +56,8 @@ public class SecurityConfig {
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
 		return http.csrf(AbstractHttpConfigurer::disable).cors(Customizer.withDefaults())
-				.authorizeHttpRequests(authorize -> authorize
-						.requestMatchers(ACCESS_ENDPOINTS).permitAll().anyRequest().authenticated())
+				.authorizeHttpRequests(authorize -> authorize.requestMatchers(ACCESS_ENDPOINTS).permitAll()
+						.requestMatchers("/liked-posts/**").hasAnyRole("USER", "ADMIN").anyRequest().authenticated())
 				.userDetailsService(customUserDetailsService)
 				.exceptionHandling(ex -> ex
 						.accessDeniedHandler((request, response, accessDeniedException) -> response.setStatus(403))

@@ -13,7 +13,7 @@ import CommentForm from "./CommentForm";
 import PostVideo from "./PostVideo";
 import { fetchPosts } from "@/app/lib/dal";
 import { useEffect } from "react";
-import { Spinner, user } from "@heroui/react";
+import { Spinner } from "@heroui/react";
 import { useApp } from "../provider/AppProvider";
 
 const User = ({ href = "", username = "", firstname = "", lastname = "" }) => {
@@ -180,8 +180,6 @@ const Post = () => {
       setLoading(false);
     }
 
-    console.log(posts);
-
     getPosts();
   }, []);
 
@@ -208,7 +206,7 @@ const Post = () => {
           <Caption text={post.captions} />
           <div className="flex text-xl">
             <LikeButton
-              className="!text-xl"
+              className="!text-xl hover:opacity-50 focus:opacity-50 transition space-x-2"
               userId={user.id}
               postId={post.id}
             />
@@ -231,11 +229,14 @@ const Post = () => {
             <Hashtag content="#myhashtag"></Hashtag> */}
           </div>
           <div className="mt-2">
-            <CommentButton className="text-black hover:text-gray-500 text-md animate-none transition-none dark:text-gray-400 dark:hover:text-white">
+            <CommentButton
+              postId={post.id}
+              className="text-black hover:text-gray-500 text-md animate-none transition-none dark:text-gray-400 dark:hover:text-white"
+            >
               View all comments
             </CommentButton>
           </div>
-          <CommentForm />
+          {/* <CommentForm /> */}
         </div>
       ))}
     </>

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useSuggestedUsers } from "@/components/provider/SuggestedUsersProvider";
+import { SuggestedUsersProvider, useSuggestedUsers } from "@/components/provider/SuggestedUsersProvider";
 import { useApp } from "@/components/provider/AppProvider";
 import FollowButton from "../ui/follow-button";
 const FollowerModal = ({ isOpen, onClose }) => {
@@ -50,9 +50,9 @@ const FollowerModal = ({ isOpen, onClose }) => {
         />
         <ul className="h-[390px]  overflow-y-auto scrollbar-hide">
           {loading ? (
-            <p className="text-gray-500">Đang tải danh sách...</p>
+            <p className="text-gray-500">Loading...</p>
           ) : !filteredUsers || filteredUsers.length === 0 ? (
-            <p className="text-gray-500">Không có người theo dõi nào.</p>
+            <p className="text-gray-500">No followers.</p>
           ) : (
             filteredUsers.slice(0, 11).map((userData) => (
               <li
@@ -77,6 +77,8 @@ const FollowerModal = ({ isOpen, onClose }) => {
                   followingId={userData.id}
                   classFollow="bg-red-500 font-bold py-1 px-4 rounded-lg text-white text-md"
                   classFollowing="bg-gray-700 hover:bg-gray-600 font-bold py-1 px-4 rounded-lg text-white text-md"
+                  contentFollow="Follow"
+                  contentFollowing="Unfollow"
                 />
               </li>
             ))

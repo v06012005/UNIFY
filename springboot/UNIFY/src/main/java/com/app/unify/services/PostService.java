@@ -6,22 +6,20 @@ import java.util.List;
 
 public interface PostService {
 
-	PostDTO createPost(PostDTO postDTO);
+    PostDTO createPost(PostDTO postDTO);
 
-	List<PostDTO> getAll();
+    List<PostDTO> getAll();
 
-	PostDTO getById(String id);
+    PostDTO getById(String id);
 
-	PostDTO updatePost(PostDTO postDTO);
+    PostDTO updatePost(PostDTO postDTO);
 
-	List<PostDTO> getPostsTrending();
+    List<PostDTO> getPostsTrending();
 
-	void deletePostById(String id);
+    void deletePostById(String id);
 
-	
-	List<PostDTO> getPostsByDate(LocalDateTime start, LocalDateTime end);
-//	List<PostDTO> getMyPosts(String username);
+    List<PostDTO> getPostsByDate(LocalDateTime start, LocalDateTime end);
+    // List<PostDTO> getMyPosts(String username);
 
-	 List<PostDTO> getMyPosts(String userId); 
-
+    List<PostDTO> getMyPosts(String userId);
 }
