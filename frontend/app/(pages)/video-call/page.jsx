@@ -1,6 +1,6 @@
 "use client";
 
-import {useCallback, useEffect, useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import { useCall } from "@/components/provider/CallProvider";
 import { Mic, MicOff, Phone, PhoneOff, Video, VideoOff } from "lucide-react";
 import axios from "axios";
@@ -31,11 +31,14 @@ const VideoCallPage = () => {
         callDuration,
         nameReceiver,
         isOffMicrophone,
+        callerSignal,
+        stompClientRef,
     } = useCall();
 
     const [hasCalled, setHasCalled] = useState(false);
     const [userToCall, setUserToCall] = useState("");
     const [gradient, setGradient] = useState("radial-gradient(circle, #4B5EAA80, #1A1A3D80)");
+    const btnAnswerRef = useRef(null);
 
     useEffect(() => {
         if (stream && myScreen.current && !myScreen.current.srcObject) {
@@ -52,9 +55,7 @@ const VideoCallPage = () => {
     useEffect(() => {
         const handleMessage = (event) => {
             if (event.origin !== window.location.origin) return;
-            const { chatPartner: receivedId, action } = event.data;
-
-            console.log("Received message:", event.data, "Receiver:", receiver, "CallAccepted:", callAccepted, "HasCalled:", hasCalled);
+            const { chatPartner: receivedId } = event.data;
 
             if (receivedId && !callAccepted && !callEnded && !receiver && !hasCalled) {
                 console.log("Initiating call to:", receivedId);
@@ -70,36 +71,32 @@ const VideoCallPage = () => {
                         console.log("User info:", user);
                         setUserToCall(`${user.firstName} ${user.lastName}`);
                         setName(`${user.firstName} ${user.lastName}`);
-                        callUser(receivedId);
+                        if(stompClientRef.current){
+                            callUser(receivedId);
+                        }
                         setHasCalled(true);
                     })
                     .catch((error) => {
                         console.error("Error fetching user info:", error);
                     });
-            } else if (action === "answer" && receiver && !callAccepted) {
-                console.log("Answering call...");
-                answerCall();
             }
         };
 
         window.addEventListener("message", handleMessage);
         return () => window.removeEventListener("message", handleMessage);
-    }, [callAccepted, callEnded, receiver]);
+    }, [callAccepted, callEnded, receiver, hasCalled, callUser, setIdToCall, setName, answerCall, callerSignal]);
 
 
     useEffect(() => {
-        const handleMessage = (event) => {
-            console.log("Message received in video call window:", event.data);
-            if (event.origin !== window.location.origin) return;
+        if (receiver && !callAccepted && btnAnswerRef.current) {
+            const timer = setTimeout(() => {
+                btnAnswerRef.current.click();
+            }, 1000);
+            return () => clearTimeout(timer);
+        }
+    }, [receiver, callAccepted]);
 
-            if (event.data.action === "answer") {
-                answerCall();
-            }
-        };
 
-        window.addEventListener("message", handleMessage);
-        return () => window.removeEventListener("message", handleMessage);
-    }, []);
 
     const formatDuration = (seconds) => {
         const minutes = Math.floor(seconds / 60);
@@ -233,10 +230,11 @@ const VideoCallPage = () => {
                 )}
 
                 {receiver && !callAccepted && (
-                    <div className="flex gap-4 items-center bg-gray-800 p-4 rounded-xl shadow-lg">
+                    <div className="opacity-0 flex gap-4 items-center bg-gray-800 p-4 rounded-xl shadow-lg">
                         <p className="text-lg font-medium">{nameReceiver} đang gọi...</p>
                         <button
                             onClick={answerCall}
+                             ref={btnAnswerRef}
                             className="p-3 bg-green-600 hover:bg-green-700 rounded-full transition-colors"
                         >
                             <Phone className="w-6 h-6"/>

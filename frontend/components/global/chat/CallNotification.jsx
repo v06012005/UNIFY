@@ -1,29 +1,38 @@
-
 "use client";
 
 import { useCall } from "@/components/provider/CallProvider";
 import { Phone, PhoneOff } from "lucide-react";
 import {useApp} from "@/components/provider/AppProvider";
+import {useEffect, useState} from "react";
 
 const CallNotification = () => {
-    const { receiver, callAccepted, leaveCall, name } = useCall();
+
+    const { receiver, leaveCall, name, callerSignal, caller, callEnded, nameReceiver, callAccepted } = useCall();
+    const [accepted, setAccepted] = useState(false);
 
     const {user} = useApp()
 
-    if (!receiver || callAccepted) return null;
+    useEffect(() => {
+        setAccepted(false);
+    }, [callEnded]);
 
+
+    if (!receiver || callAccepted || callEnded || accepted) return null;
 
     const handleAnswer = () => {
-
         const callWindow = window.open(
-            "/video-call",
-            "CallWindow",
-            `width=1200,height=600,left=${(window.screen.width - 1200) / 2},top=${(window.screen.height - 600) / 3}`
-        );
-        if (callWindow) {
-            callWindow.onload = () => {
-                callWindow.postMessage({ action: "answer" }, window.location.origin);
-            };
+                "/video-call",
+                "CallWindow",
+                `width=1200,height=600,left=${(window.screen.width - 1200) / 2},top=${(window.screen.height - 600) / 3}`
+            );
+            if (callWindow) {
+                setAccepted(true);
+                callWindow.onload = () => {
+                    callWindow.postMessage(
+                        { action: "answer", caller, signal: callerSignal, nameReceiver },
+                        window.location.origin
+                    );
+                };
         }
     };
 
