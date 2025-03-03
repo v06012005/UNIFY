@@ -60,7 +60,7 @@ const Page = () => {
   const [gender, setGender] = useState("");
   const handleGenderChange = (value) => {
     setGender(value);
-    setUserData((prev) => ({ ...prev, gender: value })); 
+    setUserData((prev) => ({ ...prev, gender: value }));
   };
 
   useEffect(() => {
@@ -180,9 +180,9 @@ const Page = () => {
     const file = e.target.files[0]; // Chỉ lấy file đầu tiên (1 ảnh duy nhất)
     const allowedTypes = ["image/png", "image/jpeg", "image/jpg", "image/gif"]; // Chỉ cho phép ảnh
 
-  
+
     if (!file) return; // Nếu không có file, thoát
-  
+
 
     // Kiểm tra loại file
     if (!allowedTypes.includes(file.type)) {
@@ -224,16 +224,16 @@ const Page = () => {
         ...userData,
         birthDay: userData.birthDay
           ? `${userData.birthDay.year}-${userData.birthDay.month.padStart(
-              2,
-              "0"
-            )}-${userData.birthDay.day.padStart(2, "0")}`
+            2,
+            "0"
+          )}-${userData.birthDay.day.padStart(2, "0")}`
           : null,
       };
       console.log("Request data to send:", requestData);
 
       if (userData.avatar instanceof File) {
         const formData = new FormData();
-        formData.append("file", userData.avatar); 
+        formData.append("file", userData.avatar);
 
         const uploadResponse = await fetch("/api/upload", {
           method: "POST",
@@ -248,7 +248,7 @@ const Page = () => {
         }
 
         const uploadData = await uploadResponse.json();
-        updatedUserData.avatar = uploadData.files[0].url; 
+        updatedUserData.avatar = uploadData.files[0].url;
       }
 
 
@@ -337,7 +337,7 @@ const Page = () => {
                   id="avatar"
                   name="avatar"
                   type="file"
-                  
+
                   accept="image/*"
                   className="hidden"
                   ref={fileInputRef}

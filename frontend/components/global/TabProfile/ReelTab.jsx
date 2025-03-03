@@ -251,11 +251,10 @@ const UserReels = ({ username }) => {
                   {selectedPost.media.map((item, index) => (
                     <div
                       key={index}
-                      className={`w-16 h-16 cursor-pointer border-2 ${
-                        selectedMedia.url === item.url
+                      className={`w-16 h-16 cursor-pointer border-2 ${selectedMedia.url === item.url
                           ? "border-blue-500"
                           : "border-transparent"
-                      }`}
+                        }`}
                       onClick={() => setSelectedMedia(item)}
                     >
                       {item.mediaType === "VIDEO" ? (

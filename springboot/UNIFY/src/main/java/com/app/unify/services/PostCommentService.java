@@ -41,7 +41,7 @@ public class PostCommentService {
 
         Post post = postRepository.findById(postId)
             .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy bài viết"));
-        
+
         if (post.getIsCommentVisible()) {
             throw new IllegalArgumentException("This post has comments disabled");
         }
@@ -66,13 +66,13 @@ public class PostCommentService {
     }
 
 
-    
-    
+
+
     public List<CommentDTO> getCommentsByPostId(String postId) {
         Post post = postRepository.findById(postId)
             .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy bài viết"));
         if (post.getIsCommentVisible()) {
-            return List.of(); 
+            return List.of();
         }
 
         List<PostComment> rootComments = postCommentRepository.findTopLevelCommentsWithReplies(postId);

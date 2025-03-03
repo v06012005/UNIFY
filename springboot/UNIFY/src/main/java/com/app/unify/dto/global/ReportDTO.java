@@ -17,6 +17,6 @@ public class ReportDTO {
 	    private Integer status;
 
 	    private Object reportedEntity;
-	
+
 
 }

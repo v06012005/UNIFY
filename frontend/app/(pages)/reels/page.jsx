@@ -36,64 +36,31 @@ const Reels = () => {
   const currentUserId = user?.id;
   const [replyingTo, setReplyingTo] = useState(null);
 
-    const {data: posts, isLoading} = useQuery({
-       queryKey: ["posts"],
-       queryFn: fetchPosts,
-    });
 
-    useEffect(() => {
-        async function getVideoPosts() {
-           if(!isLoading){
-               const filteredPosts = posts.filter((post) =>
-                   post.media.some((media) => media.mediaType === "VIDEO")
-               );
-               setVideoPosts(filteredPosts);
-               setPausedStates(
-                   filteredPosts.reduce((acc, post) => ({ ...acc, [post.id]: false }), {})
-               );
-               setToolStates(
-                   filteredPosts.reduce(
-                       (acc, post) => ({
-                           ...acc,
-                           [post.id]: {
-                               isLiked: false,
-                               isSaved: false,
-                               isPopupOpen: false,
-                               isFollow: false,
-                           },
-                       }),
-                       {}
-                   )
-               );
-               setCommentsByPost(
-                   filteredPosts.reduce((acc, post) => ({ ...acc, [post.id]: [] }), {})
-               );
-           }
-        }
-        getVideoPosts();
-    }, []);
+  // Fetch comments cho một post cụ thể
+  const loadComments = useCallback(
+    async (postId) => {
+      if (!token || !postId) return;
+      setIsCommentsLoading(true);
+      try {
+        const data = await fetchComments(postId, token);
+        console.log(`Fetched comments for post ${postId}:`, data);
+        setCommentsByPost((prev) => ({
+          ...prev,
+          [postId]: data,
+        }));
+      } catch (error) {
+        console.error(`Failed to fetch comments for post ${postId}:`, error);
+        setCommentsByPost((prev) => ({ ...prev, [postId]: [] }));
+      } finally {
+        setIsCommentsLoading(false);
+      }
+    },
+    [token]
+  );
 
-    // Fetch comments cho một post cụ thể
-    const loadComments = useCallback(
-        async (postId) => {
-            if (!token || !postId) return;
-            setIsCommentsLoading(true);
-            try {
-                const data = await fetchComments(postId, token);
-                console.log(`Fetched comments for post ${postId}:`, data);
-                setCommentsByPost((prev) => ({
-                    ...prev,
-                    [postId]: data,
-                }));
-            } catch (error) {
-                console.error(`Failed to fetch comments for post ${postId}:`, error);
-                setCommentsByPost((prev) => ({ ...prev, [postId]: [] }));
-            } finally {
-                setIsCommentsLoading(false);
-            }
-        },
-        [token]
-    );
+  const handleReportPost = useCallback(async (postId) => {
+    const report = await createPostReport(postId);
 
   // Intersection Observer
   useEffect(() => {
@@ -242,32 +209,40 @@ const Reels = () => {
             </div>
         );
     }
+
     return (
-        <div
-            ref={containerRef}
-            className="h-screen w-full overflow-y-scroll snap-y snap-mandatory scrollbar-hide shadow-lg"
-        >
-            {videoPosts.map((post, index) => (
-                <div
-                    key={post.id}
-                    className={`relative w-[450px] h-[700px] mx-auto rounded-b-xl overflow-hidden m-5 snap-start flex-shrink-0 ${
-                        isCommentOpen ? "translate-x-[-150px]" : "translate-x-0"
-                    } transition-transform duration-400 ease-in-out`}
-                >
-                    {post.media.map(
-                        (media, mediaIndex) =>
-                            media.mediaType === "VIDEO" && (
-                                <PostReels
-                                    key={mediaIndex}
-                                    src={media.url}
-                                    ref={(el) => (videoRefs.current[index] = el)}
-                                    loop
-                                    onPauseChange={(isPaused) =>
-                                        handlePauseChange(post.id, isPaused)
-                                    }
-                                />
-                            )
-                    )}
+      <div className="flex justify-center items-center h-screen">
+        <Spinner color="primary" label="Loading..." labelColor="primary" />
+      </div>
+    );
+  }
+  return (
+    <>
+      <ToastProvider placement={"top-right"} />
+      <div
+        ref={containerRef}
+        className="h-screen w-full overflow-y-scroll snap-y snap-mandatory scrollbar-hide shadow-lg"
+      >
+        {videoPosts.map((post, index) => (
+          <div
+            key={post.id}
+            className={`relative w-[450px] h-[700px] mx-auto rounded-b-xl overflow-hidden m-5 snap-start flex-shrink-0 ${isCommentOpen ? "translate-x-[-150px]" : "translate-x-0"
+              } transition-transform duration-400 ease-in-out`}
+          >
+            {post.media.map(
+              (media, mediaIndex) =>
+                media.mediaType === "VIDEO" && (
+                  <PostReels
+                    key={mediaIndex}
+                    src={media.url}
+                    ref={(el) => (videoRefs.current[index] = el)}
+                    loop
+                    onPauseChange={(isPaused) =>
+                      handlePauseChange(post.id, isPaused)
+                    }
+                  />
+                )
+            )}
 
           <div className="absolute bottom-4 left-4 flex flex-col text-white">
             <div className="flex items-center">
@@ -295,6 +270,7 @@ const Reels = () => {
           </div>
           <div className="absolute top-2/3 right-4 transform -translate-y-1/2 flex flex-col items-center space-y-7 text-white text-2xl">
             <div className="flex flex-col items-center">
+
               {/* <i
                 className={`fa-${
                   toolStates[post.id]?.isLiked ? "solid" : "regular"
@@ -357,70 +333,76 @@ const Reels = () => {
           </div>
         </div>
       ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
 
-            <ShareReels
-                isOpen={isOpen}
-                onOpenChange={onOpenChange}
-                selectedAvatars={selectedAvatars}
-                setSelectedAvatars={setSelectedAvatars}
-                handleShare={handleShare}
-            />
-            {isCommentOpen && currentPostId && (
-                <div
-                    id="overlay"
-                    className={`fixed top-0 left-0 w-full h-full z-20 transition-opacity duration-300 ease-in-out ${
-                        isCommentOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-                    }`}
-                    onClick={closeComment}
-                >
-                    <div
-                        className={`fixed top-0 right-0 h-full w-[450px] transition-transform duration-300 ease-in-out ${
-                            isCommentOpen ? "translate-x-0" : "translate-x-full"
-                        }`}
-                    >
-                        <div className="h-full flex flex-col p-4 border-l border-gray-700">
-                            <div className="flex items-center justify-between dark:text-white mb-4">
-                                <h2 className="text-2xl text-center font-bold">Comments</h2>
-                            </div>
-                            <div className="flex-grow overflow-auto">
-                                {console.log("Current Post ID:", currentPostId)}
-                                {console.log(
-                                    "Comments for current post:",
-                                    commentsByPost[currentPostId]
-                                )}
-                                {isCommentsLoading ? (
-                                    <Spinner />
-                                ) : Array.isArray(commentsByPost[currentPostId]) &&
-                                commentsByPost[currentPostId].length > 0 ? (
-                                    commentsByPost[currentPostId].map((comment) => (
-                                        <CommentItem
-                                            key={comment.id}
-                                            comment={comment}
-                                            currentUserId={currentUserId}
-                                            onReplySubmit={handleReplySubmit}
-                                            onReplyClick={() => handleReplyClick(comment)} // Set bình luận đang reply
-                                        />
-                                    ))
-                                ) : (
-                                    <p className="text-red-500 font-bold">
-                                        Comments are disabled for this post
-                                    </p>
-                                )}
-                            </div>
-                            <CommentInput
-                                postId={currentPostId}
-                                setComments={(newComments) =>
-                                    updateComments(currentPostId, newComments)
-                                }
-                                parentComment={replyingTo} // Truyền bình luận đang reply
-                                onCancelReply={handleCancelReply}
-                            />
-                        </div>
-                    </div>
+        <ShareReels
+          isOpen={isOpen}
+          onOpenChange={onOpenChange}
+          selectedAvatars={selectedAvatars}
+          setSelectedAvatars={setSelectedAvatars}
+          handleShare={handleShare}
+        />
+        {isCommentOpen && currentPostId && (
+          <div
+            id="overlay"
+            className={`fixed top-0 left-0 w-full h-full z-20 transition-opacity duration-300 ease-in-out ${isCommentOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+              }`}
+            onClick={closeComment}
+          >
+            <div
+              className={`fixed top-0 right-0 h-full w-[450px] transition-transform duration-300 ease-in-out ${isCommentOpen ? "translate-x-0" : "translate-x-full"
+                }`}
+            >
+              <div className="h-full flex flex-col p-4 border-l border-gray-700">
+                <div className="flex items-center justify-between dark:text-white mb-4">
+                  <h2 className="text-2xl text-center font-bold">Comments</h2>
                 </div>
-            )}
-        </div>
-    );
+                <div className="flex-grow overflow-auto">
+                  {console.log("Current Post ID:", currentPostId)}
+                  {console.log(
+                    "Comments for current post:",
+                    commentsByPost[currentPostId]
+                  )}
+                  {isCommentsLoading ? (
+                    <Spinner />
+                  ) : Array.isArray(commentsByPost[currentPostId]) &&
+                    commentsByPost[currentPostId].length > 0 ? (
+                    commentsByPost[currentPostId].map((comment) => (
+                      <CommentItem
+                        key={comment.id}
+                        comment={comment}
+                        currentUserId={currentUserId}
+                        onReplySubmit={handleReplySubmit}
+                        onReplyClick={() => handleReplyClick(comment)} // Set bình luận đang reply
+                      />
+                    ))
+                  ) : (
+                    <p className="text-red-500 font-bold">
+                      Comments are disabled for this post
+                    </p>
+                  )}
+                </div>
+                <CommentInput
+                  postId={currentPostId}
+                  setComments={(newComments) =>
+                    updateComments(currentPostId, newComments)
+                  }
+                  parentComment={replyingTo} // Truyền bình luận đang reply
+                  onCancelReply={handleCancelReply}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </>
+  );
 };
 
 export default Reels;

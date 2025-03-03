@@ -18,6 +18,7 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException ex) {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
 	}
+=
 	
 	@ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, String>> handleIllegalArgumentException(IllegalArgumentException ex) {
@@ -31,6 +32,7 @@ public class GlobalExceptionHandler {
         errorResponse.put("message", "Lỗi hệ thống: " + ex.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR); // 500
     }
+
 	@ExceptionHandler(ReportException.class)
     public ResponseEntity<Map<String, String>> handleReportException(ReportException ex) {
         Map<String, String> errorResponse = new HashMap<>();

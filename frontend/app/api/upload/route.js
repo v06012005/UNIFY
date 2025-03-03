@@ -1,43 +1,47 @@
 import cloudinary from "@/lib/cloudinary";
+import { NextResponse } from "next/server";
 
 export async function POST(req) {
-    const formData = await req.formData();
-    const files = formData.getAll("files"); // Get all selected files
-
-    if (!files || files.length === 0) {
-        return Response.json({ error: "No files provided" }, { status: 400 });
-    }
-
     try {
-        const uploadPromises = files.map(async (file) => {
+        const formData = await req.formData();
+        const newFiles = formData.getAll("files");
+        const existingFiles = JSON.parse(formData.get("existingFiles") || "[]");
+
+        if (!newFiles || newFiles.length === 0) {
+            return NextResponse.json({ files: existingFiles });
+        }
+
+        const uploadPromises = newFiles.map(async (file) => {
             const arrayBuffer = await file.arrayBuffer();
             const buffer = Buffer.from(arrayBuffer);
 
             return new Promise((resolve, reject) => {
-                cloudinary.uploader.upload_stream(
+                const uploadStream = cloudinary.uploader.upload_stream(
                     { resource_type: "auto", folder: "uploads" },
                     (error, result) => {
-                        if (error) reject(error);
-                        else {
-                            const fileType = result.format; // File extension (e.g., jpg, png, mp4)
-                            const fileSize = result.bytes; // File size in bytes
-                            const mediaType = result.resource_type;
-
+                        if (error) {
+                            reject(error);
+                        } else {
                             resolve({
                                 url: result.secure_url,
-                                file_type: fileType,
-                                size: fileSize,
-                                media_type: mediaType,
+                                file_type: result.format,
+                                size: result.bytes,
+                                media_type: result.resource_type.toUpperCase(),
                             });
                         }
                     }
-                ).end(buffer);
+                );
+
+                uploadStream.end(buffer);
             });
         });
 
-        const uploadedFiles = await Promise.all(uploadPromises); // Upload all files
-        return Response.json({ files: uploadedFiles });
+        const uploadedFiles = await Promise.all(uploadPromises);
+        const allFiles = [...existingFiles, ...uploadedFiles];
+
+        return NextResponse.json({ files: allFiles });
     } catch (error) {
-        return Response.json({ error: "Upload failed" }, { status: 500 });
+        console.error("Upload Error:", error);
+        return NextResponse.json({ error: "Upload failed" }, { status: 500 });
     }
 }
