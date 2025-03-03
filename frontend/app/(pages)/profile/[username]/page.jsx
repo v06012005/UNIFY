@@ -42,8 +42,6 @@ const Page = () => {
   const { user } = useApp();
   const fetchedOnce = useRef(false);
 
- 
-
   const handleClickView = () => {
     router.push("/settings/archive");
   };
@@ -69,7 +67,7 @@ const Page = () => {
             <Image
               src={`/images/avt.jpg`}
               alt="Avatar"
-              className="mx-auto rounded-full border-2 border-gray-300"
+              className="mx-auto rounded-full border-2 border-zinc-200"
               width={200}
               height={200}
             />
@@ -78,12 +76,12 @@ const Page = () => {
           <div className="p-2 ml-8">
             <div className="flex justify-between ml-10">
               <div className="flex flex-col items-center w-200 mt-2 mx-8">
-                <h3 className="text-2xl truncate w-32 text-center">
+                <h3 className="text-2xl truncate w-32 text-center font-semibold">
                   {user.username}
                 </h3>
 
                 <p
-                  className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer"
+                  className="mt-5 text-neutral-800 dark:text-white font-medium cursor-pointer"
                   onClick={toggleFriend}
                 >
                   Friend
@@ -94,14 +92,14 @@ const Page = () => {
 
               <div className="flex flex-col mx-10 items-center w-200">
                 <div
-                  className="flex items-center font-bold py-2 px-4 rounded-lg hover:bg-gray-400 bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors w-full cursor-pointer"
+                  className="flex items-center font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 bg-gray-100 dark:bg-neutral-700 dark:hover:bg-zinc-800 transition-colors w-full cursor-pointer"
                   onClick={handleClickEdit}
                 >
                   <i className="fa-regular fa-pen-to-square mr-3"></i>
                   <span>Edit Profile</span>
                 </div>
                 <p
-                  className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer"
+                  className="mt-5 text-neutral-800 dark:text-white font-medium cursor-pointer"
                   onClick={toggleFollower}
                 >
                   Follower
@@ -117,14 +115,14 @@ const Page = () => {
 
               <div className="flex flex-col mx-10 items-center w-200">
                 <div
-                  className="flex items-center font-bold py-2 px-4 rounded-lg hover:bg-gray-400 bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors w-full cursor-pointer"
+                  className="flex items-center font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 bg-gray-100 dark:bg-neutral-700 dark:hover:bg-zinc-800 transition-colors w-full cursor-pointer"
                   onClick={handleClickView}
                 >
                   <i className="fa-regular fa-bookmark mr-3"></i>
                   <span>View Archive</span>
                 </div>
                 <p
-                  className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer"
+                  className="mt-5 text-neutral-800 dark:text-white font-medium cursor-pointer"
                   onClick={toggleFollowing}
                 >
                   Following
@@ -138,19 +136,20 @@ const Page = () => {
                 />
               </div>
             </div>
-            <p className="ml-20 mt-10 dark:text-gray-400 text-gray-600 font-bold">
-              “{user.biography}”
+            <p className="ml-20 mt-10 dark:text-white text-neutral-800 font-semibold">
+              “{user.biography}"
             </p>
           </div>
         </div>
         <People />
-        <div className="p-4">
-          <div className="flex justify-center border-b-2 border-gray-300">
+        <div className="p-7">
+          <div className="flex justify-center border-b-1 dark:border-neutral-700">
             <button
-              className={`py-2 px-4 mr-5 font-bold flex items-center ${activeTab === "post"
-                  ? "text-blue-500 border-b-4 border-blue-500"
-                  : "text-gray-500 dark:text-gray-200"
-                }`}
+              className={`py-2 px-4 mr-5 font-normal flex items-center ${
+                activeTab === "post"
+                  ? "text-neutral-900 border-b-1 border-neutral-800 dark:text-white dark:border-white"
+                  : "text-neutral-900 dark:text-white"
+              }`}
               onClick={() => setActiveTab("post")}
             >
               <NavButton iconClass="fa-solid fa-pen" />
@@ -158,10 +157,11 @@ const Page = () => {
             </button>
 
             <button
-              className={`py-2 px-4 mr-5 font-bold flex items-center ${activeTab === "reel"
-                  ? "text-blue-500 border-b-4 border-blue-500"
-                  : "text-gray-500 dark:text-gray-200"
-                }`}
+              className={`py-2 px-4 mr-5 font-normal flex items-center ${
+                activeTab === "reel"
+                  ? "text-neutral-900 border-b-1 border-neutral-800 dark:text-white dark:border-white"
+                  : "text-neutral-900 dark:text-white"
+              }`}
               onClick={() => setActiveTab("reel")}
             >
               <NavButton iconClass="fa-solid fa-film" />
@@ -169,10 +169,11 @@ const Page = () => {
             </button>
 
             <button
-              className={`py-2 px-4 mr-5 font-bold flex items-center ${activeTab === "saved"
-                  ? "text-blue-500 border-b-4 border-blue-500"
-                  : "text-gray-500 dark:text-gray-200"
-                }`}
+              className={`py-2 px-4 mr-5 font-normal flex items-center ${
+                activeTab === "saved"
+                  ? "text-neutral-900 border-b-1 border-neutral-800 dark:text-white dark:border-white"
+                  : "text-neutral-900 dark:text-white"
+              }`}
               onClick={() => setActiveTab("saved")}
             >
               <NavButton iconClass="fa-solid fa-bookmark" />
@@ -180,10 +181,11 @@ const Page = () => {
             </button>
 
             <button
-              className={`py-2 px-4 mr-5 font-bold flex items-center ${activeTab === "tagged"
-                  ? "text-blue-500 border-b-4 border-blue-500"
-                  : "text-gray-500 dark:text-gray-200"
-                }`}
+              className={`py-2 px-4 mr-5 font-normal flex items-center ${
+                activeTab === "tagged"
+                  ? "text-neutral-900 border-b-1 border-neutral-800 dark:text-white dark:border-white"
+                  : "text-neutral-900 dark:text-white"
+              }`}
               onClick={() => setActiveTab("tagged")}
             >
               <NavButton iconClass="fa-solid fa-tag" />

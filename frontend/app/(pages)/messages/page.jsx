@@ -141,6 +141,7 @@ const Page = () => {
 
 
   return (
+
       <div className="ml-auto">
         <div className="flex w-full">
           <div className="h-screen basis-1/3 flex flex-col">
@@ -227,6 +228,7 @@ const Page = () => {
                         : "MinhDang"}
                   </p>
                 </div>
+
               </div>
               <div className="flex w-1/3 items-center justify-end text-2xl">
                 <button
@@ -243,6 +245,7 @@ const Page = () => {
                 >
                   <i className="fa-solid fa-video"></i>
                 </button>
+
               </div>
             </div>
             <hr className=" border-1 dark:border-gray-300"/>
@@ -252,6 +255,7 @@ const Page = () => {
               <Message messages={chatMessages} messagesEndRef={messagesEndRef}/>
               {/*<div ref={messagesEndRef}/>*/}
             </div>
+
             <div className={`relative w-full`}>
               {files.length > 0 && (
                   <div
@@ -273,6 +277,8 @@ const Page = () => {
                                   📄
                                 </div>
                             )}
+
+
 
 
                             <p className="text-xs mt-1 truncate w-16">{fileObj.file.name}</p>
@@ -353,7 +359,6 @@ const Page = () => {
                     </button>
                 )}
               </div>
-
             </div>
           </div>
         </div>

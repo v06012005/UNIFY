@@ -6,20 +6,23 @@ import React, {
   useEffect,
   useRef,
   useContext,
+
+
 } from "react";
 import { redirect, useRouter, useParams } from "next/navigation";
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import axios from "axios";
 import Cookies from "js-cookie";
+
 import { SuggestedUsersProvider } from "./SuggestedUsersProvider";
 import {dehydrate, HydrationBoundary, useQuery} from "@tanstack/react-query";
 import {getQueryClient} from "@/components/client/QueryClient";
 import { supabase } from "@/supbaseConfig";
 import { v4 as uuidv4 } from "uuid";
 
-const useChat = (user, chatPartner) => {
 
+const useChat = (user, chatPartner) => {
   const [chatMessages, setChatMessages] = useState([]);
   const stompClientRef = useRef(null);
 
@@ -137,7 +140,6 @@ const useChat = (user, chatPartner) => {
     }
   };
   return { chatMessages, sendMessage };
-
 };
 
 export default useChat;
@@ -150,7 +152,6 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const UserContext = createContext(null);
 
 export const AppProvider = ({ children }) => {
-
   const queryClient = getQueryClient();
 
   const [user, setUser] = useState({

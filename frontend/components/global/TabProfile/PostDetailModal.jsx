@@ -31,7 +31,7 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
   useEffect(() => {
     async function fetchPost() {
       try {
-        const res = await fetchPostById(post?.id)
+        const res = await fetchPostById(post?.id);
         setMyPost(res);
       } catch (error) {
         console.error("Failed to fetch posts:", error);
@@ -45,7 +45,11 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
     return text.split(/(\#[a-zA-Z0-9_]+)/g).map((part, index) => {
       if (part.startsWith("#")) {
         return (
-          <Link key={index} href={`/explore/${part.substring(1)}`} className="text-blue-500 hover:underline">
+          <Link
+            key={index}
+            href={`/explore/${part.substring(1)}`}
+            className="text-blue-500 hover:underline"
+          >
             {part}
           </Link>
         );
@@ -80,19 +84,17 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
 
   if (!post) return null;
 
-
-
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-white dark:bg-black border-gray-600 border-medium rounded-lg flex flex-row w-[1300px] h-[740px]">
+    <div className="fixed inset-0 flex items-center justify-center  bg-black bg-opacity-55 z-50">
+      <div className="bg-white dark:bg-neutral-950 dark:border-neutral-700 border-1  flex flex-row w-[1300px] h-[720px]">
         {/* Media */}
-        <div className="w-1/2 relative">
+        <div className="w-1/2 relative dark:border-neutral-700 border-r-1">
           {selectedMedia ? (
             selectedMedia.mediaType === "VIDEO" ? (
               <video
                 src={selectedMedia.url}
                 controls
-                className="w-full h-full object-contain rounded-tl-lg rounded-bl-lg"
+                className="w-full h-full object-contain "
               />
             ) : (
               <img
@@ -112,8 +114,11 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
               {post.media.map((item, index) => (
                 <div
                   key={index}
-                  className={`w-16 h-16 cursor-pointer border-2 ${selectedMedia?.url === item.url ? "border-blue-500" : "border-transparent"
-                    }`}
+                  className={`w-16 h-16 cursor-pointer border-2 ${
+                    selectedMedia?.url === item.url
+                      ? "border-blue-500"
+                      : "border-transparent"
+                  }`}
                   onClick={() => setSelectedMedia(item)}
                 >
                   {item.mediaType === "VIDEO" ? (
@@ -136,16 +141,16 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
 
         {/* Nội dung */}
         <div className="w-1/2 flex flex-col">
-          <div className="flex items-center justify-between p-3 border-b">
+          <div className="flex items-center justify-between p-3 border-b-1 dark:border-neutral-700">
             <div className="flex items-center">
-              <div className="w-10 h-10 rounded-full border-2 border-gray-300">
+              <div className="w-10 h-10 rounded-full border-2 border-zinc-300">
                 <img
                   src={post.user?.avatar || "/default-avatar.png"}
                   alt="User Avatar"
                   className="w-full h-full rounded-full object-cover"
                 />
               </div>
-              <span className="font-bold ml-3">{post.user?.username}</span>
+              <span className="font-semibold ml-3">{post.user?.username}</span>
             </div>
             <NavButton
               onClick={() => setOpenList(true)}
@@ -161,7 +166,12 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
                   >
                     Delete
                   </button>
-                  <button onClick={() => { redirect(`/posts/${post.id}`) }} className="w-full py-2 dark:hover:bg-gray-900 hover:bg-gray-100">
+                  <button
+                    onClick={() => {
+                      redirect(`/posts/${post.id}`);
+                    }}
+                    className="w-full py-2 dark:hover:bg-gray-900 hover:bg-gray-100"
+                  >
                     Update
                   </button>
                   <button className="w-full py-2 dark:hover:bg-gray-900 hover:bg-gray-100">
@@ -217,13 +227,13 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
             </div>
           </div>
 
-          <div className="p-4 border-t">
+          <div className="p-4 border-t-1 dark:border-neutral-700">
             <CommentInput postId={post.id} setComments={setComments} />
           </div>
         </div>
 
         <button
-          className="absolute top-4 right-4 text-white text-2xl font-bold"
+          className="absolute right-10 top-3 text-white text-2xl font-bold"
           onClick={handleClose}
         >
           ×

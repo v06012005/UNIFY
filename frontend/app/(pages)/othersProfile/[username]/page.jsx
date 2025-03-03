@@ -1,9 +1,6 @@
 "use client";
 
-import React, {
-  useState,
-  useEffect,
-} from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -60,50 +57,49 @@ const Page = () => {
           <div className="p-2 ml-8">
             <div className="flex justify-between ml-10">
               <div className="flex flex-col items-center w-200 mt-2 mx-8">
-                <h3 className="text-2xl truncate w-32 text-center">
+                <h3 className="text-2xl truncate w-32 text-center font-semibold">
                   {userInfo.username}
                 </h3>
-                <p className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer">
+                <p className="mt-5 text-neutral-800 dark:text-white font-medium cursor-pointer">
                   posts
                 </p>
               </div>
               <div className="flex flex-col mx-10 items-center w-200">
                 <FollowButton
                   userId={user.id}
-                  contentFollow={'Follow'}
-                  contentFollowing={'Following'}
+                  contentFollow={"Follow"}
+                  contentFollowing={"Following"}
                   followingId={userInfo.id}
                   classFollow="bg-red-500 font-bold py-2 px-8 rounded-lg w-full text-white text-md"
                   classFollowing="bg-gray-700 hover:bg-gray-600 font-bold py-2 px-8 rounded-lg w-full text-white text-md"
-                  contentFollow="Follow"
-                  contentFollowing="Unfollow"
                 />
-                <p className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer">
+                <p className="mt-5 text-neutral-800 dark:text-white font-medium cursor-pointer">
                   Follower
                 </p>
               </div>
               <div className="flex flex-col mx-10 items-center w-200">
-                <div className="flex items-center font-bold py-2 px-4 rounded-lg hover:bg-gray-400 bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors w-full cursor-pointer">
+                <div className="flex items-center font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 bg-gray-100 dark:bg-neutral-700 dark:hover:bg-zinc-800 transition-colors w-full cursor-pointer">
                   <i className="fa-brands fa-facebook-messenger mr-3"></i>
                   <span>Message</span>
                 </div>
-                <p className="mt-5 text-gray-500 dark:text-gray-300 font-bold cursor-pointer">
+                <p className="mt-5 text-neutral-800 dark:text-white font-medium cursor-pointer">
                   Following
                 </p>
               </div>
             </div>
-            <p className="ml-20 mt-10 dark:text-gray-400 text-gray-600 font-bold">
+            <p className="ml-20 mt-10 dark:text-white text-neutral-800 font-semibold">
               “{userInfo.biography}”
             </p>
           </div>
         </div>
-        <div className="p-4">
-          <div className="flex justify-center border-b-2 border-gray-300">
+        <div className="p-7">
+          <div className="flex justify-center border-b-1 border-zinc-200">
             <button
-              className={`py-2 px-4 mr-5 font-bold flex items-center ${activeTab === "post"
-                  ? "text-blue-500 border-b-4 border-blue-500"
-                  : "text-gray-500 dark:text-gray-200"
-                }`}
+              className={`py-2 px-4 mr-5 font-normal flex items-center ${
+                activeTab === "post"
+                  ? "text-neutral-900 border-b-1 border-neutral-800 dark:text-white dark:border-white"
+                  : "text-neutral-900 dark:text-white"
+              }`}
               onClick={() => setActiveTab("post")}
             >
               <NavButton iconClass="fa-solid fa-pen" />
@@ -111,10 +107,11 @@ const Page = () => {
             </button>
 
             <button
-              className={`py-2 px-4 mr-5 font-bold flex items-center ${activeTab === "reel"
-                  ? "text-blue-500 border-b-4 border-blue-500"
-                  : "text-gray-500 dark:text-gray-200"
-                }`}
+              className={`py-2 px-4 mr-5 font-normal flex items-center ${
+                activeTab === "reel"
+                  ? "text-neutral-900 border-b-1 border-neutral-800 dark:text-white dark:border-white"
+                  : "text-neutral-900 dark:text-white"
+              }`}
               onClick={() => setActiveTab("reel")}
             >
               <NavButton iconClass="fa-solid fa-film" />

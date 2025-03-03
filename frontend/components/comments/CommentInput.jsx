@@ -55,7 +55,7 @@ const CommentInput = ({
         username: user?.username || "Unknown",
       };
       setComments(enrichedComment);
-      setComment(parentComment ? `@${parentComment.username} ` : ""); // Giữ @username 
+      setComment(parentComment ? `@${parentComment.username} ` : ""); // Giữ @username
       setIsCommentEmpty(!parentComment);
       setError(null);
     } catch (error) {
@@ -109,7 +109,7 @@ const CommentInput = ({
           setComment(e.target.value);
           setIsCommentEmpty(
             e.target.value.trim() ===
-            (parentComment ? `@${parentComment.username} ` : "")
+              (parentComment ? `@${parentComment.username} ` : "")
           );
         }}
         onInput={(e) => {
@@ -130,12 +130,12 @@ const CommentInput = ({
             handleCommentSubmit();
           }
         }}
-        className="bg-gray-700 text-white placeholder-gray-400 flex-grow py-2 px-4 rounded-2xl focus:outline-none resize-none"
+        className="text-black border-1 border-neutral-300 dark:border-none dark:bg-neutral-800 dark:text-white dark:placeholder-zinc-200 flex-grow py-2 px-4 rounded-2xl focus:outline-none resize-none"
       />
       <button
         type="button"
         onClick={() => setShowPicker(!showPicker)}
-        className="ml-2 text-gray-600 hover:text-gray-400"
+        className="ml-2 dark:text-neutral-400 hover:text-gray-700 text-zinc-500 dark:hover:text-zinc-200"
       >
         <Smile size={28} />
       </button>
@@ -147,7 +147,7 @@ const CommentInput = ({
               setComment(newComment);
               setIsCommentEmpty(
                 newComment.trim() ===
-                (parentComment ? `@${parentComment.username} ` : "")
+                  (parentComment ? `@${parentComment.username} ` : "")
               );
             }}
           />
@@ -158,7 +158,7 @@ const CommentInput = ({
           <button
             type="submit"
             onClick={handleCommentSubmit}
-            className="ml-2 text-gray-600 hover:text-gray-400"
+            className="ml-2 dark:text-neutral-400 hover:text-gray-700 text-zinc-500 dark:hover:text-zinc-200"
           >
             <Send size={28} />
           </button>
@@ -166,7 +166,7 @@ const CommentInput = ({
             <button
               type="button"
               onClick={handleCancel}
-              className="ml-2 text-gray-600 hover:text-gray-400"
+              className="ml-2 dark:text-neutral-400 hover:text-gray-700 text-zinc-500 dark:hover:text-zinc-200"
             >
               Cancel
             </button>
