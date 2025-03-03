@@ -121,9 +121,8 @@ const Slider = ({ srcs = [] }) => {
         <Image
           src={srcs[currentIndex].url}
           alt="Image"
-          className={`transition-opacity duration-300 ${
-            loading ? "opacity-0" : "opacity-100"
-          } object-cover w-full h-full rounded-lg duration-500`}
+          className={`transition-opacity duration-300 ${loading ? "opacity-0" : "opacity-100"
+            } object-cover w-full h-full rounded-lg duration-500`}
           width={450}
           height={550}
           onLoad={() => {
@@ -158,9 +157,8 @@ const Slider = ({ srcs = [] }) => {
           <div
             key={index}
             onClick={() => goTo(index)}
-            className={`text-xs mx-[2px] cursor-pointer ${
-              currentIndex === index ? "dark:text-white" : "text-gray-500"
-            }`}
+            className={`text-xs mx-[2px] cursor-pointer ${currentIndex === index ? "dark:text-white" : "text-gray-500"
+              }`}
           >
             <i className="fa-solid fa-circle fa-xs "></i>
           </div>
@@ -189,7 +187,7 @@ const Post = () => {
 
   return (
     <>
-      {posts.map((post) => (
+      {posts?.map((post) => (
         <div className="w-3/4 mb-8 mx-auto pb-8" key={post.id}>
           <User
             href="/profile"

@@ -72,12 +72,22 @@ public class ReportController {
 
 
 
-		@DeleteMapping("/{id}")
-		public ResponseEntity<String> removeReport(@PathVariable String id) {
-			reportService.removeReport(id);
-			return ResponseEntity.ok("Remove Report Successfully !");
-		}
+    @GetMapping("/approved")
+    public List<Report> getApprovedReports() {
+        return reportService.getApprovedReports();
+    }
 
 
 
+    @PostMapping
+    public ResponseEntity<ReportDTO> createReport(@RequestBody @Valid ReportDTO reportDto) {
+        ReportDTO createdReport = reportService.createReport(reportDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdReport);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> removeReport(@PathVariable String id) {
+        reportService.removeReport(id);
+        return ResponseEntity.ok("Remove Report Successfully !");
+    }
 }
