@@ -5,19 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1dc806c8-9b06-409a-84de-1db3bd7b8131" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/app/(test)/uploads/page.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/supbaseConfig.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.env" beforeDir="false" afterPath="$PROJECT_DIR$/.env" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/(pages)/messages/page.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(pages)/messages/page.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(pages)/video-call/page.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(pages)/video-call/page.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(test)/test/page.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(test)/test/page.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/page.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/page.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/global/chat/CallNotification.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/global/chat/CallNotification.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/global/chat/Message.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/global/chat/Message.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/provider/CallProvider.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/provider/CallProvider.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/provider/AppProvider.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/provider/AppProvider.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -120,7 +111,7 @@
       <workItem from="1740557203603" duration="3473000" />
       <workItem from="1740565690856" duration="40439000" />
       <workItem from="1740900869066" duration="6372000" />
-      <workItem from="1740997764400" duration="15933000" />
+      <workItem from="1740997764400" duration="16652000" />
     </task>
     <servers />
   </component>
