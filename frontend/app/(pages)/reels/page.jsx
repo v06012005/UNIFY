@@ -304,7 +304,7 @@ const Reels = () => {
                 onClick={() => handleLike(post.id)}
               />
               <span className="text-sm">47k</span> */}
-              <LikeButton userId={user.id} postId={post.id} className="flex flex-col items-center"/>
+              <LikeButton userId={user.id} postId={post.id} className="flex flex-col items-center" classText="text-sm"/>
             </div>
             <div className="flex flex-col items-center">
               <i
