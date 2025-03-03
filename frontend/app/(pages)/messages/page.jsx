@@ -9,6 +9,7 @@ import Picker from "emoji-picker-react";
 import {Smile, Send, Plus} from "lucide-react";
 import {useCall} from "@/components/provider/CallProvider";
 
+
 const Page = () => {
 
     const {user, useChat} = useApp();
@@ -53,7 +54,7 @@ const Page = () => {
 
     const handleSendMessage = () => {
         if (newMessage.trim() === "") return;
-        sendMessage(newMessage);
+        sendMessage(newMessage, files);
         setNewMessage("");
     };
 
