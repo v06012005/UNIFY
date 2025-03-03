@@ -13,6 +13,7 @@ import SockJS from "sockjs-client";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { getQueryClient } from "../client/QueryClient";
+import { useQuery } from "@tanstack/react-query";
 const useChat = (user, chatPartner) => {
 
   const [chatMessages, setChatMessages] = useState([]);
