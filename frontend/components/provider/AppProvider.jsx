@@ -156,7 +156,7 @@ export const AppProvider = ({ children }) => {
       const userInfo = await getInfoUser();
       if (userInfo) {
         setIsAdmin(userInfo.roles[0].id === 1);
-        if (isAdmin) {
+        if (userInfo.roles[0].id === 1) {
           router.push("/statistics/users");
         } else {
           router.push("/");
