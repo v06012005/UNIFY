@@ -12,6 +12,7 @@ import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { getQueryClient } from "../client/QueryClient";
 const useChat = (user, chatPartner) => {
 
   const [chatMessages, setChatMessages] = useState([]);
