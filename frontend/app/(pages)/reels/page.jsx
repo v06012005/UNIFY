@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 import Image from "next/image";
 import { useState, useEffect, useRef, useCallback } from "react";
@@ -16,7 +16,7 @@ import { useDisclosure } from "@heroui/react";
 import avatar2 from "@/public/images/testAvt.jpg";
 import FollowButton from "@/components/ui/follow-button";
 import LikeButton from "@/components/global/LikeButton";
-import {useQuery} from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
 const Reels = () => {
     const [isCommentOpen, setIsCommentOpen] = useState(false);
@@ -37,38 +37,38 @@ const Reels = () => {
     const [replyingTo, setReplyingTo] = useState(null);
 
     const {data: posts, isLoading} = useQuery({
-       queryKey: ["posts"],
-       queryFn: fetchPosts,
+        queryKey: ["posts"],
+        queryFn: fetchPosts,
     });
 
     useEffect(() => {
         async function getVideoPosts() {
-           if(!isLoading){
-               const filteredPosts = posts.filter((post) =>
-                   post.media.some((media) => media.mediaType === "VIDEO")
-               );
-               setVideoPosts(filteredPosts);
-               setPausedStates(
-                   filteredPosts.reduce((acc, post) => ({ ...acc, [post.id]: false }), {})
-               );
-               setToolStates(
-                   filteredPosts.reduce(
-                       (acc, post) => ({
-                           ...acc,
-                           [post.id]: {
-                               isLiked: false,
-                               isSaved: false,
-                               isPopupOpen: false,
-                               isFollow: false,
-                           },
-                       }),
-                       {}
-                   )
-               );
-               setCommentsByPost(
-                   filteredPosts.reduce((acc, post) => ({ ...acc, [post.id]: [] }), {})
-               );
-           }
+            if(!isLoading){
+                const filteredPosts = posts.filter((post) =>
+                    post.media.some((media) => media.mediaType === "VIDEO")
+                );
+                setVideoPosts(filteredPosts);
+                setPausedStates(
+                    filteredPosts.reduce((acc, post) => ({ ...acc, [post.id]: false }), {})
+                );
+                setToolStates(
+                    filteredPosts.reduce(
+                        (acc, post) => ({
+                            ...acc,
+                            [post.id]: {
+                                isLiked: false,
+                                isSaved: false,
+                                isPopupOpen: false,
+                                isFollow: false,
+                            },
+                        }),
+                        {}
+                    )
+                );
+                setCommentsByPost(
+                    filteredPosts.reduce((acc, post) => ({ ...acc, [post.id]: [] }), {})
+                );
+            }
         }
         getVideoPosts();
     }, []);
@@ -304,10 +304,7 @@ const Reels = () => {
                 onClick={() => handleLike(post.id)}
               />
               <span className="text-sm">47k</span> */}
-                            <LikeButton
-                                userId={user.id}
-                                postId={post.id}
-                            />
+                            <LikeButton userId={user.id} postId={post.id} className="flex flex-col items-center" classText="text-sm"/>
                         </div>
                         <div className="flex flex-col items-center">
                             <i
