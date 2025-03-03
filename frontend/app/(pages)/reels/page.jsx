@@ -62,40 +62,6 @@ const Reels = () => {
   const handleReportPost = useCallback(async (postId) => {
     const report = await createPostReport(postId);
 
-    if (report?.error) {
-      const errorMessage = report.error;
-      console.warn("Failed to report post:", errorMessage);
-
-      if (errorMessage === "You have reported this post before.") {
-        addToast({
-          title: "Fail to report post",
-          description: "You have reported this post before.",
-          timeout: 3000,
-          shouldShowTimeoutProgess: true,
-          color: "warning",
-        });
-      } else {
-        addToast({
-          title: "Encountered an error",
-          description: "Error: " + errorMessage,
-          timeout: 3000,
-          shouldShowTimeoutProgess: true,
-          color: "danger",
-        });
-      }
-      return;
-    }
-
-    console.log("Post reported successfully:", report);
-    addToast({
-      title: "Success",
-      description: "Report post successful.",
-      timeout: 3000,
-      shouldShowTimeoutProgess: true,
-      color: "success",
-    });
-  }, [createPostReport]);
-
   // Intersection Observer
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -117,50 +83,133 @@ const Reels = () => {
         });
       },
       { threshold: 0.7 }
-
     );
 
-    // Intersection Observer
-    useEffect(() => {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            const video = entry.target;
-            const postId = video.dataset.postId;
-            const isManuallyPaused = pausedStates[postId];
-            if (entry.isIntersecting && !isManuallyPaused) {
-              video.play();
-            } else {
-              video.pause();
-              if (!isManuallyPaused) video.currentTime = 0;
-              setToolStates((prev) => ({
-                ...prev,
-                [postId]: { ...prev[postId], isPopupOpen: false },
-              }));
-            }
-          });
-        },
-        { threshold: 0.7 }
-      );
-
-      videoRefs.current.forEach((video, index) => {
-        if (video && videoPosts[index]) {
-          video.dataset.postId = videoPosts[index].id;
-          observer.observe(video);
-        }
-      });
-
-      return () => {
-        videoRefs.current.forEach((video) => {
-          if (video) observer.unobserve(video);
-        });
-      };
+    videoRefs.current.forEach((video, index) => {
+      if (video && videoPosts[index]) {
+        video.dataset.postId = videoPosts[index].id;
+        observer.observe(video);
+      }
     });
-  },
-    [user]
-  );
-  ////////
-  if (loading) {
+
+    return () => {
+      videoRefs.current.forEach((video) => {
+        if (video) observer.unobserve(video);
+      });
+    };
+  }, [videoPosts, pausedStates]);
+
+  const handlePauseChange = useCallback((postId, isPaused) => {
+    setPausedStates((prev) => ({ ...prev, [postId]: isPaused }));
+  }, []);
+
+  const toggleToolState = (postId, key) => {
+    setToolStates((prev) => ({
+      ...prev,
+      [postId]: {
+        ...prev[postId],
+        [key]: !prev[postId][key],
+      },
+    }));
+  };
+
+  const handleLike = (postId) => toggleToolState(postId, "isLiked");
+  const handleSave = (postId) => toggleToolState(postId, "isSaved");
+  const togglePopup = (postId) => toggleToolState(postId, "isPopupOpen");
+  const folloWing = (postId) => toggleToolState(postId, "isFollow");
+
+  const closeMore = (e, postId) => {
+    if (e.target.id === "overmore") {
+      setToolStates((prev) => ({
+        ...prev,
+        [postId]: { ...prev[postId], isPopupOpen: false },
+      }));
+    }
+  };
+  const toggleComment = (postId) => {
+    console.log("Toggling comments for post:", postId);
+    loadComments(postId);
+    setCurrentPostId(postId);
+    setIsCommentOpen((prev) => !prev);
+  };
+
+  const closeComment = (e) => {
+    if (e.target.id === "overlay") {
+      setIsCommentOpen(false);
+      setCurrentPostId(null);
+      setIsCommentsLoading(false);
+    }
+  };
+
+  const handleShare = () => {
+    if (selectedAvatars.length > 0) {
+      console.log("Sharing to:", selectedAvatars);
+      onOpenChange(false);
+    }
+  };
+
+  ///Reply comment
+  const handleReplySubmit = (newComment) => {
+    updateComments(currentPostId, newComment);
+    setReplyingTo(null); // Reset sau khi submit
+  };
+
+  const handleReplyClick = (comment) => {
+    setReplyingTo(comment); // Set bình luận đang reply
+    console.log("Replying to:", comment); // Debug
+  };
+  const handleCancelReply = () => {
+    setReplyingTo(null); // Reset khi nhấn Cancel
+  };
+  ////
+  const updateComments = useCallback(
+    (postId, newComment) => {
+      setCommentsByPost((prev) => {
+        const currentComments = Array.isArray(prev[postId]) ? prev[postId] : [];
+
+        // Nếu comment có parentId, thêm vào replies của comment cha
+        if (newComment.parentId) {
+          const updatedComments = currentComments.map((comment) => {
+            if (comment.id === newComment.parentId) {
+              return {
+                ...comment,
+                replies: [
+                  { ...newComment, username: user?.username || "Unknown" },
+                  ...(comment.replies || []),
+                ],
+              };
+            }
+            return comment;
+          });
+          return {
+            ...prev,
+            [postId]: updatedComments,
+          };
+        }
+
+                // Nếu không có parentId, thêm vào danh sách gốc
+                const updatedComments = [
+                    { ...newComment, username: user?.username || "Unknown" },
+                    ...currentComments,
+                ];
+                console.log(`Updated comments for post ${postId}:`, updatedComments);
+                return {
+                    ...prev,
+                    [postId]: updatedComments,
+                };
+            });
+        },
+        [user]
+    );
+    ////////
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <Spinner color="primary" label="Loading..." labelColor="primary" />
+            </div>
+        );
+    }
+
     return (
       <div className="flex justify-center items-center h-screen">
         <Spinner color="primary" label="Loading..." labelColor="primary" />
@@ -195,31 +244,33 @@ const Reels = () => {
                 )
             )}
 
-            <div className="absolute bottom-4 left-4 flex flex-col text-white">
-              <div className="flex items-center">
-                <Image
-                  src={avatar2}
-                  alt="User Avatar"
-                  className="w-10 h-10 bg-gray-600 rounded-full"
+          <div className="absolute bottom-4 left-4 flex flex-col text-white">
+            <div className="flex items-center">
+              <Image
+                src={avatar2}
+                alt="User Avatar"
+                className="w-10 h-10 bg-gray-600 rounded-full"
+              />
+              <div className="flex items-center space-x-2 pl-2">
+                <span className="font-medium">{post.user?.username}</span>
+                <span className="text-white text-lg">•</span>
+                <FollowButton
+                  contentFollow="Follow"
+                  contentFollowing="Following"
+                  userId={user.id}
+                  followingId={post.user.id}
+                  classFollow="backdrop-blur-lg text-sm p-4 py-1 rounded-2xl font-bold transition-all duration-200 ease-in-out active:scale-125 hover:bg-gray-500 dark:hover:bg-gray-400 border border-gray-300"
+                  classFollowing="backdrop-blur-lg text-sm p-4 py-1 rounded-2xl font-bold transition-all duration-200 ease-in-out active:scale-125 hover:bg-gray-500 dark:hover:bg-gray-400 border border-gray-300"
                 />
-                <div className="flex items-center space-x-2 pl-2">
-                  <span className="font-medium">{post.user?.username}</span>
-                  <span className="text-white text-lg">•</span>
-                  <FollowButton
-                    contentFollow="Follow"
-                    contentFollowing="Following"
-                    userId={user.id}
-                    followingId={post.user.id}
-                    classFollow="backdrop-blur-lg text-sm p-4 py-1 rounded-2xl font-bold transition-all duration-200 ease-in-out active:scale-125 hover:bg-gray-500 dark:hover:bg-gray-400 border border-gray-300"
-                    classFollowing="backdrop-blur-lg text-sm p-4 py-1 rounded-2xl font-bold transition-all duration-200 ease-in-out active:scale-125 hover:bg-gray-500 dark:hover:bg-gray-400 border border-gray-300"
-                  />
-                </div>
-              </div>
-              <div className="mt-2 w-[350px]">
-                <CaptionWithMore text={post.captions} />
               </div>
             </div>
-            <div className="absolute top-2/3 right-4 transform -translate-y-1/2 flex flex-col items-center space-y-7 text-white text-2xl">
+            <div className="mt-2 w-[350px]">
+              <CaptionWithMore text={post.captions} />
+            </div>
+          </div>
+          <div className="absolute top-2/3 right-4 transform -translate-y-1/2 flex flex-col items-center space-y-7 text-white text-2xl">
+            <div className="flex flex-col items-center">
+
               {/* <i
                 className={`fa-${
                   toolStates[post.id]?.isLiked ? "solid" : "regular"
@@ -229,55 +280,59 @@ const Reels = () => {
                 onClick={() => handleLike(post.id)}
               />
               <span className="text-sm">47k</span> */}
-              <LikeButton
-                userId={user.id}
-                postId={post.id}
-                className="flex flex-col items-center"
+              <LikeButton userId={user.id} postId={post.id} className="flex flex-col items-center" classText="text-sm"/>
+            </div>
+            <div className="flex flex-col items-center">
+              <i
+                className="fa-regular fa-comment hover:opacity-50 focus:opacity-50 transition cursor-pointer"
+                onClick={() => toggleComment(post.id)}
               />
-              <div className="flex flex-col items-center">
-                <i
-                  className="fa-regular fa-comment hover:opacity-50 focus:opacity-50 transition cursor-pointer"
-                  onClick={() => toggleComment(post.id)}
-                />
-                <span className="text-sm">
-                  {commentsByPost[post.id]?.length || 0}
-                </span>
-              </div>
-              <div className="flex flex-col items-center">
-                <i
-                  onClick={onOpen}
-                  className="fa-regular fa-paper-plane hover:opacity-50 focus:opacity-50 transition"
-                />
-              </div>
-              <div className="flex flex-col items-center">
-                <i
-                  className={`fa-${toolStates[post.id]?.isSaved ? "solid" : "regular"
-                    } fa-bookmark hover:opacity-50 focus:opacity-50 transition cursor-pointer`}
-                  onClick={() => handleSave(post.id)}
-                />
-              </div>
-              <div className="flex flex-col items-center relative">
-                <i
-                  className="fa-solid fa-ellipsis hover:opacity-50 focus:opacity-50 transition cursor-pointer"
-                  onClick={() => togglePopup(post.id)}
-                />
-                {toolStates[post.id]?.isPopupOpen && (
-                  <div
-                    id="overmore"
-                    className="w-44 absolute top-[-98] right-10 mt-2 backdrop-blur-xl p-4 rounded-lg shadow-lg text-white border border-gray-300 z-50"
-                    onClick={(e) => closeMore(e, post.id)}
-                  >
-                    <ul className="text-sm">
-                      <li className="cursor-pointer hover:bg-slate-500 font-bold text-left p-2 rounded-sm text-red-500" onClick={() => handleReportPost(post.id)} >
-                        Report
-                      </li>
-                      <li className="cursor-pointer hover:bg-zinc-500 font-bold text-left p-2 rounded-sm">
-                        Copy link
-                      </li>
-                      <li className="cursor-pointer hover:bg-slate-500 font-bold text-left p-2 rounded-sm">
-                        About this account
-                      </li>
-
+              <span className="text-sm">
+                {commentsByPost[post.id]?.length || 0}
+              </span>
+            </div>
+            <div className="flex flex-col items-center">
+              <i
+                onClick={onOpen}
+                className="fa-regular fa-paper-plane hover:opacity-50 focus:opacity-50 transition"
+              />
+            </div>
+            <div className="flex flex-col items-center">
+              <i
+                className={`fa-${
+                  toolStates[post.id]?.isSaved ? "solid" : "regular"
+                } fa-bookmark hover:opacity-50 focus:opacity-50 transition cursor-pointer`}
+                onClick={() => handleSave(post.id)}
+              />
+            </div>
+            <div className="flex flex-col items-center relative">
+              <i
+                className="fa-solid fa-ellipsis hover:opacity-50 focus:opacity-50 transition cursor-pointer"
+                onClick={() => togglePopup(post.id)}
+              />
+              {toolStates[post.id]?.isPopupOpen && (
+                <div
+                  id="overmore"
+                  className="w-44 absolute top-[-98] right-10 mt-2 backdrop-blur-xl p-4 rounded-lg shadow-lg text-white border border-gray-300 z-50"
+                  onClick={(e) => closeMore(e, post.id)}
+                >
+                  <ul className="text-sm">
+                    <li className="cursor-pointer hover:bg-zinc-500 font-bold text-left p-2 rounded-sm text-red-500">
+                      ReportReport
+                    </li>
+                    <li className="cursor-pointer hover:bg-zinc-500 font-bold text-left p-2 rounded-sm">
+                      Copy link
+                    </li>
+                    <li className="cursor-pointer hover:bg-slate-500 font-bold text-left p-2 rounded-sm">
+                      About this account
+                    </li>
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      ))}
                     </ul>
                   </div>
                 )}

@@ -1,19 +1,16 @@
 "use client";
 
-const { useState, useRef, useEffect } = require("react");
-const axios = require("axios");
-const Cookies = require("js-cookie");
-const { Client } = require("@stomp/stompjs");
-const SockJS = require("sockjs-client");
+import { useState, useCallback, useEffect } from "react";
+import axios from "axios";
+import Cookies from "js-cookie";
+import useWebSocket from "./useWebSocket";
 
 const useNotification = (userId) => {
   const [notifications, setNotifications] = useState([]);
-  const stompClient = useRef(null);
 
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     try {
       const token = Cookies.get("token");
-      console.log("Token:", token); // Debug token
       if (!token) {
         throw new Error("No token found");
       }
@@ -31,50 +28,95 @@ const useNotification = (userId) => {
       if (error.response && error.response.status === 401) {
         console.error("Unauthorized: Invalid or expired token");
       } else {
-        console.error("Error fetching notifications:", error.message);
+        console.error(
+          "Error fetching notifications:",
+          error.response?.data || error.message
+        );
+      }
+    }
+  }, [userId]);
+
+  const markNotificationAsRead = async (notificationId) => {
+    try {
+      const token = Cookies.get("token");
+      if (!token) {
+        throw new Error("No token found");
+      }
+
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/mark-notification-as-read`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setNotifications((prev) =>
+        prev.map((notification) =>
+          notification.id === notificationId
+            ? { ...notification, read: true }
+            : notification
+        )
+      );
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        console.error("Unauthorized: Invalid or expired token");
+      } else {
+        console.error(
+          "Error marking notification as read:",
+          error.response?.data || error.message
+        );
       }
     }
   };
 
+  const markAllNotificationsAsRead = async () => {
+    try {
+      const token = Cookies.get("token");
+      if (!token) {
+        throw new Error("No token found");
+      }
+
+      await axios.patch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/notifications`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setNotifications((prev) =>
+        prev.map((notification) => ({ ...notification, read: true }))
+      );
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        console.error("Unauthorized: Invalid or expired token");
+      } else {
+        console.error(
+          "Error marking all notifications as read:",
+          error.response?.data || error.message
+        );
+      }
+    }
+  };
+
+  useWebSocket(
+    userId,
+    (newNotification) => {
+      setNotifications((prev) => [...prev, newNotification]);
+    },
+    `/user/${userId}/queue/notifications`
+  );
+
   useEffect(() => {
     if (userId) {
       fetchNotifications();
-
-      const token = Cookies.get("token");
-      if (!token) {
-        console.error("No token found for WebSocket");
-        return;
-      }
-
-      const socket = new SockJS(
-        `${process.env.NEXT_PUBLIC_API_URL}/ws?token=${token}`
-      );
-      const client = new Client({
-        webSocketFactory: () => socket,
-        onConnect: () => {
-          console.log("✅ WebSocket connected successfully");
-          client.subscribe(`/user/${userId}/queue/notifications`, (message) => {
-            const newNotification = JSON.parse(message.body);
-            setNotifications((prev) => [...prev, newNotification]);
-          });
-        },
-        onStompError: (frame) => {
-          console.error("❌ STOMP Error:", frame.headers?.message || frame);
-        },
-        onDisconnect: () => {
-          console.log("❌ WebSocket disconnected");
-        },
-      });
-      client.activate();
-      stompClient.current = client;
     }
+  }, [userId, fetchNotifications]);
 
-    return () => {
-      stompClient.current?.deactivate();
-    };
-  }, [userId]);
-
-  return { notifications };
+  return { notifications, markNotificationAsRead, markAllNotificationsAsRead };
 };
 
-module.exports = useNotification;
+export default useNotification;

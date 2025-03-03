@@ -16,6 +16,7 @@ import { Spinner } from "@heroui/react";
 import { useApp } from "../provider/AppProvider";
 import { getQueryClient } from "@/app/lib/get-query-client";
 import { useQuery } from "@tanstack/react-query";
+
 import Slider from "./Slider";
 
 const User = ({ href = "", username = "", firstname = "", lastname = "" }) => {
@@ -68,7 +69,6 @@ const Caption = ({ text, maxLength = 100 }) => {
 
 
 const Post = () => {
-
   const { user } = useApp();
 
   const { data: posts, isLoading } = useQuery({
@@ -102,6 +102,7 @@ const Post = () => {
               className="!text-xl hover:opacity-50 focus:opacity-50 transition space-x-2"
               userId={user.id}
               postId={post.id}
+              classText="text-xl"
             />
             <CommentButton className="text-xl" postId={post.id}>
               <i className="fa-regular fa-comment"></i>47K
