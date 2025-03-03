@@ -5,7 +5,7 @@ import React, {
   useState,
   useEffect,
   useRef,
-  useContext, useMemo,
+  useContext,
 } from "react";
 import { redirect, useRouter, useParams } from "next/navigation";
 import { Client } from "@stomp/stompjs";
@@ -80,23 +80,40 @@ const useChat = (user, chatPartner) => {
     }
   }, [user.id, chatPartner, isLoading]);
 
-  const sendMessage = async (content, files) => {
+  const sendMessage = async (content, files, messagesEndRef) => {
     if (stompClientRef.current?.connected && user.id) {
       let fileUrls = [];
 
       if (files.length > 0) {
-        for (const file of files) {
-          const fileExt = file.name.split(".").pop();
-          const fileName = `${user.id}.${fileExt}`;
+        try {
+          await Promise.all(files.map(async (item) => {
+            const file = item.file;
+            if (!file || !file.name) {
+              console.error("Invalid file object:", file);
+              return;
+            }
 
-          const { data, error } = await supabase.storage
-              .from("files")
-              .upload(fileName, file, {
-                cacheControl: "3600",
-                upsert: false,
-              });
+            const fileName = `${uuidv4()}-${file.name}`;
 
-          fileUrls.push(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/files/${fileName}`);
+            const { data, error } = await supabase.storage
+                .from("files")
+                .upload(fileName, file, {
+                  cacheControl: "3600",
+                  upsert: false,
+                });
+
+            if (error) {
+              console.error("Upload failed:", error);
+              return;
+            }
+
+            console.log("Upload successful:", data);
+            fileUrls.push(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/files/${fileName}`);
+          }));
+
+          console.log("All files uploaded successfully.");
+        } catch (err) {
+          console.error("Error uploading files:", err);
         }
       }
 
@@ -116,9 +133,9 @@ const useChat = (user, chatPartner) => {
         destination: "/app/chat.sendMessage",
         body: JSON.stringify(message),
       });
+
     }
   };
-
   return { chatMessages, sendMessage };
 
 };
