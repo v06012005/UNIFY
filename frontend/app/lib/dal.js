@@ -178,8 +178,10 @@ export const fetchPosts = async () => {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
-            }
-        });
+            },
+            cache: "force-cache",
+            next: { revalidate: 3600 }
+        },);
 
         if (!response.ok) {
             console.log("Failed to fetch posts");
@@ -334,6 +336,39 @@ export const insertHashtagDetails = async (hashtags) => {
 
         if (!response.ok) {
             console.log("Failed to fetch posts");
+            return null;
+        }
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.log('Failed to fetch posts: ' + error)
+        return null
+    }
+}
+
+export const fetchPostsByHashtag = async (content) => {
+    const token = (await cookies()).get('token')?.value;
+
+    if (!token) {
+        redirect("/login");
+    }
+
+    console.log(content)
+
+    try {
+        const response = await fetch("http://localhost:8080/posts/hashtag/" + content, {
+            method: "GET",
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            cache: "force-cache",
+            next: { revalidate: 3600 }
+        });
+
+        if (!response.ok) {
+            console.log("Failed to fetch posts, please check again");
             return null;
         }
 

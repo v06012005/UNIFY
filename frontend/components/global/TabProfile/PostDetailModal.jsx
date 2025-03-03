@@ -45,7 +45,7 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
     return text.split(/(\#[a-zA-Z0-9_]+)/g).map((part, index) => {
       if (part.startsWith("#")) {
         return (
-          <Link key={index} href={`/hashtag/${part.substring(1)}`} className="text-blue-500 hover:underline">
+          <Link key={index} href={`/explore/${part.substring(1)}`} className="text-blue-500 hover:underline">
             {part}
           </Link>
         );

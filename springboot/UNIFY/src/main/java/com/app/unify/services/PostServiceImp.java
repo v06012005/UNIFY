@@ -1,18 +1,24 @@
 package com.app.unify.services;
 
-import com.app.unify.dto.global.PostDTO;
-import com.app.unify.entities.Post;
-import com.app.unify.exceptions.PostNotFoundException;
-import com.app.unify.mapper.PostMapper;
-import com.app.unify.repositories.PostRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
+
+import com.app.unify.dto.global.PostDTO;
+import com.app.unify.entities.Hashtag;
+import com.app.unify.entities.Post;
+import com.app.unify.exceptions.PostNotFoundException;
+import com.app.unify.mapper.PostMapper;
+import com.app.unify.repositories.HashtagDetailRepository;
+import com.app.unify.repositories.HashtagRepository;
+import com.app.unify.repositories.PostRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
@@ -23,6 +29,11 @@ public class PostServiceImp implements PostService {
 
     @Autowired
     private PostMapper mapper;
+    
+    @Autowired
+    private HashtagRepository hashtagRepository;
+    @Autowired
+    private HashtagDetailRepository hashtagDetailRepository;
 
     @Override
     public PostDTO createPost(PostDTO postDTO) {
@@ -84,4 +95,13 @@ public class PostServiceImp implements PostService {
     public List<PostDTO> getMyPosts(String username) {
         return mapper.toPostDTOList(postRepository.findMyPosts(username));
     }
+
+	@Override
+	public List<PostDTO> getPostsByHashtag(String hashtag) {
+		Hashtag h = hashtagRepository.findByContent(hashtag)
+				.orElseThrow(() -> new RuntimeException("Hashtag not found!"));
+		List<String> postIds = hashtagDetailRepository.findPostByHashtagId(h.getId());
+		List<PostDTO> list = mapper.toPostDTOList(postRepository.findAllById(postIds));
+		return list;
+	}
 }

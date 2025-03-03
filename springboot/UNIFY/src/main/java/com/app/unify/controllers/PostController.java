@@ -94,4 +94,9 @@ public class PostController {
         List<PostDTO> posts = postService.getMyPosts(userId);
         return ResponseEntity.ok(posts);
     }
+    
+    @GetMapping("/hashtag/{content}")
+    public ResponseEntity<List<PostDTO>> getPostsByHashtag(@PathVariable("content") String content) {
+    	return ResponseEntity.ok(postService.getPostsByHashtag("#" + content));
+    }
 }
