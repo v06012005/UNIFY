@@ -83,7 +83,6 @@ public class Post {
 	Set<LikedPost> likedPosts;
 	
 	@OneToMany(mappedBy = "post")
-	@JsonManagedReference
 	Set<HashtagDetail> hashtags;
 
 	@Override

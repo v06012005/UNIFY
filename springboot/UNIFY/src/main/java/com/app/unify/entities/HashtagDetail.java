@@ -1,7 +1,5 @@
 package com.app.unify.entities;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -34,6 +32,5 @@ public class HashtagDetail {
 	
 	@ManyToOne
 	@JoinColumn(name = "hashtag_id", nullable = false)
-	@JsonManagedReference
 	Hashtag hashtag;
 }

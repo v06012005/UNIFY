@@ -9,9 +9,10 @@ import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { Select, SelectItem, Textarea } from "@heroui/react";
 import PostSwitch from "@/components/global/PostSwitch";
 import { useEffect, useRef, useState } from "react";
-import { getUser, insertHashtagDetails, insertHashtags, saveMedia, savePost } from "@/app/lib/dal";
+import { fetchPostById, getUser, saveMedia, savePost, updatePost } from "@/app/lib/dal";
 import { cn } from "@/lib/utils";
 import { addToast, ToastProvider } from "@heroui/toast";
+import { redirect, useParams } from "next/navigation";
 
 const User = ({ user }) => {
   return (
@@ -34,8 +35,9 @@ const Page = () => {
   const [isCommentVisible, setIsCommentVisible] = useState(false);
   const [audience, setAudience] = useState("PUBLIC");
   const [caption, setCaption] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [hashtags, setHashtags] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [post, setPost] = useState(null);
+  const { postId } = useParams();
 
   const [user, setUser] = useState(null);
 
@@ -45,8 +47,26 @@ const Page = () => {
       setUser(currentUser);
     }
 
+    async function fetchPost() {
+      const fetchedPost = await fetchPostById(postId);
+      setPost(fetchedPost);
+      setPreviews(fetchedPost?.media);
+      setCaption(fetchedPost?.captions)
+      setAudience(fetchedPost?.audience)
+      setIsCommentVisible(fetchedPost?.isCommentVisible)
+      setIsLikeVisible(fetchedPost?.isLikeVisible)
+      setLoading(false);
+    }
+
     fetchUser();
+    fetchPost();
+
   }, []);
+
+  useEffect(() => {
+    handleCommentVisibility(isCommentVisible);
+    handleLikeVisibility(isLikeVisible);
+  }, [isCommentVisible, isLikeVisible])
 
   const handleDivClick = () => {
     fileInputRef.current?.click();
@@ -67,6 +87,7 @@ const Page = () => {
 
   function handleClick() {
     refreshPost();
+    redirect(`/profile/${user.username}`);
   }
 
   const handleFileChange = (e) => {
@@ -107,17 +128,27 @@ const Page = () => {
   }, [previews]);
 
   const handleUpload = async () => {
-    if (files.length === 0)
-      return addToast({
+    const existingFiles = post?.media.map(m => ({
+      url: m.url,
+      file_type: m.fileType,
+      size: m.size,
+      media_type: m.mediaType
+    }));
+
+    if (files.length === 0 && existingFiles.length === 0) {
+      addToast({
         title: "No files uploaded",
-        description: "Please upload at least one media file (image/ video).",
+        description: "Please upload at least one media file (image/video).",
         timeout: 3000,
         shouldShowTimeoutProgess: true,
         color: "warning",
       });
+      return;
+    }
 
     const formData = new FormData();
     files.forEach((file) => formData.append("files", file));
+    formData.append("existingFiles", JSON.stringify(existingFiles));
 
     const res = await fetch("/api/upload", {
       method: "POST",
@@ -128,6 +159,7 @@ const Page = () => {
     return data;
   };
 
+
   const refreshPost = () => {
     setFiles([]);
     setPreviews([]);
@@ -135,7 +167,6 @@ const Page = () => {
     setIsCommentVisible(false);
     setIsLikeVisible(false);
     setAudience("PUBLIC");
-    setHashtags([])
   };
 
   const handleSave = async () => {
@@ -153,68 +184,8 @@ const Page = () => {
         return;
       }
 
-      const newPost = {
-        captions: caption,
-        audience: audience,
-        user: user,
-        isCommentVisible: isCommentVisible,
-        isLikeVisible: isLikeVisible,
-        postedAt: new Date().toISOString(),
-      };
-
-      const post = await savePost(newPost);
-      if (!post) {
-        addToast({
-          title: "Fail to save post",
-          description:
-            "Cannot save your post. Please contact the admin for further information",
-          timeout: 3000,
-          shouldShowTimeoutProgess: true,
-          color: "danger",
-        });
-        return;
-      }
-
-      const hashtagList = caption.toString().split(" ").filter(word => word.startsWith("#"))
-      if (hashtagList.length > 0) {
-        const newHashtags = hashtagList.map(h => ({
-          content: h
-        }))
-        console.log(newHashtags)
-        const savedHashtags = await insertHashtags(newHashtags);
-        if (!savedHashtags) {
-          addToast({
-            title: "Fail to proceed hashtags",
-            description:
-              "Cannot proceed your hashtags. Please contact the admin for further information or try again",
-            timeout: 3000,
-            shouldShowTimeoutProgess: true,
-            color: "danger",
-          });
-          return;
-        }
-        const hashtagDetails = savedHashtags.map(h => ({
-          hashtag: h,
-          post: post
-        }));
-
-        if (hashtagDetails > 0) {
-          const savedDetails = await insertHashtagDetails(hashtagDetails);
-          if (!savedDetails) {
-            addToast({
-              title: "Fail to proceed hashtags.",
-              description:
-                "Cannot proceed your hashtags. Please contact the admin for further information or try again.",
-              timeout: 3000,
-              shouldShowTimeoutProgess: true,
-              color: "danger",
-            });
-            return;
-          }
-        }
-      }
-
       const fetchedFiles = await handleUpload();
+
       if (!fetchedFiles || fetchedFiles.length === 0) {
         addToast({
           title: "No files uploaded",
@@ -226,7 +197,7 @@ const Page = () => {
         return;
       }
 
-      const postMedia = fetchedFiles.files.map((file) => ({
+      const newMedia = fetchedFiles?.files?.map(file => ({
         post: post,
         url: file.url,
         fileType: file.file_type,
@@ -234,26 +205,48 @@ const Page = () => {
         mediaType: file.media_type.toUpperCase(),
       }));
 
-      const savedMedia = await saveMedia(post?.id, postMedia);
+      const savedMedia = await saveMedia(post.id, newMedia);
+
       if (savedMedia) {
         addToast({
           title: "Success",
-          description:
-            "Your post is uploaded successfully. Other users can now interact with your post.",
+          description: "Your post is updated successfully. Other users can now interact with your post.",
           timeout: 3000,
           shouldShowTimeoutProgess: true,
           color: "success",
         });
-        refreshPost();
       } else {
         addToast({
           title: "Fail to save media",
-          description:
-            "The server ran into a problem and could not save your images/ videos successfully. Please contact the admin for further information.",
+          description: "The server ran into a problem and could not save your images/ videos successfully. Please contact the admin for further information.",
           timeout: 3000,
           shouldShowTimeoutProgess: true,
           color: "danger",
         });
+      }
+
+
+      const newPost = {
+        ...post,
+        captions: caption,
+        audience: audience,
+        isCommentVisible: isCommentVisible,
+        isLikeVisible: isLikeVisible
+      };
+
+      const updatedPost = await updatePost(newPost);
+      console.log(newPost)
+      console.log(updatedPost)
+      if (!updatedPost) {
+        addToast({
+          title: "Fail to save post",
+          description:
+            "Cannot save your post. Please contact the admin for further information",
+          timeout: 3000,
+          shouldShowTimeoutProgess: true,
+          color: "danger",
+        });
+        return;
       }
     } catch (error) {
       addToast({
@@ -317,7 +310,7 @@ const Page = () => {
                   )}
                 >
                   {previews.map((file) => {
-                    const isVideo = file.type.startsWith("video/");
+                    const isVideo = file?.mediaType?.startsWith("VIDEO");
 
                     return (
                       <div key={file.url} className="relative w-full h-full">
@@ -386,7 +379,6 @@ const Page = () => {
                   onChange={handleFileChange}
                 />
               </div>
-              <p>{hashtags}</p>
             </div>
             <div className="basis-1/2 border-l p-3 overflow-y-scroll no-scrollbar">
               <div>
@@ -433,12 +425,14 @@ const Page = () => {
                 </p>
                 <div>
                   <PostSwitch
+                    isOn={isLikeVisible}
                     onToggle={handleLikeVisibility}
                     className="mb-3"
                     title={"Hide like and comment counts on this post"}
                     subtitle="Control your privacy by hiding the like and comment counts on this post, keeping the focus on the content rather than the numbers."
                   />
                   <PostSwitch
+                    isOn={isCommentVisible}
                     onToggle={handleCommentVisibility}
                     title={"Turn off commenting"}
                     subtitle="Disable comments on this post to maintain control over interactions and focus solely on the content."

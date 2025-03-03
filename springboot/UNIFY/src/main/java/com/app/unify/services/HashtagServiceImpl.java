@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.app.unify.dto.global.HashtagDTO;
 import com.app.unify.entities.Hashtag;
@@ -11,6 +12,10 @@ import com.app.unify.exceptions.PostNotFoundException;
 import com.app.unify.mapper.HashtagMapper;
 import com.app.unify.repositories.HashtagRepository;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+@Service
 public class HashtagServiceImpl implements HashtagService {
 	
 	@Autowired
@@ -47,6 +52,13 @@ public class HashtagServiceImpl implements HashtagService {
 	@Override
 	public void deletePostById(String id) {
 		hashtagRepository.deleteById(id);
+	}
+
+	@Override
+	public List<HashtagDTO> saveAll(List<HashtagDTO> hashtagDTOs) {
+		List<Hashtag> hashtags = mapper.toHashtagList(hashtagDTOs);
+		List<Hashtag> savedHashtag = hashtagRepository.saveAll(hashtags);
+		return mapper.toHashtagDTOList(savedHashtag);
 	}
 
 }

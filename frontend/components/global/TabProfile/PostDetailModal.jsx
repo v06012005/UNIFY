@@ -6,17 +6,17 @@ import CommentInput from "@/components/comments/CommentInput";
 import Cookies from "js-cookie";
 import Link from "next/link";
 const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
-    return (
-      <Link
-        className="flex h-full items-center text-center"
-        href={href}
-        onClick={onClick}
-      >
-        <i className={`${iconClass}`}></i>
-        <span className="">{content}</span>
-      </Link>
-    );
-  };
+  return (
+    <Link
+      className="flex h-full items-center text-center"
+      href={href}
+      onClick={onClick}
+    >
+      <i className={`${iconClass}`}></i>
+      <span className="">{content}</span>
+    </Link>
+  );
+};
 const PostDetailModal = ({ post, onClose, onDelete }) => {
   const [openList, setOpenList] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -80,9 +80,8 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
               {post.media.map((item, index) => (
                 <div
                   key={index}
-                  className={`w-16 h-16 cursor-pointer border-2 ${
-                    selectedMedia?.url === item.url ? "border-blue-500" : "border-transparent"
-                  }`}
+                  className={`w-16 h-16 cursor-pointer border-2 ${selectedMedia?.url === item.url ? "border-blue-500" : "border-transparent"
+                    }`}
                   onClick={() => setSelectedMedia(item)}
                 >
                   {item.mediaType === "VIDEO" ? (
@@ -130,9 +129,9 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
                   >
                     Delete
                   </button>
-                  <button className="w-full py-2 dark:hover:bg-gray-900 hover:bg-gray-100">
+                  <Link href={`/posts/${post.id}`} className="w-full py-2 dark:hover:bg-gray-900 hover:bg-gray-100">
                     Update
-                  </button>
+                  </Link>
                   <button className="w-full py-2 dark:hover:bg-gray-900 hover:bg-gray-100">
                     Share
                   </button>

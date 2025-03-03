@@ -44,9 +44,18 @@ public class PostServiceImp implements PostService {
 
     @Override
     public PostDTO updatePost(PostDTO postDTO) {
-        Post post = postRepository.save(postRepository.findById(postDTO.getId())
-                .orElseThrow(() -> new PostNotFoundException("Post not found!")));
-        return mapper.toPostDTO(post);
+    	Post post = postRepository.findById(postDTO.getId())
+                .orElseThrow(() -> new PostNotFoundException("Post not found!"));
+
+        post.setCaptions(postDTO.getCaptions());
+        post.setAudience(postDTO.getAudience());
+        post.setIsCommentVisible(postDTO.getIsCommentVisible());
+        post.setIsLikeVisible(postDTO.getIsLikeVisible());
+        post.setPostedAt(postDTO.getPostedAt());
+        
+        Post updatedPost = postRepository.save(post);
+        
+        return mapper.toPostDTO(updatedPost);
     }
 
     @Override
