@@ -8,7 +8,7 @@ import SearchHorizontalToggle from "@/components/global/SearchHorizontalToggle";
 import NotificationModal from "@/components/global/NotificationModal";
 import UnifyLogoIcon from "./UnifyLogoIcon";
 import { useApp } from "@/components/provider/AppProvider";
-import { useParams } from "next/navigation"; 
+import {useParams, useRouter} from "next/navigation";
 const NavButton = React.memo(function NavButton({
   iconClass,
   href = "",
@@ -34,6 +34,7 @@ const SideBar = () => {
   const searchComponentRef = useRef(null);
   const toggleRef = useRef(null);
   const [openSearch, setOpenSearch] = useState(false);
+  const router = useRouter();
 
   const toggleSearch = () => {
     setOpenSearch((prevState) => !prevState);
