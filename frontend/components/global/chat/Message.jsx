@@ -37,14 +37,35 @@ const Message = ({ messages }) => {
                         )}
 
                         <div
-                            className={`max-w-[75%] flex flex-col ${isCurrentUser ? "items-end" : "items-start"} ${!isCurrentUser && !isFirstOfGroup ? "pl-12" : ""}`}>
+                            className={`max-w-[75%] flex flex-col ${isCurrentUser ? "items-end" : "items-start"} ${!isCurrentUser && !isFirstOfGroup ? "pl-[50]" : ""}`}>
 
                             <div
                                 className={`p-3 rounded-2xl shadow-md ${
                                     isCurrentUser ? "bg-blue-500 text-white" : "bg-gray-800 text-white"
                                 }`}
                             >
-                                {message.content}
+                                {message.content && (
+                                    <div className={`p-3 rounded-2xl shadow-md ${isCurrentUser ? "bg-blue-500 text-white" : "bg-gray-800 text-white"}`}>
+                                        {message.content}
+                                    </div>
+                                )}
+
+                                {/* Display Files (Images or Links) */}
+                                {message.fileUrls?.length > 0 && (
+                                    <div className="flex flex-wrap gap-2 mt-2">
+                                        {message.fileUrls.map((fileUrl, fileIndex) => (
+                                            <a key={fileIndex} href={fileUrl} target="_blank" rel="noopener noreferrer">
+                                                {fileUrl.match(/\.(jpg|jpeg|png|gif)$/) ? (
+                                                    <img src={fileUrl} alt="Uploaded file" className="w-32 h-32 rounded-md shadow-md" />
+                                                ) : (
+                                                    <div className="p-2 bg-gray-700 text-white rounded-lg flex items-center gap-2">
+                                                        📎 {fileUrl.split("/").pop()}
+                                                    </div>
+                                                )}
+                                            </a>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
 
 

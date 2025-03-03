@@ -136,12 +136,11 @@ export const CallProvider = ({children}) => {
         }
     }, [user, path]);
 
+
     useEffect(() => {
         const handleMessage = (event) => {
             if (event.origin !== window.location.origin) return;
             const { action, caller, signal, nameReceiver } = event.data;
-            console.log("Received postMessage in CallProvider:", event.data);
-
             if (action === "answer" && signal && caller && !callAccepted) {
                 console.log("Setting callerSignal from postMessage:", signal);
                 setReceiver(true);
@@ -155,6 +154,19 @@ export const CallProvider = ({children}) => {
         return () => window.removeEventListener("message", handleMessage);
     }, [callAccepted]);
 
+    useEffect(() => {
+        const handleMessage = (event) => {
+            if (event.origin !== window.location.origin) return;
+            const { toggleCamera, stream } = event.data;
+            if (toggleCamera && stream) {
+                setStream(stream);
+                setToggleCamera(true);
+            }
+        };
+
+        window.addEventListener("message", handleMessage);
+        return () => window.removeEventListener("message", handleMessage);
+    }, [toggleCamera], stream);
 
 
     useEffect(() => {
@@ -338,6 +350,7 @@ export const CallProvider = ({children}) => {
             name,
             setName,
             toggleCamera,
+            setToggleCamera,
             toggleMicrophone,
             isOffCamera,
             isOffMicrophone,
