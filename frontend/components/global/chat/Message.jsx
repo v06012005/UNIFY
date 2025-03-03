@@ -37,7 +37,7 @@ const Message = ({ messages }) => {
                         )}
 
                         <div
-                            className={`max-w-[75%] flex flex-col ${isCurrentUser ? "items-end" : "items-start"} ${!isCurrentUser && !isFirstOfGroup ? "pl-12" : ""}`}>
+                            className={`max-w-[75%] flex flex-col ${isCurrentUser ? "items-end" : "items-start"} ${!isCurrentUser && !isFirstOfGroup ? "pl-[50]" : ""}`}>
 
                             <div
                                 className={`p-3 rounded-2xl shadow-md ${
