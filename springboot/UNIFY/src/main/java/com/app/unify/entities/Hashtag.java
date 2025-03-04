@@ -2,8 +2,6 @@ package com.app.unify.entities;
 
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -29,7 +27,7 @@ public class Hashtag {
 	@GeneratedValue(strategy = GenerationType.UUID)
 	String id;
 	String content;
-	
+
 	@OneToMany(mappedBy = "hashtag")
 	Set<HashtagDetail> hashtagDetails;
 }

@@ -29,7 +29,7 @@ public class PostServiceImp implements PostService {
 
     @Autowired
     private PostMapper mapper;
-    
+
     @Autowired
     private HashtagRepository hashtagRepository;
     @Autowired
@@ -63,9 +63,9 @@ public class PostServiceImp implements PostService {
         post.setIsCommentVisible(postDTO.getIsCommentVisible());
         post.setIsLikeVisible(postDTO.getIsLikeVisible());
         post.setPostedAt(postDTO.getPostedAt());
-        
+
         Post updatedPost = postRepository.save(post);
-        
+
         return mapper.toPostDTO(updatedPost);
     }
 

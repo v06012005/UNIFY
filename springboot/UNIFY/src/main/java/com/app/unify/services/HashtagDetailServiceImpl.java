@@ -16,13 +16,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Service
 public class HashtagDetailServiceImpl implements HashtagDetailService {
-	
+
 	@Autowired
 	HashtagDetailRepository hashtagDetailRepository;
-	
+
 	@Autowired
 	HashtagDetailMapper mapper;
-	
+
 	@Override
 	public HashtagDetailDTO createHashtagDetai(HashtagDetailDTO hashtagDetailDTO) {
 		// TODO Auto-generated method stub
@@ -58,7 +58,7 @@ public class HashtagDetailServiceImpl implements HashtagDetailService {
 	@Override
 	public void deletePostById(String id) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

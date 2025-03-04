@@ -21,7 +21,6 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import Slider from "./Slider";
 
-
 const User = ({ href = "", username = "", firstname = "", lastname = "" }) => {
   return (
     <Link href={href}>
@@ -176,7 +175,7 @@ const Slider = ({ srcs = [] }) => {
 };
 
 const Post = () => {
-  const [posts, setPosts] = useState([]);
+  // const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const { user } = useApp();
   const [commentsByPost, setCommentsByPost] = useState({});
@@ -185,14 +184,13 @@ const Post = () => {
     queryFn: fetchPosts,
   });
 
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <Spinner color="primary" label="Loading..." labelColor="primary" />
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="flex justify-center items-center h-screen">
+  //       <Spinner color="primary" label="Loading..." labelColor="primary" />
+  //     </div>
+  //   );
+  // }
 
   return (
     <>

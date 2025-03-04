@@ -1,8 +1,9 @@
 package com.app.unify.services;
 
-import com.app.unify.dto.global.PostDTO;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import com.app.unify.dto.global.PostDTO;
 
 public interface PostService {
 
@@ -22,6 +23,6 @@ public interface PostService {
     // List<PostDTO> getMyPosts(String username);
 
     List<PostDTO> getMyPosts(String userId);
-    
+
     List<PostDTO> getPostsByHashtag(String hashtag);
 }

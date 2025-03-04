@@ -99,32 +99,6 @@ const Reels = () => {
     [token]
   );
 
-
-  const handleReportPost = useCallback(async (postId) => {
-    const report = await createPostReport(postId);
-  
-    if (report?.error) {
-      const errorMessage = report.error;
-      console.warn("Failed to report post:", errorMessage);
-  
-      if (errorMessage === "You have reported this content before.") {
-        addToast({
-          title: "Fail to report post",
-          description: "You have reported this content before.",
-          timeout: 3000,
-          shouldShowTimeoutProgess: true,
-          color: "warning",
-        });
-      } else {
-        addToast({
-          title: "Encountered an error",
-          description: "Error: " + errorMessage,
-          timeout: 3000,
-          shouldShowTimeoutProgess: true,
-          color: "danger",
-        });
-      }
-      return;
   //   load comments
   useEffect(() => {
     if (videoPosts.length > 0) {
@@ -451,4 +425,3 @@ const Reels = () => {
 };
 
 export default Reels;
-Giữ code dùm BRO

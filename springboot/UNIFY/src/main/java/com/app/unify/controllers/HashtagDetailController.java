@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class HashtagDetailController {
 	@Autowired
 	HashtagDetailService service;
-	
+
 	@PostMapping("/saveAll")
 	public List<HashtagDetailDTO> saveAll(@RequestBody List<HashtagDetailDTO> list) {
 		return service.saveAll(list);
