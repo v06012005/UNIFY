@@ -17,15 +17,18 @@ import avatar2 from "@/public/images/testAvt.jpg";
 import FollowButton from "@/components/ui/follow-button";
 import LikeButton from "@/components/global/LikeButton";
 
+
 import { useReports } from "@/components/provider/ReportProvider";
 import { addToast, ToastProvider } from "@heroui/toast";
 import { useQuery } from "@tanstack/react-query";
+
 
 const Reels = () => {
   const [isCommentOpen, setIsCommentOpen] = useState(false);
   const [toolStates, setToolStates] = useState({});
   const [selectedAvatars, setSelectedAvatars] = useState([]);
   const [videoPosts, setVideoPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [commentsByPost, setCommentsByPost] = useState({});
   const [currentPostId, setCurrentPostId] = useState(null);
   const [pausedStates, setPausedStates] = useState({});
@@ -35,50 +38,79 @@ const Reels = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const containerRef = useRef(null);
   const videoRefs = useRef([]);
+
   ////////////// ReplyReply
+
   const currentUserId = user?.id;
   const [replyingTo, setReplyingTo] = useState(null);
-
-  const { data: posts, isLoading } = useQuery({
-    queryKey: ["posts"],
-    queryFn: fetchPosts,
-  });
-
-  // Fetch video posts
   const { createPostReport, createUserReport, createCommentReport } =
     useReports();
+
+
+  // Fetch video posts và comments ngay từ đầu
   useEffect(() => {
     async function getVideoPosts() {
-      const homePosts = await fetchPosts();
-      const filteredPosts = homePosts.filter((post) =>
-        post.media.some((media) => media.mediaType === "VIDEO")
-      );
-      setVideoPosts(filteredPosts);
-      setPausedStates(
-        filteredPosts.reduce((acc, post) => ({ ...acc, [post.id]: false }), {})
-      );
-      setToolStates(
-        filteredPosts.reduce(
-          (acc, post) => ({
-            ...acc,
-            [post.id]: {
-              isLiked: false,
-              isSaved: false,
-              isPopupOpen: false,
-              isFollow: false,
-            },
-          }),
-          {}
-        )
-      );
-      setCommentsByPost(
-        filteredPosts.reduce((acc, post) => ({ ...acc, [post.id]: [] }), {})
-      );
+      try {
+        const homePosts = await fetchPosts();
+        const filteredPosts = homePosts.filter((post) =>
+          post.media.some((media) => media.mediaType === "VIDEO")
+        );
+        setVideoPosts(filteredPosts);
+        setPausedStates(
+          filteredPosts.reduce(
+            (acc, post) => ({ ...acc, [post.id]: false }),
+            {}
+          )
+        );
+        setToolStates(
+          filteredPosts.reduce(
+            (acc, post) => ({
+              ...acc,
+              [post.id]: {
+                isLiked: false,
+                isSaved: false,
+                isPopupOpen: false,
+                isFollow: false,
+              },
+            }),
+            {}
+          )
+        );
+        setCommentsByPost(
+          filteredPosts.reduce((acc, post) => ({ ...acc, [post.id]: [] }), {})
+        );
+
+        // Fetch comments cho tất cả posts nếu có token
+        if (token) {
+          await Promise.all(
+            filteredPosts.map(async (post) => {
+              try {
+                const data = await fetchComments(post.id, token);
+                setCommentsByPost((prev) => ({
+                  ...prev,
+                  [post.id]: data,
+                }));
+              } catch (error) {
+                console.error(
+                  `Failed to fetch comments for post ${post.id}:`,
+                  error
+                );
+                setCommentsByPost((prev) => ({ ...prev, [post.id]: [] }));
+              }
+            })
+          );
+        }
+      } catch (error) {
+        console.error("Failed to fetch video posts:", error);
+      } finally {
+        setLoading(false);
+      }
     }
     getVideoPosts();
-  }, []);
+  }, [token]);
 
-  // Fetch comments cho một post cụ thể
+
+  // Fetch comments cho một post cụ thể (giữ lại để reload nếu cần)
   const loadComments = useCallback(
     async (postId) => {
       if (!token || !postId) return;
@@ -100,22 +132,13 @@ const Reels = () => {
     [token]
   );
 
-  useEffect(() => {
-    if (videoPosts.length > 0) {
-      videoPosts.forEach((post) => {
-        loadComments(post.id);
-      });
-    }
-  }, [videoPosts, loadComments]);
 
   const handleReportPost = useCallback(
     async (postId) => {
       const report = await createPostReport(postId);
-
       if (report?.error) {
         const errorMessage = report.error;
         console.warn("Failed to report post:", errorMessage);
-
         if (errorMessage === "You have reported this content before.") {
           addToast({
             title: "Fail to report post",
@@ -178,6 +201,7 @@ const Reels = () => {
       }
     });
 
+
     return () => {
       videoRefs.current.forEach((video) => {
         if (video) observer.unobserve(video);
@@ -212,9 +236,10 @@ const Reels = () => {
       }));
     }
   };
+
   const toggleComment = (postId) => {
     console.log("Toggling comments for post:", postId);
-    loadComments(postId);
+
     setCurrentPostId(postId);
     setIsCommentOpen((prev) => !prev);
   };
@@ -234,26 +259,26 @@ const Reels = () => {
     }
   };
 
-  ///Reply comment
+
   const handleReplySubmit = (newComment) => {
     updateComments(currentPostId, newComment);
-    setReplyingTo(null); // Reset sau khi submit
+    setReplyingTo(null);
   };
 
   const handleReplyClick = (comment) => {
-    setReplyingTo(comment); // Set bình luận đang reply
-    console.log("Replying to:", comment); // Debug
+    setReplyingTo(comment);
+    console.log("Replying to:", comment);
   };
+
   const handleCancelReply = () => {
-    setReplyingTo(null); // Reset khi nhấn Cancel
+    setReplyingTo(null);
   };
-  ////
+
   const updateComments = useCallback(
     (postId, newComment) => {
       setCommentsByPost((prev) => {
         const currentComments = Array.isArray(prev[postId]) ? prev[postId] : [];
 
-        // Nếu comment có parentId, thêm vào replies của comment cha
         if (newComment.parentId) {
           const updatedComments = currentComments.map((comment) => {
             if (comment.id === newComment.parentId) {
@@ -273,7 +298,6 @@ const Reels = () => {
           };
         }
 
-        // Nếu không có parentId, thêm vào danh sách gốc
         const updatedComments = [
           { ...newComment, username: user?.username || "Unknown" },
           ...currentComments,
@@ -287,14 +311,16 @@ const Reels = () => {
     },
     [user]
   );
-  ////////
-  if (isLoading) {
+
+  if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
         <Spinner color="primary" label="Loading..." labelColor="primary" />
       </div>
     );
   }
+
+
   return (
     <>
       <ToastProvider placement={"top-right"} />
@@ -337,29 +363,23 @@ const Reels = () => {
                   <FollowButton
                     contentFollow="Follow"
                     contentFollowing="Following"
-                    userId={currentUserId}
+
+                    userId={user?.id}
                     followingId={post.user.id}
-                    classFollow="backdrop-blur-lg text-sm p-4 py-1 rounded-2xl font-bold transition-all duration-200 ease-in-out active:scale-125 hover:bg-gray-500 dark:hover:bg-gray-400 border border-gray-300"
-                    classFollowing="backdrop-blur-lg text-sm p-4 py-1 rounded-2xl font-bold transition-all duration-200 ease-in-out active:scale-125 hover:bg-gray-500 dark:hover:bg-gray-400 border border-gray-300"
+                    classFollow="backdrop-blur-lg text-sm p-4 py-1 rounded-2xl font-bold transition-all duration-200 ease-in-out active:scale-125 hover:bg-black/50  border border-gray-300"
+                    classFollowing="backdrop-blur-lg text-sm p-4 py-1 rounded-2xl font-bold transition-all duration-200 ease-in-out active:scale-125 hover:bg-black/50  border border-gray-300"
+
                   />
                 </div>
               </div>
               <div className="mt-2 w-[350px]">
                 <CaptionWithMore text={post.captions} />
+
               </div>
             </div>
             <div className="absolute top-2/3 right-4 transform -translate-y-1/2 flex flex-col items-center space-y-7 text-white text-2xl">
-              {/* <i
-                className={`fa-${
-                  toolStates[post.id]?.isLiked ? "solid" : "regular"
-                } fa-heart hover:opacity-50 focus:opacity-50 transition cursor-pointer ${
-                  toolStates[post.id]?.isLiked ? "text-red-500" : "text-white"
-                }`}
-                onClick={() => handleLike(post.id)}
-              />
-              <span className="text-sm">47k</span> */}
               <LikeButton
-                userId={currentUserId}
+                userId={user?.id}
                 postId={post.id}
                 className="flex flex-col items-center"
                 classText="text-sm"
@@ -395,20 +415,20 @@ const Reels = () => {
                 {toolStates[post.id]?.isPopupOpen && (
                   <div
                     id="overmore"
-                    className="w-44 absolute top-[-98] right-10 mt-2 backdrop-blur-xl p-4 rounded-lg shadow-lg text-white border border-gray-300 z-50"
+                    className="w-44 absolute top-[-138] right-10 mt-2 backdrop-blur-xl p-4 rounded-lg shadow-lg text-white border border-gray-300 z-50"
                     onClick={(e) => closeMore(e, post.id)}
                   >
                     <ul className="text-sm">
                       <li
-                        className="cursor-pointer hover:bg-slate-500 font-bold text-left p-2 rounded-sm text-red-500"
+                        className="cursor-pointer hover:bg-black/30 hover:backdrop-blur-sm font-bold text-left p-2 rounded-sm text-red-500"
                         onClick={() => handleReportPost(post.id)}
                       >
                         Report
                       </li>
-                      <li className="cursor-pointer hover:bg-zinc-500 font-bold text-left p-2 rounded-sm">
+                      <li className="cursor-pointer  hover:bg-black/30 hover:backdrop-blur-sm font-bold text-left p-2 rounded-sm">
                         Copy link
                       </li>
-                      <li className="cursor-pointer hover:bg-slate-500 font-bold text-left p-2 rounded-sm">
+                      <li className="cursor-pointer  hover:bg-black/30 hover:backdrop-blur-sm font-bold text-left p-2 rounded-sm">
                         About this account
                       </li>
                     </ul>
@@ -416,6 +436,7 @@ const Reels = () => {
                 )}
               </div>
             </div>
+
           </div>
         ))}
 
@@ -439,16 +460,12 @@ const Reels = () => {
                 isCommentOpen ? "translate-x-0" : "translate-x-full"
               }`}
             >
-              <div className="h-full flex flex-col p-4 border-l border-gray-700">
+
+              <div className="h-full flex flex-col p-4 border-l border-neutral-700">
                 <div className="flex items-center justify-between dark:text-white mb-4">
                   <h2 className="text-2xl text-center font-bold">Comments</h2>
                 </div>
                 <div className="flex-grow overflow-auto">
-                  {console.log("Current Post ID:", currentPostId)}
-                  {console.log(
-                    "Comments for current post:",
-                    commentsByPost[currentPostId]
-                  )}
                   {isCommentsLoading ? (
                     <Spinner />
                   ) : Array.isArray(commentsByPost[currentPostId]) &&
@@ -459,20 +476,22 @@ const Reels = () => {
                         comment={comment}
                         currentUserId={currentUserId}
                         onReplySubmit={handleReplySubmit}
-                        onReplyClick={() => handleReplyClick(comment)} // Set bình luận đang reply
+                        onReplyClick={() => handleReplyClick(comment)}
                       />
                     ))
                   ) : (
                     <p className="text-red-500 font-bold">
-                      Comments are disabled for this post
+                      No comments available for this post
                     </p>
                   )}
                 </div>
+
                 <CommentInput
                   postId={currentPostId}
                   setComments={(newComments) =>
                     updateComments(currentPostId, newComments)
                   }
+
                   parentComment={replyingTo} // Truyền bình luận đang reply
                   onCancelReply={handleCancelReply}
                 />

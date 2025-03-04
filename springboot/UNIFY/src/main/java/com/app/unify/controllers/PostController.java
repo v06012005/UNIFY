@@ -102,6 +102,7 @@ public class PostController {
     @GetMapping("/hashtag/{content}")
     public ResponseEntity<List<PostDTO>> getPostsByHashtag(@PathVariable("content") String content) {
         return ResponseEntity.ok(postService.getPostsByHashtag("#" + content));
+
     }
 
     @GetMapping("/explorer")
@@ -112,6 +113,7 @@ public class PostController {
     }
 
     private String getCurrentUserId() {
+
 		var authentication = SecurityContextHolder.getContext().getAuthentication();
 
 		if (authentication == null || authentication.getPrincipal() == null) {
@@ -128,4 +130,5 @@ public class PostController {
 
 		throw new RuntimeException("User not authenticated (401)");
 	}
+
 }
