@@ -9,7 +9,7 @@ import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { Select, SelectItem, Textarea } from "@heroui/react";
 import PostSwitch from "@/components/global/PostSwitch";
 import { useEffect, useRef, useState } from "react";
-import { fetchPostById, getUser, saveMedia, savePost, updatePost } from "@/app/lib/dal";
+import { fetchPostById, getUser, insertHashtagDetails, insertHashtags, saveMedia, savePost, updatePost } from "@/app/lib/dal";
 import { cn } from "@/lib/utils";
 import { addToast, ToastProvider } from "@heroui/toast";
 import { redirect, useParams } from "next/navigation";
@@ -182,6 +182,48 @@ const Page = () => {
           color: "danger",
         });
         return;
+      }
+
+      const hashtagList = caption
+        .toString()
+        .split(/(\#[a-zA-Z0-9_]+)/g)
+        .filter((word) => word.startsWith("#"));
+      if (hashtagList.length > 0) {
+        const newHashtags = hashtagList.map((h) => ({
+          content: h,
+        }));
+        const savedHashtags = await insertHashtags(newHashtags);
+        if (!savedHashtags) {
+          addToast({
+            title: "Fail to proceed hashtags",
+            description:
+              "Cannot proceed your hashtags. Please contact the admin for further information or try again",
+            timeout: 3000,
+            shouldShowTimeoutProgess: true,
+            color: "danger",
+          });
+          return;
+        }
+
+        const hashtagDetails = savedHashtags.map((h) => ({
+          hashtag: h,
+          post: post,
+        }));
+
+        if (hashtagDetails.length > 0) {
+          const savedDetails = await insertHashtagDetails(hashtagDetails);
+          if (!savedDetails) {
+            addToast({
+              title: "Fail to proceed hashtags.",
+              description:
+                "Cannot proceed your hashtags. Please contact the admin for further information or try again.",
+              timeout: 3000,
+              shouldShowTimeoutProgess: true,
+              color: "danger",
+            });
+            return;
+          }
+        }
       }
 
       const fetchedFiles = await handleUpload();

@@ -183,13 +183,12 @@ const Page = () => {
 
       const hashtagList = caption
         .toString()
-        .split(" ")
+        .split(/(\#[a-zA-Z0-9_]+)/g)
         .filter((word) => word.startsWith("#"));
       if (hashtagList.length > 0) {
         const newHashtags = hashtagList.map((h) => ({
           content: h,
         }));
-        console.log(newHashtags);
         const savedHashtags = await insertHashtags(newHashtags);
         if (!savedHashtags) {
           addToast({
@@ -322,7 +321,7 @@ const Page = () => {
                 <div
                   className={cn(
                     previews.length > 0 &&
-                      "mt-4 grid grid-cols-4 gap-2 items-stretch",
+                    "mt-4 grid grid-cols-4 gap-2 items-stretch",
                     previews.length < 1 && "h-full"
                   )}
                 >
