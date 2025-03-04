@@ -1,12 +1,10 @@
 package com.app.unify.mapper;
 
-import java.util.List;
-
-import org.mapstruct.Mapper;
-
 import com.app.unify.dto.global.PostDTO;
 import com.app.unify.dto.response.PostsDataResponse;
 import com.app.unify.entities.Post;
+import java.util.List;
+import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface PostMapper {

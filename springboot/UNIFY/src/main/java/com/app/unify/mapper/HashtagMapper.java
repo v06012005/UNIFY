@@ -1,11 +1,9 @@
 package com.app.unify.mapper;
 
-import java.util.List;
-
-import org.mapstruct.Mapper;
-
 import com.app.unify.dto.global.HashtagDTO;
 import com.app.unify.entities.Hashtag;
+import java.util.List;
+import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface HashtagMapper {

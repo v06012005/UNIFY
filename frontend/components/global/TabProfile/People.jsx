@@ -23,7 +23,7 @@ const People = () => {
   }, []);
 
   useEffect(() => {
-    setShowArrows(suggestedUsers.length > 10);
+    setShowArrows(suggestedUsers.length > 5); // Giảm xuống 5 để giống Instagram
   }, [suggestedUsers]);
 
   const handleClick = (username) => {
@@ -36,7 +36,7 @@ const People = () => {
 
   const scroll = (direction) => {
     if (scrollRef.current) {
-      const scrollAmount = 200;
+      const scrollAmount = 150; // Giảm scroll amount để mượt hơn
       scrollRef.current.scrollBy({
         left: direction === "left" ? -scrollAmount : scrollAmount,
         behavior: "smooth",
@@ -45,66 +45,69 @@ const People = () => {
   };
 
   return (
-    <div className="relative mt-2 ml-3 mr-5 p-3">
+    <div className="relative mt-4 mx-2 p-4 bg-white dark:bg-black rounded-lg shadow-sm ">
       {showArrows && (
         <button
-          className="absolute left-0 top-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 p-2 rounded-full shadow-md"
+          className="absolute left-2 top-1/2 -translate-y-1/2 bg-gray-100 dark:bg-neutral-700 p-1.5 rounded-full shadow-sm opacity-90 hover:opacity-100 transition-opacity z-10"
           onClick={() => scroll("left")}
         >
-          <ChevronLeft size={20} />
+          <ChevronLeft size={16} className="text-zinc-700 dark:text-gray-300" />
         </button>
       )}
 
       <div
         ref={scrollRef}
-        className="flex gap-11 justify-center overflow-x-auto scrollbar-hide scroll-smooth px-10"
+        className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth px-4 py-2 max-w-[calc(100vw-16px)]" // Giới hạn chiều rộng
       >
         {loading ? (
-          <p className="text-gray-500">Loading...</p>
+          <p className="text-gray-400 text-sm">Loading...</p>
         ) : suggestedUsers.length > 0 ? (
-          suggestedUsers.slice(0, 11).map((user, index) => (
+          suggestedUsers.slice(0, 10).map((user, index) => (
             <div
               key={user.username}
               onClick={() => handleClick(user.username)}
-              className="flex flex-col items-center cursor-pointer"
+              className="flex flex-col items-center cursor-pointer group min-w-[80px]" // min-w để cố định kích thước
             >
-              <div className="relative w-[64px] h-[64px] overflow-hidden rounded-full border-2 border-gray-300">
+              <div className="relative w-[70px] h-[70px] overflow-hidden rounded-full border-2 border-gray-200 dark:border-gray-700 group-hover:border-pink-500 transition-colors">
                 {user?.avatar?.url ? (
                   <Image
                     src={user.avatar.url}
                     alt="Avatar"
-                    width={64}
-                    height={64}
-                    priority={index === 0}
+                    width={70}
+                    height={70}
+                    priority={index < 3} // Chỉ ưu tiên load 3 ảnh đầu
                     className="w-full h-full object-cover"
                   />
                 ) : (
                   <Image
                     src="/images/unify_icon_2.svg"
                     alt="Default Avatar"
-                    width={64}
-                    height={64}
-                    priority={index === 0}
+                    width={70}
+                    height={70}
+                    priority={index < 3}
                     className="w-full h-full object-cover"
                   />
                 )}
               </div>
-              <p className="text-sm text-gray-700 dark:text-white mt-1">
+              <p className="text-xs font-semibold text-gray-800 dark:text-gray-200 mt-1 truncate max-w-[70px]">
                 {user.username}
               </p>
             </div>
           ))
         ) : (
-          <p className="text-gray-500">There are no tips.</p>
+          <p className="text-gray-400 text-sm">No suggestions available.</p>
         )}
       </div>
 
       {showArrows && (
         <button
-          className="absolute right-0 top-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 p-2 rounded-full shadow-md"
+          className="absolute right-2 top-1/2 -translate-y-1/2 bg-gray-100 dark:bg-neutral-800 p-1.5 rounded-full shadow-sm opacity-90 hover:opacity-100 transition-opacity z-10"
           onClick={() => scroll("right")}
         >
-          <ChevronRight size={20} />
+          <ChevronRight
+            size={16}
+            className="text-zinc-700 dark:text-gray-300"
+          />
         </button>
       )}
     </div>
