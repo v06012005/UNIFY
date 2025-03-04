@@ -32,7 +32,7 @@ export const FollowProvider = ({ children }) => {
         }));
       }
     } catch (error) {
-      console.error("Lỗi khi kiểm tra follow:", error);
+      console.log("Lỗi khi kiểm tra follow:", error);
     }
   };
 
@@ -59,14 +59,14 @@ export const FollowProvider = ({ children }) => {
       );
 
       if (!response.ok) {
-        console.error("Lỗi follow/unfollow:", await response.text());
+        console.log("Lỗi follow/unfollow:", await response.text());
         setFollowingStatus((prev) => ({
           ...prev,
           [followingId]: currentStatus,
         }));
       }
     } catch (error) {
-      console.error("Lỗi khi follow/unfollow:", error);
+      console.log("Lỗi khi follow/unfollow:", error);
       setFollowingStatus((prev) => ({
         ...prev,
         [followingId]: currentStatus,
