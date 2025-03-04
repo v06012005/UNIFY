@@ -32,10 +32,10 @@ const Reels = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const containerRef = useRef(null);
   const videoRefs = useRef([]);
-
+  
   const currentUserId = user?.id;
   const [replyingTo, setReplyingTo] = useState(null);
-
+  const { createPostReport, createUserReport, createCommentReport } = useReports();
   const { data: posts, isLoading } = useQuery({
     queryKey: ["posts"],
     queryFn: fetchPosts,
@@ -76,7 +76,42 @@ const Reels = () => {
     }
     getVideoPosts();
   }, [isLoading, posts]);
-
+  const handleReportPost = useCallback(async (postId) => {
+    const report = await createPostReport(postId);
+  
+    if (report?.error) {
+      const errorMessage = report.error;
+      console.warn("Failed to report post:", errorMessage);
+  
+      if (errorMessage === "You have reported this content before.") {
+        addToast({
+          title: "Fail to report post",
+          description: "You have reported this content before.",
+          timeout: 3000,
+          shouldShowTimeoutProgess: true,
+          color: "warning",
+        });
+      } else {
+        addToast({
+          title: "Encountered an error",
+          description: "Error: " + errorMessage,
+          timeout: 3000,
+          shouldShowTimeoutProgess: true,
+          color: "danger",
+        });
+      }
+      return;
+    }
+  
+    console.log("Post reported successfully:", report);
+    addToast({
+      title: "Success",
+      description: "Report post successful.",
+      timeout: 3000,
+      shouldShowTimeoutProgess: true,
+      color: "success",
+    });
+  }, [createPostReport]);
   // Fetch comments cho một post cụ thể
   const loadComments = useCallback(
     async (postId) => {
@@ -347,7 +382,7 @@ const Reels = () => {
                   onClick={(e) => closeMore(e, post.id)}
                 >
                   <ul className="text-sm">
-                    <li className="cursor-pointer hover:bg-stone-900 font-bold text-left p-2 rounded-sm text-red-500">
+                  <li className="cursor-pointer hover:bg-slate-500 font-bold text-left p-2 rounded-sm text-red-500" onClick={() => handleReportPost(post.id)} >
                       Report
                     </li>
                     <li className="cursor-pointer hover:bg-stone-900 font-bold text-left p-2 rounded-sm">

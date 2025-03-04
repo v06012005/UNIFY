@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams, usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -178,7 +178,6 @@ const Page = () => {
                     </div>
                   )}
                 </div>
-
               </div>
               <p className="ml-20 mt-10 dark:text-gray-400 text-gray-600 font-bold">
                 “{userInfo.biography}”
@@ -217,14 +216,12 @@ const Page = () => {
             </button>
           </div>
 
-
-            <div className="mt-4">
-              <ProfileTabs
-                activeTab={activeTab}
-                username={params.username}
-                userReels={userReels}
-              />
-            </div>
+          <div className="mt-4">
+            <ProfileTabs
+              activeTab={activeTab}
+              username={params.username}
+              userReels={userReels}
+            />
           </div>
         </div>
       </div>

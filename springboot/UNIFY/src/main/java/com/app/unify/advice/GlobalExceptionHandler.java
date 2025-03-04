@@ -18,12 +18,7 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException ex) {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
 	}
-<<<<<<< HEAD
 
-
-=======
-	
->>>>>>> 19613fa10dacea3a5378aadd6911d88ff95e184c
 	@ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, String>> handleIllegalArgumentException(IllegalArgumentException ex) {
         Map<String, String> errorResponse = new HashMap<>();
