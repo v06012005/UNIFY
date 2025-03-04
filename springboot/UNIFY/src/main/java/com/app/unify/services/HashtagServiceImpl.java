@@ -17,10 +17,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Service
 public class HashtagServiceImpl implements HashtagService {
-	
+
 	@Autowired
 	HashtagMapper mapper;
-	
+
 	@Autowired
 	HashtagRepository hashtagRepository;
 
@@ -58,7 +58,7 @@ public class HashtagServiceImpl implements HashtagService {
 	@Transactional
 	public List<HashtagDTO> saveAll(List<HashtagDTO> hashtagDTOs) {
 		List<Hashtag> hashtags = hashtagDTOs.stream()
-		        .map(dto -> hashtagRepository.findByContent(dto.getContent()) 
+		        .map(dto -> hashtagRepository.findByContent(dto.getContent())
 		            .orElseGet(() -> mapper.toHashtag(dto)))
 		        .collect(Collectors.toList());
 

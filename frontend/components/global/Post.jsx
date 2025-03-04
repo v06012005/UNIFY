@@ -21,7 +21,6 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import Slider from "./Slider";
 
-
 const User = ({ href = "", username = "", firstname = "", lastname = "" }) => {
   return (
     <Link href={href}>
@@ -79,7 +78,6 @@ const Post = () => {
     queryKey: ["posts"],
     queryFn: fetchPosts,
   });
-
 
   if (isLoading) {
     return (

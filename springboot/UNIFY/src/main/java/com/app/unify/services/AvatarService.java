@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
 import com.app.unify.dto.global.AvatarDTO;
@@ -22,7 +23,7 @@ public class AvatarService {
 	private final AvatarRepository avatarRepository;
 	private final UserRepository userRepository;
 	private final AvatarMapper avatarMapper;
-	
+
 	public AvatarDTO create(AvatarDTO avatarDTO) {
 		Avatar avatar = avatarRepository.save(avatarMapper.toAvatar(avatarDTO));
 		return avatarMapper.toAvatarDTO(avatar);

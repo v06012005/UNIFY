@@ -2,8 +2,6 @@ package com.app.unify.dto.global;
 
 import java.time.LocalDateTime;
 
-import com.app.unify.entities.User;
-
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;

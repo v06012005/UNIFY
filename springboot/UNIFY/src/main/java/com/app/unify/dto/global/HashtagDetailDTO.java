@@ -1,7 +1,5 @@
 package com.app.unify.dto.global;
 
-import com.app.unify.entities.Post;
-
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,8 +12,8 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 public class HashtagDetailDTO {
 	String id;
-	
+
 	PostDTO post;
-	
+
 	HashtagDTO hashtag;
 }

@@ -1,13 +1,15 @@
 package com.app.unify.advice;
 
-import com.app.unify.exceptions.ReportException;
-import com.app.unify.exceptions.UserNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import com.app.unify.exceptions.ReportException;
+import com.app.unify.exceptions.UserNotFoundException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -16,7 +18,12 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException ex) {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
 	}
+<<<<<<< HEAD
+
+
+=======
 	
+>>>>>>> 19613fa10dacea3a5378aadd6911d88ff95e184c
 	@ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, String>> handleIllegalArgumentException(IllegalArgumentException ex) {
         Map<String, String> errorResponse = new HashMap<>();
@@ -34,8 +41,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleReportException(ReportException ex) {
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("message", ex.getMessage());
-        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND); 
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
-	
+
 
 }

@@ -2,6 +2,7 @@ package com.app.unify.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+
 import com.app.unify.dto.global.AvatarDTO;
 import com.app.unify.entities.Avatar;
 

@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/hashtags")
 public class HashtagController {
-	
+
 	@Autowired
 	HashtagService hashtagService;
 
@@ -25,5 +25,5 @@ public class HashtagController {
 	public List<HashtagDTO> saveAll(@RequestBody List<HashtagDTO> hashtagDTOs) {
 		return hashtagService.saveAll(hashtagDTOs);
 	}
-	
+
 }

@@ -6,7 +6,7 @@ import com.app.unify.dto.global.HashtagDetailDTO;
 
 public interface HashtagDetailService {
 	HashtagDetailDTO createHashtagDetai(HashtagDetailDTO hashtagDetailDTO);
-	
+
 	List<HashtagDetailDTO> saveAll(List<HashtagDetailDTO> hashtagDetailDTOs);
 
 	List<HashtagDetailDTO> getAll();
