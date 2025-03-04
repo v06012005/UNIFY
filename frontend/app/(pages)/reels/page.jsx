@@ -100,10 +100,10 @@ const Reels = () => {
       const errorMessage = report.error;
       console.warn("Failed to report post:", errorMessage);
   
-      if (errorMessage === "You have reported this post before.") {
+      if (errorMessage === "You have reported this content before.") {
         addToast({
           title: "Fail to report post",
-          description: "You have reported this post before.",
+          description: "You have reported this content before.",
           timeout: 3000,
           shouldShowTimeoutProgess: true,
           color: "warning",

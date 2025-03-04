@@ -38,11 +38,7 @@ const Page = () => {
   const [taggedPosts, setTaggedPosts] = useState([]);
   const params = useParams();
   const router = useRouter();
-
   const { user } = useApp();
-  const fetchedOnce = useRef(false);
-
- 
 
   const handleClickView = () => {
     router.push("/settings/archive");
@@ -65,14 +61,24 @@ const Page = () => {
     <div className="h-screen overflow-y-auto">
       <div className=" w-[82%] mx-auto">
         <div className="flex p-5 mx-20">
-          <div className="relative">
-            <Image
-              src={`/images/avt.jpg`}
-              alt="Avatar"
-              className="mx-auto rounded-full border-2 border-gray-300"
-              width={200}
-              height={200}
-            />
+          <div className="relative w-[200px] h-[200px] overflow-hidden rounded-full border-2 border-gray-300">
+            {user?.avatar?.url ? (
+              <Image
+                src={user.avatar.url}
+                alt="Avatar"
+                width={200}
+                height={200}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <Image
+                src="/images/unify_icon_2.svg"
+                alt="Default Avatar"
+                width={200}
+                height={200}
+                className="w-full h-full object-cover"
+              />
+            )}
           </div>
 
           <div className="p-2 ml-8">
@@ -147,10 +153,11 @@ const Page = () => {
         <div className="p-4">
           <div className="flex justify-center border-b-2 border-gray-300">
             <button
-              className={`py-2 px-4 mr-5 font-bold flex items-center ${activeTab === "post"
+              className={`py-2 px-4 mr-5 font-bold flex items-center ${
+                activeTab === "post"
                   ? "text-blue-500 border-b-4 border-blue-500"
                   : "text-gray-500 dark:text-gray-200"
-                }`}
+              }`}
               onClick={() => setActiveTab("post")}
             >
               <NavButton iconClass="fa-solid fa-pen" />
@@ -158,10 +165,11 @@ const Page = () => {
             </button>
 
             <button
-              className={`py-2 px-4 mr-5 font-bold flex items-center ${activeTab === "reel"
+              className={`py-2 px-4 mr-5 font-bold flex items-center ${
+                activeTab === "reel"
                   ? "text-blue-500 border-b-4 border-blue-500"
                   : "text-gray-500 dark:text-gray-200"
-                }`}
+              }`}
               onClick={() => setActiveTab("reel")}
             >
               <NavButton iconClass="fa-solid fa-film" />
@@ -169,10 +177,11 @@ const Page = () => {
             </button>
 
             <button
-              className={`py-2 px-4 mr-5 font-bold flex items-center ${activeTab === "saved"
+              className={`py-2 px-4 mr-5 font-bold flex items-center ${
+                activeTab === "saved"
                   ? "text-blue-500 border-b-4 border-blue-500"
                   : "text-gray-500 dark:text-gray-200"
-                }`}
+              }`}
               onClick={() => setActiveTab("saved")}
             >
               <NavButton iconClass="fa-solid fa-bookmark" />
@@ -180,10 +189,11 @@ const Page = () => {
             </button>
 
             <button
-              className={`py-2 px-4 mr-5 font-bold flex items-center ${activeTab === "tagged"
+              className={`py-2 px-4 mr-5 font-bold flex items-center ${
+                activeTab === "tagged"
                   ? "text-blue-500 border-b-4 border-blue-500"
                   : "text-gray-500 dark:text-gray-200"
-                }`}
+              }`}
               onClick={() => setActiveTab("tagged")}
             >
               <NavButton iconClass="fa-solid fa-tag" />

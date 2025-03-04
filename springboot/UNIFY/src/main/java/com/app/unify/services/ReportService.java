@@ -134,7 +134,7 @@ public class ReportService {
         }
 
         if (reportRepository.existsByUserIdAndReportedIdAndEntityType(userId, reportedId, entityType)) {
-            throw new ReportException("You have reported this post before.");
+            throw new ReportException("You have reported this content before.");
         }
 
         User user = userRepository.findById(userId)

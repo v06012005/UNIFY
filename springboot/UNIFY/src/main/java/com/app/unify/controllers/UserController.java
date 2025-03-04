@@ -77,7 +77,7 @@ public class UserController {
         return userService.createUser(userDto);
     }
 
-    @PutMapping()
+    @PutMapping
     public ResponseEntity<?> updateUser(@RequestBody UserDTO userDto) {
         try {
             UserDTO updatedUser = userService.updateUser(userDto);

@@ -119,6 +119,7 @@ export const AppProvider = ({ children }) => {
     status: 0,
     workAt: "",
     biography: "",
+    avatar: { url: "" },
   });
   const [isAdmin, setIsAdmin] = useState(false);
   const router = useRouter();

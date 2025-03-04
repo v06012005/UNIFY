@@ -19,7 +19,6 @@ export const SuggestedUsersProvider = ({ children }) => {
     try {
       const token = Cookies.get("token");
       if (!token) {
-        console.error("No token found! User might not be logged in.");
         return null;
       }
 

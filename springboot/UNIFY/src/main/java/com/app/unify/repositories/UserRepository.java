@@ -3,6 +3,7 @@ package com.app.unify.repositories;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -17,9 +18,10 @@ import jakarta.transaction.Transactional;
 public interface UserRepository extends JpaRepository<User, String> {
 
 	Optional<User> findByEmail(String email);
-
+//	@EntityGraph(attributePaths = "avatars")
+//	Optional<User> findWithAvatarById(String id);
 	Optional<User> findByUsername(String username);
-
+	Optional<User> findById(String id);
 	boolean existsByEmail(String email);
 
 	boolean existsByUsername(String username);

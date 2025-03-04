@@ -91,13 +91,26 @@ const ModalPost = ({ report, isOpen, onClose }) => {
           {/* Header: Người đăng */}
           <div className="flex items-center justify-between border-b pb-2 px-4 pt-4">
             <div className="flex items-center">
-              <div className="w-10 h-10 rounded-full border-2 border-gray-300 overflow-hidden">
+               <div className="relative w-[50px] h-[50px] overflow-hidden rounded-full border-2 border-gray-300">
+              {reportedEntity?.avatar?.url ? (
                 <img
-                  src={reportedEntity.user?.avatar || "/default-avatar.png"}
-                  alt="User Avatar"
+                  src={reportedEntity.avatar.url}
+                  alt="Avatar"
+                  width={50}
+                  height={50}
                   className="w-full h-full object-cover"
                 />
-              </div>
+              ) : (
+                <img
+                  src="/images/unify_icon_2.svg"
+                  alt="Default Avatar"
+                  width={50}
+                  height={50}
+                  className="w-full h-full object-cover"
+                />
+              )}
+            </div>
+            
               <span className="font-bold ml-3 dark:text-white">
                 {reportedEntity.user?.username || "Unknown"}
               </span>

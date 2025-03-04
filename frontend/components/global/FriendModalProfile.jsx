@@ -54,13 +54,25 @@ const FriendModal = ({ isOpen, onClose }) => {
                   onClick={() => handleClick(user.username)}
                   className="flex items-center cursor-pointer"
                 >
-                  <Image
-                    src={`/images/avt.jpg`}
-                    alt="Avatar"
-                    className="rounded-full border-2 border-gray-300"
-                    width={50}
-                    height={50}
-                  />
+                  <div className="relative w-[50px] h-[50px] overflow-hidden rounded-full border-2 border-gray-300">
+                                {userData?.avatar?.url ? (
+                                  <Image
+                                    src={userData.avatar.url}
+                                    alt="Avatar"
+                                    width={50}
+                                    height={50}
+                                    className="w-full h-full object-cover"
+                                  />
+                                ) : (
+                                  <Image
+                                    src="/images/unify_icon_2.svg"
+                                    alt="Default Avatar"
+                                    width={200}
+                                    height={200}
+                                    className="w-full h-full object-cover"
+                                  />
+                                )}
+                              </div>
                   <span className="font-medium ml-3">{user.username}</span>
                 </div>
                 <div className="flex items-center space-x-2 border px-6 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-500 dark:bg-gray-700 cursor-pointer">

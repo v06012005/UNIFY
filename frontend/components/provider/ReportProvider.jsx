@@ -14,9 +14,10 @@ const useFetchReports = () => {
     try {
       const token = Cookies.get("token");
       if (!token) {
-        throw new Error("Vui lòng đăng nhập để tiếp tục.");
+        console.warn("Không tìm thấy token, không thể tải báo cáo.");
+        return;
       }
-
+  
       console.log("Fetching pending reports with token:", token);
       const response = await fetch("http://localhost:8080/reports/status?statuses=0", {
         method: "GET",
@@ -25,59 +26,64 @@ const useFetchReports = () => {
           "Content-Type": "application/json",
         },
       });
-
+  
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
-        throw new Error(errorData?.message || "Không có quyền truy cập hoặc lỗi hệ thống");
+        console.warn("Không có quyền truy cập hoặc lỗi hệ thống: ", errorData?.message || "Lỗi không xác định");
+        return;
       }
-
+  
       const data = await response.json();
       if (data.length === 0) {
-        console.warn("API không trả về báo cáo nào cho status 0.");
+        console.warn("Không có báo cáo nào ở trạng thái 0.");
+      } else {
+        setPendingReports(data);
       }
-      setPendingReports(data);
     } catch (error) {
-      console.error("Lỗi khi tải danh sách báo cáo status 0: ", error);
-      throw error;
+      console.warn("Lỗi khi tải danh sách báo cáo: ", error.message || error);
     } finally {
       setLoading(false);
     }
   }, []);
+  
 
   const fetchApprovedReports = useCallback(async () => {
-    setLoading(true);
-    try {
-      const token = Cookies.get("token");
-      if (!token) {
-        throw new Error("Vui lòng đăng nhập để tiếp tục.");
+      setLoading(true);
+      try {
+        const token = Cookies.get("token");
+        if (!token) {
+          console.warn("Không tìm thấy token, không thể tải báo cáo.");
+          return;
+        }
+    
+        console.log("Fetching pending reports with token:", token);
+        const response = await fetch("http://localhost:8080/reports/status?statuses=1,2", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+    
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => null);
+          console.warn("Không có quyền truy cập hoặc lỗi hệ thống: ", errorData?.message || "Lỗi không xác định");
+          return;
+        }
+    
+        const data = await response.json();
+        if (data.length === 0) {
+          console.warn("Không có báo cáo nào ở trạng thái 1,2.");
+        } else {
+          setPendingReports(data);
+        }
+      } catch (error) {
+        console.warn("Lỗi khi tải danh sách báo cáo: ", error.message || error);
+      } finally {
+        setLoading(false);
       }
-
-      console.log("Fetching approved reports with token:", token);
-      const response = await fetch("http://localhost:8080/reports/status?statuses=1,2", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        throw new Error(errorData?.message || "Không có quyền truy cập hoặc lỗi hệ thống");
-      }
-
-      const data = await response.json();
-      if (data.length === 0) {
-        console.warn("API không trả về báo cáo nào cho status 1,2.");
-      }
-      setApprovedReports(data);
-    } catch (error) {
-      console.error("Lỗi khi tải danh sách báo cáo status 1,2: ", error);
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    }, []);
+    
   const createPostReport = useCallback(async (reportedId) => {
     try {
       const token = Cookies.get("token");
