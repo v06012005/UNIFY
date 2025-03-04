@@ -1,14 +1,5 @@
 package com.app.unify.services;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.stereotype.Service;
-
 import com.app.unify.dto.global.PostDTO;
 import com.app.unify.entities.Hashtag;
 import com.app.unify.entities.Post;
@@ -17,8 +8,14 @@ import com.app.unify.mapper.PostMapper;
 import com.app.unify.repositories.HashtagDetailRepository;
 import com.app.unify.repositories.HashtagRepository;
 import com.app.unify.repositories.PostRepository;
-
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
@@ -32,8 +29,11 @@ public class PostServiceImp implements PostService {
 
     @Autowired
     private HashtagRepository hashtagRepository;
+
     @Autowired
     private HashtagDetailRepository hashtagDetailRepository;
+
+    
 
     @Override
     public PostDTO createPost(PostDTO postDTO) {
@@ -104,4 +104,14 @@ public class PostServiceImp implements PostService {
 		List<PostDTO> list = mapper.toPostDTOList(postRepository.findAllById(postIds));
 		return list;
 	}
+
+    @Override
+    public List<PostDTO> getRecommendedPosts(String userId) {
+        // Logic recommendation: Lấy posts từ user follow, lượt like, hashtag, v.v.
+        List<Post> posts = postRepository.findPostsWithInteractionCounts()
+            .stream()
+            .map(result -> (Post) result[0])
+            .collect(Collectors.toList());
+        return posts.stream().map(mapper::toPostDTO).collect(Collectors.toList());
+    }
 }

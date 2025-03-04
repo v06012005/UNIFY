@@ -33,7 +33,6 @@ const Reels = () => {
   const containerRef = useRef(null);
   const videoRefs = useRef([]);
 
-  const currentUserId = user?.id;
   const [replyingTo, setReplyingTo] = useState(null);
 
   const { data: posts, isLoading } = useQuery({
@@ -304,7 +303,7 @@ const Reels = () => {
           <div className="absolute top-2/3 right-4 transform -translate-y-1/2 flex flex-col items-center space-y-7 text-white text-2xl">
             <div className="flex flex-col items-center">
               <LikeButton
-                userId={user.id}
+                userId={user?.id}
                 postId={post.id}
                 className="flex flex-col items-center"
                 classText="text-sm"
@@ -397,7 +396,7 @@ const Reels = () => {
                     <CommentItem
                       key={comment.id}
                       comment={comment}
-                      currentUserId={currentUserId}
+                      currentUserId={user?.id}
                       onReplySubmit={handleReplySubmit}
                       onReplyClick={() => handleReplyClick(comment)}
                     />

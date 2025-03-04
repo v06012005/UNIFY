@@ -1,5 +1,6 @@
 package com.app.unify.controllers;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/follow")
 public class FollowerController {
 
+    @Autowired
     private final FollowService followService;
 
     @PostMapping("/{followingId}")
