@@ -38,9 +38,8 @@ const Page = () => {
   const [taggedPosts, setTaggedPosts] = useState([]);
   const params = useParams();
   const router = useRouter();
-
   const { user } = useApp();
-  const fetchedOnce = useRef(false);
+
 
   const handleClickView = () => {
     router.push("/settings/archive");
@@ -63,14 +62,26 @@ const Page = () => {
     <div className="h-screen overflow-y-auto">
       <div className=" w-[82%] mx-auto">
         <div className="flex p-5 mx-20">
-          <div className="relative">
-            <Image
-              src={`/images/avt.jpg`}
-              alt="Avatar"
-              className="mx-auto rounded-full border-2 border-zinc-200"
-              width={200}
-              height={200}
-            />
+
+          <div className="relative w-[200px] h-[200px] overflow-hidden rounded-full border-2 border-gray-300">
+            {user?.avatar?.url ? (
+              <Image
+                src={user.avatar.url}
+                alt="Avatar"
+                width={200}
+                height={200}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <Image
+                src="/images/unify_icon_2.svg"
+                alt="Default Avatar"
+                width={200}
+                height={200}
+                className="w-full h-full object-cover"
+              />
+            )}
+
           </div>
 
           <div className="p-2 ml-8">
@@ -145,10 +156,12 @@ const Page = () => {
         <div className="p-7">
           <div className="flex justify-center border-b-1 dark:border-neutral-700">
             <button
+
               className={`py-2 px-4 mr-5 font-normal flex items-center ${
                 activeTab === "post"
                   ? "text-neutral-900 border-b-1 border-neutral-800 dark:text-white dark:border-white"
                   : "text-neutral-900 dark:text-white"
+
               }`}
               onClick={() => setActiveTab("post")}
             >
@@ -157,10 +170,12 @@ const Page = () => {
             </button>
 
             <button
+
               className={`py-2 px-4 mr-5 font-normal flex items-center ${
                 activeTab === "reel"
                   ? "text-neutral-900 border-b-1 border-neutral-800 dark:text-white dark:border-white"
                   : "text-neutral-900 dark:text-white"
+
               }`}
               onClick={() => setActiveTab("reel")}
             >
@@ -169,10 +184,12 @@ const Page = () => {
             </button>
 
             <button
+
               className={`py-2 px-4 mr-5 font-normal flex items-center ${
                 activeTab === "saved"
                   ? "text-neutral-900 border-b-1 border-neutral-800 dark:text-white dark:border-white"
                   : "text-neutral-900 dark:text-white"
+
               }`}
               onClick={() => setActiveTab("saved")}
             >
@@ -181,10 +198,12 @@ const Page = () => {
             </button>
 
             <button
+
               className={`py-2 px-4 mr-5 font-normal flex items-center ${
                 activeTab === "tagged"
                   ? "text-neutral-900 border-b-1 border-neutral-800 dark:text-white dark:border-white"
                   : "text-neutral-900 dark:text-white"
+
               }`}
               onClick={() => setActiveTab("tagged")}
             >

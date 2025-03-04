@@ -59,6 +59,6 @@ public class UserDTO {
 	private String currentPassword;
 	private String newPassword;
 	Set<Role> roles;
-//	Set<Avatar> avatars;
 
+	private AvatarDTO avatar;
 }

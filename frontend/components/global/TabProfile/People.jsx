@@ -1,14 +1,17 @@
 import React, { useRef, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { SuggestedUsersProvider, useSuggestedUsers } from "@/components/provider/SuggestedUsersProvider";
+import {
+  SuggestedUsersProvider,
+  useSuggestedUsers,
+} from "@/components/provider/SuggestedUsersProvider";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const People = () => {
   const scrollRef = useRef(null);
   const router = useRouter();
   const [showArrows, setShowArrows] = useState(false);
-  const hasFetched = useRef(false); // Đánh dấu đã fetch
+  const hasFetched = useRef(false);
 
   const { suggestedUsers, getSuggestedUsers, loading } = useSuggestedUsers();
 
@@ -65,21 +68,34 @@ const People = () => {
               onClick={() => handleClick(user.username)}
               className="flex flex-col items-center cursor-pointer"
             >
-              <Image
-                src={user.avatar || "/images/default-avatar.jpg"}
-                alt="Avatar"
-                className="rounded-full border-2 border-gray-300 w-16 h-16 object-cover"
-                width={64}
-                height={64}
-                priority={index === 0}
-              />
+              <div className="relative w-[64px] h-[64px] overflow-hidden rounded-full border-2 border-gray-300">
+                {user?.avatar?.url ? (
+                  <Image
+                    src={user.avatar.url}
+                    alt="Avatar"
+                    width={64}
+                    height={64}
+                    priority={index === 0}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <Image
+                    src="/images/unify_icon_2.svg"
+                    alt="Default Avatar"
+                    width={64}
+                    height={64}
+                    priority={index === 0}
+                    className="w-full h-full object-cover"
+                  />
+                )}
+              </div>
               <p className="text-sm text-gray-700 dark:text-white mt-1">
                 {user.username}
               </p>
             </div>
           ))
         ) : (
-          <p className="text-gray-500">Không có gợi ý nào.</p>
+          <p className="text-gray-500">There are no tips.</p>
         )}
       </div>
 
@@ -94,11 +110,5 @@ const People = () => {
     </div>
   );
 };
-// const PeopleList = () => {
-//   return (
-//     <SuggestedUsersProvider>
-//       <People />
-//     </SuggestedUsersProvider>
-//   );
-// };
+
 export default People;

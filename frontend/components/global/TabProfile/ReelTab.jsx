@@ -212,7 +212,7 @@ const UserReels = ({ username }) => {
             })}
         </div>
       ) : (
-        <p className="text-center text-gray-500 mt-4">Không có video nào.</p>
+        <p className="text-center text-gray-500 mt-4">No video available..</p>
       )}
       {selectedPost && (
         <div

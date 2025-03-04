@@ -5,12 +5,20 @@ const UserInfo = ({ user }) => {
   return (
     <div className="space-y-4">
       <div className="flex items-center space-x-4">
-        <div className="w-20 h-20 rounded-full border-2 border-gray-300 overflow-hidden">
-          <img
-            src={user.avatar || "/default-avatar.png"}
-            alt="User Avatar"
-            className="w-full h-full object-cover"
-          />
+        <div className="relative w-[140px] h-[140px] overflow-hidden rounded-full border-2 border-gray-300">
+              {user?.avatar?.url ? (
+                <img
+                  src={user.avatar.url}
+                  alt="Avatar"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <img
+                  src="/images/unify_icon_2.svg"
+                  alt="Default Avatar"
+                  className="w-full h-full object-cover"
+                />
+              )}
         </div>
         <div>
           <h2 className="text-xl font-bold dark:text-white">

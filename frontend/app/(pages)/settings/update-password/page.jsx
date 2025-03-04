@@ -3,7 +3,7 @@
 import React from "react";
 import { Form, Input, Button } from "@heroui/react";
 import { axiosResult } from "@/app/api/cookie";
-import { toast } from "@/hooks/use-toast";
+import { addToast, ToastProvider } from "@heroui/toast";
 const ChangePassword = () => {
   const [currentPassword, setCurrentPassword] = React.useState("");
   const [newPassword, setNewPassword] = React.useState("");
@@ -47,9 +47,12 @@ const ChangePassword = () => {
         setCurrentPassword("");
         setNewPassword("");
         setConfirmPassword("");
-        toast({
-          title: result,
-          variant: "success",
+        addToast({
+          title: "Success",
+          description: result,
+          timeout: 3000,
+          shouldShowTimeoutProgess: true,
+          color: "success",
         });
       }
     } catch (error) {
@@ -105,28 +108,40 @@ const ChangePassword = () => {
       });
 
       if (response.ok) {
-        toast({
-          title:
-            "You have entered the wrong password too many times (5 attempts). Please log in again to change your password!",
-          variant: "warning",
+          
+        addToast({
+          title: "Waiting",
+          description: "You have entered the wrong password too many times (5 attempts). Please log in again to change your password!",
+          timeout: 3000,
+          shouldShowTimeoutProgess: true,
+          color: "warning",
         });
         window.location.href = "/login";
       } else {
-        toast({
-          title: "Logout failed. Please try again.",
-          variant: "warning",
+        addToast({
+          title: "Waiting",
+          description: "Logout failed. Please try again.",
+          timeout: 3000,
+          shouldShowTimeoutProgess: true,
+          color: "warning",
         });
       }
     } catch (error) {
       console.error("Error removing cookie:", error);
-      toast({
-        title: "An unexpected error occurred while logging out.",
-        variant: "warning",
+      addToast({
+        title: "Waiting",
+        description: "Logout failed. Please try again.",
+        timeout: 3000,
+        shouldShowTimeoutProgess: true,
+        color: "warning",
       });
     }
   };
 
   return (
+    <>
+    <ToastProvider placement={"top-right"} />
+  
     <div className="w-full h-screen">
       <h1 className="text-3xl font-bold mb-5 ">Change password</h1>
       <Form
@@ -222,6 +237,7 @@ const ChangePassword = () => {
         </div>
       </Form>
     </div>
+    </>
   );
 };
 
