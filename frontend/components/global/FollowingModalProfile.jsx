@@ -66,13 +66,25 @@ const FollowingModal = ({ isOpen, onClose }) => {
                   onClick={() => handleClick(userData.username)}
                   className="flex items-center cursor-pointer"
                 >
-                  <Image
-                    src={`/images/avt.jpg`}
-                    alt="Avatar"
-                    className="rounded-full border-2 border-gray-300"
-                    width={50}
-                    height={50}
-                  />
+                  <div className="relative w-[50px] h-[50px] overflow-hidden rounded-full border-2 border-gray-300">
+                    {userData?.avatar?.url ? (
+                      <Image
+                        src={userData.avatar.url}
+                        alt="Avatar"
+                        width={50}
+                        height={50}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <Image
+                        src="/images/unify_icon_2.svg"
+                        alt="Default Avatar"
+                        width={200}
+                        height={200}
+                        className="w-full h-full object-cover"
+                      />
+                    )}
+                  </div>
                   <span className="font-medium ml-3">{userData.username}</span>
                 </div>
                 <FollowButton

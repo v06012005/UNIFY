@@ -6,7 +6,8 @@ import { TagNotification } from "@/components/ui/tag_notification";
 import useNotification from "@/hooks/useNotification";
 
 const NotificationModal = ({ isNotificationOpen, modalRef, userId }) => {
-  const { notifications } = useNotification(userId);
+  const { notifications, markNotificationAsRead, markAllNotificationsAsRead } =
+    useNotification(userId);
 
   const sortedNotifications = [...notifications].sort(
     (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
@@ -19,7 +20,9 @@ const NotificationModal = ({ isNotificationOpen, modalRef, userId }) => {
           <FollowNotification
             key={notification.id}
             isSeen={notification.isRead}
-            sender={notification.sender} // Pass the sender prop
+            sender={notification.sender}
+            timestamp={notification.timestamp}
+            onClick={() => markNotificationAsRead(notification.id)}
           />
         );
       case "tag":
@@ -32,19 +35,19 @@ const NotificationModal = ({ isNotificationOpen, modalRef, userId }) => {
   };
 
   return (
-    <div className="fixed left-20 bg-black bg-opacity-50 z-40 flex justify-start">
+    <div className="fixed left-20 bg-black border-l-1 dark:border-neutral-700 bg-opacity-50 flex justify-start">
       <div
         ref={modalRef}
         className={`bg-white dark:bg-black text-black dark:text-white shadow-lg max-w-md h-screen overflow-hidden ${
           isNotificationOpen ? "animate-fadeScale" : "animate-fadeOut"
-        } transition-all ease-in-out duration-300`}
+        } transition-all ease-in-out duration-300  dark:border-neutral-700`}
         style={{
           width: isNotificationOpen ? 448 : 0,
         }}
       >
         <h1 className="font-bold text-2xl mb-4 px-5 pt-5">Notifications</h1>
 
-        <div className="overflow-y-auto space-y-1 pr-2 max-h-full h-[94%] pb-5 pl-5">
+        <div className="overflow-y-auto space-y-1 max-h-full h-[94%] pb-5 px-5">
           {sortedNotifications.length > 0 ? (
             sortedNotifications.map((notification, index) => (
               <React.Fragment key={notification.id}>

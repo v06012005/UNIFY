@@ -3,9 +3,9 @@ import "./globals.css";
 import Head from "next/head";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import RootProviders from "@/components/provider/RootProviders";
-import React, {Suspense} from "react";
+import React, { Suspense } from "react";
 import Spinner from "@/components/loading/Spinner";
-import Logo from "@/public/images/unify_1.svg"
+import Logo from "@/public/images/unify_1.svg";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,29 +23,30 @@ export const metadata = {
 };
 
 export default async function RootLayout({ children }) {
-
-    return (
-          <html lang="en" suppressHydrationWarning>
-          <Head>
-              <link
-                  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-                  rel="stylesheet"
-              />
-          </Head>
-          <body
-              className={`${geistSans.variable} ${geistMono.variable} flex w-full`}
-          >
-        <Suspense fallback={
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <Head>
+        <link
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+          rel="stylesheet"
+        />
+      </Head>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} flex w-full`}
+      >
+        <Suspense
+          fallback={
             <div className="grid w-full bg-gray-300 h-screen place-items-center">
-                <div className="flex flex-col items-center gap-4">
-                    <img src={Logo.src} alt="logo" className="w-80"/>
-                    <Spinner/>
-                </div>
+              <div className="flex flex-col items-center gap-4">
+                <img src={Logo.src} alt="logo" className="w-80" />
+                <Spinner />
+              </div>
             </div>
-        }>
-            <RootProviders>{children}</RootProviders>
+          }
+        >
+          <RootProviders>{children}</RootProviders>
         </Suspense>
-          </body>
-          </html>
-    );
+      </body>
+    </html>
+  );
 }

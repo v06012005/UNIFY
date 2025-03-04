@@ -2,6 +2,8 @@ package com.app.unify.entities;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -18,6 +20,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -80,9 +83,6 @@ public class User {
 	@OneToMany(mappedBy = "user")
 	Set<Post> posts;
 
-	@OneToMany(mappedBy = "user")
-	Set<Avatar> avatars;
-
 	@OneToMany(mappedBy = "userFollower")
 	Set<Follower> followers;
 
@@ -111,8 +111,19 @@ public class User {
 	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
 	Set<Role> roles;
 
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	List<Avatar> avatars = new ArrayList<>();
 	@JsonIgnore
 	@OneToMany(mappedBy = "user")
 	List<Token> tokens;
+	public Avatar getLatestAvatar() {
+        return avatars.stream()
+                .max(Comparator.comparing(Avatar::getChangedDate))
+                .orElse(null);
+    }
 
+    public void addAvatar(Avatar avatar) {
+        avatars.add(avatar);
+        avatar.setUser(this);
+    }
 }

@@ -8,7 +8,7 @@ import SearchHorizontalToggle from "@/components/global/SearchHorizontalToggle";
 import NotificationModal from "@/components/global/NotificationModal";
 import UnifyLogoIcon from "./UnifyLogoIcon";
 import { useApp } from "@/components/provider/AppProvider";
-import {useParams, useRouter} from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 const NavButton = React.memo(function NavButton({
   iconClass,
   href = "",
@@ -18,6 +18,7 @@ const NavButton = React.memo(function NavButton({
     <Link
       title={title}
       href={href}
+      // className={`w-full dark:hover:text-black dark:hover:bg-gray-200 flex h-full items-center text-center transition delay-100 ease-in-out duration-100 hover:bg-[#D9D9D9]`}
       className={`w-full dark:hover:text-black dark:hover:bg-gray-200 flex h-full items-center text-center transition delay-100 ease-in-out duration-100 hover:bg-[#D9D9D9]`}
     >
       <i className={`${iconClass} w-full`}></i>
@@ -26,7 +27,6 @@ const NavButton = React.memo(function NavButton({
 });
 
 const SideBar = () => {
-  
   const { user } = useApp();
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const modalRef = useRef(null);
@@ -80,15 +80,15 @@ const SideBar = () => {
       searchComponentRef={searchComponentRef}
     >
       <div className="relative flex flex-row">
-        <div className="flex flex-col border h-screen fixed left-0 top-0 z-50">
+        <div className="flex flex-col border-r-1 dark:border-neutral-700 h-screen fixed left-0 top-0 z-50">
           <UnifyLogoIcon />
           <NotificationModal
             isNotificationOpen={isNotificationOpen}
             modalRef={modalRef}
             userId={user?.id}
           />
-          <ul className="text-3xl flex flex-col justify-center grow w-full">
-            <li className="h-16">
+          <ul className="text-2xl flex flex-col justify-center grow w-full">
+            <li className="h-16  ">
               <NavButton
                 title="Home"
                 href="/"
@@ -152,7 +152,7 @@ const SideBar = () => {
                   <Image
                     src={avatar}
                     alt="User profile image"
-                    className="h-10 w-10 mx-auto rounded-full"
+                    className="h-8 w-8 mx-auto rounded-full"
                   />
                 </Link>
               )}

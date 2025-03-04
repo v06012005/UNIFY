@@ -103,16 +103,13 @@ const UserReels = ({ username }) => {
                 setLoading(false);
 
                 console.log("Danh sách bài đăng của tôi:", response.data);
-
               })
               .catch((error) => console.log(error));
           }
         })
         .catch((error) => console.log(error));
     } catch (error) {
-
       console.log(error);
-
     }
   };
 
@@ -157,8 +154,6 @@ const UserReels = ({ username }) => {
   const handlePostClick = (post) => {
     setSelectedPost(post);
     setSelectedMedia(post.media.length > 0 ? post.media[0] : null);
-
-
   };
 
   const closeModal = () => {
@@ -186,7 +181,6 @@ const UserReels = ({ username }) => {
                     <video
                       src={firstVideo.url}
                       className="w-full h-full object-cover cursor-pointer"
-                      controls
                       onClick={() => handlePostClick(post)}
                     />
                   </div>
@@ -218,7 +212,7 @@ const UserReels = ({ username }) => {
             })}
         </div>
       ) : (
-        <p className="text-center text-gray-500 mt-4">Không có video nào.</p>
+        <p className="text-center text-gray-500 mt-4">No video available..</p>
       )}
       {selectedPost && (
         <div
@@ -251,10 +245,11 @@ const UserReels = ({ username }) => {
                   {selectedPost.media.map((item, index) => (
                     <div
                       key={index}
-                      className={`w-16 h-16 cursor-pointer border-2 ${selectedMedia.url === item.url
+                      className={`w-16 h-16 cursor-pointer border-2 ${
+                        selectedMedia.url === item.url
                           ? "border-blue-500"
                           : "border-transparent"
-                        }`}
+                      }`}
                       onClick={() => setSelectedMedia(item)}
                     >
                       {item.mediaType === "VIDEO" ? (

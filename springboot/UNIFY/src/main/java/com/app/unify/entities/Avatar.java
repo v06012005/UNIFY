@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -35,9 +36,8 @@ public class Avatar {
 
 	@Column(name = "changed_date", nullable = false)
 	LocalDateTime changedDate;
-
 	@ManyToOne
-	@JoinColumn(name = "user_id", nullable = false)
-	User user;
+    @JoinColumn(name = "user_id", nullable = false)
+     User user;
 
 }
