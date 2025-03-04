@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.app.unify.dto.global.UserDTO;
+import com.app.unify.entities.Avatar;
 import com.app.unify.entities.Role;
 import com.app.unify.entities.User;
 import com.app.unify.exceptions.UserNotFoundException;

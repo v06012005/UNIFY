@@ -26,12 +26,6 @@ const Page = () => {
         {posts?.map(post => {
           return (<Picture key={post.id} post={post} url={post?.media[0].url} />)
         })}
-
-        <Video />
-        <Picture />
-        <Video />
-        <Picture />
-        <Video />
       </div>
     </div>
   );
