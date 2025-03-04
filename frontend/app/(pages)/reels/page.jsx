@@ -16,8 +16,12 @@ import { useDisclosure } from "@heroui/react";
 import avatar2 from "@/public/images/testAvt.jpg";
 import FollowButton from "@/components/ui/follow-button";
 import LikeButton from "@/components/global/LikeButton";
+
+
 import { useReports } from "@/components/provider/ReportProvider";
 import { addToast, ToastProvider } from "@heroui/toast";
+import { useQuery } from "@tanstack/react-query";
+
 
 const Reels = () => {
   const [isCommentOpen, setIsCommentOpen] = useState(false);
@@ -34,10 +38,14 @@ const Reels = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const containerRef = useRef(null);
   const videoRefs = useRef([]);
+
+  ////////////// ReplyReply
+
   const currentUserId = user?.id;
   const [replyingTo, setReplyingTo] = useState(null);
   const { createPostReport, createUserReport, createCommentReport } =
     useReports();
+
 
   // Fetch video posts và comments ngay từ đầu
   useEffect(() => {
@@ -101,6 +109,7 @@ const Reels = () => {
     getVideoPosts();
   }, [token]);
 
+
   // Fetch comments cho một post cụ thể (giữ lại để reload nếu cần)
   const loadComments = useCallback(
     async (postId) => {
@@ -122,6 +131,7 @@ const Reels = () => {
     },
     [token]
   );
+
 
   const handleReportPost = useCallback(
     async (postId) => {
@@ -148,6 +158,7 @@ const Reels = () => {
         }
         return;
       }
+
       console.log("Post reported successfully:", report);
       addToast({
         title: "Success",
@@ -190,6 +201,7 @@ const Reels = () => {
       }
     });
 
+
     return () => {
       videoRefs.current.forEach((video) => {
         if (video) observer.unobserve(video);
@@ -227,6 +239,7 @@ const Reels = () => {
 
   const toggleComment = (postId) => {
     console.log("Toggling comments for post:", postId);
+
     setCurrentPostId(postId);
     setIsCommentOpen((prev) => !prev);
   };
@@ -246,6 +259,7 @@ const Reels = () => {
     }
   };
 
+
   const handleReplySubmit = (newComment) => {
     updateComments(currentPostId, newComment);
     setReplyingTo(null);
@@ -264,6 +278,7 @@ const Reels = () => {
     (postId, newComment) => {
       setCommentsByPost((prev) => {
         const currentComments = Array.isArray(prev[postId]) ? prev[postId] : [];
+
         if (newComment.parentId) {
           const updatedComments = currentComments.map((comment) => {
             if (comment.id === newComment.parentId) {
@@ -282,6 +297,7 @@ const Reels = () => {
             [postId]: updatedComments,
           };
         }
+
         const updatedComments = [
           { ...newComment, username: user?.username || "Unknown" },
           ...currentComments,
@@ -303,6 +319,7 @@ const Reels = () => {
       </div>
     );
   }
+
 
   return (
     <>
@@ -346,15 +363,18 @@ const Reels = () => {
                   <FollowButton
                     contentFollow="Follow"
                     contentFollowing="Following"
+
                     userId={user?.id}
                     followingId={post.user.id}
                     classFollow="backdrop-blur-lg text-sm p-4 py-1 rounded-2xl font-bold transition-all duration-200 ease-in-out active:scale-125 hover:bg-black/50  border border-gray-300"
                     classFollowing="backdrop-blur-lg text-sm p-4 py-1 rounded-2xl font-bold transition-all duration-200 ease-in-out active:scale-125 hover:bg-black/50  border border-gray-300"
+
                   />
                 </div>
               </div>
               <div className="mt-2 w-[350px]">
                 <CaptionWithMore text={post.captions} />
+
               </div>
             </div>
             <div className="absolute top-2/3 right-4 transform -translate-y-1/2 flex flex-col items-center space-y-7 text-white text-2xl">
@@ -416,6 +436,7 @@ const Reels = () => {
                 )}
               </div>
             </div>
+
           </div>
         ))}
 
@@ -439,6 +460,7 @@ const Reels = () => {
                 isCommentOpen ? "translate-x-0" : "translate-x-full"
               }`}
             >
+
               <div className="h-full flex flex-col p-4 border-l border-neutral-700">
                 <div className="flex items-center justify-between dark:text-white mb-4">
                   <h2 className="text-2xl text-center font-bold">Comments</h2>
@@ -463,12 +485,14 @@ const Reels = () => {
                     </p>
                   )}
                 </div>
+
                 <CommentInput
                   postId={currentPostId}
                   setComments={(newComments) =>
                     updateComments(currentPostId, newComments)
                   }
-                  parentComment={replyingTo}
+
+                  parentComment={replyingTo} // Truyền bình luận đang reply
                   onCancelReply={handleCancelReply}
                 />
               </div>

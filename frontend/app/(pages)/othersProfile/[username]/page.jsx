@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
-import { useParams } from "next/navigation";
+import React, { useState, useEffect, useCallback} from "react";
+import { useParams, usePathname } from "next/navigation";
+
 import Link from "next/link";
 import Image from "next/image";
 import ProfileTabs from "@/components/global/TabProfile/Tabs";
@@ -150,6 +151,7 @@ const Page = () => {
                 <span className="text-gray-500 dark:text-gray-300 font-bold">
                   following
                 </span>
+
               </div>
             </div>
 
@@ -204,6 +206,7 @@ const Page = () => {
           </div>
         </div>
 
+
        
         <div className="mt-4">
           <ProfileTabs
@@ -233,6 +236,7 @@ const Page = () => {
                 Close
               </button>
             </div>
+
           </div>
         )}
       </div>
