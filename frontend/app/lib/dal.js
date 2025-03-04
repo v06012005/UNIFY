@@ -77,35 +77,91 @@ export const savePost = async (post) => {
     }
 }
 
-export const saveMedia = async (media) => {
-    const token = (await cookies()).get('token')?.value;
+export const updatePost = async (post) => {
+    const token = (await cookies()).get('token')?.value
 
     if (!token) {
         redirect("/login");
     }
 
     try {
+        const response = await fetch("http://localhost:8080/posts", {
+
+            method: "PUT",
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(post)
+        });
+
+        if (!response.ok) {
+            console.log(response);
+            console.log("Response is not ok");
+            return null;
+        }
+
+        const savedPost = await response.json();
+        return savedPost;
+    } catch (error) {
+        console.log('Failed to fetch post and ran into an error, ' + error)
+        return null
+    }
+}
+
+export const saveMedia = async (postId, newMedia) => {
+    const token = (await cookies()).get('token')?.value;
+    if (!token) {
+        redirect("/login");
+    }
+
+    try {
+        const existingResponse = await fetch(`http://localhost:8080/media/${postId}`, {
+            method: "GET",
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!existingResponse.ok) {
+            console.log("Failed to fetch existing media");
+            return null;
+        }
+
+        const existingMedia = await existingResponse.json();
+        const existingUrls = new Set(existingMedia.map(media => media.url));
+
+
+        const mediaToSave = newMedia.filter(media => !existingUrls.has(media.url));
+
+        if (mediaToSave.length === 0) {
+            console.log("No new media to save");
+            return existingMedia;
+        }
+
+
         const response = await fetch("http://localhost:8080/media", {
             method: "POST",
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(media)
+            body: JSON.stringify(mediaToSave)
         });
 
-        // if (!response.ok) {
-        //     console.log("Failed to fetch post");
-        //     return null;
-        // }
+        if (!response.ok) {
+            console.log("Failed to save new media");
+            return null;
+        }
 
-        const savedMedia = await response.json();
-        return savedMedia;
+        return await response.json();
     } catch (error) {
-        console.log('Failed to fetch media')
-        return null
+        console.log('Failed to save media:', error);
+        return null;
     }
-}
+};
+
 
 export const fetchPosts = async () => {
     const token = (await cookies()).get('token')?.value;
@@ -122,8 +178,10 @@ export const fetchPosts = async () => {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
-            }
-        });
+            },
+            cache: "force-cache",
+            next: { revalidate: 3600 }
+        },);
 
         if (!response.ok) {
             console.log("Failed to fetch posts");
@@ -227,3 +285,98 @@ export const fetchPostsByDate = async (start, end) => {
         return null
     }
 }
+
+export const insertHashtags = async (hashtags) => {
+    const token = (await cookies()).get('token')?.value;
+
+    if (!token) {
+        redirect("/login");
+    }
+
+
+    try {
+        const response = await fetch("http://localhost:8080/hashtags/saveAll", {
+            method: "POST",
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(hashtags)
+        });
+
+        if (!response.ok) {
+            console.log("Failed to fetch posts");
+            return null;
+        }
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.log('Failed to fetch posts: ' + error)
+        return null
+    }
+}
+export const insertHashtagDetails = async (hashtags) => {
+    const token = (await cookies()).get('token')?.value;
+
+    if (!token) {
+        redirect("/login");
+    }
+
+
+    try {
+        const response = await fetch("http://localhost:8080/hashtag-details/saveAll", {
+            method: "POST",
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(hashtags)
+        });
+
+        if (!response.ok) {
+            console.log("Failed to fetch posts");
+            return null;
+        }
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.log('Failed to fetch posts: ' + error)
+        return null
+    }
+}
+
+export const fetchPostsByHashtag = async (content) => {
+    const token = (await cookies()).get('token')?.value;
+
+    if (!token) {
+        redirect("/login");
+    }
+
+    console.log(content)
+
+    try {
+        const response = await fetch("http://localhost:8080/posts/hashtag/" + content, {
+            method: "GET",
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            cache: "force-cache",
+            next: { revalidate: 3600 }
+        });
+
+        if (!response.ok) {
+            console.log("Failed to fetch posts, please check again");
+            return null;
+        }
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.log('Failed to fetch posts: ' + error)
+        return null
+    }
+}
+

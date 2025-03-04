@@ -13,7 +13,7 @@ export const SuggestedUsersProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [currentUserId, setCurrentUserId] = useState("");
   const [error, setError] = useState(null);
-  const [isDataLoaded, setIsDataLoaded] = useState(false); 
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   const fetchUserInfo = useCallback(async () => {
     try {
@@ -119,7 +119,7 @@ export const SuggestedUsersProvider = ({ children }) => {
   }, []);
 
   const loadAllData = useCallback(async () => {
-    if (isDataLoaded) return; 
+    if (isDataLoaded) return;
 
     setLoading(true);
     setError(null);
@@ -132,7 +132,7 @@ export const SuggestedUsersProvider = ({ children }) => {
           getFollowingUsers(id),
           getFriendUsers(id),
         ]);
-        setIsDataLoaded(true); 
+        setIsDataLoaded(true);
       }
     } catch (err) {
       setError(err.message || "Failed to load data");
@@ -150,7 +150,7 @@ export const SuggestedUsersProvider = ({ children }) => {
 
   useEffect(() => {
     loadAllData();
-  }, [loadAllData]); 
+  }, [loadAllData]);
 
   return (
     <SuggestedUsersContext.Provider

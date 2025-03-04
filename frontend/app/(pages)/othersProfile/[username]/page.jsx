@@ -1,19 +1,11 @@
 "use client";
 
-import React, {
-  createContext,
-  useState,
-  useEffect,
-  useRef,
-  useCallback,
-  useContext,
-} from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import ProfileTabs from "@/components/global/TabProfile/Tabs";
 import { useApp } from "@/components/provider/AppProvider";
-import People from "@/components/global/TabProfile/People";
 import FollowButton from "@/components/ui/follow-button";
 import { useReports } from "@/components/provider/ReportProvider";
 import { addToast, ToastProvider } from "@heroui/toast";
@@ -186,38 +178,45 @@ const Page = () => {
                     </div>
                   )}
                 </div>
+
               </div>
               <p className="ml-20 mt-10 dark:text-gray-400 text-gray-600 font-bold">
                 “{userInfo.biography}”
               </p>
             </div>
-          </div>
-          <div className="p-4">
-            <div className="flex justify-center border-b-2 border-gray-300">
-              <button
-                className={`py-2 px-4 mr-5 font-bold flex items-center ${
-                  activeTab === "post"
-                    ? "text-blue-500 border-b-4 border-blue-500"
-                    : "text-gray-500 dark:text-gray-200"
-                }`}
-                onClick={() => setActiveTab("post")}
-              >
-                <NavButton iconClass="fa-solid fa-pen" />
-                <span className="ml-2">POST</span>
-              </button>
 
-              <button
-                className={`py-2 px-4 mr-5 font-bold flex items-center ${
-                  activeTab === "reel"
-                    ? "text-blue-500 border-b-4 border-blue-500"
-                    : "text-gray-500 dark:text-gray-200"
-                }`}
-                onClick={() => setActiveTab("reel")}
-              >
-                <NavButton iconClass="fa-solid fa-film" />
-                <span className="ml-2">REEL</span>
-              </button>
-            </div>
+            <p className="ml-20 mt-10 dark:text-white text-neutral-800 font-semibold">
+              “{userInfo.biography}”
+            </p>
+          </div>
+        </div>
+        <div className="p-7">
+          <div className="flex justify-center border-b-1 border-zinc-200">
+            <button
+              className={`py-2 px-4 mr-5 font-normal flex items-center ${
+                activeTab === "post"
+                  ? "text-neutral-900 border-b-1 border-neutral-800 dark:text-white dark:border-white"
+                  : "text-neutral-900 dark:text-white"
+              }`}
+              onClick={() => setActiveTab("post")}
+            >
+              <NavButton iconClass="fa-solid fa-pen" />
+              <span className="ml-2">POST</span>
+            </button>
+
+            <button
+              className={`py-2 px-4 mr-5 font-normal flex items-center ${
+                activeTab === "reel"
+                  ? "text-neutral-900 border-b-1 border-neutral-800 dark:text-white dark:border-white"
+                  : "text-neutral-900 dark:text-white"
+              }`}
+              onClick={() => setActiveTab("reel")}
+            >
+              <NavButton iconClass="fa-solid fa-film" />
+              <span className="ml-2">REEL</span>
+            </button>
+          </div>
+
 
             <div className="mt-4">
               <ProfileTabs

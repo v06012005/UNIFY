@@ -41,7 +41,7 @@ const FriendModal = ({ isOpen, onClose }) => {
           {loading ? (
 
             <p className="text-gray-500">Loading...</p>
-          ) : !friendUsers || friendUsers.length === 0 ? ( 
+          ) : !friendUsers || friendUsers.length === 0 ? (
             <p className="text-gray-500">Make friends to share more interesting things.</p>
 
           ) : (

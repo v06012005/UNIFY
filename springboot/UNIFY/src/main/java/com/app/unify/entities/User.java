@@ -102,7 +102,7 @@ public class User {
 	@JsonIgnore
 	@OneToMany(mappedBy = "user")
 	Set<LikedPost> likedPosts;
-	
+
 	@JsonIgnore
 	@OneToMany(mappedBy = "user")
 	Set<Report> reports;

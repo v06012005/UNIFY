@@ -9,7 +9,13 @@ import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { Select, SelectItem, Textarea } from "@heroui/react";
 import PostSwitch from "@/components/global/PostSwitch";
 import { useEffect, useRef, useState } from "react";
-import { getUser, saveMedia, savePost } from "@/app/lib/dal";
+import {
+  getUser,
+  insertHashtagDetails,
+  insertHashtags,
+  saveMedia,
+  savePost,
+} from "@/app/lib/dal";
 import { cn } from "@/lib/utils";
 import { addToast, ToastProvider } from "@heroui/toast";
 
@@ -35,6 +41,7 @@ const Page = () => {
   const [audience, setAudience] = useState("PUBLIC");
   const [caption, setCaption] = useState("");
   const [loading, setLoading] = useState(false);
+  const [hashtags, setHashtags] = useState([]);
 
   const [user, setUser] = useState(null);
 
@@ -131,9 +138,10 @@ const Page = () => {
     setFiles([]);
     setPreviews([]);
     setCaption("");
-    // setIsCommentVisible(false);
-    // setIsLikeVisible(false);
+    setIsCommentVisible(false);
+    setIsLikeVisible(false);
     setAudience("PUBLIC");
+    setHashtags([]);
   };
 
   const handleSave = async () => {
@@ -172,6 +180,50 @@ const Page = () => {
         });
         return;
       }
+
+      const hashtagList = caption
+        .toString()
+        .split(" ")
+        .filter((word) => word.startsWith("#"));
+      if (hashtagList.length > 0) {
+        const newHashtags = hashtagList.map((h) => ({
+          content: h,
+        }));
+        console.log(newHashtags);
+        const savedHashtags = await insertHashtags(newHashtags);
+        if (!savedHashtags) {
+          addToast({
+            title: "Fail to proceed hashtags",
+            description:
+              "Cannot proceed your hashtags. Please contact the admin for further information or try again",
+            timeout: 3000,
+            shouldShowTimeoutProgess: true,
+            color: "danger",
+          });
+          return;
+        }
+
+        const hashtagDetails = savedHashtags.map((h) => ({
+          hashtag: h,
+          post: post,
+        }));
+
+        if (hashtagDetails.length > 0) {
+          const savedDetails = await insertHashtagDetails(hashtagDetails);
+          if (!savedDetails) {
+            addToast({
+              title: "Fail to proceed hashtags.",
+              description:
+                "Cannot proceed your hashtags. Please contact the admin for further information or try again.",
+              timeout: 3000,
+              shouldShowTimeoutProgess: true,
+              color: "danger",
+            });
+            return;
+          }
+        }
+      }
+
       const fetchedFiles = await handleUpload();
       if (!fetchedFiles || fetchedFiles.length === 0) {
         addToast({
@@ -192,7 +244,7 @@ const Page = () => {
         mediaType: file.media_type.toUpperCase(),
       }));
 
-      const savedMedia = await saveMedia(postMedia);
+      const savedMedia = await saveMedia(post?.id, postMedia);
       if (savedMedia) {
         addToast({
           title: "Success",
@@ -254,7 +306,7 @@ const Page = () => {
             </div>
           )}
 
-          <div className="flex h-full border-t">
+          <div className="flex h-full border-t-1 dark:border-neutral-700">
             <div className="basis-1/2 p-3">
               <div className="h-full">
                 <div className="flex justify-between">
@@ -306,7 +358,7 @@ const Page = () => {
                   <div
                     onClick={handleDivClick}
                     className={cn(
-                      "mt-2 cursor-pointer flex justify-center rounded-lg border border-dashed dark:border-gray-200 border-gray-900/25",
+                      "mt-2 cursor-pointer flex justify-center rounded-lg border border-dashed  dark:border-neutral-500 border-gray-900/25",
                       previews.length < 1 && "h-5/6 px-6 py-10",
                       previews.length > 0 && "h-full my-auto",
                       previews.length >= 12 && "hidden"
@@ -344,8 +396,9 @@ const Page = () => {
                   onChange={handleFileChange}
                 />
               </div>
+              <p>{hashtags}</p>
             </div>
-            <div className="basis-1/2 border-l p-3 overflow-y-scroll no-scrollbar">
+            <div className="basis-1/2 border-l-1 dark:border-neutral-700 p-3 overflow-y-scroll no-scrollbar">
               <div>
                 <p className="text-sm/6 font-medium text-gray-900 dark:text-white">
                   Write Your Caption

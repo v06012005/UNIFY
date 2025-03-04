@@ -174,6 +174,7 @@ const Page = () => {
 
     if (!file) return;
 
+
     if (!allowedTypes.includes(file.type)) {
       toast({
         title: "Invalid file type",
@@ -268,8 +269,8 @@ const Page = () => {
         biography: userData.biography,
         avatar: avatarData,
       };
-
       console.log("Request data:", JSON.stringify(requestData, null, 2));
+
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
         method: "PUT",
@@ -394,6 +395,7 @@ const Page = () => {
                 >
                   Logout
                 </button>
+
               </div>
             </div>
 

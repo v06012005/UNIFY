@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.app.unify.dto.global.UserDTO;
-import com.app.unify.entities.Avatar;
 import com.app.unify.entities.Role;
 import com.app.unify.entities.User;
 import com.app.unify.exceptions.UserNotFoundException;
@@ -64,6 +63,7 @@ public class UserService {
 
 		Role role = roleRepository.findByName("USER").orElseThrow(() -> new RuntimeException("Role not found !"));
 		userDto.setRoles(Collections.singleton(role));
+
 		User user = userRepository.save(userMapper.toUser(userDto));
 		return userMapper.toUserDTO(user);
 	}
@@ -87,6 +87,7 @@ public class UserService {
 	@Transactional
 	@PreAuthorize("#userDto.email == authentication.name")
 	public UserDTO updateUser(UserDTO userDto) {
+
 		try {
 			Role role = roleRepository.findByName("USER").orElseThrow(() -> new RuntimeException("Role not found!"));
 
@@ -122,6 +123,7 @@ public class UserService {
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
 					"An unexpected error occurred: " + e.getMessage());
 		}
+
 	}
 
 	@PreAuthorize("hasRole('ADMIN')")

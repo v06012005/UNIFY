@@ -2,8 +2,10 @@ package com.app.unify.controllers;
 
 import java.util.List;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,12 +20,11 @@ import com.app.unify.dto.global.UserDTO;
 import com.app.unify.exceptions.UserNotFoundException;
 import com.app.unify.services.UserService;
 
-import lombok.RequiredArgsConstructor;
-
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
+
 
     @Autowired
     private UserService userService;
@@ -114,4 +115,5 @@ public class UserController {
         userService.removeUser(id);
         return ResponseEntity.ok("Remove User Successfully !");
     }
+
 }

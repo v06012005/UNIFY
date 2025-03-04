@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { Client } from "@stomp/stompjs";
-import SockJS from "sockjs-client";
 import axios from "axios";
 import Cookies from "js-cookie";
+import useWebSocket from "./useWebSocket";
 
 const useChat = (user, chatPartner) => {
   const [chatMessages, setChatMessages] = useState([]);
@@ -22,44 +21,18 @@ const useChat = (user, chatPartner) => {
     }
   };
 
+  useWebSocket(user.id, (message) => {
+    setChatMessages((prev) =>
+      [...prev, message].sort(
+        (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+      )
+    );
+  }, `/user/queue/messages`);
+
   useEffect(() => {
     if (user.id && chatPartner) {
       fetchMessages();
-
-      if (!stompClientRef.current) {
-        const socket = new SockJS(
-          `${process.env.NEXT_PUBLIC_API_URL}/ws?token=${Cookies.get("token")}`
-        );
-        const client = new Client({
-          webSocketFactory: () => socket,
-          onConnect: () => {
-            console.log("✅ WebSocket connected");
-            client.subscribe(`/user/queue/messages`, (message) => {
-              setChatMessages((prev) =>
-                [...prev, JSON.parse(message.body)].sort(
-                  (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
-                )
-              );
-            });
-          },
-          onStompError: (frame) => {
-            console.error("❌ STOMP Error:", frame);
-          },
-          onDisconnect: () => {
-            console.log(
-              "❌ WebSocket disconnected, attempting to reconnect..."
-            );
-          },
-        });
-
-        client.activate();
-        stompClientRef.current = client;
-      }
     }
-
-    return () => {
-      stompClientRef.current?.deactivate();
-    };
   }, [user.id, chatPartner]);
 
   const sendMessage = (content) => {

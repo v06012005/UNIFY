@@ -1,4 +1,3 @@
-
 import Post from "@/components/global/Post";
 import avatar from "@/public/images/test1.png";
 import Image from "next/image";
@@ -6,7 +5,9 @@ import fullLogo from "@/public/images/unify_1.svg";
 import RootLayout from "./(pages)/layout";
 import Link from "next/link";
 import FullUnifyLogo from "@/components/global/FullUnifyLogo";
-import { verifySession } from "./lib/dal";
+import { fetchPosts, verifySession } from "./lib/dal";
+import { getQueryClient } from "@/app/lib/get-query-client";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 const SearchBar = () => {
   return (
@@ -36,7 +37,6 @@ const SearchBar = () => {
 // }
 
 const User = ({ href = "" }) => {
-
   return (
     <Link href={href}>
       <div className="flex mb-4">
@@ -53,16 +53,15 @@ const User = ({ href = "" }) => {
 export default async function Home() {
   const session = await verifySession();
 
-
   return (
     <RootLayout>
       <div className="flex">
-        <div className="basis-3/4 border-r py-8 h-screen overflow-y-scroll no-scrollbar">
+        <div className="basis-3/4  py-8 h-screen overflow-y-scroll no-scrollbar">
           <div className="w-3/4 flex flex-col mx-auto">
-            <Post></Post>
+            <Post />
           </div>
         </div>
-        <div className="basis-1/4 border py-8 h-screen sticky top-0">
+        <div className="basis-1/4 border-l-1 dark:border-neutral-700 py-8 h-screen sticky top-0">
           <div className="w-3/4 flex flex-col mx-auto">
             {session?.isAuth && <User href="/profile" />}
             <div className="flex justify-center">
@@ -85,7 +84,7 @@ export default async function Home() {
                 Register
               </Link> */}
             </div>
-            <hr className="my-4" />
+            <hr className="my-4 dark:border-neutral-700  " />
             <div>
               <p className="font-bold text-xl mb-4">Your Friends</p>
               <User href="/profile" />
@@ -94,10 +93,10 @@ export default async function Home() {
               <User href="/" />
               <User href="/" />
             </div>
-            <hr className="my-4" />
+            <hr className="my-4 dark:border-neutral-700" />
             <div>
               <FullUnifyLogo className="w-1/2" />
-              <p className="mt-2 text-gray-500">
+              <p className="mt-2 text-zinc-500">
                 &copy; UNIFY FROM WORKAHOLICS
               </p>
             </div>
