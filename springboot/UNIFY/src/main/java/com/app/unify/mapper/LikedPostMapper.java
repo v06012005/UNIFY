@@ -1,9 +1,8 @@
 package com.app.unify.mapper;
 
-import org.mapstruct.Mapper;
-
 import com.app.unify.dto.global.LikedPostDTO;
 import com.app.unify.entities.LikedPost;
+import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface LikedPostMapper {

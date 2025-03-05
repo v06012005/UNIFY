@@ -7,10 +7,12 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface HashtagDetailMapper {
-	HashtagDetailDTO toHashtagDetailDTO(HashtagDetail hashtagDetail);
 
-	HashtagDetail toHashtagDetail(HashtagDetailDTO hashtagDetailDTO);
+    HashtagDetailDTO toHashtagDetailDTO(HashtagDetail hashtagDetail);
 
-	List<HashtagDetail> toHashtagDetailList(List<HashtagDetailDTO> dtoList);
+    HashtagDetail toHashtagDetail(HashtagDetailDTO hashtagDetailDTO);
+
+    List<HashtagDetail> toHashtagDetailList(List<HashtagDetailDTO> dtoList);
+
     List<HashtagDetailDTO> toHashtagDetailDTOList(List<HashtagDetail> hashtags);
 }
