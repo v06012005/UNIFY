@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 @Mapper(componentModel = "spring")
 @Component
 public interface NotificationMapper {
+
     @Mapping(source = "timestamp", target = "timestamp", dateFormat = "yyyy-MM-dd'T'HH:mm:ss")
     NotificationDTO toNotificationDTO(Notification notification);
 

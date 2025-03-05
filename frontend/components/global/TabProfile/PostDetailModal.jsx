@@ -5,8 +5,10 @@ import CommentItem from "@/components/comments/CommentItem";
 import CommentInput from "@/components/comments/CommentInput";
 import Cookies from "js-cookie";
 import Link from "next/link";
+import Avatar from "@/public/images/avt.jpg";
 import { redirect } from "next/navigation";
 import { fetchPostById } from "@/app/lib/dal";
+import Image from "next/image";
 
 const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   return (
@@ -145,8 +147,8 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
           <div className="flex items-center justify-between p-4 border-b dark:border-neutral-800">
             <div className="flex items-center">
               <div className="w-10 h-10 rounded-full border-2 border-gray-300 dark:border-gray-600">
-                <img
-                  src={post.user?.avatar || "/default-avatar.png"}
+                <Image
+                  src={post.user?.avatar || Avatar}
                   alt="User Avatar"
                   className="w-full h-full rounded-full object-cover"
                 />
@@ -220,11 +222,25 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
             )}
           </div>
 
-          <div className="flex-1 p-4 overflow-y-auto">
-            <div className="text-sm leading-tight text-gray-800 dark:text-gray-200">
-              <span className="font-bold mr-4">{post.user?.username}</span>
-              {transformHashtags(post.captions)}
-            </div>
+          <div className="flex-1 px-4 py-3 overflow-y-auto">
+            {post.captions === null ? (
+              ""
+            ) : (
+              <div className="flex items-center gap-3 leading-tight text-gray-800 dark:text-gray-200">
+                <div className="w-10 h-10 rounded-full border-2 border-gray-300 dark:border-gray-600">
+                  <Image
+                    src={post.user?.avatar || Avatar}
+                    alt="User Avatar"
+                    className="w-full h-full rounded-full object-cover"
+                  />
+                </div>
+                <span className="text-sm font-bold mr-4">
+                  {post.user?.username}
+                </span>
+                {transformHashtags(post.captions)}
+              </div>
+            )}
+
             <div className="mt-5 space-y-2">
               {comments.map((comment) => (
                 <CommentItem key={comment.id} comment={comment} />

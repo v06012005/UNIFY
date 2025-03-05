@@ -21,10 +21,10 @@ const Reply = ({ reply }) => {
               alt="User avatar"
               className="rounded-full w-11 h-11"
             />
-            <h4 className="text-base font-bold truncate w-28 pl-2">
+            <h4 className="text-base font-bold truncate max-w-full w-fit px-2">
               {reply.username}
             </h4>
-            <h4 className="text-xs  truncate w-32 dark:text-gray-500">
+            <h4 className="text-xs truncate w-32 dark:text-gray-500">
               {reply.commentedAt &&
               !isNaN(new Date(reply.commentedAt).getTime())
                 ? formatDistanceToNow(new Date(reply.commentedAt), {
@@ -33,13 +33,13 @@ const Reply = ({ reply }) => {
                 : "Vừa xong"}
             </h4>
           </div>
-          <div className="ml-2">
-            <Content text={reply.content} />
+          <div className="indent-12">
+            <Content text={reply.content} className=""/>
           </div>
         </div>
 
-        <CardFooter className="flex flex-row justify-end">
-          <LikeButton className="!text-sm" />
+        <CardFooter className="flex flex-row justify-end py-1">
+          <LikeButton className="!text-sm space-x-1" />
           <Button size="sm" className="bg-transparent dark:text-white">
             <i className="fa-solid fa-reply"></i>Reply
           </Button>

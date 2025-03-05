@@ -1,18 +1,15 @@
 package com.app.unify.services;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.app.unify.dto.global.HashtagDTO;
 import com.app.unify.entities.Hashtag;
 import com.app.unify.mapper.HashtagMapper;
 import com.app.unify.repositories.HashtagRepository;
-
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -61,7 +58,6 @@ public class HashtagServiceImpl implements HashtagService {
 		        .map(dto -> hashtagRepository.findByContent(dto.getContent())
 		            .orElseGet(() -> mapper.toHashtag(dto)))
 		        .collect(Collectors.toList());
-
 		    List<Hashtag> savedHashtags = hashtagRepository.saveAll(hashtags);
 		    return savedHashtags.stream().map(mapper::toHashtagDTO).collect(Collectors.toList());
 	}

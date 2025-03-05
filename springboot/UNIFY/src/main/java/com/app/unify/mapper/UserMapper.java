@@ -1,19 +1,18 @@
 package com.app.unify.mapper;
 
+import com.app.unify.dto.global.UserDTO;
+import com.app.unify.entities.Avatar;
+import com.app.unify.entities.User;
 import java.time.LocalDateTime;
-
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-import com.app.unify.dto.global.UserDTO;
-import com.app.unify.entities.Avatar;
-import com.app.unify.entities.User;
-
 @Mapper(componentModel = "spring", uses = {AvatarMapper.class})
 public interface UserMapper {
+
     User toUser(UserDTO userDto);
 
     @Mapping(target = "avatar", source = "user.latestAvatar")
