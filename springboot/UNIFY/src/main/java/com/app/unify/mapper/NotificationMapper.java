@@ -1,10 +1,11 @@
 package com.app.unify.mapper;
 
-import com.app.unify.dto.global.NotificationDTO;
-import com.app.unify.entities.Notification;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.stereotype.Component;
+
+import com.app.unify.dto.global.NotificationDTO;
+import com.app.unify.entities.Notification;
 
 @Mapper(componentModel = "spring")
 @Component

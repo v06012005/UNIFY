@@ -9,6 +9,8 @@ import Avatar from "@/public/images/avt.jpg";
 import { redirect } from "next/navigation";
 import { fetchPostById } from "@/app/lib/dal";
 import Image from "next/image";
+import iconVideo from "@/public/vds.svg"; // Correct video icon path
+import iconImage from "@/public/imgs.svg"; // Correct image icon path
 
 const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   return (
@@ -42,7 +44,7 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
       }
     }
     fetchPost();
-  }, []);
+  }, [post?.id]);
 
   const transformHashtags = (text) => {
     return text.split(/(\#[a-zA-Z0-9_]+)/g).map((part, index) => {
@@ -94,17 +96,22 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
         <div className="w-1/2 relative dark:border-neutral-700 border-r">
           {selectedMedia ? (
             selectedMedia.mediaType === "VIDEO" ? (
-              <video
-                src={selectedMedia.url}
-                controls
-                className="w-full h-full object-cover" // Full div
-              />
+              <div className="relative w-full h-full">
+                <video
+                  src={selectedMedia.url}
+                  controls
+                  autoPlay
+                  className="w-full h-full object-cover" // Full div
+                />
+              </div>
             ) : (
-              <img
-                src={selectedMedia.url}
-                className="w-full h-full object-cover rounded-tl-xl rounded-bl-xl" // Full div
-                alt="Post Media"
-              />
+              <div className="relative w-full h-full">
+                <img
+                  src={selectedMedia.url}
+                  className="w-full h-full object-contain rounded-tl-xl rounded-bl-xl" // Full div
+                  alt="Post Media"
+                />
+              </div>
             )
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-black text-white">
@@ -125,16 +132,36 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
                   onClick={() => setSelectedMedia(item)}
                 >
                   {item.mediaType === "VIDEO" ? (
-                    <video
-                      src={item.url}
-                      className="w-full h-full object-cover rounded"
-                    />
+                    <div className="relative w-full h-full">
+                      <video
+                        src={item.url}
+                        className="w-full h-full object-cover rounded"
+                      />
+                      <div className="absolute top-1 left-1">
+                        <Image
+                          src={iconVideo}
+                          width={16}
+                          height={16}
+                          alt="Video"
+                        />
+                      </div>
+                    </div>
                   ) : (
-                    <img
-                      src={item.url}
-                      className="w-full h-full object-cover rounded"
-                      alt="Thumbnail"
-                    />
+                    <div className="relative w-full h-full">
+                      <img
+                        src={item.url}
+                        className="w-full h-full object-cover rounded"
+                        alt="Thumbnail"
+                      />
+                      <div className="absolute top-1 left-1">
+                        <Image
+                          src={iconImage}
+                          width={16}
+                          height={16}
+                          alt="Image"
+                        />
+                      </div>
+                    </div>
                   )}
                 </div>
               ))}
@@ -150,6 +177,8 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
                 <Image
                   src={post.user?.avatar || Avatar}
                   alt="User Avatar"
+                  width={40} // Add width
+                  height={40} // Add height
                   className="w-full h-full rounded-full object-cover"
                 />
               </div>
@@ -231,6 +260,8 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
                   <Image
                     src={post.user?.avatar || Avatar}
                     alt="User Avatar"
+                    width={40} // Add width
+                    height={40} // Add height
                     className="w-full h-full rounded-full object-cover"
                   />
                 </div>

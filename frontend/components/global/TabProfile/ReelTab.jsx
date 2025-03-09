@@ -1,43 +1,21 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
 import { useApp } from "@/components/provider/AppProvider";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { useDisclosure } from "@heroui/react";
 import { fetchComments } from "app/api/service/commentService";
-import CommentItem from "@/components/comments/CommentItem";
-import CommentInput from "@/components/comments/CommentInput";
 import PostDetailModal from "./PostDetailModal";
-const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
-  return (
-    <Link
-      className="flex h-full items-center text-center"
-      href={href}
-      onClick={onClick}
-    >
-      <i className={`${iconClass}`}></i>
-      <span className="">{content}</span>
-    </Link>
-  );
-};
 
 const UserReels = ({ username }) => {
   const [selectedPost, setSelectedPost] = useState(null);
-  const [postToDelete, setPostToDelete] = useState(null);
-  const [openList, setOpenList] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState(null);
   const { user, getUserInfoByUsername } = useApp();
-  const router = useRouter();
   const [postUsers, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const params = useParams();
   const [comments, setComments] = useState([]);
   const [isCommentsLoading, setIsCommentsLoading] = useState(false);
   const token = Cookies.get("token");
   const commentsContainerRef = useRef(null);
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   const loadComments = useCallback(
     async (postId) => {
@@ -85,7 +63,7 @@ const UserReels = ({ username }) => {
       getUserInfoByUsername(username)
         .then((data) => {
           if (data) {
-            const response = axios
+            axios
               .get(
                 `${process.env.NEXT_PUBLIC_API_URL}/posts/my?userId=${data.id}`,
                 {
@@ -126,11 +104,6 @@ const UserReels = ({ username }) => {
     } catch (error) {
       console.error("Error deleting post:", error);
     }
-  };
-
-  const openDeleteModal = (postId) => {
-    setPostToDelete(postId);
-    setShowModal(true);
   };
 
   useEffect(() => {
@@ -182,6 +155,7 @@ const UserReels = ({ username }) => {
                       src={firstVideo.url}
                       className="w-full h-full object-cover"
                       muted
+                      style={{ aspectRatio: '1 / 1' }}
                     />
                   </div>
                   {post.media.length > 1 && (
@@ -193,6 +167,7 @@ const UserReels = ({ username }) => {
                               <video
                                 src={mediaItem?.url}
                                 className="w-full h-full object-cover"
+                                style={{ aspectRatio: '1 / 1' }}
                               />
                             ) : (
                               <img

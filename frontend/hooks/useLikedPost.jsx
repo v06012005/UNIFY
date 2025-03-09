@@ -28,6 +28,12 @@ const useLikedPost = (userId, postId) => {
       } catch (error) {
         console.log("Lỗi khi kiểm tra trạng thái like:", error);
       }
+
+      try {
+        
+      } catch (error) {
+        
+      }
     };
 
     checkLikedStatus();
