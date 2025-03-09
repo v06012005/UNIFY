@@ -45,7 +45,7 @@ export default function ExplorePage() {
 
   if (isLoading)
     return (
-      <div className="flex justify-center items-center h-screen">
+      <div className="flex flex-col justify-center items-center max-h-[87vh] h-screen">
         <Spinner
           color="primary"
           label="Loading posts..."

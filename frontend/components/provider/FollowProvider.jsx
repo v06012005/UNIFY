@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { createContext, useContext, useEffect, useState } from "react";
 import Cookies from "js-cookie";
 
@@ -74,8 +74,58 @@ export const FollowProvider = ({ children }) => {
     }
   };
 
+  const countFollowing = async (userId) => {
+    const token = Cookies.get("token");
+    if (!token) return;
+
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/follow/following/${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        const count = await response.json();
+        return count;
+      }
+    } catch (error) {
+      console.log("Lỗi khi đếm following:", error);
+    }
+  };
+
+  const countFollowers = async (userId) => {
+    const token = Cookies.get("token");
+    if (!token) return;
+
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/follow/followers/${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        const count = await response.json();
+        return count;
+      }
+    } catch (error) {
+      console.log("Lỗi khi đếm followers:", error);
+    }
+  };
+
   return (
-    <FollowContext.Provider value={{ followingStatus, checkFollowing, toggleFollow }}>
+    <FollowContext.Provider
+      value={{ followingStatus, checkFollowing, toggleFollow, countFollowers, countFollowing }}
+    >
       {children}
     </FollowContext.Provider>
   );

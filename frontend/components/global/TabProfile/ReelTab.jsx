@@ -165,11 +165,11 @@ const UserReels = ({ username }) => {
         <div className="grid grid-cols-3 gap-1">
           {postUsers
             .filter((post) =>
-              post.media.some((mediaItem) => mediaItem.mediaType === "VIDEO")
+              post.media.some((mediaItem) => mediaItem?.mediaType === "VIDEO")
             )
             .map((post) => {
               const firstVideo = post.media.find(
-                (mediaItem) => mediaItem.mediaType === "VIDEO"
+                (mediaItem) => mediaItem?.mediaType === "VIDEO"
               );
               return (
                 <div
@@ -189,14 +189,14 @@ const UserReels = ({ username }) => {
                       <div className="flex gap-1 overflow-x-auto scrollbar-hide">
                         {post.media.map((mediaItem, index) => (
                           <div key={index} className="w-12 h-12 flex-shrink-0">
-                            {mediaItem.mediaType === "VIDEO" ? (
+                            {mediaItem?.mediaType === "VIDEO" ? (
                               <video
-                                src={mediaItem.url}
+                                src={mediaItem?.url}
                                 className="w-full h-full object-cover"
                               />
                             ) : (
                               <img
-                                src={mediaItem.url}
+                                src={mediaItem?.url}
                                 className="w-full h-full object-cover"
                                 alt="Media preview"
                               />

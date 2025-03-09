@@ -90,7 +90,7 @@ const CommentInput = ({
   }, [showPicker]);
 
   return (
-    <div className="flex items-center mt-3 text-white p-3 rounded-2xl w-full justify-center relative">
+    <div className="flex items-center text-white rounded-2xl w-full justify-center relative">
       <Image
         src={avatar2}
         alt="Avatar"

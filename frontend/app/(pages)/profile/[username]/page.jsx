@@ -10,6 +10,7 @@ import Image from "next/image";
 import ProfileTabs from "@/components/global/TabProfile/Tabs";
 import { useApp } from "@/components/provider/AppProvider";
 import People from "@/components/global/TabProfile/People";
+import { useFollow } from "@/components/provider/FollowProvider";
 
 const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   return (
@@ -30,9 +31,12 @@ const Page = () => {
   const [userReels, setUserReels] = useState([]);
   const [savedItems, setSavedItems] = useState([]);
   const [taggedPosts, setTaggedPosts] = useState([]);
+  const [followerCount, setFollowerCount] = useState(0);
+  const [followingCount, setFollowingCount] = useState(0);
   const params = useParams();
   const router = useRouter();
   const { user } = useApp();
+  const { countFollowers, countFollowing } = useFollow();
 
   const handleClickView = () => router.push("/settings/archive");
   const handleClickEdit = () => router.push("/settings/edit-profile");
@@ -46,6 +50,16 @@ const Page = () => {
   const toggleFollower = () => setIsFollowerOpen(!isFollowerOpen);
   const toggleFriend = () => setIsFriendOpen(!isFriendOpen);
   const toggleFollow = () => setIsFollow(!isFollow);
+
+  useEffect(() => {
+    const fetchCounts = async () => {
+      const followers = await countFollowers(user.id);
+      const following = await countFollowing(user.id);
+      setFollowerCount(followers);
+      setFollowingCount(following);
+    };
+    fetchCounts();
+  }, [user]);
 
   return (
     <div className="max-w-4xl mx-auto py-6">
@@ -97,7 +111,7 @@ const Page = () => {
               onClick={toggleFollower}
             >
               <span className="font-bold text-neutral-800 dark:text-white">
-                {user.followers?.length || 0}
+                {followerCount || 0}
               </span>{" "}
               <span className="text-neutral-800 dark:text-white font-medium">
                 Followers
@@ -108,7 +122,7 @@ const Page = () => {
               onClick={toggleFollowing}
             >
               <span className="font-bold text-neutral-800 dark:text-white">
-                {user.following?.length || 0}
+                {followingCount || 0}
               </span>{" "}
               <span className="text-neutral-800 dark:text-white font-medium">
                 Following

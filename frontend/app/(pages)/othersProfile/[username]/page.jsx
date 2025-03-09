@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback} from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams, usePathname } from "next/navigation";
 
 import Link from "next/link";
@@ -10,6 +10,7 @@ import { useApp } from "@/components/provider/AppProvider";
 import FollowButton from "@/components/ui/follow-button";
 import { useReports } from "@/components/provider/ReportProvider";
 import { addToast, ToastProvider } from "@heroui/toast";
+import { useFollow } from "@/components/provider/FollowProvider";
 
 const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   return (
@@ -25,14 +26,19 @@ const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
 };
 
 const Page = () => {
-  const { createUserReport } = useReports();
   const [activeTab, setActiveTab] = useState("post");
   const [userInfo, setUserInfo] = useState(null);
   const [userReels, setUserReels] = useState([]);
-  const params = useParams();
-  const { user, getUserInfoByUsername } = useApp();
+  const [followerCount, setFollowerCount] = useState(0);
+  const [followingCount, setFollowingCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [openList, setOpenList] = useState(false);
+
+  const params = useParams();
+
+  const { createUserReport } = useReports();
+  const { user, getUserInfoByUsername } = useApp();
+  const { countFollowers, countFollowing } = useFollow();
 
   useEffect(() => {
     if (params) {
@@ -44,6 +50,18 @@ const Page = () => {
         .catch((err) => console.log(err));
     }
   }, [params]);
+
+  useEffect(() => {
+    const fetchCounts = async () => {
+      if (userInfo) {
+        const followers = await countFollowers(userInfo.id);
+        const following = await countFollowing(userInfo.id);
+        setFollowerCount(followers);
+        setFollowingCount(following);
+      }
+    };
+    fetchCounts();
+  }, [userInfo, countFollowers, countFollowing]);
 
   const handleReportUser = useCallback(
     async (data) => {
@@ -138,7 +156,7 @@ const Page = () => {
               </div>
               <div className="text-center">
                 <span className="font-bold text-neutral-800 dark:text-white">
-                  {userInfo.followers || 0}
+                  {followerCount || 0}
                 </span>{" "}
                 <span className="text-gray-500 dark:text-gray-300 font-bold">
                   followers
@@ -146,12 +164,11 @@ const Page = () => {
               </div>
               <div className="text-center">
                 <span className="font-bold text-neutral-800 dark:text-white">
-                  {userInfo.following || 0}
+                  {followingCount || 0}
                 </span>{" "}
                 <span className="text-gray-500 dark:text-gray-300 font-bold">
                   following
                 </span>
-
               </div>
             </div>
 
@@ -160,7 +177,6 @@ const Page = () => {
               “{userInfo.biography}”
             </p>
 
-           
             <div className="mt-4 flex space-x-2">
               <FollowButton
                 userId={user.id}
@@ -178,7 +194,6 @@ const Page = () => {
           </div>
         </div>
 
-       
         <div className="mt-6 border-t dark:border-neutral-600 border-gray-300">
           <div className="flex justify-center space-x-12">
             <button
@@ -206,8 +221,6 @@ const Page = () => {
           </div>
         </div>
 
-
-       
         <div className="mt-4">
           <ProfileTabs
             activeTab={activeTab}
@@ -216,7 +229,6 @@ const Page = () => {
           />
         </div>
 
-      
         {openList && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">
             <div className="bg-white dark:bg-neutral-900 rounded-xl w-72 shadow-2xl border border-gray-200 dark:border-neutral-800">
@@ -236,7 +248,6 @@ const Page = () => {
                 Close
               </button>
             </div>
-
           </div>
         )}
       </div>
