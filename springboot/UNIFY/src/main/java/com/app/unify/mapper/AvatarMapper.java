@@ -1,9 +1,10 @@
 package com.app.unify.mapper;
 
-import com.app.unify.dto.global.AvatarDTO;
-import com.app.unify.entities.Avatar;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+
+import com.app.unify.dto.global.AvatarDTO;
+import com.app.unify.entities.Avatar;
 
 @Mapper(componentModel = "spring")
 public interface AvatarMapper {
