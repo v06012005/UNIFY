@@ -144,15 +144,15 @@ const UserPosts = ({ username }) => {
                 </div>
               ) : (
                 <div className="w-full h-full overflow-hidden">
-                  {post.media[0].mediaType === "VIDEO" ? (
+                  {post.media[0]?.mediaType === "VIDEO" ? (
                     <video
-                      src={post.media[0].url}
+                      src={post.media[0]?.url}
                       className="w-full h-full object-cover"
                       muted
                     />
                   ) : (
                     <img
-                      src={post.media[0].url}
+                      src={post.media[0]?.url}
                       className="w-full h-full object-cover"
                       alt="Post media"
                     />
@@ -164,14 +164,14 @@ const UserPosts = ({ username }) => {
                   <div className="flex gap-1 overflow-x-auto scrollbar-hide">
                     {post.media.map((mediaItem, index) => (
                       <div key={index} className="w-12 h-12 flex-shrink-0">
-                        {mediaItem.mediaType === "VIDEO" ? (
+                        {mediaItem?.mediaType === "VIDEO" ? (
                           <video
-                            src={mediaItem.url}
+                            src={mediaItem?.url}
                             className="w-full h-full object-cover"
                           />
                         ) : (
                           <img
-                            src={mediaItem.url}
+                            src={mediaItem?.url}
                             className="w-full h-full object-cover"
                             alt="Media preview"
                           />
@@ -188,7 +188,7 @@ const UserPosts = ({ username }) => {
                   </span>
                 </div>
               )}
-              {post.media[0].mediaType === "VIDEO" && (
+              {post.media[0]?.mediaType === "VIDEO" && (
                 <div className="absolute top-2 right-2 bg-black/50 text-white text-xs px-1 py-0.5 rounded pointer-events-none">
                   <i className="fa-solid fa-film"></i>
                 </div>
