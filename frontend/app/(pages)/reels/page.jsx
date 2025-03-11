@@ -16,12 +16,11 @@ import { useDisclosure } from "@heroui/react";
 import avatar2 from "@/public/images/testAvt.jpg";
 import FollowButton from "@/components/ui/follow-button";
 import LikeButton from "@/components/global/LikeButton";
-
+import ReportModal from "@/components/global/Report/ReportModal";
 
 import { useReports } from "@/components/provider/ReportProvider";
 import { addToast, ToastProvider } from "@heroui/toast";
 import { useQuery } from "@tanstack/react-query";
-
 
 const Reels = () => {
   const [isCommentOpen, setIsCommentOpen] = useState(false);
@@ -38,14 +37,20 @@ const Reels = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const containerRef = useRef(null);
   const videoRefs = useRef([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const openReportModal = () => {
+    setIsModalOpen(true);
+  };
 
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
   ////////////// ReplyReply
 
   const currentUserId = user?.id;
   const [replyingTo, setReplyingTo] = useState(null);
   const { createPostReport, createUserReport, createCommentReport } =
     useReports();
-
 
   // Fetch video posts và comments ngay từ đầu
   useEffect(() => {
@@ -109,7 +114,6 @@ const Reels = () => {
     getVideoPosts();
   }, [token]);
 
-
   // Fetch comments cho một post cụ thể (giữ lại để reload nếu cần)
   const loadComments = useCallback(
     async (postId) => {
@@ -132,10 +136,9 @@ const Reels = () => {
     [token]
   );
 
-
   const handleReportPost = useCallback(
-    async (postId) => {
-      const report = await createPostReport(postId);
+    async (postId, reason) => {
+      const report = await createPostReport(postId, reason);
       if (report?.error) {
         const errorMessage = report.error;
         console.warn("Failed to report post:", errorMessage);
@@ -147,6 +150,7 @@ const Reels = () => {
             shouldShowTimeoutProgess: true,
             color: "warning",
           });
+          setIsModalOpen(false);
         } else {
           addToast({
             title: "Encountered an error",
@@ -155,6 +159,7 @@ const Reels = () => {
             shouldShowTimeoutProgess: true,
             color: "danger",
           });
+          setIsModalOpen(false);
         }
         return;
       }
@@ -167,6 +172,8 @@ const Reels = () => {
         shouldShowTimeoutProgess: true,
         color: "success",
       });
+      setIsModalOpen(false);
+      
     },
     [createPostReport]
   );
@@ -200,7 +207,6 @@ const Reels = () => {
         observer.observe(video);
       }
     });
-
 
     return () => {
       videoRefs.current.forEach((video) => {
@@ -258,7 +264,6 @@ const Reels = () => {
       onOpenChange(false);
     }
   };
-
 
   const handleReplySubmit = (newComment) => {
     updateComments(currentPostId, newComment);
@@ -320,7 +325,6 @@ const Reels = () => {
     );
   }
 
-
   return (
     <>
       <ToastProvider placement={"top-right"} />
@@ -363,18 +367,15 @@ const Reels = () => {
                   <FollowButton
                     contentFollow="Follow"
                     contentFollowing="Following"
-
                     userId={user?.id}
                     followingId={post.user.id}
                     classFollow="backdrop-blur-lg text-sm p-4 py-1 rounded-2xl font-bold transition-all duration-200 ease-in-out active:scale-125 hover:bg-black/50  border border-gray-300"
                     classFollowing="backdrop-blur-lg text-sm p-4 py-1 rounded-2xl font-bold transition-all duration-200 ease-in-out active:scale-125 hover:bg-black/50  border border-gray-300"
-
                   />
                 </div>
               </div>
               <div className="mt-2 w-[350px]">
                 <CaptionWithMore text={post.captions} />
-
               </div>
             </div>
             <div className="absolute top-2/3 right-4 transform -translate-y-1/2 flex flex-col items-center space-y-7 text-white text-2xl">
@@ -415,28 +416,33 @@ const Reels = () => {
                 {toolStates[post.id]?.isPopupOpen && (
                   <div
                     id="overmore"
-                    className="w-44 absolute top-[-138] right-10 mt-2 backdrop-blur-xl p-4 rounded-lg shadow-lg text-white border border-gray-300 z-50"
+                    className="w-44 absolute top-[-138px] right-10 mt-2 backdrop-blur-xl p-4 rounded-lg shadow-lg text-white border border-gray-300 z-50"
                     onClick={(e) => closeMore(e, post.id)}
                   >
                     <ul className="text-sm">
                       <li
                         className="cursor-pointer hover:bg-black/30 hover:backdrop-blur-sm font-bold text-left p-2 rounded-sm text-red-500"
-                        onClick={() => handleReportPost(post.id)}
+                        onClick={openReportModal}
                       >
                         Report
                       </li>
-                      <li className="cursor-pointer  hover:bg-black/30 hover:backdrop-blur-sm font-bold text-left p-2 rounded-sm">
+                      <li className="cursor-pointer hover:bg-black/30 hover:backdrop-blur-sm font-bold text-left p-2 rounded-sm">
                         Copy link
                       </li>
-                      <li className="cursor-pointer  hover:bg-black/30 hover:backdrop-blur-sm font-bold text-left p-2 rounded-sm">
+                      <li className="cursor-pointer hover:bg-black/30 hover:backdrop-blur-sm font-bold text-left p-2 rounded-sm">
                         About this account
                       </li>
                     </ul>
+                    <ReportModal
+                      isOpen={isModalOpen}
+                      onClose={closeModal}
+                      onSubmit={handleReportPost}
+                      postId={post.id}
+                    />
                   </div>
                 )}
               </div>
             </div>
-
           </div>
         ))}
 
@@ -460,7 +466,6 @@ const Reels = () => {
                 isCommentOpen ? "translate-x-0" : "translate-x-full"
               }`}
             >
-
               <div className="h-full flex flex-col p-4 border-l border-neutral-700">
                 <div className="flex items-center justify-between dark:text-white mb-4">
                   <h2 className="text-2xl text-center font-bold">Comments</h2>
@@ -491,7 +496,6 @@ const Reels = () => {
                   setComments={(newComments) =>
                     updateComments(currentPostId, newComments)
                   }
-
                   parentComment={replyingTo} // Truyền bình luận đang reply
                   onCancelReply={handleCancelReply}
                 />

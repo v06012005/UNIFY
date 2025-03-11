@@ -1,14 +1,15 @@
 package com.app.unify.entities;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
 
-import com.app.unify.types.EntityType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -23,32 +24,26 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 @Entity
-@Table(name = "reports")
+@Table(name = "saved_posts")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Report {
-
+public class SavedPost {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	String id;
+	
+	@Column(name = "saved_at", nullable = false)
+	LocalDateTime savedAt;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-	@ManyToOne
-	@JsonIgnore
-	@JoinColumn(name = "user_id", nullable = false)
-	User user;
-
-	@Column(name = "reported_id", nullable = false)
-	String reportedId;
-
-	@Column(name = "reported_at", nullable = false)
-	LocalDateTime reportedAt;
-	@Column(name = "entity_type", nullable = false)
-	@Enumerated(EnumType.STRING)
-    EntityType entityType;
-	Integer status;
-	@Column(name = "reason", nullable = false)
-	String reason;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id", nullable = false)
+    private Post post;
+	
 }
