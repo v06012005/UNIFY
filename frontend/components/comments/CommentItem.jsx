@@ -7,7 +7,7 @@ import { useState } from "react";
 import Reply from "@/components/comments/Reply";
 import Content from "@/components/comments/Content";
 import LikeButton from "@/components/global/LikeButton";
-import avatar2 from "@/public/images/testAvt.jpg";
+import defaultAvatar from "public/images/unify_icon_2.svg"; // Sử dụng hình ảnh mặc định giống Page
 
 const CommentItem = ({
   comment,
@@ -20,16 +20,31 @@ const CommentItem = ({
   return (
     <Card
       key={comment.id}
-      className="overflow-visible border-none bg-transparent shadow-none p-3 m-4"
+      className="overflow-visible border-none bg-transparent shadow-none p-3"
     >
       <div>
         <div className="flex items-center">
-          <Image
-            src={avatar2}
-            alt="User avatar"
-            className="rounded-full w-11 h-11"
-          />
-          <h4 className="text-base font-bold truncate w-28 pl-2">
+          {/* Hiển thị avatar */}
+          <div className="relative w-11 h-11 rounded-full overflow-hidden border-2 border-zinc-300">
+            {comment.avatarUrl ? (
+              <Image
+                src={comment.avatarUrl}
+                alt={`${comment.username || "Unknown"}'s avatar`}
+                width={44}
+                height={44}
+                className="object-cover w-full h-full"
+              />
+            ) : (
+              <Image
+                src={defaultAvatar}
+                alt="Default Avatar"
+                width={44}
+                height={44}
+                className="object-cover w-full h-full"
+              />
+            )}
+          </div>
+          <h4 className="text-base font-bold truncate max-w-96 px-3">
             {comment.username || "Unknown"}
           </h4>
           <h4 className="text-xs truncate w-32 dark:text-gray-500">
@@ -41,22 +56,25 @@ const CommentItem = ({
               : "Vừa xong"}
           </h4>
         </div>
-        <div>
-          <Content text={comment.content} />
+        <div className="indent-14 mb-5">
+          <Content
+            text={comment.content}
+            className="leading-snug text-base dark:text-gray-200 w-fit max-w-full"
+          />
         </div>
       </div>
 
-      <CardFooter className="flex flex-row justify-end">
-        <LikeButton className="!text-sm" />
+      <CardFooter className="flex flex-row justify-end p-0">
+        <LikeButton className="!text-sm space-x-1" />
         <Button
           size="sm"
           className="bg-transparent dark:text-white"
-          onClick={onReplyClick} // Đảm bảo gọi đúng
+          onPress={onReplyClick}
         >
           <i className="fa-solid fa-reply"></i> Reply
         </Button>
         <Button
-          onClick={() => setIsShown(!isShown)}
+          onPress={() => setIsShown(!isShown)}
           size="sm"
           className="bg-transparent dark:text-white"
         >

@@ -61,7 +61,6 @@ public class HashtagServiceImpl implements HashtagService {
 		        .map(dto -> hashtagRepository.findByContent(dto.getContent())
 		            .orElseGet(() -> mapper.toHashtag(dto)))
 		        .collect(Collectors.toList());
-
 		    List<Hashtag> savedHashtags = hashtagRepository.saveAll(hashtags);
 		    return savedHashtags.stream().map(mapper::toHashtagDTO).collect(Collectors.toList());
 	}

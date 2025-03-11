@@ -32,8 +32,11 @@ public class PostServiceImp implements PostService {
 
     @Autowired
     private HashtagRepository hashtagRepository;
+
     @Autowired
     private HashtagDetailRepository hashtagDetailRepository;
+
+
 
     @Override
     public PostDTO createPost(PostDTO postDTO) {
@@ -104,4 +107,14 @@ public class PostServiceImp implements PostService {
 		List<PostDTO> list = mapper.toPostDTOList(postRepository.findAllById(postIds));
 		return list;
 	}
+
+    @Override
+    public List<PostDTO> getRecommendedPosts(String userId) {
+        // Logic recommendation: Lấy posts từ user follow, lượt like, hashtag, v.v.
+        List<Post> posts = postRepository.findPostsWithInteractionCounts()
+            .stream()
+            .map(result -> (Post) result[0])
+            .collect(Collectors.toList());
+        return posts.stream().map(mapper::toPostDTO).collect(Collectors.toList());
+    }
 }

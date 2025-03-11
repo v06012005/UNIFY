@@ -37,10 +37,13 @@ const FollowingModal = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]">
-      <div className="bg-white dark:bg-gray-800 rounded-lg w-[450px] h-[500px] p-6 ">
+      <div className="bg-white dark:bg-neutral-800 rounded-lg w-[450px] h-[500px] p-6 ">
         <div className="flex justify-between mb-4 text-2xl">
           <h2 className="text-lg font-bold">Following</h2>
-          <button className="text-gray-500 hover:text-black" onClick={onClose}>
+          <button
+            className="text-zinc-500 dark:hover:text-white hover:text-black"
+            onClick={onClose}
+          >
             ×
           </button>
         </div>
@@ -91,7 +94,7 @@ const FollowingModal = ({ isOpen, onClose }) => {
                   userId={user.id}
                   followingId={userData.id}
                   classFollow="bg-red-500 font-bold py-1 px-4 rounded-lg text-white text-md"
-                  classFollowing="bg-gray-700 hover:bg-gray-600 font-bold py-1 px-4 rounded-lg text-white text-md"
+                  classFollowing="bg-zinc-500 hover:bg-zinc-700 font-bold py-1 px-4 rounded-lg text-white text-md"
                   contentFollowing="Unfollow"
                   contentFollow="Follow"
                 />

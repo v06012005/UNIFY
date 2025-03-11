@@ -4,10 +4,10 @@ import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { Smile, Send } from "lucide-react";
 import Picker from "emoji-picker-react";
-import avatar2 from "@/public/images/testAvt.jpg";
 import { postComment } from "app/api/service/commentService";
 import Cookies from "js-cookie";
 import { useApp } from "@/components/provider/AppProvider";
+import defaultAvatar from "public/images/unify_icon_2.svg";  
 
 const CommentInput = ({
   postId,
@@ -53,6 +53,7 @@ const CommentInput = ({
       const enrichedComment = {
         ...newComment,
         username: user?.username || "Unknown",
+        avatarUrl: user?.avatar?.url || null, // Thêm avatarUrl vào comment mới
       };
       setComments(enrichedComment);
       setComment(parentComment ? `@${parentComment.username} ` : ""); // Giữ @username
@@ -90,12 +91,27 @@ const CommentInput = ({
   }, [showPicker]);
 
   return (
-    <div className="flex items-center mt-3 text-white p-3 rounded-2xl w-full justify-center relative">
-      <Image
-        src={avatar2}
-        alt="Avatar"
-        className="rounded-full w-10 h-10 mr-2"
-      />
+    <div className="flex items-center text-white rounded-2xl w-full justify-center relative">
+      {/* Hiển thị avatar của người dùng hiện tại */}
+      <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-gray-300 mr-2">
+        {user?.avatar?.url ? (
+          <Image
+            src={user.avatar.url}
+            alt={`${user.username || "Unknown"}'s avatar`}
+            width={40}
+            height={40}
+            className="object-cover w-full h-full"
+          />
+        ) : (
+          <Image
+            src={defaultAvatar}
+            alt="Default Avatar"
+            width={40}
+            height={40}
+            className="object-cover w-full h-full"
+          />
+        )}
+      </div>
       <textarea
         placeholder={
           parentComment
@@ -172,9 +188,6 @@ const CommentInput = ({
             </button>
           )}
         </>
-      )}
-      {error && (
-        <div className="absolute top-[-30px] text-red-500 text-sm">{error}</div>
       )}
       {error && (
         <div className="absolute top-[-30px] text-red-500 text-sm">{error}</div>

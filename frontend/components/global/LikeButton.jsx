@@ -36,7 +36,7 @@ const LikeButton = ({ className = "", classText = "", userId, postId }) => {
           );
         }
       } catch (error) {
-        console.error("Lỗi khi fetch số lượt like type2");
+        console.error("Lỗi khi fetch số lượt like type2", await response.text());
       }
     };
     fetchLikeCount();
