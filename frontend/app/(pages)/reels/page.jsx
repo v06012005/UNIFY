@@ -17,6 +17,9 @@ import avatar2 from "@/public/images/testAvt.jpg";
 import FollowButton from "@/components/ui/follow-button";
 import LikeButton from "@/components/global/LikeButton";
 
+import ReportModal from "@/components/global/Report/ReportModal";
+
+
 import { useReports } from "@/components/provider/ReportProvider";
 import { addToast, ToastProvider } from "@heroui/toast";
 import { useQuery } from "@tanstack/react-query";
@@ -36,15 +39,26 @@ const Reels = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const containerRef = useRef(null);
   const videoRefs = useRef([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const openReportModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+  ////////////// ReplyReply
 
   const currentUserId = user?.id;
   const [replyingTo, setReplyingTo] = useState(null);
   const { createPostReport, createUserReport, createCommentReport } =
     useReports();
+
   const { data: posts, isLoading } = useQuery({
     queryKey: ["posts"],
     queryFn: fetchPosts,
   });
+
 
   // Fetch video posts và comments ngay từ đầu
   useEffect(() => {
@@ -106,6 +120,7 @@ const Reels = () => {
       }
     }
     getVideoPosts();
+
   }, [isLoading, posts]);
   const handleReportPost = useCallback(
     async (postId) => {
@@ -147,6 +162,7 @@ const Reels = () => {
     [createPostReport]
   );
   // Fetch comments cho một post cụ thể
+
   const loadComments = useCallback(
     async (postId) => {
       if (!token || !postId) return;
@@ -168,6 +184,7 @@ const Reels = () => {
     [token]
   );
 
+
   //   load comments
   useEffect(() => {
     if (videoPosts.length > 0) {
@@ -178,6 +195,51 @@ const Reels = () => {
   }, [videoPosts, loadComments]);
 
   //  autoplay video
+
+  const handleReportPost = useCallback(
+    async (postId, reason) => {
+      const report = await createPostReport(postId, reason);
+      if (report?.error) {
+        const errorMessage = report.error;
+        console.warn("Failed to report post:", errorMessage);
+        if (errorMessage === "You have reported this content before.") {
+          addToast({
+            title: "Fail to report post",
+            description: "You have reported this content before.",
+            timeout: 3000,
+            shouldShowTimeoutProgess: true,
+            color: "warning",
+          });
+          setIsModalOpen(false);
+        } else {
+          addToast({
+            title: "Encountered an error",
+            description: "Error: " + errorMessage,
+            timeout: 3000,
+            shouldShowTimeoutProgess: true,
+            color: "danger",
+          });
+          setIsModalOpen(false);
+        }
+        return;
+      }
+
+      console.log("Post reported successfully:", report);
+      addToast({
+        title: "Success",
+        description: "Report post successful.",
+        timeout: 3000,
+        shouldShowTimeoutProgess: true,
+        color: "success",
+      });
+      setIsModalOpen(false);
+      
+    },
+    [createPostReport]
+  );
+
+  // Intersection Observer
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -228,8 +290,11 @@ const Reels = () => {
     }));
   };
 
+ 
+  const handleLike = (postId) => toggleToolState(postId, "isLiked");
   const handleSave = (postId) => toggleToolState(postId, "isSaved");
   const togglePopup = (postId) => toggleToolState(postId, "isPopupOpen");
+  const folloWing = (postId) => toggleToolState(postId, "isFollow");
 
   const closeMore = (e, postId) => {
     if (e.target.id === "overmore") {
@@ -242,10 +307,12 @@ const Reels = () => {
 
   const toggleComment = (postId) => {
     console.log("Toggling comments for post:", postId);
+
     setCurrentPostId(postId);
     setIsCommentOpen((prev) => !prev);
   };
 
+ 
   const closeComment = (e) => {
     if (e.target.id === "overlay") {
       setIsCommentOpen(false);
@@ -279,6 +346,7 @@ const Reels = () => {
     (postId, newComment) => {
       setCommentsByPost((prev) => {
         const currentComments = Array.isArray(prev[postId]) ? prev[postId] : [];
+ 
         if (newComment.parentId) {
           const updatedComments = currentComments.map((comment) => {
             if (comment.id === newComment.parentId) {
@@ -297,6 +365,8 @@ const Reels = () => {
             [postId]: updatedComments,
           };
         }
+
+
         const updatedComments = [
           { ...newComment, username: user?.username || "Unknown" },
           ...currentComments,
@@ -311,7 +381,7 @@ const Reels = () => {
     [user]
   );
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
         <Spinner color="primary" label="Loading..." labelColor="primary" />
@@ -320,165 +390,180 @@ const Reels = () => {
   }
 
   return (
-    <div
-      ref={containerRef}
-      className="h-screen w-full overflow-y-scroll snap-y snap-mandatory scrollbar-hide shadow-lg"
-    >
-      {videoPosts.map((post, index) => (
-        <div
-          key={post.id}
-          className={`relative w-[450px] h-[700px] mx-auto rounded-b-xl overflow-hidden m-5 snap-start flex-shrink-0 ${
-            isCommentOpen ? "translate-x-[-150px]" : "translate-x-0"
-          } transition-transform duration-400 ease-in-out`}
-        >
-          {post.media.map(
-            (media, mediaIndex) =>
-              media.mediaType === "VIDEO" && (
-                <PostReels
-                  key={mediaIndex}
-                  src={media.url}
-                  ref={(el) => (videoRefs.current[index] = el)}
-                  loop
-                  onPauseChange={(isPaused) =>
-                    handlePauseChange(post.id, isPaused)
-                  }
-                />
-              )
-          )}
+    <>
+      <ToastProvider placement={"top-right"} />
+      <div
+        ref={containerRef}
+        className="h-screen w-full overflow-y-scroll snap-y snap-mandatory scrollbar-hide shadow-lg"
+      >
+        {videoPosts.map((post, index) => (
+          <div
+            key={post.id}
+            className={`relative w-[450px] h-[700px] mx-auto rounded-b-xl overflow-hidden m-5 snap-start flex-shrink-0 ${
+              isCommentOpen ? "translate-x-[-150px]" : "translate-x-0"
+            } transition-transform duration-400 ease-in-out`}
+          >
+            {post.media.map(
+              (media, mediaIndex) =>
+                media.mediaType === "VIDEO" && (
+                  <PostReels
+                    key={mediaIndex}
+                    src={media.url}
+                    ref={(el) => (videoRefs.current[index] = el)}
+                    loop
+                    onPauseChange={(isPaused) =>
+                      handlePauseChange(post.id, isPaused)
+                    }
+                  />
+                )
+            )}
 
-          <div className="absolute bottom-4 left-4 flex flex-col text-white">
-            <div className="flex items-center">
-              <Image
-                src={avatar2}
-                alt="User Avatar"
-                className="w-10 h-10 bg-gray-600 rounded-full"
-              />
-              <div className="flex items-center space-x-2 pl-2">
-                <span className="font-medium">{post.user?.username}</span>
-                <span className="text-white text-lg">•</span>
-                <FollowButton
-                  contentFollow="Follow"
-                  contentFollowing="Following"
-                  userId={user.id}
-                  followingId={post.user.id}
-                  classFollow="backdrop-blur-lg text-sm p-4 py-1 rounded-2xl font-bold transition-all duration-200 ease-in-out active:scale-125 hover:bg-zinc-500 dark:hover:bg-zinc-500 border border-zinc-300"
-                  classFollowing="backdrop-blur-lg text-sm p-4 py-1 rounded-2xl font-bold transition-all duration-200 ease-in-out active:scale-125 hover:bg-zinc-500 dark:hover:bg-zinc-500 border border-zinc-300"
+            <div className="absolute bottom-4 left-4 flex flex-col text-white">
+              <div className="flex items-center">
+                <Image
+                  src={avatar2}
+                  alt="User Avatar"
+                  className="w-10 h-10 bg-gray-600 rounded-full"
                 />
+                <div className="flex items-center space-x-2 pl-2">
+                  <span className="font-medium">{post.user?.username}</span>
+                  <span className="text-white text-lg">•</span>
+                  <FollowButton
+                    contentFollow="Follow"
+                    contentFollowing="Following"
+                    userId={user?.id}
+                    followingId={post.user.id}
+                    classFollow="backdrop-blur-lg text-sm p-4 py-1 rounded-2xl font-bold transition-all duration-200 ease-in-out active:scale-125 hover:bg-black/50  border border-gray-300"
+                    classFollowing="backdrop-blur-lg text-sm p-4 py-1 rounded-2xl font-bold transition-all duration-200 ease-in-out active:scale-125 hover:bg-black/50  border border-gray-300"
+                  />
+                </div>
+              </div>
+              <div className="mt-2 w-[350px]">
+                <CaptionWithMore text={post.captions} />
               </div>
             </div>
-            <div className="mt-2 w-[350px]">
-              <CaptionWithMore text={post.captions} />
-            </div>
-          </div>
-          <div className="absolute top-2/3 right-4 transform -translate-y-1/2 flex flex-col items-center space-y-7 text-white text-2xl">
-            <div className="flex flex-col items-center">
+            <div className="absolute top-2/3 right-4 transform -translate-y-1/2 flex flex-col items-center space-y-7 text-white text-2xl">
               <LikeButton
-                userId={user.id}
+                userId={user?.id}
                 postId={post.id}
                 className="flex flex-col items-center"
                 classText="text-sm"
               />
-            </div>
-            <div className="flex flex-col items-center">
-              <i
-                className="fa-regular fa-comment hover:opacity-50 focus:opacity-50 transition cursor-pointer"
-                onClick={() => toggleComment(post.id)}
-              />
-              <span className="text-sm">
-                {isCommentsLoading
-                  ? "..."
-                  : commentsByPost[post.id]?.length || 0}
-              </span>
-            </div>
-            <div className="flex flex-col items-center">
-              <i
-                onClick={onOpen}
-                className="fa-regular fa-paper-plane hover:opacity-50 focus:opacity-50 transition"
-              />
-            </div>
-            <div className="flex flex-col items-center">
-              <i
-                className={`fa-${
-                  toolStates[post.id]?.isSaved ? "solid" : "regular"
-                } fa-bookmark hover:opacity-50 focus:opacity-50 transition cursor-pointer`}
-                onClick={() => handleSave(post.id)}
-              />
-            </div>
-            <div className="flex flex-col items-center relative">
-              <i
-                className="fa-solid fa-ellipsis hover:opacity-50 focus:opacity-50 transition cursor-pointer"
-                onClick={() => togglePopup(post.id)}
-              />
-              {toolStates[post.id]?.isPopupOpen && (
-                <div
-                  id="overmore"
-                  className="w-44 absolute top-[-138] right-10 mt-2 backdrop-blur-xl p-4 rounded-lg shadow-lg text-white border border-gray-300 z-50"
-                  onClick={(e) => closeMore(e, post.id)}
-                >
-                  <ul className="text-sm">
-                    <li
-                      className="cursor-pointer hover:bg-slate-500 font-bold text-left p-2 rounded-sm text-red-500"
-                      onClick={() => handleReportPost(post.id)}
-                    >
-                      Report
-                    </li>
-                    <li className="cursor-pointer hover:bg-stone-900 font-bold text-left p-2 rounded-sm">
-                      Copy link
-                    </li>
-                    <li className="cursor-pointer hover:bg-stone-900 font-bold text-left p-2 rounded-sm">
-                      About this account
-                    </li>
-                  </ul>
-                </div>
-              )}
+              <div className="flex flex-col items-center">
+                <i
+                  className="fa-regular fa-comment hover:opacity-50 focus:opacity-50 transition cursor-pointer"
+                  onClick={() => toggleComment(post.id)}
+                />
+                <span className="text-sm">
+                  {commentsByPost[post.id]?.length || 0}
+                </span>
+              </div>
+              <div className="flex flex-col items-center">
+                <i
+                  onClick={onOpen}
+                  className="fa-regular fa-paper-plane hover:opacity-50 focus:opacity-50 transition"
+                />
+              </div>
+              <div className="flex flex-col items-center">
+                <i
+                  className={`fa-${
+                    toolStates[post.id]?.isSaved ? "solid" : "regular"
+                  } fa-bookmark hover:opacity-50 focus:opacity-50 transition cursor-pointer`}
+                  onClick={() => handleSave(post.id)}
+                />
+              </div>
+              <div className="flex flex-col items-center relative">
+                <i
+                  className="fa-solid fa-ellipsis hover:opacity-50 focus:opacity-50 transition cursor-pointer"
+                  onClick={() => togglePopup(post.id)}
+                />
+                {toolStates[post.id]?.isPopupOpen && (
+                  <div
+                    id="overmore"
+                    className="w-44 absolute top-[-138px] right-10 mt-2 backdrop-blur-xl p-4 rounded-lg shadow-lg text-white border border-gray-300 z-50"
+                    onClick={(e) => closeMore(e, post.id)}
+                  >
+                    <ul className="text-sm">
+                      <li
+                        className="cursor-pointer hover:bg-black/30 hover:backdrop-blur-sm font-bold text-left p-2 rounded-sm text-red-500"
+                        onClick={openReportModal}
+                      >
+                        Report
+                      </li>
+                      <li className="cursor-pointer hover:bg-black/30 hover:backdrop-blur-sm font-bold text-left p-2 rounded-sm">
+                        Copy link
+                      </li>
+                      <li className="cursor-pointer hover:bg-black/30 hover:backdrop-blur-sm font-bold text-left p-2 rounded-sm">
+                        About this account
+                      </li>
+                    </ul>
+                    <ReportModal
+                      isOpen={isModalOpen}
+                      onClose={closeModal}
+                      onSubmit={handleReportPost}
+                      postId={post.id}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        ))}
 
-      <ShareReels
-        isOpen={isOpen}
-        onOpenChange={onOpenChange}
-        selectedAvatars={selectedAvatars}
-        setSelectedAvatars={setSelectedAvatars}
-        handleShare={handleShare}
-      />
-      {isCommentOpen && currentPostId && (
-        <div
-          id="overlay"
-          className={`fixed top-0 left-0 w-full h-full z-20 transition-opacity duration-300 ease-in-out ${
-            isCommentOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-          }`}
-          onClick={closeComment}
-        >
+        <ShareReels
+          isOpen={isOpen}
+          onOpenChange={onOpenChange}
+          selectedAvatars={selectedAvatars}
+          setSelectedAvatars={setSelectedAvatars}
+          handleShare={handleShare}
+        />
+        {isCommentOpen && currentPostId && (
           <div
-            className={`fixed top-0 right-0 h-full w-[450px] transition-transform duration-300 ease-in-out ${
-              isCommentOpen ? "translate-x-0" : "translate-x-full"
+            id="overlay"
+            className={`fixed top-0 left-0 w-full h-full z-20 transition-opacity duration-300 ease-in-out ${
+              isCommentOpen ? "opacity-100" : "opacity-0 pointer-events-none"
             }`}
+            onClick={closeComment}
           >
-            <div className="h-full flex flex-col p-4 border-l border-neutral-700">
-              <div className="flex items-center justify-between dark:text-white mb-4">
-                <h2 className="text-2xl text-center font-bold">Comments</h2>
-              </div>
-              <div className="flex-grow overflow-auto">
-                {isCommentsLoading ? (
-                  <Spinner />
-                ) : Array.isArray(commentsByPost[currentPostId]) &&
-                  commentsByPost[currentPostId].length > 0 ? (
-                  commentsByPost[currentPostId].map((comment) => (
-                    <CommentItem
-                      key={comment.id}
-                      comment={comment}
-                      currentUserId={currentUserId}
-                      onReplySubmit={handleReplySubmit}
-                      onReplyClick={() => handleReplyClick(comment)}
-                    />
-                  ))
-                ) : (
-                  <p className="dark:text-white font-bold text-3xl">
-                    No comments yet.
-                  </p>
-                )}
+            <div
+              className={`fixed top-0 right-0 h-full w-[450px] transition-transform duration-300 ease-in-out ${
+                isCommentOpen ? "translate-x-0" : "translate-x-full"
+              }`}
+            >
+              <div className="h-full flex flex-col p-4 border-l border-neutral-700">
+                <div className="flex items-center justify-between dark:text-white mb-4">
+                  <h2 className="text-2xl text-center font-bold">Comments</h2>
+                </div>
+                <div className="flex-grow overflow-auto">
+                  {isCommentsLoading ? (
+                    <Spinner />
+                  ) : Array.isArray(commentsByPost[currentPostId]) &&
+                    commentsByPost[currentPostId].length > 0 ? (
+                    commentsByPost[currentPostId].map((comment) => (
+                      <CommentItem
+                        key={comment.id}
+                        comment={comment}
+                        currentUserId={currentUserId}
+                        onReplySubmit={handleReplySubmit}
+                        onReplyClick={() => handleReplyClick(comment)}
+                      />
+                    ))
+                  ) : (
+                    <p className="text-red-500 font-bold">
+                      No comments available for this post
+                    </p>
+                  )}
+                </div>
+
+                <CommentInput
+                  postId={currentPostId}
+                  setComments={(newComments) =>
+                    updateComments(currentPostId, newComments)
+                  }
+                  parentComment={replyingTo} // Truyền bình luận đang reply
+                  onCancelReply={handleCancelReply}
+                />
+
               </div>
               <CommentInput
                 postId={currentPostId}
@@ -490,9 +575,10 @@ const Reels = () => {
               />
             </div>
           </div>
-        </div>
-      )}
-    </div>
+
+        )}
+      </div>
+    </>
   );
 };
 

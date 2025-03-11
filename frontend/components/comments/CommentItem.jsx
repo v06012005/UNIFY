@@ -24,6 +24,7 @@ const CommentItem = ({
     >
       <div>
         <div className="flex items-center">
+
           {/* Hiển thị avatar */}
           <div className="relative w-11 h-11 rounded-full overflow-hidden border-2 border-zinc-300">
             {comment.avatarUrl ? (
@@ -44,6 +45,7 @@ const CommentItem = ({
               />
             )}
           </div>
+
           <h4 className="text-base font-bold truncate max-w-96 px-3">
             {comment.username || "Unknown"}
           </h4>
@@ -56,11 +58,13 @@ const CommentItem = ({
               : "Vừa xong"}
           </h4>
         </div>
+
         <div className="indent-14 mb-5">
           <Content
             text={comment.content}
             className="leading-snug text-base dark:text-gray-200 w-fit max-w-full"
           />
+
         </div>
       </div>
 

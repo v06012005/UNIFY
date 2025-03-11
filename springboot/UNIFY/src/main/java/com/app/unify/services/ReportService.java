@@ -73,29 +73,32 @@ public class ReportService {
         }
     }
 
-    public ReportDTO createPostReport(String reportedId) {
+    public ReportDTO createPostReport(String reportedId, String reason) {
         String userId = userService.getMyInfo().getId();
         ReportDTO reportDTO = new ReportDTO();
         reportDTO.setUserId(userId);
         reportDTO.setReportedId(reportedId);
+        reportDTO.setReason(reason);
         reportDTO.setStatus(PENDING);
         return createReport(reportDTO, EntityType.POST);
     }
 
-    public ReportDTO createUserReport(String reportedId) {
+    public ReportDTO createUserReport(String reportedId, String reason) {
         String userId = userService.getMyInfo().getId();
         ReportDTO reportDTO = new ReportDTO();
         reportDTO.setUserId(userId);
         reportDTO.setReportedId(reportedId);
+        reportDTO.setReason(reason);
         reportDTO.setStatus(PENDING);
         return createReport(reportDTO, EntityType.USER);
     }
 
-    public ReportDTO createCommentReport(String reportedId) {
+    public ReportDTO createCommentReport(String reportedId, String reason) {
         String userId = userService.getMyInfo().getId();
         ReportDTO reportDTO = new ReportDTO();
         reportDTO.setUserId(userId);
         reportDTO.setReportedId(reportedId);
+        reportDTO.setReason(reason);
         reportDTO.setStatus(PENDING);
         return createReport(reportDTO, EntityType.COMMENT);
     }
@@ -122,6 +125,10 @@ public class ReportService {
     public ReportDTO createReport(ReportDTO reportDTO, EntityType entityType) {
         String userId = reportDTO.getUserId();
         String reportedId = reportDTO.getReportedId();
+        String reason = reportDTO.getReason();
+        if (reason == null || reason.trim().isEmpty()) {
+            throw new IllegalArgumentException("Reason for report cannot be empty.");
+        }
         if (isSelfReport(userId, reportedId, entityType)) {
             throw new IllegalArgumentException("You cannot self-report.");
         }

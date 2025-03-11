@@ -15,7 +15,7 @@ public class ReportDTO {
 	    private String entityType;
 	    private LocalDateTime reportedAt;
 	    private Integer status;
-
+	    private String reason;
 	    private Object reportedEntity;
 
 

@@ -9,7 +9,12 @@ import Avatar from "@/public/images/avt.jpg";
 import { redirect } from "next/navigation";
 import { fetchPostById } from "@/app/lib/dal";
 import Image from "next/image";
+ 
 import { useApp } from "@/components/provider/AppProvider"; // Thêm AppProvider để lấy thông tin user
+ 
+import iconVideo from "@/public/vds.svg"; // Correct video icon path
+import iconImage from "@/public/imgs.svg"; // Correct image icon path
+ 
 
 const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   return (
@@ -162,6 +167,7 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
         <div className="w-1/2 relative dark:border-neutral-700 border-r">
           {selectedMedia ? (
             selectedMedia.mediaType === "VIDEO" ? (
+
               <video
                 src={selectedMedia.url}
                 controls
@@ -173,6 +179,7 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
                 className="w-full h-full object-cover rounded-tl-xl rounded-bl-xl"
                 alt="Post Media"
               />
+
             )
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-black text-white">
@@ -193,16 +200,36 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
                   onClick={() => setSelectedMedia(item)}
                 >
                   {item.mediaType === "VIDEO" ? (
-                    <video
-                      src={item.url}
-                      className="w-full h-full object-cover rounded"
-                    />
+                    <div className="relative w-full h-full">
+                      <video
+                        src={item.url}
+                        className="w-full h-full object-cover rounded"
+                      />
+                      <div className="absolute top-1 left-1">
+                        <Image
+                          src={iconVideo}
+                          width={16}
+                          height={16}
+                          alt="Video"
+                        />
+                      </div>
+                    </div>
                   ) : (
-                    <img
-                      src={item.url}
-                      className="w-full h-full object-cover rounded"
-                      alt="Thumbnail"
-                    />
+                    <div className="relative w-full h-full">
+                      <img
+                        src={item.url}
+                        className="w-full h-full object-cover rounded"
+                        alt="Thumbnail"
+                      />
+                      <div className="absolute top-1 left-1">
+                        <Image
+                          src={iconImage}
+                          width={16}
+                          height={16}
+                          alt="Image"
+                        />
+                      </div>
+                    </div>
                   )}
                 </div>
               ))}
@@ -218,6 +245,8 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
                 <Image
                   src={post.user?.avatar || Avatar}
                   alt="User Avatar"
+                  width={40} // Add width
+                  height={40} // Add height
                   className="w-full h-full rounded-full object-cover"
                 />
               </div>
@@ -290,10 +319,12 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
             )}
           </div>
 
+
           <div
             className="flex-1 px-4 py-3 overflow-y-auto"
             ref={commentsContainerRef}
           >
+
             {post.captions === null ? (
               ""
             ) : (
@@ -302,6 +333,8 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
                   <Image
                     src={post.user?.avatar || Avatar}
                     alt="User Avatar"
+
+
                     className="w-full h-full rounded-full object-cover"
                   />
                 </div>
@@ -313,6 +346,7 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
             )}
 
             <div className="mt-5 space-y-2">
+
               {isCommentsLoading ? (
                 <p>Loading comments...</p>
               ) : comments.length > 0 ? (
@@ -328,21 +362,26 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
               ) : (
                 <p>No comments yet.</p>
               )}
+
             </div>
           </div>
 
           <div className="p-4 border-t dark:border-neutral-800">
+
             <CommentInput
               postId={post.id}
               setComments={handleNewComment}
               parentComment={replyingTo} //   được reply
               onCancelReply={handleCancelReply} //   hủy reply
             />
+
           </div>
         </div>
 
         <button
+
           className="absolute right-4 top-4 text-gray-200 hover:text-white text-3xl font-bold rounded-full w-10 h-10 flex items-center justify-center transition-colors"
+
           onClick={handleClose}
         >
           ×

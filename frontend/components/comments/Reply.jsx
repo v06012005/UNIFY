@@ -17,6 +17,7 @@ const Reply = ({ reply }) => {
       >
         <div className="">
           <div className="flex items-center">
+
             {/* Hiển thị avatar */}
             <div className="relative w-11 h-11 rounded-full overflow-hidden border-2 border-gray-300">
               {reply.avatarUrl ? (
@@ -39,6 +40,7 @@ const Reply = ({ reply }) => {
             </div>
             <h4 className="text-base font-bold truncate max-w-full w-fit px-2">
               {reply.username || "Unknown"}
+
             </h4>
             <h4 className="text-xs truncate w-32 dark:text-gray-500">
               {reply.commentedAt &&
@@ -50,7 +52,9 @@ const Reply = ({ reply }) => {
             </h4>
           </div>
           <div className="indent-12">
-            <Content text={reply.content} className="" />
+
+            <Content text={reply.content} className=""/>
+
           </div>
         </div>
 

@@ -92,6 +92,7 @@ const CommentInput = ({
 
   return (
     <div className="flex items-center text-white rounded-2xl w-full justify-center relative">
+
       {/* Hiển thị avatar của người dùng hiện tại */}
       <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-gray-300 mr-2">
         {user?.avatar?.url ? (
@@ -112,6 +113,7 @@ const CommentInput = ({
           />
         )}
       </div>
+
       <textarea
         placeholder={
           parentComment

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
+
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useApp } from "@/components/provider/AppProvider";
@@ -22,22 +23,21 @@ const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   );
 };
 
+
 const UserReels = ({ username }) => {
   const [selectedPost, setSelectedPost] = useState(null);
-  const [postToDelete, setPostToDelete] = useState(null);
-  const [openList, setOpenList] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState(null);
   const { user, getUserInfoByUsername } = useApp();
-  const router = useRouter();
   const [postUsers, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+
   const params = useParams();
+
   const [comments, setComments] = useState([]);
   const [isCommentsLoading, setIsCommentsLoading] = useState(false);
   const token = Cookies.get("token");
   const commentsContainerRef = useRef(null);
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   const loadComments = useCallback(
     async (postId) => {
@@ -85,7 +85,7 @@ const UserReels = ({ username }) => {
       getUserInfoByUsername(username)
         .then((data) => {
           if (data) {
-            const response = axios
+            axios
               .get(
                 `${process.env.NEXT_PUBLIC_API_URL}/posts/my?userId=${data.id}`,
                 {
@@ -126,11 +126,6 @@ const UserReels = ({ username }) => {
     } catch (error) {
       console.error("Error deleting post:", error);
     }
-  };
-
-  const openDeleteModal = (postId) => {
-    setPostToDelete(postId);
-    setShowModal(true);
   };
 
   useEffect(() => {
@@ -182,6 +177,8 @@ const UserReels = ({ username }) => {
                       src={firstVideo.url}
                       className="w-full h-full object-cover"
                       muted
+
+
                     />
                   </div>
                   {post.media.length > 1 && (
@@ -193,6 +190,8 @@ const UserReels = ({ username }) => {
                               <video
                                 src={mediaItem?.url}
                                 className="w-full h-full object-cover"
+
+
                               />
                             ) : (
                               <img
@@ -208,7 +207,9 @@ const UserReels = ({ username }) => {
                   )}
                   {post.media.length > 1 && (
                     <div className="absolute top-2 right-2 bg-black/50 text-white text-xs px-1 py-0.5 rounded pointer-events-none">
+
                       <i className="fa-solid fa-layer-group"></i>
+
                     </div>
                   )}
                 </div>
