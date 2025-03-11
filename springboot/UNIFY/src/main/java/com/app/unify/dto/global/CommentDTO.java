@@ -25,6 +25,7 @@ public class CommentDTO {
     private String userId;
     private String postId;
     private String username;
+    private String avatarUrl;
     private String parentId;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     private LocalDateTime commentedAt;

@@ -27,6 +27,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/posts")
@@ -39,6 +41,10 @@ public class PostController {
     private final LikedPostService likedService;
     private final MediaService mediaService;
         
+    @Autowired
+    private final UserRepository userRepository;
+
+
     @Autowired
     private final UserRepository userRepository;
 
@@ -112,6 +118,7 @@ public class PostController {
         String userId = getCurrentUserId();
         List<PostDTO> posts = postService.getRecommendedPosts(userId);
         return ResponseEntity.ok(posts);
+
     }
 
     private String getCurrentUserId() {
@@ -132,5 +139,6 @@ public class PostController {
 
 		throw new RuntimeException("User not authenticated (401)");
 	}
+
 
 }

@@ -110,22 +110,28 @@ const Page = () => {
         {/* Profile Header */}
         <div className="flex px-4 sm:px-6">
           {/* Avatar */}
-          <div className="w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0">
+
+          <div className="w-28 h-28 sm:w-36 sm:h-36 flex-shrink-0">
+=
             <div className="relative w-full h-full rounded-full overflow-hidden border-2 border-gray-300">
               {userInfo?.avatar?.url ? (
                 <Image
                   src={userInfo.avatar.url}
                   alt="Avatar"
-                  width={128}
-                  height={128}
+
+                  width={144}
+                  height={144}
+
                   className="object-cover w-full h-full"
                 />
               ) : (
                 <Image
                   src="/images/unify_icon_2.svg"
                   alt="Default Avatar"
-                  width={128}
-                  height={128}
+
+                  width={144}
+                  height={144}
+
                   className="object-cover w-full h-full"
                 />
               )}
@@ -133,7 +139,9 @@ const Page = () => {
           </div>
 
           {/* Profile Info */}
-          <div className="ml-6 flex-1">
+
+          <div className="ml-20 flex-1">
+
             <div className="flex items-center justify-between">
               <h3 className="text-2xl font-normal text-neutral-800 dark:text-white truncate max-w-[200px]">
                 {userInfo.username}

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { fetchComments } from "app/api/service/commentService";
 import CommentItem from "@/components/comments/CommentItem";
 import CommentInput from "@/components/comments/CommentInput";
@@ -9,8 +9,12 @@ import Avatar from "@/public/images/avt.jpg";
 import { redirect } from "next/navigation";
 import { fetchPostById } from "@/app/lib/dal";
 import Image from "next/image";
+ 
+import { useApp } from "@/components/provider/AppProvider"; // Thêm AppProvider để lấy thông tin user
+ 
 import iconVideo from "@/public/vds.svg"; // Correct video icon path
 import iconImage from "@/public/imgs.svg"; // Correct image icon path
+ 
 
 const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   return (
@@ -30,7 +34,12 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState(post?.media?.[0] || null);
   const [comments, setComments] = useState([]);
+  const [isCommentsLoading, setIsCommentsLoading] = useState(false); // Thêm trạng thái loading
+  const [replyingTo, setReplyingTo] = useState(null); // Thêm trạng thái để theo dõi reply
   const token = Cookies.get("token");
+  const commentsContainerRef = useRef(null); // Ref để cuộn comment
+  const { user } = useApp(); // Lấy thông tin user từ context
+  const currentUserId = user?.id; // ID của user hiện tại
 
   const [myPost, setMyPost] = useState([]);
 
@@ -63,19 +72,81 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
     });
   };
 
+  // tải comments 
   const loadComments = useCallback(async () => {
     if (!post?.id || !token) return;
+    setIsCommentsLoading(true);
     try {
       const data = await fetchComments(post.id, token);
       setComments(data || []);
     } catch (error) {
       console.error("Error fetching comments:", error);
+      setComments([]);
+    } finally {
+      setIsCommentsLoading(false);
     }
   }, [post?.id, token]);
 
+  //   loadComments  
   useEffect(() => {
     loadComments();
   }, [loadComments]);
+
+  //  comment mới (bao gồm cả reply)
+  const handleNewComment = (newComment) => {
+    const enrichedComment = {
+      ...newComment,
+      username: user?.username || "Unknown",
+      user: { avatar: user?.avatar || "/default-avatar.jpg" }, // Thêm thông tin user  
+    };
+    setComments((prevComments) => {
+      if (newComment.parentId) {
+        //  thêm vào danh sách replies 
+        const addReplyToComment = (comments) => {
+          return comments.map((comment) => {
+            if (comment.id === newComment.parentId) {
+              return {
+                ...comment,
+                replies: [enrichedComment, ...(comment.replies || [])],
+              };
+            }
+            if (comment.replies) {
+              return {
+                ...comment,
+                replies: addReplyToComment(comment.replies),
+              };
+            }
+            return comment;
+          });
+        };
+        return addReplyToComment(prevComments);
+      }
+      //   không phải reply, thêm vào   comments gốc
+      return [enrichedComment, ...prevComments];
+    });
+
+    // Cuộn  
+    if (commentsContainerRef.current) {
+      commentsContainerRef.current.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }
+
+    // Reset trạng thái  
+    setReplyingTo(null);
+  };
+
+  //   nhấn nút reply
+  const handleReplyClick = (comment) => {
+    setReplyingTo(comment);
+    console.log("Replying to:", comment);
+  };
+
+  //   hủy reply
+  const handleCancelReply = () => {
+    setReplyingTo(null);
+  };
 
   const handleOpenDeleteModal = () => {
     setShowDeleteModal(true);
@@ -96,22 +167,19 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
         <div className="w-1/2 relative dark:border-neutral-700 border-r">
           {selectedMedia ? (
             selectedMedia.mediaType === "VIDEO" ? (
-              <div className="relative w-full h-full">
-                <video
-                  src={selectedMedia.url}
-                  controls
-                  autoPlay
-                  className="w-full h-full object-cover" // Full div
-                />
-              </div>
+
+              <video
+                src={selectedMedia.url}
+                controls
+                className="w-full h-full object-cover"
+              />
             ) : (
-              <div className="relative w-full h-full">
-                <img
-                  src={selectedMedia.url}
-                  className="w-full h-full object-contain rounded-tl-xl rounded-bl-xl" // Full div
-                  alt="Post Media"
-                />
-              </div>
+              <img
+                src={selectedMedia.url}
+                className="w-full h-full object-cover rounded-tl-xl rounded-bl-xl"
+                alt="Post Media"
+              />
+
             )
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-black text-white">
@@ -251,7 +319,12 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
             )}
           </div>
 
-          <div className="flex-1 px-4 py-3 overflow-y-auto">
+
+          <div
+            className="flex-1 px-4 py-3 overflow-y-auto"
+            ref={commentsContainerRef}
+          >
+
             {post.captions === null ? (
               ""
             ) : (
@@ -260,8 +333,8 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
                   <Image
                     src={post.user?.avatar || Avatar}
                     alt="User Avatar"
-                    width={40} // Add width
-                    height={40} // Add height
+
+
                     className="w-full h-full rounded-full object-cover"
                   />
                 </div>
@@ -273,19 +346,42 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
             )}
 
             <div className="mt-5 space-y-2">
-              {comments.map((comment) => (
-                <CommentItem key={comment.id} comment={comment} />
-              ))}
+
+              {isCommentsLoading ? (
+                <p>Loading comments...</p>
+              ) : comments.length > 0 ? (
+                comments.map((comment) => (
+                  <CommentItem
+                    key={comment.id}
+                    comment={comment}
+                    currentUserId={currentUserId}
+                    onReplySubmit={handleNewComment}
+                    onReplyClick={() => handleReplyClick(comment)}
+                  />
+                ))
+              ) : (
+                <p>No comments yet.</p>
+              )}
+
             </div>
           </div>
 
           <div className="p-4 border-t dark:border-neutral-800">
-            <CommentInput postId={post.id} setComments={setComments} />
+
+            <CommentInput
+              postId={post.id}
+              setComments={handleNewComment}
+              parentComment={replyingTo} //   được reply
+              onCancelReply={handleCancelReply} //   hủy reply
+            />
+
           </div>
         </div>
 
         <button
-          className="absolute right-4 top-4 text-gray-200 hover:text-white text-3xl font-bold  rounded-full w-10 h-10 flex items-center justify-center transition-colors"
+
+          className="absolute right-4 top-4 text-gray-200 hover:text-white text-3xl font-bold rounded-full w-10 h-10 flex items-center justify-center transition-colors"
+
           onClick={handleClose}
         >
           ×

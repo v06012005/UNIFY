@@ -7,7 +7,7 @@ import { useState } from "react";
 import Reply from "@/components/comments/Reply";
 import Content from "@/components/comments/Content";
 import LikeButton from "@/components/global/LikeButton";
-import avatar2 from "@/public/images/testAvt.jpg";
+import defaultAvatar from "public/images/unify_icon_2.svg"; // Sử dụng hình ảnh mặc định giống Page
 
 const CommentItem = ({
   comment,
@@ -24,11 +24,28 @@ const CommentItem = ({
     >
       <div>
         <div className="flex items-center">
-          <Image
-            src={avatar2}
-            alt="User avatar"
-            className="rounded-full w-11 h-11"
-          />
+
+          {/* Hiển thị avatar */}
+          <div className="relative w-11 h-11 rounded-full overflow-hidden border-2 border-zinc-300">
+            {comment.avatarUrl ? (
+              <Image
+                src={comment.avatarUrl}
+                alt={`${comment.username || "Unknown"}'s avatar`}
+                width={44}
+                height={44}
+                className="object-cover w-full h-full"
+              />
+            ) : (
+              <Image
+                src={defaultAvatar}
+                alt="Default Avatar"
+                width={44}
+                height={44}
+                className="object-cover w-full h-full"
+              />
+            )}
+          </div>
+
           <h4 className="text-base font-bold truncate max-w-96 px-3">
             {comment.username || "Unknown"}
           </h4>
@@ -41,8 +58,13 @@ const CommentItem = ({
               : "Vừa xong"}
           </h4>
         </div>
-        <div className="indent-14">
-          <Content text={comment.content} className="leading-snug text-base dark:text-gray-200 w-fit max-w-full font-extralight"/>
+
+        <div className="indent-14 mb-5">
+          <Content
+            text={comment.content}
+            className="leading-snug text-base dark:text-gray-200 w-fit max-w-full"
+          />
+
         </div>
       </div>
 

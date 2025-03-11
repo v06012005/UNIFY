@@ -33,7 +33,7 @@ public class PostServiceImp implements PostService {
     @Autowired
     private HashtagDetailRepository hashtagDetailRepository;
 
-    
+
 
     @Override
     public PostDTO createPost(PostDTO postDTO) {

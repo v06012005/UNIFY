@@ -82,9 +82,11 @@
           console.error("Lỗi API like/unlike: ", result);
         }
       } catch (error) {
+
         console.error("Lỗi khi like/unlike: ", error);
       } finally {
         setLoading(false);
+
       }
     };
 

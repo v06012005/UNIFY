@@ -190,7 +190,13 @@ const UserPosts = ({ username }) => {
               )}
               {post.media[0]?.mediaType === "VIDEO" && (
                 <div className="absolute top-2 right-2 bg-black/50 text-white text-xs px-1 py-0.5 rounded pointer-events-none">
-                  <i className="fa-solid fa-film"></i>
+
+                  {post.media.length > 1 ? (
+                    <i className="fa-solid fa-layer-group"></i>
+                  ) : (
+                    <i className="fa-solid fa-film"></i>
+                  )}
+
                 </div>
               )}
             </div>

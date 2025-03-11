@@ -66,22 +66,28 @@ const Page = () => {
       {/* Profile Header */}
       <div className="flex px-4 sm:px-6">
         {/* Avatar */}
-        <div className="w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0">
+
+        <div className="w-28 h-28 sm:w-36 sm:h-36 flex-shrink-0">
+
           <div className="relative w-full h-full rounded-full overflow-hidden border-2 border-gray-300">
             {user?.avatar?.url ? (
               <Image
                 src={user.avatar.url}
                 alt="Avatar"
-                width={128}
-                height={128}
+
+                width={144}
+                height={144}
+
                 className="object-cover w-full h-full"
               />
             ) : (
               <Image
                 src="/images/unify_icon_2.svg"
                 alt="Default Avatar"
-                width={128}
-                height={128}
+
+                width={144}
+                height={144}
+
                 className="object-cover w-full h-full"
               />
             )}
@@ -89,7 +95,9 @@ const Page = () => {
         </div>
 
         {/* Profile Info */}
-        <div className="ml-6 flex-1">
+
+        <div className="ml-20 flex-1">
+
           <div className="flex items-center justify-between">
             <h3 className="text-2xl font-normal text-neutral-800 dark:text-white truncate max-w-[200px]">
               {user.username}
@@ -97,12 +105,16 @@ const Page = () => {
           </div>
 
           {/* Stats */}
-          <div className="flex space-x-6 mt-4">
+
+          <div className="flex space-x-8 mt-4">
+
             <div className="text-center cursor-pointer" onClick={toggleFriend}>
               <span className="font-bold text-neutral-800 dark:text-white">
                 {user.friends?.length || 0}
               </span>{" "}
-              <span className="text-neutral-800 dark:text-white font-medium">
+
+              <span className="text-zinc-500 dark:text-zinc-400 font-medium">
+
                 Friends
               </span>
             </div>
@@ -113,7 +125,9 @@ const Page = () => {
               <span className="font-bold text-neutral-800 dark:text-white">
                 {followerCount || 0}
               </span>{" "}
-              <span className="text-neutral-800 dark:text-white font-medium">
+
+              <span className="text-zinc-500 dark:text-zinc-400 font-medium">
+
                 Followers
               </span>
             </div>
@@ -124,7 +138,9 @@ const Page = () => {
               <span className="font-bold text-neutral-800 dark:text-white">
                 {followingCount || 0}
               </span>{" "}
-              <span className="text-neutral-800 dark:text-white font-medium">
+
+              <span className="text-zinc-500 dark:text-zinc-400 font-medium">
+
                 Following
               </span>
             </div>
@@ -136,7 +152,9 @@ const Page = () => {
           </p>
 
           {/* Buttons */}
-          <div className="mt-4 flex space-x-2">
+
+          <div className="mt-6 flex space-x-3">
+
             <button
               className="flex items-center font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 bg-gray-100 dark:bg-neutral-700 dark:hover:bg-zinc-800 transition-colors w-full justify-center"
               onClick={handleClickEdit}

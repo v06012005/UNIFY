@@ -14,7 +14,9 @@ export default function ExplorePage() {
 
   const fetchRecommendedPosts = async () => {
     const token = Cookies.get("token");
+
     if (!token) throw new Error("No token found");
+
     const response = await axios.get(
       `${process.env.NEXT_PUBLIC_API_URL}/posts/explorer`,
       {
@@ -60,6 +62,7 @@ export default function ExplorePage() {
 
   return (
     <div className="w-full h-auto flex flex-wrap mt-8 mb-5 justify-center">
+
       <div className="grid grid-cols-4 gap-1">
         {posts.map((post) => (
           <div key={post.id} style={{ width: "300px", height: "300px" }}>
@@ -74,6 +77,7 @@ export default function ExplorePage() {
       </div>
       {selectedPost && (
         <PostDetailModal post={selectedPost} onClose={closeModal} />
+
       )}
     </div>
   );

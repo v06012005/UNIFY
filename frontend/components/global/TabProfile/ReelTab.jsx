@@ -1,9 +1,28 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
+
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
 import { useApp } from "@/components/provider/AppProvider";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { useDisclosure } from "@heroui/react";
 import { fetchComments } from "app/api/service/commentService";
+import CommentItem from "@/components/comments/CommentItem";
+import CommentInput from "@/components/comments/CommentInput";
 import PostDetailModal from "./PostDetailModal";
+const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
+  return (
+    <Link
+      className="flex h-full items-center text-center"
+      href={href}
+      onClick={onClick}
+    >
+      <i className={`${iconClass}`}></i>
+      <span className="">{content}</span>
+    </Link>
+  );
+};
+
 
 const UserReels = ({ username }) => {
   const [selectedPost, setSelectedPost] = useState(null);
@@ -12,6 +31,9 @@ const UserReels = ({ username }) => {
   const { user, getUserInfoByUsername } = useApp();
   const [postUsers, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const params = useParams();
+
   const [comments, setComments] = useState([]);
   const [isCommentsLoading, setIsCommentsLoading] = useState(false);
   const token = Cookies.get("token");
@@ -155,7 +177,8 @@ const UserReels = ({ username }) => {
                       src={firstVideo.url}
                       className="w-full h-full object-cover"
                       muted
-                      style={{ aspectRatio: '1 / 1' }}
+
+
                     />
                   </div>
                   {post.media.length > 1 && (
@@ -167,7 +190,8 @@ const UserReels = ({ username }) => {
                               <video
                                 src={mediaItem?.url}
                                 className="w-full h-full object-cover"
-                                style={{ aspectRatio: '1 / 1' }}
+
+
                               />
                             ) : (
                               <img
@@ -183,7 +207,9 @@ const UserReels = ({ username }) => {
                   )}
                   {post.media.length > 1 && (
                     <div className="absolute top-2 right-2 bg-black/50 text-white text-xs px-1 py-0.5 rounded pointer-events-none">
-                      <span>{post.media.length}</span>
+
+                      <i className="fa-solid fa-layer-group"></i>
+
                     </div>
                   )}
                 </div>

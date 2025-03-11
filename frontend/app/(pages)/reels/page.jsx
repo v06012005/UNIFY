@@ -16,7 +16,9 @@ import { useDisclosure } from "@heroui/react";
 import avatar2 from "@/public/images/testAvt.jpg";
 import FollowButton from "@/components/ui/follow-button";
 import LikeButton from "@/components/global/LikeButton";
+
 import ReportModal from "@/components/global/Report/ReportModal";
+
 
 import { useReports } from "@/components/provider/ReportProvider";
 import { addToast, ToastProvider } from "@heroui/toast";
@@ -51,6 +53,12 @@ const Reels = () => {
   const [replyingTo, setReplyingTo] = useState(null);
   const { createPostReport, createUserReport, createCommentReport } =
     useReports();
+
+  const { data: posts, isLoading } = useQuery({
+    queryKey: ["posts"],
+    queryFn: fetchPosts,
+  });
+
 
   // Fetch video posts và comments ngay từ đầu
   useEffect(() => {
@@ -112,9 +120,49 @@ const Reels = () => {
       }
     }
     getVideoPosts();
-  }, [token]);
 
-  // Fetch comments cho một post cụ thể (giữ lại để reload nếu cần)
+  }, [isLoading, posts]);
+  const handleReportPost = useCallback(
+    async (postId) => {
+      const report = await createPostReport(postId);
+
+      if (report?.error) {
+        const errorMessage = report.error;
+        console.warn("Failed to report post:", errorMessage);
+
+        if (errorMessage === "You have reported this content before.") {
+          addToast({
+            title: "Fail to report post",
+            description: "You have reported this content before.",
+            timeout: 3000,
+            shouldShowTimeoutProgess: true,
+            color: "warning",
+          });
+        } else {
+          addToast({
+            title: "Encountered an error",
+            description: "Error: " + errorMessage,
+            timeout: 3000,
+            shouldShowTimeoutProgess: true,
+            color: "danger",
+          });
+        }
+        return;
+      }
+
+      console.log("Post reported successfully:", report);
+      addToast({
+        title: "Success",
+        description: "Report post successful.",
+        timeout: 3000,
+        shouldShowTimeoutProgess: true,
+        color: "success",
+      });
+    },
+    [createPostReport]
+  );
+  // Fetch comments cho một post cụ thể
+
   const loadComments = useCallback(
     async (postId) => {
       if (!token || !postId) return;
@@ -135,6 +183,18 @@ const Reels = () => {
     },
     [token]
   );
+
+
+  //   load comments
+  useEffect(() => {
+    if (videoPosts.length > 0) {
+      videoPosts.forEach((post) => {
+        loadComments(post.id);
+      });
+    }
+  }, [videoPosts, loadComments]);
+
+  //  autoplay video
 
   const handleReportPost = useCallback(
     async (postId, reason) => {
@@ -179,6 +239,7 @@ const Reels = () => {
   );
 
   // Intersection Observer
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -229,6 +290,7 @@ const Reels = () => {
     }));
   };
 
+ 
   const handleLike = (postId) => toggleToolState(postId, "isLiked");
   const handleSave = (postId) => toggleToolState(postId, "isSaved");
   const togglePopup = (postId) => toggleToolState(postId, "isPopupOpen");
@@ -250,6 +312,7 @@ const Reels = () => {
     setIsCommentOpen((prev) => !prev);
   };
 
+ 
   const closeComment = (e) => {
     if (e.target.id === "overlay") {
       setIsCommentOpen(false);
@@ -283,7 +346,7 @@ const Reels = () => {
     (postId, newComment) => {
       setCommentsByPost((prev) => {
         const currentComments = Array.isArray(prev[postId]) ? prev[postId] : [];
-
+ 
         if (newComment.parentId) {
           const updatedComments = currentComments.map((comment) => {
             if (comment.id === newComment.parentId) {
@@ -302,6 +365,7 @@ const Reels = () => {
             [postId]: updatedComments,
           };
         }
+
 
         const updatedComments = [
           { ...newComment, username: user?.username || "Unknown" },
@@ -499,9 +563,19 @@ const Reels = () => {
                   parentComment={replyingTo} // Truyền bình luận đang reply
                   onCancelReply={handleCancelReply}
                 />
+
               </div>
+              <CommentInput
+                postId={currentPostId}
+                setComments={(newComments) =>
+                  updateComments(currentPostId, newComments)
+                }
+                parentComment={replyingTo}
+                onCancelReply={handleCancelReply}
+              />
             </div>
           </div>
+
         )}
       </div>
     </>
