@@ -1,5 +1,7 @@
 package com.app.unify.mapper;
 
+
+
 import java.time.LocalDateTime;
 
 import org.mapstruct.AfterMapping;
@@ -14,6 +16,7 @@ import com.app.unify.entities.User;
 
 @Mapper(componentModel = "spring", uses = {AvatarMapper.class})
 public interface UserMapper {
+
     User toUser(UserDTO userDto);
 
     @Mapping(target = "avatar", source = "user.latestAvatar")

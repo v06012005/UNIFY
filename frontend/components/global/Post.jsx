@@ -12,13 +12,9 @@ import ShareButton from "./ShareButton";
 import CommentForm from "./CommentForm";
 import PostVideo from "./PostVideo";
 import { fetchPosts } from "@/app/lib/dal";
-import { useEffect } from "react";
 import { Spinner } from "@heroui/react";
 import { useApp } from "../provider/AppProvider";
-
-import { getQueryClient } from "@/app/lib/get-query-client";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-
+import { useQuery } from "@tanstack/react-query";
 import Slider from "./Slider";
 
 const User = ({ href = "", username = "", firstname = "", lastname = "" }) => {
@@ -70,10 +66,9 @@ const Caption = ({ text, maxLength = 100 }) => {
 };
 
 const Post = () => {
-  // const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
   const { user } = useApp();
   const [commentsByPost, setCommentsByPost] = useState({});
+
   const { data: posts, isLoading } = useQuery({
     queryKey: ["posts"],
     queryFn: fetchPosts,
@@ -102,7 +97,7 @@ const Post = () => {
           <Caption text={post.captions} />
           <div className="flex text-xl">
             <LikeButton
-              className="!text-xl hover:opacity-50 focus:opacity-50 transition space-x-2"
+              className="!text-xl hover:opacity-50 focus:opacity-50 transition space-x-2 flex items-center"
               userId={user.id}
               postId={post.id}
             />
@@ -113,16 +108,6 @@ const Post = () => {
           </div>
           <div className="mt-2 flex flex-wrap">
             <Hashtag content="#myhashtag"></Hashtag>
-            {/* <Hashtag content="#myhashtag"></Hashtag>
-            <Hashtag content="#myhashtag"></Hashtag>
-            <Hashtag content="#myhashtag"></Hashtag>
-            <Hashtag content="#myhashtag"></Hashtag>
-            <Hashtag content="#myhashtag"></Hashtag>
-            <Hashtag content="#myhashtag"></Hashtag>
-            <Hashtag content="#myhashtag"></Hashtag>
-            <Hashtag content="#myhashtag"></Hashtag>
-            <Hashtag content="#myhashtag"></Hashtag>
-            <Hashtag content="#myhashtag"></Hashtag> */}
           </div>
           <div className="mt-2">
             <CommentButton
@@ -132,7 +117,6 @@ const Post = () => {
               View all comments
             </CommentButton>
           </div>
-          {/* <CommentForm /> */}
         </div>
       ))}
     </>

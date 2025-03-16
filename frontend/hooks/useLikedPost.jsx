@@ -8,6 +8,7 @@ const useLikedPost = (userId, postId) => {
     const checkLikedStatus = async () => {
       const token = Cookies.get("token");
       if (!token) return;
+
       try {
         const response = await fetch(
           `http://localhost:8080/liked-posts/is-liked/${userId}/${postId}`,
@@ -15,6 +16,7 @@ const useLikedPost = (userId, postId) => {
             method: "GET",
             headers: {
               Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
             },
           }
         );
@@ -24,7 +26,15 @@ const useLikedPost = (userId, postId) => {
           setIsLiked(likedStatus);
         }
       } catch (error) {
-        console.error("Lỗi khi kiểm tra trạng thái like:", error);
+        console.log("Lỗi khi kiểm tra trạng thái like:", error);
+
+      }
+
+      try {
+        
+      } catch (error) {
+        
+
       }
     };
 

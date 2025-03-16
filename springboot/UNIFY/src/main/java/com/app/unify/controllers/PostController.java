@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.unify.dto.global.PostDTO;
+import com.app.unify.repositories.UserRepository;
 import com.app.unify.services.LikedPostService;
 import com.app.unify.services.MediaService;
 import com.app.unify.services.PostCommentService;
@@ -28,16 +30,26 @@ import com.app.unify.services.PostService;
 
 import lombok.RequiredArgsConstructor;
 
+
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/posts")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class PostController {
 
     @Autowired
-    private PostService postService;
+    private final PostService postService;
     private final PostCommentService postCommentService;
     private final LikedPostService likedService;
     private final MediaService mediaService;
+
+    @Autowired
+    private final UserRepository userRepository;
+
+
+
+
 
     @GetMapping
     public List<PostDTO> getAllPosts() {
@@ -99,7 +111,8 @@ public class PostController {
 
     @GetMapping("/hashtag/{content}")
     public ResponseEntity<List<PostDTO>> getPostsByHashtag(@PathVariable("content") String content) {
-    	return ResponseEntity.ok(postService.getPostsByHashtag("#" + content));
+        return ResponseEntity.ok(postService.getPostsByHashtag("#" + content));
+
     }
 
     @GetMapping("/explorer")
@@ -107,23 +120,28 @@ public class PostController {
         String userId = getCurrentUserId();
         List<PostDTO> posts = postService.getRecommendedPosts(userId);
         return ResponseEntity.ok(posts);
+
+
     }
 
     private String getCurrentUserId() {
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication == null || authentication.getPrincipal() == null) {
-            throw new RuntimeException("User not authenticated (401)");
-        }
+		var authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        Object principal = authentication.getPrincipal();
+		if (authentication == null || authentication.getPrincipal() == null) {
+			throw new RuntimeException("User not authenticated (401)");
+		}
 
-        if (principal instanceof UserDetails userDetails) {
-            String userId = userRepository.findByEmail(userDetails.getUsername())
-                    .orElseThrow(() -> new RuntimeException("User not found")).getId();
-            return userId;
-        }
+		Object principal = authentication.getPrincipal();
 
-        throw new RuntimeException("User not authenticated (401)");
-    }
+		if (principal instanceof UserDetails userDetails) {
+			String userId = userRepository.findByEmail(userDetails.getUsername())
+					.orElseThrow(() -> new RuntimeException("User not found")).getId();
+			return userId;
+		}
+
+		throw new RuntimeException("User not authenticated (401)");
+	}
+
+
 }

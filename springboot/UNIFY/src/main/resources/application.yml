@@ -36,7 +36,6 @@ mail:
         starttls:
           enable: true
           required: true
-
 logging:
   level:
     org.springframework.http.converter.json: DEBUG
