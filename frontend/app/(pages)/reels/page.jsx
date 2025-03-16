@@ -19,7 +19,6 @@ import LikeButton from "@/components/global/LikeButton";
 
 import ReportModal from "@/components/global/Report/ReportModal";
 
-
 import { useReports } from "@/components/provider/ReportProvider";
 import { addToast, ToastProvider } from "@heroui/toast";
 import { useQuery } from "@tanstack/react-query";
@@ -58,7 +57,6 @@ const Reels = () => {
     queryKey: ["posts"],
     queryFn: fetchPosts,
   });
-
 
   // Fetch video posts và comments ngay từ đầu
   useEffect(() => {
@@ -120,7 +118,6 @@ const Reels = () => {
       }
     }
     getVideoPosts();
-
   }, [isLoading, posts]);
   // Fetch comments cho một post cụ thể
 
@@ -144,7 +141,6 @@ const Reels = () => {
     },
     [token]
   );
-
 
   //   load comments
   useEffect(() => {
@@ -194,7 +190,6 @@ const Reels = () => {
         color: "success",
       });
       setIsModalOpen(false);
-      
     },
     [createPostReport]
   );
@@ -251,7 +246,6 @@ const Reels = () => {
     }));
   };
 
- 
   const handleLike = (postId) => toggleToolState(postId, "isLiked");
   const handleSave = (postId) => toggleToolState(postId, "isSaved");
   const togglePopup = (postId) => toggleToolState(postId, "isPopupOpen");
@@ -273,7 +267,6 @@ const Reels = () => {
     setIsCommentOpen((prev) => !prev);
   };
 
- 
   const closeComment = (e) => {
     if (e.target.id === "overlay") {
       setIsCommentOpen(false);
@@ -307,7 +300,7 @@ const Reels = () => {
     (postId, newComment) => {
       setCommentsByPost((prev) => {
         const currentComments = Array.isArray(prev[postId]) ? prev[postId] : [];
- 
+
         if (newComment.parentId) {
           const updatedComments = currentComments.map((comment) => {
             if (comment.id === newComment.parentId) {
@@ -326,7 +319,6 @@ const Reels = () => {
             [postId]: updatedComments,
           };
         }
-
 
         const updatedComments = [
           { ...newComment, username: user?.username || "Unknown" },
@@ -524,7 +516,6 @@ const Reels = () => {
                   parentComment={replyingTo} // Truyền bình luận đang reply
                   onCancelReply={handleCancelReply}
                 />
-
               </div>
               <CommentInput
                 postId={currentPostId}
@@ -536,7 +527,6 @@ const Reels = () => {
               />
             </div>
           </div>
-
         )}
       </div>
     </>
