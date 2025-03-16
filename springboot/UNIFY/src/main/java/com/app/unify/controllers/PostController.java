@@ -29,6 +29,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 
+
+
+
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/posts")
@@ -43,6 +47,13 @@ public class PostController {
         
     @Autowired
     private final UserRepository userRepository;
+
+    @Autowired
+    private final UserRepository userRepository;
+
+
+
+
 
     @GetMapping
     public List<PostDTO> getAllPosts() {
@@ -113,6 +124,7 @@ public class PostController {
         String userId = getCurrentUserId();
         List<PostDTO> posts = postService.getRecommendedPosts(userId);
         return ResponseEntity.ok(posts);
+
 
     }
 

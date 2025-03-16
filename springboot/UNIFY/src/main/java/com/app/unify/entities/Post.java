@@ -77,11 +77,13 @@ public class Post {
 	@OneToMany(mappedBy = "post")
 	@JsonManagedReference
 	Set<Media> media;
+
 	
 	@OneToMany(mappedBy = "post")
 	@JsonManagedReference
 	Set<SavedPost> savePosts;
 	
+
 	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JsonManagedReference
 	Set<LikedPost> likedPosts;
