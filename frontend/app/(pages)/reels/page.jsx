@@ -122,45 +122,6 @@ const Reels = () => {
     getVideoPosts();
 
   }, [isLoading, posts]);
-  const handleReportPost = useCallback(
-    async (postId) => {
-      const report = await createPostReport(postId);
-
-      if (report?.error) {
-        const errorMessage = report.error;
-        console.warn("Failed to report post:", errorMessage);
-
-        if (errorMessage === "You have reported this content before.") {
-          addToast({
-            title: "Fail to report post",
-            description: "You have reported this content before.",
-            timeout: 3000,
-            shouldShowTimeoutProgess: true,
-            color: "warning",
-          });
-        } else {
-          addToast({
-            title: "Encountered an error",
-            description: "Error: " + errorMessage,
-            timeout: 3000,
-            shouldShowTimeoutProgess: true,
-            color: "danger",
-          });
-        }
-        return;
-      }
-
-      console.log("Post reported successfully:", report);
-      addToast({
-        title: "Success",
-        description: "Report post successful.",
-        timeout: 3000,
-        shouldShowTimeoutProgess: true,
-        color: "success",
-      });
-    },
-    [createPostReport]
-  );
   // Fetch comments cho một post cụ thể
 
   const loadComments = useCallback(

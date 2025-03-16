@@ -44,11 +44,6 @@ public class PostController {
     @Autowired
     private final UserRepository userRepository;
 
-
-    @Autowired
-    private final UserRepository userRepository;
-
-
     @GetMapping
     public List<PostDTO> getAllPosts() {
         return postService.getPostsTrending();
