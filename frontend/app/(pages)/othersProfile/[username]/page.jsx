@@ -11,7 +11,7 @@ import FollowButton from "@/components/ui/follow-button";
 import { useReports } from "@/components/provider/ReportProvider";
 import { addToast, ToastProvider } from "@heroui/toast";
 import { useFollow } from "@/components/provider/FollowProvider";
-
+import ReportUserModal from "@/components/global/Report/ReportUserModal";
 const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   return (
     <Link
@@ -39,7 +39,15 @@ const Page = () => {
   const { createUserReport } = useReports();
   const { user, getUserInfoByUsername } = useApp();
   const { countFollowers, countFollowing } = useFollow();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const openReportModal = () => {
+    setIsModalOpen(true);
+    setOpenList(false)
+  };
 
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
   useEffect(() => {
     if (params) {
       getUserInfoByUsername(params.username)
@@ -64,8 +72,8 @@ const Page = () => {
   }, [userInfo, countFollowers, countFollowing]);
 
   const handleReportUser = useCallback(
-    async (data) => {
-      const report = await createUserReport(data);
+    async (data, reason) => {
+      const report = await createUserReport(data, reason);
       if (report?.error) {
         const errorMessage = report.error;
         console.warn("Failed to report post:", errorMessage);
@@ -86,7 +94,7 @@ const Page = () => {
             color: "danger",
           });
         }
-        setOpenList(false);
+        setIsModalOpen(false);
         return;
       }
       addToast({
@@ -96,7 +104,7 @@ const Page = () => {
         shouldShowTimeoutProgess: true,
         color: "success",
       });
-      setOpenList(false);
+      setIsModalOpen(false);
     },
     [createUserReport]
   );
@@ -112,7 +120,6 @@ const Page = () => {
           {/* Avatar */}
 
           <div className="w-28 h-28 sm:w-36 sm:h-36 flex-shrink-0">
-=
             <div className="relative w-full h-full rounded-full overflow-hidden border-2 border-gray-300">
               {userInfo?.avatar?.url ? (
                 <Image
@@ -242,7 +249,8 @@ const Page = () => {
             <div className="bg-white dark:bg-neutral-900 rounded-xl w-72 shadow-2xl border border-gray-200 dark:border-neutral-800">
               <button
                 className="w-full py-3.5 text-red-500 dark:text-red-400 font-semibold text-sm hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200 rounded-t-xl"
-                onClick={() => handleReportUser(userInfo.id)}
+                // onClick={() => handleReportUser(userInfo.id)}
+                onClick={openReportModal}
               >
                 Report
               </button>
@@ -257,7 +265,14 @@ const Page = () => {
               </button>
             </div>
           </div>
+          
         )}
+          <ReportUserModal
+                      isOpen={isModalOpen}
+                      onClose={closeModal}
+                      onSubmit={handleReportUser}
+                      userId={userInfo.id}
+                    />
       </div>
     </>
   );
