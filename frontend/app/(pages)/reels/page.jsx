@@ -4,11 +4,13 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { fetchPosts } from "@/app/lib/dal";
 
+
 export default function ReelsDefault() {
   const router = useRouter();
 
   useEffect(() => {
     async function redirectToFirstPost() {
+
       try {
         const homePosts = await fetchPosts();
         const filteredPosts = homePosts.filter((post) =>
@@ -33,3 +35,4 @@ export default function ReelsDefault() {
     </div>
   );
 }
+

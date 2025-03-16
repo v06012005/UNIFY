@@ -2,21 +2,20 @@ package com.app.unify.services;
 
 
 
-import java.time.LocalDateTime;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Service;
 
 import com.app.unify.entities.Follower;
 import com.app.unify.entities.User;
 import com.app.unify.repositories.FollowRepository;
 import com.app.unify.repositories.UserRepository;
 import com.app.unify.types.FollowerUserId;
-
 import jakarta.transaction.Transactional;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor

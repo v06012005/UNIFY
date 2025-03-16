@@ -10,10 +10,11 @@ const OtherReasonModal = ({ isOpen, onClose, onSubmit, postId }) => {
       alert("Please enter a reason.");
       return;
     }
-    onSubmit(postId, customReason); // Gửi lý do tùy chỉnh lên parent
+
+    onSubmit(postId, customReason); 
   };
 
-  // Reset input khi đóng modal
+
   const handleClose = () => {
     setCustomReason("");
     onClose();

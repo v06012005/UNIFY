@@ -1,10 +1,16 @@
 package com.app.unify.controllers;
 
+import com.app.unify.dto.global.PostDTO;
+import com.app.unify.repositories.UserRepository;
+import com.app.unify.services.LikedPostService;
+import com.app.unify.services.MediaService;
+import com.app.unify.services.PostCommentService;
+import com.app.unify.services.PostService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,14 +27,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.app.unify.dto.global.PostDTO;
-import com.app.unify.repositories.UserRepository;
-import com.app.unify.services.LikedPostService;
-import com.app.unify.services.MediaService;
-import com.app.unify.services.PostCommentService;
-import com.app.unify.services.PostService;
 
-import lombok.RequiredArgsConstructor;
+
+
 
 
 
@@ -43,6 +44,9 @@ public class PostController {
     private final PostCommentService postCommentService;
     private final LikedPostService likedService;
     private final MediaService mediaService;
+        
+    @Autowired
+    private final UserRepository userRepository;
 
     @Autowired
     private final UserRepository userRepository;

@@ -1,67 +1,57 @@
 "use client";
 import React from "react";
-import OtherReasonModal from "./OtherReportModal";
+import ImpersonationModal from "./ImpersonationModal";
 
-const ReportModal = ({ isOpen, onClose, onSubmit, postId }) => {
+const ReportUserModal = ({ isOpen, onClose, onSubmit, userId }) => {
   const [selectedReason, setSelectedReason] = React.useState("");
-  const [isOtherModalOpen, setIsOtherModalOpen] = React.useState(false);
+  const [isImpersonationModalOpen, setIsImpersonationModalOpen] = React.useState(false);
 
-  // Danh sách lý do báo cáo
   const reportReasons = [
-    "Spam",
-    "Inappropriate Content",
-    "Harassment",
-    "Violence",
-    "Other",
+    "This account user may be under 13 years old",
+    "This account is impersonating someone else",
+    "Post content that should not appear on Unify",
   ];
 
   const handleReasonChange = (reason) => {
     setSelectedReason(reason);
     if (reason === "Other") {
-
-      setIsOtherModalOpen(true); 
-
+      setIsOtherModalOpen(true);
+    } else if (reason === "This account is impersonating someone else") {
+      setIsImpersonationModalOpen(true);
     }
   };
 
-  // Xử lý khi nhấn Submit trong ReportModal
   const handleSubmit = () => {
     if (!selectedReason) {
       alert("Please select a reason for reporting.");
       return;
     }
-    if (selectedReason !== "Other") {
-      onSubmit(postId, selectedReason); // Gửi trực tiếp nếu không phải "Other"
+    if (selectedReason !== "This account is impersonating someone else") {
+      onSubmit(userId, selectedReason);
     }
-    // Nếu là "Other", đợi modal con xử lý
   };
 
-  // Reset lý do khi đóng ReportModal
   const handleClose = () => {
     setSelectedReason("");
-    setIsOtherModalOpen(false);
+    setSelectedReason(false);
     onClose();
   };
 
-  // Xử lý khi gửi lý do từ OtherReasonModal
-  const handleOtherSubmit = (postId, customReason) => {
-    onSubmit(postId, customReason); // Gửi lý do tùy chỉnh lên parent
-    setIsOtherModalOpen(false); // Đóng modal Other
-    handleClose(); // Đóng luôn ReportModal
+  const handleImpersonationSubmit = (userId, impersonationReason) => {
+    onSubmit(userId, impersonationReason);
+    setIsImpersonationModalOpen(false);
+    handleClose();
   };
 
   if (!isOpen) return null;
 
   return (
     <>
-
-      <div className="fixed inset-0 bg-black/60 flex items-center justify-center ">
+      <div className="fixed inset-0 bg-black/60 flex items-center justify-center">
         <div className="bg-white dark:bg-neutral-900 rounded-lg shadow-xl w-[500px] max-w-[90%] mx-4 p-4 z-[9999]">
-
           <h2 className="text-lg font-semibold text-center border-b pb-2 mb-4">
             Why are you reporting this post?
           </h2>
-
 
           <div className="mb-4 space-y-3">
             {reportReasons.map((reason) => (
@@ -85,12 +75,15 @@ const ReportModal = ({ isOpen, onClose, onSubmit, postId }) => {
             ))}
           </div>
 
-          {/* Nút hành động */}
           <div className="flex item-center gap-2">
             <button
               onClick={handleSubmit}
               className="w-full py-2 bg-red-500 dark:disabled:bg-neutral-500 text-white font-semibold rounded-md hover:bg-red-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
-              disabled={!selectedReason || selectedReason === "Other"}
+              disabled={
+                !selectedReason ||
+                selectedReason === "Other" ||
+                selectedReason === "This account is impersonating someone else"
+              }
             >
               Submit
             </button>
@@ -104,17 +97,14 @@ const ReportModal = ({ isOpen, onClose, onSubmit, postId }) => {
         </div>
       </div>
 
-      {/* Modal Other nếu chọn "Other" */}
-      <OtherReasonModal
-        isOpen={isOtherModalOpen}
-        onClose={() => setIsOtherModalOpen(false)}
-        onSubmit={handleOtherSubmit}
-        postId={postId}
+      <ImpersonationModal
+        isOpen={isImpersonationModalOpen}
+        onClose={() => setIsImpersonationModalOpen(false)}
+        onSubmit={handleImpersonationSubmit}
+        userId={userId}
       />
     </>
   );
 };
 
-
-export default ReportModal;
-
+export default ReportUserModal;

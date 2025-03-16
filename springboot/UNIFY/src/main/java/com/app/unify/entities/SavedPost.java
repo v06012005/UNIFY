@@ -1,6 +1,13 @@
 package com.app.unify.entities;
 
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,8 +37,10 @@ public class SavedPost {
 	@GeneratedValue(strategy = GenerationType.UUID)
 	String id;
 
+	
 	@Column(name = "saved_at", nullable = false)
 	LocalDateTime savedAt;
+	
 
 	@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
