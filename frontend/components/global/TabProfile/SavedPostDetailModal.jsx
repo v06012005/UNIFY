@@ -9,9 +9,10 @@ import Avatar from "@/public/images/avt.jpg";
 import { redirect } from "next/navigation";
 import { fetchPostById } from "@/app/lib/dal";
 import Image from "next/image";
-
+import ReportModal from "@/components/global/Report/ReportModal";
+import { useReports } from "@/components/provider/ReportProvider";
 import { useApp } from "@/components/provider/AppProvider"; // Thêm AppProvider để lấy thông tin user
-
+import { addToast, ToastProvider } from "@heroui/toast";
 import iconVideo from "@/public/vds.svg"; // Correct video icon path
 import iconImage from "@/public/imgs.svg"; // Correct image icon path
 
@@ -28,9 +29,10 @@ const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   );
 };
 
-const PostDetailModal = ({ post, onClose, onDelete }) => {
+const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
   const [openList, setOpenList] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const { createPostReport, createUserReport, createCommentReport } = useReports();
   const [selectedMedia, setSelectedMedia] = useState(post?.media?.[0] || null);
   const [comments, setComments] = useState([]);
   const [isCommentsLoading, setIsCommentsLoading] = useState(false); // Thêm trạng thái loading
@@ -39,9 +41,56 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
   const commentsContainerRef = useRef(null); // Ref để cuộn comment
   const { user } = useApp(); // Lấy thông tin user từ context
   const currentUserId = user?.id; // ID của user hiện tại
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const openReportModal = () => {
+    setIsModalOpen(true);
+  };
 
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
   const [myPost, setMyPost] = useState([]);
 
+  const handleReportPost = useCallback(
+    async (postId, reason) => {
+      const report = await createPostReport(postId, reason);
+      if (report?.error) {
+        const errorMessage = report.error;
+        console.warn("Failed to report post:", errorMessage);
+        if (errorMessage === "You have reported this content before.") {
+          addToast({
+            title: "Fail to report post",
+            description: "You have reported this content before.",
+            timeout: 3000,
+            shouldShowTimeoutProgess: true,
+            color: "warning",
+          });
+          setIsModalOpen(false);
+        } else {
+          addToast({
+            title: "Encountered an error",
+            description: "Error: " + errorMessage,
+            timeout: 3000,
+            shouldShowTimeoutProgess: true,
+            color: "danger",
+          });
+          setIsModalOpen(false);
+        }
+        return;
+      }
+
+      console.log("Post reported successfully:", report);
+      addToast({
+        title: "Success",
+        description: "Report post successful.",
+        timeout: 3000,
+        shouldShowTimeoutProgess: true,
+        color: "success",
+      });
+      setIsModalOpen(false);
+    },
+    [createPostReport]
+  );
   useEffect(() => {
     async function fetchPost() {
       try {
@@ -147,9 +196,6 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
     setReplyingTo(null);
   };
 
-  const handleOpenDeleteModal = () => {
-    setShowDeleteModal(true);
-  };
 
   const handleClose = () => {
     setOpenList(false);
@@ -266,16 +312,18 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
               <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[60]">
                 <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-xl w-80 transform transition-all duration-200 scale-100 hover:scale-105">
                   <button
-                    onClick={handleOpenDeleteModal}
+                    onClick={() => {
+                        openReportModal(); 
+                        setOpenList(false);
+                      }}
                     className="w-full py-3 text-red-500 dark:hover:bg-neutral-700 hover:bg-gray-100 rounded-t-lg font-medium"
                   >
-                    Delete
+                    Report                 
                   </button>
                   <button
-                    onClick={() => redirect(`/posts/${post.id}`)}
                     className="w-full py-3 text-gray-800 dark:text-gray-200 dark:hover:bg-neutral-700 hover:bg-gray-100 font-medium"
                   >
-                    Update
+                     Delete bookmark
                   </button>
                   <button className="w-full py-3 text-gray-800 dark:text-gray-200 dark:hover:bg-neutral-700 hover:bg-gray-100 font-medium">
                     Share
@@ -289,36 +337,12 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
                 </div>
               </div>
             )}
-            {/* Modal Delete */}
-            {showDeleteModal && (
-              <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[9999]">
-                <div className="bg-white dark:bg-neutral-800 rounded-xl p-6 w-full max-w-md shadow-2xl transform transition-all duration-200 scale-100 hover:scale-102">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                    Confirm Delete
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-300 mb-6">
-                    Are you sure you want to delete this post?
-                  </p>
-                  <div className="flex justify-end gap-4">
-                    <button
-                      onClick={() => setShowDeleteModal(false)}
-                      className="bg-gray-200 dark:bg-neutral-700 hover:bg-gray-300 dark:hover:bg-neutral-600 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-lg transition-colors"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={() => {
-                        onDelete(post.id);
-                        setShowDeleteModal(false);
-                      }}
-                      className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
+          <ReportModal
+                      isOpen={isModalOpen}
+                      onClose={closeModal}
+                      onSubmit={handleReportPost}
+                      postId={post.id}
+                    />
           </div>
 
           <div
@@ -383,4 +407,4 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
   );
 };
 
-export default React.memo(PostDetailModal);
+export default React.memo(SavedPostDetailModal);
