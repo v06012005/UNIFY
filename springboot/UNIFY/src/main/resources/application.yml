@@ -1,8 +1,10 @@
 spring:
+  application:
+    name: UNIFY
   datasource:
     url: jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?characterEncoding=UTF-8&prepareThreshold=0
     username: postgres.mlafrkaocppdojtsyysc
-    password: yulwsLvpq8BqQmuDoNpexrXk
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 5
@@ -20,14 +22,14 @@ spring:
     show-sql: true
   data:
     mongodb:
-      uri: "mongodb+srv://mddev:mddev123321@cluster0.vd4gu.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+      uri: "mongodb+srv://mddev:${MONGO_PASSWORD}@cluster0.vd4gu.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
       database: unify_chat_app
       auto-index-creation: true
 mail:
   host: smtp.gmail.com
   port: 587
   username: ninhnapc09333@gmail.com
-  password: ralzgajxrjqupwcw
+  password: ${MAIL_PASSWORD}
   protocol: smtp
   properties:
     mail:
@@ -42,7 +44,14 @@ logging:
     com.zaxxer.hikari: TRACE
 
 jwt:
-  signerKey: "5c6321fb6bdf294f41ef37aifc20d0113853e3d633dc475df1a9ab36be2ba817797942e337fe3407165"
+  signerKey: ${JWT_KEY}
 
 var:
   allowedOrigin: http://localhost:3000
+
+supabase:
+  url: https://mlafrkaocppdojtsyysc.supabase.co
+  key: ${SUPABASE_KEY}
+
+server:
+  port: 8080

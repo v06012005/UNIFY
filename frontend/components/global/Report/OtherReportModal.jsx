@@ -9,8 +9,10 @@ const OtherReasonModal = ({ isOpen, onClose, onSubmit, postId }) => {
       alert("Please enter a reason.");
       return;
     }
+
     onSubmit(postId, customReason); 
   };
+
 
   const handleClose = () => {
     setCustomReason("");

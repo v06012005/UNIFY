@@ -67,7 +67,8 @@ const Page = () => {
       <div className="flex px-4 sm:px-6">
         {/* Avatar */}
 
-        <div className="w-28 h-28 sm:w-36 sm:h-36 flex-shrink-0">
+
+        <div className="w-36 h-36 sm:w-48 sm:h-48 flex-shrink-0">
 
           <div className="relative w-full h-full rounded-full overflow-hidden border-2 border-gray-300">
             {user?.avatar?.url ? (
@@ -75,8 +76,8 @@ const Page = () => {
                 src={user.avatar.url}
                 alt="Avatar"
 
-                width={144}
-                height={144}
+                width={154}
+                height={154}
 
                 className="object-cover w-full h-full"
               />
@@ -85,8 +86,8 @@ const Page = () => {
                 src="/images/unify_icon_2.svg"
                 alt="Default Avatar"
 
-                width={144}
-                height={144}
+                width={154}
+                height={154}
 
                 className="object-cover w-full h-full"
               />
@@ -94,10 +95,10 @@ const Page = () => {
           </div>
         </div>
 
+
         {/* Profile Info */}
 
-        <div className="ml-20 flex-1">
-
+        <div className="ml-12 flex-1">
           <div className="flex items-center justify-between">
             <h3 className="text-2xl font-normal text-neutral-800 dark:text-white truncate max-w-[200px]">
               {user.username}
@@ -107,14 +108,11 @@ const Page = () => {
           {/* Stats */}
 
           <div className="flex space-x-8 mt-4">
-
             <div className="text-center cursor-pointer" onClick={toggleFriend}>
               <span className="font-bold text-neutral-800 dark:text-white">
                 {user.friends?.length || 0}
               </span>{" "}
-
               <span className="text-zinc-500 dark:text-zinc-400 font-medium">
-
                 Friends
               </span>
             </div>
@@ -125,9 +123,7 @@ const Page = () => {
               <span className="font-bold text-neutral-800 dark:text-white">
                 {followerCount || 0}
               </span>{" "}
-
               <span className="text-zinc-500 dark:text-zinc-400 font-medium">
-
                 Followers
               </span>
             </div>
@@ -138,9 +134,7 @@ const Page = () => {
               <span className="font-bold text-neutral-800 dark:text-white">
                 {followingCount || 0}
               </span>{" "}
-
               <span className="text-zinc-500 dark:text-zinc-400 font-medium">
-
                 Following
               </span>
             </div>
