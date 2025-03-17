@@ -1,11 +1,8 @@
 package com.app.unify.entities;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -31,19 +29,27 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 public class SavedPost {
-	@Id
-	@GeneratedValue(strategy = GenerationType.UUID)
-	String id;
-	
-	@Column(name = "saved_at", nullable = false)
-	LocalDateTime savedAt;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", updatable = false, nullable = false)
+    String id;
+    
+    @Column(name = "saved_at", nullable = false)
+    LocalDateTime savedAt;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonBackReference
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonBackReference
     @JoinColumn(name = "post_id", nullable = false)
-    private Post post;
-	
+    Post post;
+    
+    @PrePersist
+    protected void onSave() {
+        this.savedAt = LocalDateTime.now();
+    }
 }

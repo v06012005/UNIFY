@@ -1,147 +1,81 @@
-import React, { useState, useEffect } from "react";
-import Link from "next/link";
-////////////
-import Cookies from "js-cookie";
+"use client";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useApp } from "@/components/provider/AppProvider";
-import { fetchComments } from "app/api/service/commentService";
-import CommentItem from "@/components/comments/CommentItem";
-import CommentInput from "@/components/comments/CommentInput";
-const testPost = {
-  id: 1,
-};
-const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
-  return (
-    <Link
-      className="flex h-full items-center text-center"
-      href={href}
-      onClick={onClick}
-    >
-      <i className={`${iconClass}`}></i>
-      <span className="">{content}</span>
-    </Link>
-  );
-};
-const SavedItems = () => {
+import { useBookmarks } from "@/components/provider/BookmarkProvider";
+import Cookies from "js-cookie";
+import SavedPostDetailModal from "./SavedPostDetailModal";
+import { Spinner } from "@heroui/react";
+import { addToast, ToastProvider } from "@heroui/toast";
+
+const SavedItems = ({ username }) => {
   const [selectedPost, setSelectedPost] = useState(null);
-  const [openList, setOpenList] = useState(false);
-
-  /////////////
-  const [comments, setComments] = useState([]);
-  const { user } = useApp();
+  const { getUserInfoByUsername } = useApp();
+  const { bookmarks = [], loading, fetchBookmarks } = useBookmarks();
   const token = Cookies.get("token");
-  const postId = "0de81a82-caa6-439c-a0bc-124a83b5ceaf";
-  useEffect(() => {
-    const loadComments = async () => {
-      const data = await fetchComments(postId, token);
-      setComments(data);
-    };
-    loadComments();
-  }, [postId, token]);
-  //////
-  const handlePostClick = () => {
-    setSelectedPost(testPost);
-  };
 
-  const closeModal = () => {
+  useEffect(() => {
+    if (username && username.trim() !== "") {
+      fetchBookmarks();
+    }
+  }, [username, fetchBookmarks]);
+
+  const handlePostClick = useCallback((post) => {
+    setSelectedPost(post);
+  }, []);
+
+  const closeModal = useCallback(() => {
     setSelectedPost(null);
-  };
+  }, []);
+
+  const memoizedBookmarks = useMemo(() => (Array.isArray(bookmarks) ? bookmarks : []), [bookmarks]);
 
   return (
-    <div>
-      <h3 className="text-sm text-gray-400 mb-2">
-      Only you can see your saved items.{" "}
-      </h3>
-      <div className="grid grid-cols-4 gap-3">
-        <img
-          src={`/images/avt.jpg`}
-          className="w-72 h-80 object-cover cursor-pointer"
-          onClick={handlePostClick}
-        />
-      </div>
-
-      {selectedPost && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white dark:bg-gray-900 rounded-lg flex flex-row w-[1300px] h-[740px]">
-            <div className="w-1/2">
-              <img
-                src={`/images/avt.jpg`}
-                className="w-full h-full object-cover rounded-tl-lg rounded-bl-lg"
-              />
-            </div>
-
-            <div className="w-1/2 flex flex-col">
-              <div className="flex items-center justify-between p-4 border-b">
-                <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-full border-2 border-gray-300">
-                    <img
-                      src={`/images/avt.jpg`}
-                      alt="User Avatar"
-                      className="w-full h-full rounded-full object-cover"
-                    />
-                  </div>
-                  <span className="font-bold ml-3">huynhdiz</span>
-                </div>
-
-                <NavButton
-                  onClick={() => setOpenList(true)}
-                  className="text-gray-500 hover:text-black"
-                  content="•••"
-                ></NavButton>
-                {openList && (
-                  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                    <div className="bg-white dark:bg-black rounded-lg shadow-lg w-72">
-                      <button className="w-full py-2 text-red-500 dark:hover:bg-gray-900 hover:bg-gray-100">
-                        Delete
-                      </button>
-                      <button className="w-full py-2 dark:hover:bg-gray-900 hover:bg-gray-100">
-                        Share
-                      </button>
-                      <button className="w-full py-2 dark:hover:bg-gray-900 hover:bg-gray-100">
-                        Go to Post
-                      </button>
-                      <button
-                        onClick={() => setOpenList(false)}
-                        className="w-full py-2 text-gray-400 hover:bg-gray-700"
-                      >
-                        Close
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <div className="flex-1 p-4 h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
-                {comments.map((comment) => (
-                  <CommentItem key={comment.id} comment={comment} />
-                ))}
-              </div>
-
-              <div className="p-4 border-t">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex space-x-4">
-                    <NavButton iconClass="fa-regular fa-heart" />
-                    <NavButton iconClass="fa-regular fa-comment" />
-                    <NavButton iconClass="fa-regular fa-paper-plane" />
-                  </div>
-                  <NavButton iconClass="fa-regular fa-bookmark" />
-                </div>
-                <p className="dark:text-gray-500">Thời gian</p>
-                <div className="flex items-center pt-2 ">
-                  <CommentInput postId={postId} setComments={setComments} />
-                </div>
-              </div>
-            </div>
-          </div>
-          <button
-            className="absolute top-4 right-4 text-white text-2xl font-bold"
-            onClick={closeModal}
+    <div className="w-full grid grid-cols-3 gap-1">
+      {loading ? (
+        <div className="flex justify-center items-center h-screen">
+          <Spinner color="primary" label="Loading saved posts..." labelColor="primary" />
+        </div>
+      ) : memoizedBookmarks.length > 0 ? (
+        memoizedBookmarks.map((post) => (
+          <div
+            key={post.post.id}
+            className="relative group cursor-pointer aspect-square bg-gray-200 overflow-hidden"
+            onClick={() => handlePostClick(post.post)}
           >
-            &times;
+            {post.post.media && post.post.media.length > 0 ? (
+              post.post.media[0].mediaType === "VIDEO" ? (
+                <video
+                  src={post.post.media[0].url}
+                  className="w-full h-full object-cover"
+                  muted
+                />
+              ) : (
+                <img
+                  src={post.post.media[0].url}
+                  className="w-full h-full object-cover"
+                  alt="Post media"
+                  onError={(e) => (e.target.style.display = "none")}
+                />
+              )
+            ) : (
+              <div className="w-full h-full bg-black flex items-center justify-center">
+                <p className="text-white text-sm">View article</p>
+              </div>
+            )}
+          </div>
+        ))
+      ) : (
+        <div className="text-center text-gray-500 mt-4">
+          <p>No saved posts available.</p>
+          <button onClick={fetchBookmarks} className="text-blue-500">
+            Try again
           </button>
         </div>
       )}
+
+      {selectedPost && <SavedPostDetailModal post={selectedPost} onClose={closeModal} />}
     </div>
   );
 };
 
-export default SavedItems;
+export default React.memo(SavedItems);

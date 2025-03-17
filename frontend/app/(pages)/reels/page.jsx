@@ -50,8 +50,7 @@ const Reels = () => {
 
   const currentUserId = user?.id;
   const [replyingTo, setReplyingTo] = useState(null);
-  const { createPostReport, createUserReport, createCommentReport } =
-    useReports();
+  const { createPostReport, createUserReport, createCommentReport } = useReports();
 
   const { data: posts, isLoading } = useQuery({
     queryKey: ["posts"],

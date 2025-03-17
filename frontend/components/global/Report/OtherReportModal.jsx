@@ -4,7 +4,6 @@ import React from "react";
 const OtherReasonModal = ({ isOpen, onClose, onSubmit, postId }) => {
   const [customReason, setCustomReason] = React.useState("");
 
-  // Xử lý khi nhấn Submit trong modal Other
   const handleSubmit = () => {
     if (!customReason.trim()) {
       alert("Please enter a reason.");
@@ -27,7 +26,6 @@ const OtherReasonModal = ({ isOpen, onClose, onSubmit, postId }) => {
           Please specify your reason
         </h2>
 
-        {/* Input để nhập lý do */}
         <div className="mb-4">
           <label className="block text-sm font-medium  dark:text-gray-500 mb-2 ">
             Enter your reason:

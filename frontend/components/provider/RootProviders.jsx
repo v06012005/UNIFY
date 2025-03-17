@@ -8,7 +8,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { getQueryClient } from "@/components/client/QueryClient";
 import { SuggestedUsersProvider } from "./SuggestedUsersProvider";
 import { ReportProvider } from "./ReportProvider";
-
+import { BookmarkProvider } from "./BookmarkProvider";
 const RootProviders = ({ children }) => {
   const queryClient = getQueryClient();
 
@@ -17,11 +17,13 @@ const RootProviders = ({ children }) => {
       <AuthProvider>
         <AppProvider>
           <ReportProvider>
-            <ModalProvider>
-              <SuggestedUsersProvider>
-                <FollowProvider>{children}</FollowProvider>
-              </SuggestedUsersProvider>
-            </ModalProvider>
+            <BookmarkProvider>
+              <ModalProvider>
+                <SuggestedUsersProvider>
+                  <FollowProvider>{children}</FollowProvider>
+                </SuggestedUsersProvider>
+              </ModalProvider>
+            </BookmarkProvider>
           </ReportProvider>
         </AppProvider>
       </AuthProvider>
