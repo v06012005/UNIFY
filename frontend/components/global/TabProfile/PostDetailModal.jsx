@@ -177,7 +177,7 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
               <div className="w-full h-full flex items-center justify-center bg-black">
                 <img
                   src={selectedMedia.url}
-                  className="max-w-full max-h-full object-contain rounded-tl-xl rounded-bl-xl"
+                  className="max-w-full max-h-full object-contain "
                   alt="Post Media"
                 />
               </div>

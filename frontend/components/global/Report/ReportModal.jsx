@@ -31,9 +31,8 @@ const ReportModal = ({ isOpen, onClose, onSubmit, postId }) => {
       return;
     }
     if (selectedReason !== "Other") {
-      onSubmit(postId, selectedReason); // Gửi trực tiếp nếu không phải "Other"
+      onSubmit(postId, selectedReason); 
     }
-    // Nếu là "Other", đợi modal con xử lý
   };
 
   // Reset lý do khi đóng ReportModal
@@ -55,7 +54,7 @@ const ReportModal = ({ isOpen, onClose, onSubmit, postId }) => {
   return (
     <>
 
-      <div className="fixed inset-0 bg-black/60 flex items-center justify-center ">
+      <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-20 ">
         <div className="bg-white dark:bg-neutral-900 rounded-lg shadow-xl w-[500px] max-w-[90%] mx-4 p-4 z-[9999]">
 
           <h2 className="text-lg font-semibold text-center border-b pb-2 mb-4">

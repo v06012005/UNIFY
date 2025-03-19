@@ -13,7 +13,7 @@ public interface SavedPostMapper {
     SavedPost toSavedPost(SavedPostDTO savedPostDTO);
 
     @Mapping(target = "userId", source = "user.id")
-    @Mapping(target = "post", source = "post") 
+    @Mapping(target = "post", source = "post")
     SavedPostDTO toSavedPostDTO(SavedPost savedPost);
 
 }

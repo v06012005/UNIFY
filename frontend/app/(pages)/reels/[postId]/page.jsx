@@ -21,7 +21,7 @@ import ReportModal from "@/components/global/Report/ReportModal";
 import { useReports } from "@/components/provider/ReportProvider";
 import { addToast, ToastProvider } from "@heroui/toast";
 import { useQuery } from "@tanstack/react-query";
-
+import { useBookmarks } from "@/components/provider/BookmarkProvider";
 export default function Reels() {
   const [isCommentOpen, setIsCommentOpen] = useState(false);
   const [toolStates, setToolStates] = useState({});
@@ -44,7 +44,7 @@ export default function Reels() {
   const currentUserId = user?.id;
   const [replyingTo, setReplyingTo] = useState(null);
   const { createPostReport } = useReports();
-
+  const { savedPostsMap, toggleBookmark } = useBookmarks();
   const { data: posts, isLoading } = useQuery({
     queryKey: ["posts"],
     queryFn: fetchPosts,
@@ -455,10 +455,14 @@ export default function Reels() {
                 </div>
                 <div className="flex flex-col items-center">
                   <i
-                    className={`fa-${
-                      toolStates[post.id]?.isSaved ? "solid" : "regular"
-                    } fa-bookmark hover:opacity-50 focus:opacity-50 transition cursor-pointer`}
-                    onClick={() => handleSave(post.id)}
+                    // className={`fa-${
+                    //   toolStates[post.id]?.isSaved ? "solid" : "regular"
+                    // } fa-bookmark hover:opacity-50 focus:opacity-50 transition cursor-pointer`}
+                    // onClick={() => handleSave(post.id)}
+
+                    className={`fa-${savedPostsMap[post.id] ? "solid" : "regular"} fa-bookmark
+        hover:opacity-50 focus:opacity-50 transition cursor-pointer`}
+      onClick={() => toggleBookmark(post.id)}
                   />
                 </div>
                 <div className="flex flex-col items-center relative">
