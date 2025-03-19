@@ -3,6 +3,7 @@ package com.app.unify.services;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -63,15 +64,6 @@ public class SavedPostService {
             throw new IllegalStateException("Saved post not found.");
         }
         savedPostRepository.deleteById(id);
-    }
-
-
-    private String getCurrentUserId() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (principal instanceof UserDetails) {
-            return ((UserDetails) principal).getUsername();
-        }
-        throw new RuntimeException("Không thể xác định người dùng.");
     }
 
     public List<SavedPostDTO> getSavedPostsByUsername(String username) {
