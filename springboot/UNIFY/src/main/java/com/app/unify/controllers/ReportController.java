@@ -72,21 +72,6 @@ public class ReportController {
 	        return ResponseEntity.ok(updatedReport);
 	    }
 
-
-
-//    @GetMapping("/approved")
-//    public List<Report> getApprovedReports() {
-//        return reportService.getApprovedReports();
-//    }
-
-
-
-//    @PostMapping
-//    public ResponseEntity<ReportDTO> createReport(@RequestBody @Valid ReportDTO reportDto) {
-//        ReportDTO createdReport = reportService.createReport(reportDto);
-//        return ResponseEntity.status(HttpStatus.CREATED).body(createdReport);
-//    }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<String> removeReport(@PathVariable String id) {
         reportService.removeReport(id);

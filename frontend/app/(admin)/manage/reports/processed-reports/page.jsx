@@ -27,36 +27,46 @@ const ProcessedReportListContent = () => {
   const toggleFilter = () => setIsFilterOpen(!isFilterOpen);
   const toggleTypeOrder = () => setIsDescendingByType((prev) => !prev);
   const toggleReportDateOrder = () => setIsDescendingByReportDate((prev) => !prev);
-
   useEffect(() => {
-    let updatedReports = [...approvedReports];
-
-    updatedReports = updatedReports.filter((report) =>
+    fetchApprovedReports();
+  }, [fetchApprovedReports]);
+  useEffect(() => {
+    if (!approvedReports) return; 
+  
+    let updatedReports = approvedReports.filter((report) =>
       (report.reportedId || "").toLowerCase().includes(search.toLowerCase())
     );
-
+  
     updatedReports.sort((a, b) => {
       const typeComparison = isDescendingByType
         ? (b.entityType || "").localeCompare(a.entityType || "")
         : (a.entityType || "").localeCompare(b.entityType || "");
-
-      if (typeComparison === 0) {
-        const dateA = new Date(a.reportedAt || "");
-        const dateB = new Date(b.reportedAt || "");
-        return isDescendingByReportDate ? dateB - dateA : dateA - dateB;
+  
+      if (typeComparison !== 0) {
+        return typeComparison;
       }
-
-      return typeComparison;
+  
+      const dateA = a.reportedAt ? new Date(a.reportedAt).getTime() : 0;
+      const dateB = b.reportedAt ? new Date(b.reportedAt).getTime() : 0;
+  
+      return isDescendingByReportDate ? dateB - dateA : dateA - dateB;
     });
-
+  
     setFilteredReports(updatedReports);
     setCurrentPage(1);
   }, [approvedReports, search, isDescendingByType, isDescendingByReportDate]);
-
-  const handleRefresh = () => {
-    fetchApprovedReports(); 
+ 
+  const handleRefresh = async () => {
+    try {
+      setSearch(""); // Reset ô tìm kiếm
+      setIsDescendingByType(true); // Reset trạng thái sắp xếp
+      setIsDescendingByReportDate(true); // Reset trạng thái sắp xếp
+      await fetchApprovedReports(); // Fetch lại dữ liệu
+    } catch (error) {
+      console.error("Failed to refresh reports:", error);
+    }
   };
-
+  
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredReports.slice(indexOfFirstItem, indexOfLastItem);
@@ -105,8 +115,8 @@ const ProcessedReportListContent = () => {
           <p>Loading reports...</p>
         ) : (
           <div className="shadow-md rounded-lg">
-            <table className="min-w-full bg-white dark:bg-gray-800 table-auto">
-              <thead className="shadow-inner sticky top-0 bg-gray-200 dark:bg-gray-600">
+            <table className="min-w-full bg-white dark:bg-neutral-900 table-auto">
+              <thead className="shadow-inner sticky top-0 bg-gray-200 dark:bg-neutral-800">
                 <tr>
                   <th className="py-3 px-2 text-left w-[5%]">STT</th>
                   <th className="py-3 px-2 text-left w-[30%]">REPORTED ID</th>
@@ -118,7 +128,7 @@ const ProcessedReportListContent = () => {
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {currentItems.map((report, index) => (
-                  <tr key={report.id} className="hover:bg-gray-100 dark:hover:bg-gray-700">
+                  <tr key={report.id} className="hover:bg-gray-100 dark:hover:bg-neutral-700">
                     <td className="py-3 px-2">{indexOfFirstItem + index + 1}</td>
                     <td className="py-3 px-2 truncate max-w-[30%]">{report.reportedId || "N/A"}</td>
                     <td className="py-3 px-2 truncate max-w-[15%]">{report.entityType || "N/A"}</td>
