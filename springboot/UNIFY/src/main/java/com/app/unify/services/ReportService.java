@@ -179,18 +179,55 @@ public class ReportService {
     }
 
 
-	public ReportDTO updateReportStatus(String reportId, Integer status) {
-		Report report = reportRepository.findById(reportId)
-				.orElseThrow(() -> new ReportException("Report not found!"));
+//	public ReportDTO updateReportStatus(String reportId, Integer status) {
+//		Report report = reportRepository.findById(reportId)
+//				.orElseThrow(() -> new ReportException("Report not found!"));
+//
+//		if (status < PENDING || status > CANCELED) {
+//			throw new ReportException("Invalid status value: " + status);
+//		}
+//
+//		report.setStatus(status);
+//		Report updatedReport = reportRepository.save(report);
+//		return reportMapper.toReportDTO(updatedReport);
+//	}
+    
+    public ReportDTO updateReportStatus(String reportId, Integer status) {
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new ReportException("Report not found!"));
 
-		if (status < PENDING || status > CANCELED) {
-			throw new ReportException("Invalid status value: " + status);
-		}
+        if (status < PENDING || status > CANCELED) {
+            throw new ReportException("Invalid status value: " + status);
+        }
 
-		report.setStatus(status);
-		Report updatedReport = reportRepository.save(report);
-		return reportMapper.toReportDTO(updatedReport);
-	}
+        report.setStatus(status);
+        
+        if (status == APPROVED && report.getEntityType() == EntityType.POST) {
+            Post post = postRepository.findById(report.getReportedId())
+                    .orElseThrow(() -> new ReportException("Post not found!"));
+            
+            post.setStatus(0); 
+            postRepository.save(post);
+        }
+        if (status == APPROVED && report.getEntityType() == EntityType.USER) {
+            User user = userRepository.findById(report.getReportedId())
+                    .orElseThrow(() -> new ReportException("User not found!"));
+            
+            user.setStatus(1); 
+            userRepository.save(user);
+        }
+//        if (status == APPROVED && report.getEntityType() == EntityType.COMMENT) {
+//            PostComment postComment = commentRepository.findById(report.getReportedId())
+//                    .orElseThrow(() -> new ReportException("Comment not found!"));
+//            
+//            postComment.setStatus(1); 
+//            commentRepository.save(postComment);
+//        }
+        
+        Report updatedReport = reportRepository.save(report);
+        return reportMapper.toReportDTO(updatedReport);
+    }
+
 	@PreAuthorize("hasRole('ADMIN')")
 	public void removeReport(String reportId) {
 	    Report report = reportRepository.findById(reportId)

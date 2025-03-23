@@ -18,24 +18,20 @@ const ReportModal = ({ isOpen, onClose, onSubmit, postId }) => {
   const handleReasonChange = (reason) => {
     setSelectedReason(reason);
     if (reason === "Other") {
-
-      setIsOtherModalOpen(true); 
-
+      setIsOtherModalOpen(true);
     }
   };
 
-  // Xử lý khi nhấn Submit trong ReportModal
   const handleSubmit = () => {
     if (!selectedReason) {
       alert("Please select a reason for reporting.");
       return;
     }
     if (selectedReason !== "Other") {
-      onSubmit(postId, selectedReason); 
+      onSubmit(postId, selectedReason);
     }
   };
 
-  // Reset lý do khi đóng ReportModal
   const handleClose = () => {
     setSelectedReason("");
     setIsOtherModalOpen(false);
@@ -53,14 +49,11 @@ const ReportModal = ({ isOpen, onClose, onSubmit, postId }) => {
 
   return (
     <>
-
       <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-20 ">
         <div className="bg-white dark:bg-neutral-900 rounded-lg shadow-xl w-[500px] max-w-[90%] mx-4 p-4 z-[9999]">
-
           <h2 className="text-lg font-semibold text-center border-b pb-2 mb-4">
             Why are you reporting this post?
           </h2>
-
 
           <div className="mb-4 space-y-3">
             {reportReasons.map((reason) => (
@@ -84,7 +77,6 @@ const ReportModal = ({ isOpen, onClose, onSubmit, postId }) => {
             ))}
           </div>
 
-          {/* Nút hành động */}
           <div className="flex item-center gap-2">
             <button
               onClick={handleSubmit}
@@ -102,8 +94,6 @@ const ReportModal = ({ isOpen, onClose, onSubmit, postId }) => {
           </div>
         </div>
       </div>
-
-      {/* Modal Other nếu chọn "Other" */}
       <OtherReasonModal
         isOpen={isOtherModalOpen}
         onClose={() => setIsOtherModalOpen(false)}
@@ -114,6 +104,4 @@ const ReportModal = ({ isOpen, onClose, onSubmit, postId }) => {
   );
 };
 
-
 export default ReportModal;
-

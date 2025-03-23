@@ -14,7 +14,7 @@ const NavButton = React.memo(function NavButton({
     <Link
       title={title}
       href={href}
-      className={`w-full  hover:text-white px-2 dark:hover:bg-gray-600 hover:bg-gray-500 rounded-md flex h-10 items-center text-center transition delay-100 ease-in-out duration-150`}
+      className={`w-full  hover:text-white px-2 dark:hover:bg-neutral-700 hover:bg-neutral-500 rounded-md flex h-10 items-center text-center transition delay-100 ease-in-out duration-150`}
     >
       <i className={`${iconClass} w-1/5 text-center`}></i> {text}
     </Link>
@@ -31,7 +31,7 @@ const AdminSidebar = () => {
             <AccordionItem
               key="1"
               title="User Management"
-              className="dark:bg-gray-700"
+              className="dark:bg-neutral-800"
               startContent={<i className="fa-solid fa-users-gear"></i>}
             >
               <ul>
@@ -52,7 +52,7 @@ const AdminSidebar = () => {
               </ul>
             </AccordionItem>
             <AccordionItem
-              className="dark:bg-gray-700"
+              className="dark:bg-neutral-800"
               key="2"
               title="Post Management"
               startContent={<i className="fa-solid fa-newspaper"></i>}
@@ -68,7 +68,7 @@ const AdminSidebar = () => {
               </ul>
             </AccordionItem>
             <AccordionItem
-              className="dark:bg-gray-700"
+              className="dark:bg-neutral-800"
               key="3"
               title="Reports"
               startContent={<i className="fa-solid fa-flag"></i>}
@@ -91,7 +91,7 @@ const AdminSidebar = () => {
               </ul>
             </AccordionItem>
             <AccordionItem
-              className="dark:bg-gray-700"
+              className="dark:bg-neutral-800"
               key="4"
               title="Statistics"
               startContent={<i className="fa-solid fa-chart-simple"></i>}
@@ -120,7 +120,7 @@ const AdminSidebar = () => {
                             </ul>
                         </AccordionItem> */}
             <AccordionItem
-              className="dark:bg-gray-700"
+              className="dark:bg-neutral-800"
               key="6"
               title="Quick Settings"
               startContent={<i className="fa-solid fa-gear"></i>}

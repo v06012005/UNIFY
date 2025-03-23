@@ -21,7 +21,7 @@ const ModalUser = ({ report, isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white dark:bg-gray-900 rounded-lg w-[1000px] h-[600px] flex flex-row overflow-hidden relative">
+      <div className="bg-white dark:bg-neutral-900 rounded-lg w-[1000px] h-[600px] flex flex-row overflow-hidden relative">
         <div className="w-1/2 p-6 overflow-y-auto">
           <UserInfo user={reportedEntity} />
           <div className="mt-4 border-t pt-4 space-y-2">
