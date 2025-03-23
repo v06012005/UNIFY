@@ -1,9 +1,18 @@
+
 "use client";
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 
 const SuggestedUsersContext = createContext();
+
+// Tạo instance Axios với cấu hình mặc định
+const apiClient = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
 export const SuggestedUsersProvider = ({ children }) => {
   const [suggestedUsers, setSuggestedUsers] = useState([]);
@@ -15,106 +24,52 @@ export const SuggestedUsersProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
+  // Hàm chung để gọi API với endpoint và setter
+  const fetchUsers = useCallback(
+    async (endpoint, setter, userId) => {
+      try {
+        const token = Cookies.get("token");
+        if (!token || !userId) return;
+
+        const response = await apiClient.get(`/users/${endpoint}?currentUserId=${userId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        setter(Array.isArray(response.data) ? response.data : []);
+      } catch (err) {
+        setError(err.response?.data?.message || `Failed to fetch ${endpoint} users`);
+      }
+    },
+    []
+  );
+
   const fetchUserInfo = useCallback(async () => {
     try {
       const token = Cookies.get("token");
       if (!token) {
+        setError("No token found, redirecting to login...");
+        window.location.href = "/login";
         return null;
       }
 
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/users/my-info`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const response = await apiClient.get("/users/my-info", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-      if (!response.data || !response.data.id) {
-        console.error("No ID retrieved from /users/my-info API!");
+      if (!response.data?.id) {
+        setError("No user ID retrieved from API!");
         return null;
       }
 
       setCurrentUserId(response.data.id);
       return response.data.id;
     } catch (err) {
-      console.error("Error fetching user info:", err.response?.data || err.message);
+      setError(err.response?.data?.message || "Error fetching user info");
       if (err.response?.status === 401) {
         Cookies.remove("token");
         window.location.href = "/login";
       }
       return null;
-    }
-  }, []);
-
-  const getSuggestedUsers = useCallback(async (userId) => {
-    try {
-      const token = Cookies.get("token");
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/users/suggestions?currentUserId=${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      setSuggestedUsers(response.data || []);
-    } catch (err) {
-      setError(err.response?.data?.message || "Failed to fetch suggested users");
-    }
-  }, []);
-
-  const getFollowerUsers = useCallback(async (userId) => {
-    try {
-      const token = Cookies.get("token");
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/users/follower?currentUserId=${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      setFollowerUsers(response.data || []);
-    } catch (err) {
-      setError(err.response?.data?.message || "Failed to fetch followers");
-    }
-  }, []);
-
-  const getFollowingUsers = useCallback(async (userId) => {
-    try {
-      const token = Cookies.get("token");
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/users/following?currentUserId=${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      setFollowingUsers(response.data || []);
-    } catch (err) {
-      setError(err.response?.data?.message || "Failed to fetch following users");
-    }
-  }, []);
-
-  const getFriendUsers = useCallback(async (userId) => {
-    try {
-      const token = Cookies.get("token");
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/users/friend?currentUserId=${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      setFriendUsers(response.data || []);
-    } catch (err) {
-      setError(err.response?.data?.message || "Failed to fetch friends");
     }
   }, []);
 
@@ -125,28 +80,21 @@ export const SuggestedUsersProvider = ({ children }) => {
     setError(null);
     try {
       const id = await fetchUserInfo();
-      if (id) {
-        await Promise.all([
-          getSuggestedUsers(id),
-          getFollowerUsers(id),
-          getFollowingUsers(id),
-          getFriendUsers(id),
-        ]);
-        setIsDataLoaded(true);
-      }
+      if (!id) return;
+
+      await Promise.all([
+        fetchUsers("suggestions", setSuggestedUsers, id),
+        fetchUsers("follower", setFollowerUsers, id),
+        fetchUsers("following", setFollowingUsers, id),
+        fetchUsers("friend", setFriendUsers, id),
+      ]);
+      setIsDataLoaded(true);
     } catch (err) {
-      setError(err.message || "Failed to load data");
+      setError(err.message || "Failed to load user data");
     } finally {
       setLoading(false);
     }
-  }, [
-    fetchUserInfo,
-    getSuggestedUsers,
-    getFollowerUsers,
-    getFollowingUsers,
-    getFriendUsers,
-    isDataLoaded,
-  ]);
+  }, [fetchUserInfo, fetchUsers, isDataLoaded]);
 
   useEffect(() => {
     loadAllData();
@@ -156,13 +104,13 @@ export const SuggestedUsersProvider = ({ children }) => {
     <SuggestedUsersContext.Provider
       value={{
         suggestedUsers,
-        getSuggestedUsers,
+        getSuggestedUsers: (userId) => fetchUsers("suggestions", setSuggestedUsers, userId),
         followingUsers,
-        getFollowingUsers,
+        getFollowingUsers: (userId) => fetchUsers("following", setFollowingUsers, userId),
         followerUsers,
-        getFollowerUsers,
+        getFollowerUsers: (userId) => fetchUsers("follower", setFollowerUsers, userId),
         friendUsers,
-        getFriendUsers,
+        getFriendUsers: (userId) => fetchUsers("friend", setFriendUsers, userId),
         currentUserId,
         loading,
         error,

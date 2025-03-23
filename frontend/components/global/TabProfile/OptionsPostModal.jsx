@@ -70,6 +70,11 @@ const ModalOptions = ({ onOpenDeleteModal, onClose, postId, isOwner, setOpenList
             >
               Update
             </button>
+            <button
+              className="w-full py-3 text-gray-800 dark:text-gray-200 dark:hover:bg-neutral-700 hover:bg-gray-100 font-medium"
+            >
+              Chuyển vào kho lưu trữ
+            </button>
           </>
         ) : (
           <button
