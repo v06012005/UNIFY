@@ -11,6 +11,16 @@ import PropTypes from "prop-types";
 export const FollowNotification = React.memo(
   ({ isSeen, sender, timestamp, onClick }) => {
     const { user } = useApp();
+
+    // Debug log for input props
+    console.debug("FollowNotification props:", { isSeen, sender, timestamp, onClick });
+
+    // Check if sender is valid
+    if (!sender || !sender.username) {
+      console.error("Invalid sender data:", sender);
+      return null; // Render nothing if sender is invalid
+    }
+
     const timeAgo = useMemo(() => {
       let time = formatDistanceToNow(new Date(timestamp), {
         addSuffix: true,
