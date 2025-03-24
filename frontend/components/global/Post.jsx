@@ -102,7 +102,7 @@ const Post = () => {
               postId={post.id}
             />
             <CommentButton className="text-xl" postId={post.id}>
-              <i className="fa-regular fa-comment"></i>20
+              <i className="fa-regular fa-comment"></i>
             </CommentButton>
             <ShareButton />
           </div>
@@ -114,7 +114,7 @@ const Post = () => {
               postId={post.id}
               className="text-black hover:text-gray-500 text-md animate-none transition-none dark:text-zinc-400 dark:hover:text-white"
             >
-              View all comments
+              View all {commentsByPost[post.id]?.length} comments
             </CommentButton>
           </div>
         </div>

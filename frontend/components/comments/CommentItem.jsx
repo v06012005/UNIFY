@@ -1,5 +1,3 @@
-"use client";
-
 import { Card, CardFooter, Button } from "@heroui/react";
 import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
@@ -7,7 +5,9 @@ import { useState } from "react";
 import Reply from "@/components/comments/Reply";
 import Content from "@/components/comments/Content";
 import LikeButton from "@/components/global/LikeButton";
-import defaultAvatar from "public/images/unify_icon_2.svg"; // Sử dụng hình ảnh mặc định giống Page
+
+import defaultAvatar from "public/images/unify_icon_2.svg";
+
 
 const CommentItem = ({
   comment,
@@ -25,7 +25,6 @@ const CommentItem = ({
       <div>
         <div className="flex items-center">
 
-          {/* Hiển thị avatar */}
           <div className="relative w-11 h-11 rounded-full overflow-hidden border-2 border-zinc-300">
             {comment.avatarUrl ? (
               <Image
@@ -50,20 +49,14 @@ const CommentItem = ({
             {comment.username || "Unknown"}
           </h4>
           <h4 className="text-xs truncate w-32 dark:text-gray-500">
-            {comment.commentedAt &&
-            !isNaN(new Date(comment.commentedAt).getTime())
-              ? formatDistanceToNow(new Date(comment.commentedAt), {
-                  addSuffix: true,
-                })
+            {comment.commentedAt && !isNaN(new Date(comment.commentedAt).getTime())
+              ? formatDistanceToNow(new Date(comment.commentedAt), { addSuffix: true })
               : "Vừa xong"}
           </h4>
         </div>
 
         <div className="indent-14 mb-5">
-          <Content
-            text={comment.content}
-            className="leading-snug text-base dark:text-gray-200 w-fit max-w-full"
-          />
+          <Content text={comment.content} className="leading-snug text-base dark:text-gray-200 w-fit max-w-full" />
 
         </div>
       </div>
@@ -73,7 +66,9 @@ const CommentItem = ({
         <Button
           size="sm"
           className="bg-transparent dark:text-white"
-          onPress={onReplyClick}
+
+          onPress={() => onReplyClick(comment)} // Truyền comment cho cấp 1
+
         >
           <i className="fa-solid fa-reply"></i> Reply
         </Button>
@@ -96,11 +91,12 @@ const CommentItem = ({
       {isShown && comment.replies && comment.replies.length > 0 && (
         <div className="w-full flex flex-col items-end">
           {comment.replies.map((reply) => (
-            <Reply
+            < Reply
               key={reply.id}
               reply={reply}
               currentUserId={currentUserId}
               onReplySubmit={onReplySubmit}
+              onReplyClick={onReplyClick} // Truyền trực tiếp onReplyClick
             />
           ))}
         </div>

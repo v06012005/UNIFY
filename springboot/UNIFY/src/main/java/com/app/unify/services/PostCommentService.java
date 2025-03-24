@@ -76,7 +76,8 @@ public class PostCommentService {
             return List.of();
         }
 
-        List<PostComment> rootComments = postCommentRepository.findTopLevelCommentsWithReplies(postId);
+        // Chỉ lấy comment cấp 1
+        List<PostComment> rootComments = postCommentRepository.findByPostIdAndParentIsNull(postId);
         for (PostComment root : rootComments) {
             loadRepliesRecursively(root);
         }

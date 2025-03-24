@@ -134,5 +134,27 @@ public class PostController {
         }
 
         throw new RuntimeException("User not authenticated (401)");
+
     }
+
+    private String getCurrentUserId() {
+
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || authentication.getPrincipal() == null) {
+            throw new RuntimeException("User not authenticated (401)");
+        }
+
+        Object principal = authentication.getPrincipal();
+
+        if (principal instanceof UserDetails userDetails) {
+            String userId = userRepository.findByEmail(userDetails.getUsername())
+                    .orElseThrow(() -> new RuntimeException("User not found")).getId();
+            return userId;
+        }
+
+        throw new RuntimeException("User not authenticated (401)");
+    }
+
+
 }

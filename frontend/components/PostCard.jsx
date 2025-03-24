@@ -41,7 +41,9 @@ export default function PostCard({ post, onClick, style, postId }) {
         }
       } catch (error) {
 
+
         console.error("Lỗi khi fetch số lượt like type2", await response.text());
+
 
       }
     };

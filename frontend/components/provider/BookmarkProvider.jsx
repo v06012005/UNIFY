@@ -7,6 +7,7 @@ import { useApp } from "@/components/provider/AppProvider";
 const BookmarkContext = createContext();
 
 const useFetchBookmarks = () => {
+
   const [bookmarks, setBookmarks] = useState([]); // Lưu danh sách bài viết đã bookmark
   const [savedPostsMap, setSavedPostsMap] = useState({}); // Lưu trạng thái bài viết đã bookmark
   const [loading, setLoading] = useState(false);
@@ -14,6 +15,7 @@ const useFetchBookmarks = () => {
 
   const fetchBookmarks = useCallback(async () => {
     if (!user?.username) return;
+
 
     setLoading(true);
     try {
@@ -41,17 +43,20 @@ const useFetchBookmarks = () => {
       const data = await response.json();
       setBookmarks(data);
 
+
       const map = {};
       data.forEach((post) => {
         map[post.post.id] = true;
       });
       setSavedPostsMap(map);
 
+
     } catch (error) {
       console.warn("Lỗi khi tải danh sách bài viết đã lưu:", error.message || error);
     } finally {
       setLoading(false);
     }
+
   }, [user?.username]);
 
   const toggleBookmark = useCallback(async (postId) => {
@@ -94,10 +99,12 @@ const useFetchBookmarks = () => {
     loading,
     fetchBookmarks,
     toggleBookmark, 
+
   };
 };
 
 export const BookmarkProvider = ({ children }) => {
+
   const { bookmarks, savedPostsMap, loading, fetchBookmarks, toggleBookmark } = useFetchBookmarks();
 
   useEffect(() => {
@@ -106,6 +113,7 @@ export const BookmarkProvider = ({ children }) => {
 
   return (
     <BookmarkContext.Provider value={{ bookmarks, savedPostsMap, loading, fetchBookmarks, toggleBookmark }}>
+
       {children}
     </BookmarkContext.Provider>
   );
