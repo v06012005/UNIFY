@@ -1,3 +1,4 @@
+
 "use client";
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import Cookies from "js-cookie";
@@ -6,12 +7,15 @@ import { useApp } from "@/components/provider/AppProvider";
 const BookmarkContext = createContext();
 
 const useFetchBookmarks = () => {
-  const [bookmarks, setBookmarks] = useState([]);
+
+  const [bookmarks, setBookmarks] = useState([]); // Lưu danh sách bài viết đã bookmark
+  const [savedPostsMap, setSavedPostsMap] = useState({}); // Lưu trạng thái bài viết đã bookmark
   const [loading, setLoading] = useState(false);
-  const { user } = useApp(); // Lấy user từ context
+  const { user } = useApp();
 
   const fetchBookmarks = useCallback(async () => {
-    if (!user?.username) return; // Kiểm tra nếu chưa có username thì không fetch
+    if (!user?.username) return;
+
 
     setLoading(true);
     try {
@@ -38,29 +42,78 @@ const useFetchBookmarks = () => {
 
       const data = await response.json();
       setBookmarks(data);
+
+
+      const map = {};
+      data.forEach((post) => {
+        map[post.post.id] = true;
+      });
+      setSavedPostsMap(map);
+
+
     } catch (error) {
       console.warn("Lỗi khi tải danh sách bài viết đã lưu:", error.message || error);
     } finally {
       setLoading(false);
     }
-  }, [user?.username]); // Chạy lại khi username thay đổi
+
+  }, [user?.username]);
+
+  const toggleBookmark = useCallback(async (postId) => {
+    if (!user?.id) return;
+
+    try {
+      const token = Cookies.get("token");
+      if (!token) {
+        console.warn("Không tìm thấy token, không thể lưu bài viết.");
+        return;
+      }
+
+      console.log("Toggling saved post with ID:", postId);
+      const response = await fetch(`http://localhost:8080/savedPosts/add/${user.id}/${postId}`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        console.warn("Không thể toggle bài viết đã lưu:", response.statusText);
+        return;
+      }
+
+      setSavedPostsMap((prev) => ({
+        ...prev,
+        [postId]: !prev[postId], 
+      }));
+      fetchBookmarks();
+    } catch (error) {
+      console.warn("Lỗi khi toggle bài viết đã lưu:", error.message || error);
+    }
+  }, [user?.id]);
 
   return {
     bookmarks,
+    savedPostsMap, 
     loading,
     fetchBookmarks,
+    toggleBookmark, 
+
   };
 };
 
 export const BookmarkProvider = ({ children }) => {
-  const { bookmarks, loading, fetchBookmarks } = useFetchBookmarks();
+
+  const { bookmarks, savedPostsMap, loading, fetchBookmarks, toggleBookmark } = useFetchBookmarks();
 
   useEffect(() => {
     fetchBookmarks();
-  }, [fetchBookmarks]); // Tự động fetch khi username thay đổi
+  }, [fetchBookmarks]);
 
   return (
-    <BookmarkContext.Provider value={{ bookmarks, loading, fetchBookmarks }}>
+    <BookmarkContext.Provider value={{ bookmarks, savedPostsMap, loading, fetchBookmarks, toggleBookmark }}>
+
       {children}
     </BookmarkContext.Provider>
   );
@@ -73,3 +126,4 @@ export const useBookmarks = () => {
   }
   return context;
 };
+

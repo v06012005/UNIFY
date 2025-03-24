@@ -69,6 +69,9 @@ public class User {
 	String location;
 	String education;
 
+//	status = 1; Khóa tạm thời
+//	status = 2; Khóa vĩnh viễn
+//	status = 0; Bình thường
 	@Column(nullable = false)
 	Integer status;
 

@@ -356,8 +356,6 @@ export const AppProvider = ({ children }) => {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <SuggestedUsersProvider>
-        {" "}
         {
           <UserContext.Provider
             value={{
@@ -376,7 +374,6 @@ export const AppProvider = ({ children }) => {
             {children}
           </UserContext.Provider>
         }
-      </SuggestedUsersProvider>
     </HydrationBoundary>
   );
 };

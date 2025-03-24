@@ -6,7 +6,6 @@ import { useApp } from "@/components/provider/AppProvider";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Cookies from "js-cookie";
 import { addToast, ToastProvider } from "@heroui/toast";
-import { useToast } from "@/hooks/use-toast";
 
 const Page = () => {
   const defaultAvatar = "/images/unify_icon_2.svg";
@@ -16,7 +15,6 @@ const Page = () => {
   const [errors, setErrors] = useState({});
   const { user, setUser } = useApp();
   const { logoutUser } = useApp();
-  const { toast } = useToast();
   const [userData, setUserData] = useState({
     id: "",
     firstName: "",

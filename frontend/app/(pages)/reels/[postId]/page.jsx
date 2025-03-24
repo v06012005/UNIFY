@@ -21,6 +21,9 @@ import ReportModal from "@/components/global/Report/ReportModal";
 import { useReports } from "@/components/provider/ReportProvider";
 import { addToast, ToastProvider } from "@heroui/toast";
 import { useQuery } from "@tanstack/react-query";
+
+import { useBookmarks } from "@/components/provider/BookmarkProvider";
+
 export default function Reels() {
   const [isCommentOpen, setIsCommentOpen] = useState(false);
   const [toolStates, setToolStates] = useState({});
@@ -43,6 +46,8 @@ export default function Reels() {
   const currentUserId = user?.id;
   const [replyingTo, setReplyingTo] = useState(null);
   const { createPostReport } = useReports();
+
+  const { savedPostsMap, toggleBookmark } = useBookmarks();
 
   const { data: posts, isLoading } = useQuery({
     queryKey: ["posts"],
@@ -139,7 +144,9 @@ export default function Reels() {
 
           if (entry.isIntersecting && !isManuallyPaused) {
             video.play();
-            //   không reload
+
+            //   không reload  
+
             window.history.pushState({}, "", `/reels/${postId}`);
           } else {
             video.pause();
@@ -321,10 +328,12 @@ export default function Reels() {
     setReplyingTo(null);
   };
 
+
   const handleReplyClick = (target) => {
     setReplyingTo(target); // Lưu comment hoặc reply
     console.log("Replying to:", target);
     console.log("Username:", target.username || "Unknown");
+
   };
 
   const handleCancelReply = () => {
@@ -417,6 +426,7 @@ export default function Reels() {
                   <div className="flex items-center space-x-2 pl-2">
                     <span className="font-medium">{post.user?.username}</span>
                     <span className="text-white text-lg">•</span>
+
                     {user?.id !== post.user.id && (
                       <FollowButton
                         contentFollow="Follow"
@@ -427,6 +437,7 @@ export default function Reels() {
                         classFollowing="backdrop-blur-lg text-sm p-4 py-1 rounded-2xl font-bold transition-all duration-200 ease-in-out active:scale-125 hover:bg-black/50 border border-gray-300"
                       />
                     )}
+
                   </div>
                 </div>
                 <div className="mt-2 w-[350px]">
@@ -457,10 +468,16 @@ export default function Reels() {
                 </div>
                 <div className="flex flex-col items-center">
                   <i
-                    className={`fa-${
-                      toolStates[post.id]?.isSaved ? "solid" : "regular"
-                    } fa-bookmark hover:opacity-50 focus:opacity-50 transition cursor-pointer`}
-                    onClick={() => handleSave(post.id)}
+
+                    // className={`fa-${
+                    //   toolStates[post.id]?.isSaved ? "solid" : "regular"
+                    // } fa-bookmark hover:opacity-50 focus:opacity-50 transition cursor-pointer`}
+                    // onClick={() => handleSave(post.id)}
+
+                    className={`fa-${savedPostsMap[post.id] ? "solid" : "regular"} fa-bookmark
+        hover:opacity-50 focus:opacity-50 transition cursor-pointer`}
+      onClick={() => toggleBookmark(post.id)}
+
                   />
                 </div>
                 <div className="flex flex-col items-center relative">
@@ -538,7 +555,9 @@ export default function Reels() {
                         comment={comment}
                         currentUserId={currentUserId}
                         onReplySubmit={handleReplySubmit}
+
                         onReplyClick={handleReplyClick}
+
                       />
                     ))
                   ) : (
@@ -562,4 +581,6 @@ export default function Reels() {
       </div>
     </>
   );
+
 }
+

@@ -10,10 +10,10 @@ import { redirect } from "next/navigation";
 import { fetchPostById } from "@/app/lib/dal";
 import Image from "next/image";
 
-import { useApp } from "@/components/provider/AppProvider"; // Thêm AppProvider để lấy thông tin user
-
-import iconVideo from "@/public/vds.svg"; // Correct video icon path
-import iconImage from "@/public/imgs.svg"; // Correct image icon path
+import { useApp } from "@/components/provider/AppProvider"; 
+import iconVideo from "@/public/vds.svg"; 
+import iconImage from "@/public/imgs.svg"; 
+import OptionsPostModal from "@/components/global/TabProfile/OptionsPostModal";
 
 const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   return (
@@ -33,12 +33,14 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState(post?.media?.[0] || null);
   const [comments, setComments] = useState([]);
-  const [isCommentsLoading, setIsCommentsLoading] = useState(false); // Thêm trạng thái loading
-  const [replyingTo, setReplyingTo] = useState(null); // Thêm trạng thái để theo dõi reply
+
+  const [isCommentsLoading, setIsCommentsLoading] = useState(false); 
+  const [replyingTo, setReplyingTo] = useState(null); 
   const token = Cookies.get("token");
-  const commentsContainerRef = useRef(null); // Ref để cuộn comment
-  const { user } = useApp(); // Lấy thông tin user từ context
-  const currentUserId = user?.id; // ID của user hiện tại
+  const commentsContainerRef = useRef(null); 
+  const { user } = useApp(); 
+  const currentUserId = user?.id;
+  const isOwner = user?.id === post?.user.id;
 
   const [myPost, setMyPost] = useState([]);
 
@@ -149,6 +151,7 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
 
   const handleOpenDeleteModal = () => {
     setShowDeleteModal(true);
+    setOpenList(false);
   };
 
   const handleClose = () => {
@@ -177,7 +180,9 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
               <div className="w-full h-full flex items-center justify-center bg-black">
                 <img
                   src={selectedMedia.url}
-                  className="max-w-full max-h-full object-contain rounded-tl-xl rounded-bl-xl"
+
+                  className="max-w-full max-h-full object-contain "
+
                   alt="Post Media"
                 />
               </div>
@@ -261,34 +266,20 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
               content="•••"
               className="text-2xl"
             />
-            {/* Modal Options */}
-            {openList && (
-              <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[60]">
-                <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-xl w-80 transform transition-all duration-200 scale-100 hover:scale-105">
-                  <button
-                    onClick={handleOpenDeleteModal}
-                    className="w-full py-3 text-red-500 dark:hover:bg-neutral-700 hover:bg-gray-100 rounded-t-lg font-medium"
-                  >
-                    Delete
-                  </button>
-                  <button
-                    onClick={() => redirect(`/posts/${post.id}`)}
-                    className="w-full py-3 text-gray-800 dark:text-gray-200 dark:hover:bg-neutral-700 hover:bg-gray-100 font-medium"
-                  >
-                    Update
-                  </button>
-                  <button className="w-full py-3 text-gray-800 dark:text-gray-200 dark:hover:bg-neutral-700 hover:bg-gray-100 font-medium">
-                    Share
-                  </button>
-                  <button
-                    onClick={() => setOpenList(false)}
-                    className="w-full py-3 text-gray-500 dark:text-gray-400 dark:hover:bg-neutral-700 hover:bg-gray-100 rounded-b-lg font-medium"
-                  >
-                    Close
-                  </button>
-                </div>
-              </div>
-            )}
+
+             {openList && (
+          <OptionsPostModal
+            isOwner={isOwner}
+            onOpenDeleteModal={handleOpenDeleteModal}
+            onClose={() => setOpenList(false)}
+            postId={post.id}
+            onReport={() => {
+              onReport(post.id);
+              setOpenList(false);
+            }}
+          />
+        )}
+
             {/* Modal Delete */}
             {showDeleteModal && (
               <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[9999]">

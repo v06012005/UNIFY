@@ -8,6 +8,9 @@ import Link from "next/link";
 import Avatar from "@/public/images/avt.jpg";
 import { redirect } from "next/navigation";
 import { fetchPostById } from "@/app/lib/dal";
+
+import { useBookmarks } from "@/components/provider/BookmarkProvider";
+
 import Image from "next/image";
 import ReportModal from "@/components/global/Report/ReportModal";
 import { useReports } from "@/components/provider/ReportProvider";
@@ -33,6 +36,9 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
   const [openList, setOpenList] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const { createPostReport, createUserReport, createCommentReport } = useReports();
+
+  const { bookmarks = [], toggleBookmark  } = useBookmarks();
+
   const [selectedMedia, setSelectedMedia] = useState(post?.media?.[0] || null);
   const [comments, setComments] = useState([]);
   const [isCommentsLoading, setIsCommentsLoading] = useState(false); // Thêm trạng thái loading
@@ -206,6 +212,10 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
   if (!post) return null;
 
   return (
+
+    <>
+     <ToastProvider placement={"top-right"} />
+
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50">
       <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-2xl flex flex-row w-[1300px] h-[720px] overflow-hidden">
         {/* Media */}
@@ -223,7 +233,9 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
               <div className="w-full h-full flex items-center justify-center bg-black">
                 <img
                   src={selectedMedia.url}
-                  className="max-w-full max-h-full object-contain rounded-tl-xl rounded-bl-xl"
+
+                  className="max-w-full max-h-full object-contain "
+
                   alt="Post Media"
                 />
               </div>
@@ -309,7 +321,11 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
             />
             {/* Modal Options */}
             {openList && (
-              <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[60]">
+
+              <div
+              
+               className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[60]">
+
                 <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-xl w-80 transform transition-all duration-200 scale-100 hover:scale-105">
                   <button
                     onClick={() => {
@@ -321,6 +337,13 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
                     Report                 
                   </button>
                   <button
+
+                  onClick={() => {
+                    toggleBookmark(post.id);
+                    setOpenList(false);
+                    onClose();
+                  }}
+
                     className="w-full py-3 text-gray-800 dark:text-gray-200 dark:hover:bg-neutral-700 hover:bg-gray-100 font-medium"
                   >
                      Delete bookmark
@@ -404,6 +427,9 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
         </button>
       </div>
     </div>
+
+    </>
+
   );
 };
 

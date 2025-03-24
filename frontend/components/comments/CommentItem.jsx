@@ -5,7 +5,9 @@ import { useState } from "react";
 import Reply from "@/components/comments/Reply";
 import Content from "@/components/comments/Content";
 import LikeButton from "@/components/global/LikeButton";
+
 import defaultAvatar from "public/images/unify_icon_2.svg";
+
 
 const CommentItem = ({
   comment,
@@ -22,6 +24,7 @@ const CommentItem = ({
     >
       <div>
         <div className="flex items-center">
+
           <div className="relative w-11 h-11 rounded-full overflow-hidden border-2 border-zinc-300">
             {comment.avatarUrl ? (
               <Image
@@ -41,6 +44,7 @@ const CommentItem = ({
               />
             )}
           </div>
+
           <h4 className="text-base font-bold truncate max-w-96 px-3">
             {comment.username || "Unknown"}
           </h4>
@@ -50,8 +54,10 @@ const CommentItem = ({
               : "Vừa xong"}
           </h4>
         </div>
+
         <div className="indent-14 mb-5">
           <Content text={comment.content} className="leading-snug text-base dark:text-gray-200 w-fit max-w-full" />
+
         </div>
       </div>
 
@@ -60,7 +66,9 @@ const CommentItem = ({
         <Button
           size="sm"
           className="bg-transparent dark:text-white"
+
           onPress={() => onReplyClick(comment)} // Truyền comment cho cấp 1
+
         >
           <i className="fa-solid fa-reply"></i> Reply
         </Button>

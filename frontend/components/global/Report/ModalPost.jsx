@@ -34,8 +34,7 @@ const ModalPost = ({ report, isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white dark:bg-gray-900 rounded-lg flex flex-row w-[1000px] h-[600px] overflow-hidden">
-        {/* Phần trái: Media */}
+      <div className="bg-white dark:bg-neutral-900 rounded-lg flex flex-row w-[1000px] h-[600px] overflow-hidden">
         <div className="w-1/2 relative bg-black">
           {selectedMedia ? (
             selectedMedia.mediaType === "VIDEO" ? (
@@ -57,7 +56,6 @@ const ModalPost = ({ report, isOpen, onClose }) => {
             </div>
           )}
 
-          {/* Thumbnail nếu có nhiều media */}
           {reportedEntity.media.length > 1 && (
             <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex gap-2 p-2 bg-black bg-opacity-50 rounded-lg">
               {reportedEntity.media.map((item, index) => (
@@ -86,9 +84,7 @@ const ModalPost = ({ report, isOpen, onClose }) => {
           )}
         </div>
 
-        {/* Phần phải: Thông tin chi tiết và bình luận */}
         <div className="w-1/2 flex flex-col">
-          {/* Header: Người đăng */}
           <div className="flex items-center justify-between border-b pb-2 px-4 pt-4">
             <div className="flex items-center">
                <div className="relative w-[50px] h-[50px] overflow-hidden rounded-full border-2 border-gray-300">
@@ -123,7 +119,6 @@ const ModalPost = ({ report, isOpen, onClose }) => {
             </button>
           </div>
 
-          {/* Nội dung bài post và bình luận */}
           <div className="flex-1 overflow-y-auto px-4 py-2">
             <p className="text-sm leading-tight dark:text-white mb-4">
               <span className="font-bold mr-2">{reportedEntity.user?.username}</span>
@@ -133,7 +128,6 @@ const ModalPost = ({ report, isOpen, onClose }) => {
               Posted at: {new Date(reportedEntity.postedAt).toLocaleString()}
             </p>
 
-            {/* Danh sách bình luận */}
             <div className="space-y-2">
               {comments.map((comment) => (
                 <CommentItem key={comment.id} comment={comment} />
@@ -144,7 +138,6 @@ const ModalPost = ({ report, isOpen, onClose }) => {
             </div>
           </div>
 
-          {/* Thông tin báo cáo */}
           <div className="border-t pt-2 px-4 pb-4">
             <p className="text-sm dark:text-white">
               <span className="font-semibold">Reported by:</span> {report.userId}

@@ -67,14 +67,6 @@ public class SavedPostService {
     }
 
 
-    private String getCurrentUserId() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (principal instanceof UserDetails) {
-            return ((UserDetails) principal).getUsername();
-        }
-        throw new RuntimeException("Không thể xác định người dùng.");
-    }
-
     public List<SavedPostDTO> getSavedPostsByUsername(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
