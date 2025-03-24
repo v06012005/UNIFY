@@ -1,20 +1,18 @@
-import { useRef, useEffect } from "react";
-import { Client } from "@stomp/stompjs";
-import SockJS from "sockjs-client";
-import Cookies from "js-cookie";
-
 const useWebSocket = (userId, onMessage, endpoint) => {
   const stompClientRef = useRef(null);
 
   useEffect(() => {
-    if (userId) {
-      const token = Cookies.get("token");
-      if (!token) {
-        console.error("No token found for WebSocket");
-        return;
-      }
+    if (!userId) return;
+    const token = Cookies.get("token");
+    if (!token) {
+      console.error("No token found for WebSocket");
+      return;
+    }
 
-      const socket = new SockJS(`${process.env.NEXT_PUBLIC_API_URL}/ws?token=${token}`);
+    const connect = () => {
+      const socket = new SockJS(
+        `${process.env.NEXT_PUBLIC_API_URL}/ws?token=${token}`
+      );
       const client = new Client({
         webSocketFactory: () => socket,
         onConnect: () => {
@@ -27,13 +25,16 @@ const useWebSocket = (userId, onMessage, endpoint) => {
           console.error("❌ STOMP Error:", frame.headers?.message || frame);
         },
         onDisconnect: () => {
-          console.log("❌ WebSocket disconnected");
+          console.log("❌ WebSocket disconnected, reconnecting...");
+          setTimeout(connect, 1000); // Thử kết nối lại sau 1 giây
         },
       });
 
       client.activate();
       stompClientRef.current = client;
-    }
+    };
+
+    connect();
 
     return () => {
       stompClientRef.current?.deactivate();
@@ -42,5 +43,3 @@ const useWebSocket = (userId, onMessage, endpoint) => {
 
   return stompClientRef.current;
 };
-
-export default useWebSocket;

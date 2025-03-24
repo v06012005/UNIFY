@@ -66,7 +66,6 @@ public class SavedPostService {
         savedPostRepository.deleteById(id);
     }
 
-
     public List<SavedPostDTO> getSavedPostsByUsername(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));

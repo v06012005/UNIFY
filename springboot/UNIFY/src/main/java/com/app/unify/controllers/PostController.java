@@ -42,6 +42,7 @@ public class PostController {
     private final LikedPostService likedService;
     private final MediaService mediaService;
 
+
     @Autowired
     private final UserRepository userRepository;
 
@@ -115,25 +116,6 @@ public class PostController {
         List<PostDTO> posts = postService.getRecommendedPosts(userId);
         return ResponseEntity.ok(posts);
 
-    }
-
-    private String getCurrentUserId() {
-
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication == null || authentication.getPrincipal() == null) {
-            throw new RuntimeException("User not authenticated (401)");
-        }
-
-        Object principal = authentication.getPrincipal();
-
-        if (principal instanceof UserDetails userDetails) {
-            String userId = userRepository.findByEmail(userDetails.getUsername())
-                    .orElseThrow(() -> new RuntimeException("User not found")).getId();
-            return userId;
-        }
-
-        throw new RuntimeException("User not authenticated (401)");
 
     }
 
