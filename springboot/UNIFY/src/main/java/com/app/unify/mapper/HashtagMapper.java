@@ -9,10 +9,13 @@ import com.app.unify.entities.Hashtag;
 
 @Mapper(componentModel = "spring")
 public interface HashtagMapper {
-	HashtagDTO toHashtagDTO(Hashtag hashtag);
 
-	Hashtag toHashtag(HashtagDTO hashtagDTO);
+    HashtagDTO toHashtagDTO(Hashtag hashtag);
 
-	List<Hashtag> toHashtagList(List<HashtagDTO> dtoList);
+    Hashtag toHashtag(HashtagDTO hashtagDTO);
+
+    List<Hashtag> toHashtagList(List<HashtagDTO> dtoList);
+
+
     List<HashtagDTO> toHashtagDTOList(List<Hashtag> hashtags);
 }

@@ -25,10 +25,13 @@ const FriendModal = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]">
-      <div className="bg-white dark:bg-gray-800 rounded-lg w-[450px] h-[500px] p-6 ">
+      <div className="bg-white dark:bg-neutral-800 rounded-lg w-[450px] h-[500px] p-6 ">
         <div className="flex justify-between mb-4 text-2xl">
           <h2 className="text-lg font-bold">Friend</h2>
-          <button className="text-gray-500 hover:text-black" onClick={onClose}>
+          <button
+            className="text-zinc-500 dark:hover:text-white hover:text-black"
+            onClick={onClose}
+          >
             ×
           </button>
         </div>
@@ -39,11 +42,11 @@ const FriendModal = ({ isOpen, onClose }) => {
         />
         <ul className="h-[390px]  overflow-y-auto scrollbar-hide">
           {loading ? (
-
-            <p className="text-gray-500">Loading...</p>
+            <p className="text-zinc-500">Loading...</p>
           ) : !friendUsers || friendUsers.length === 0 ? (
-            <p className="text-gray-500">Make friends to share more interesting things.</p>
-
+            <p className="text-zinc-500 mt-4">
+              Make friends to share more interesting things.
+            </p>
           ) : (
             friendUsers.slice(0, 11).map((user) => (
               <li
@@ -55,24 +58,24 @@ const FriendModal = ({ isOpen, onClose }) => {
                   className="flex items-center cursor-pointer"
                 >
                   <div className="relative w-[50px] h-[50px] overflow-hidden rounded-full border-2 border-gray-300">
-                                {userData?.avatar?.url ? (
-                                  <Image
-                                    src={userData.avatar.url}
-                                    alt="Avatar"
-                                    width={50}
-                                    height={50}
-                                    className="w-full h-full object-cover"
-                                  />
-                                ) : (
-                                  <Image
-                                    src="/images/unify_icon_2.svg"
-                                    alt="Default Avatar"
-                                    width={200}
-                                    height={200}
-                                    className="w-full h-full object-cover"
-                                  />
-                                )}
-                              </div>
+                    {userData?.avatar?.url ? (
+                      <Image
+                        src={userData.avatar.url}
+                        alt="Avatar"
+                        width={50}
+                        height={50}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <Image
+                        src="/images/unify_icon_2.svg"
+                        alt="Default Avatar"
+                        width={200}
+                        height={200}
+                        className="w-full h-full object-cover"
+                      />
+                    )}
+                  </div>
                   <span className="font-medium ml-3">{user.username}</span>
                 </div>
                 <div className="flex items-center space-x-2 border px-6 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-500 dark:bg-gray-700 cursor-pointer">

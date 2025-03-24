@@ -108,10 +108,10 @@ const ChangePassword = () => {
       });
 
       if (response.ok) {
-          
         addToast({
           title: "Waiting",
-          description: "You have entered the wrong password too many times (5 attempts). Please log in again to change your password!",
+          description:
+            "You have entered the wrong password too many times (5 attempts). Please log in again to change your password!",
           timeout: 3000,
           shouldShowTimeoutProgess: true,
           color: "warning",
@@ -140,103 +140,103 @@ const ChangePassword = () => {
 
   return (
     <>
-    <ToastProvider placement={"top-right"} />
-  
-    <div className="w-full h-screen">
-      <h1 className="text-3xl font-bold mb-5 ">Change password</h1>
-      <Form
-        className="w-full grid place-items-center align-middle mt-20 "
-        onSubmit={onSubmit}
-      >
-        <div className="flex flex-col gap-4 w-2/4">
-          <label
-            htmlFor="current-password"
-            className="block text-lg font-medium text-gray-700 dark:text-white mb-2"
-          >
-            Current Password
-          </label>
-          <Input
-            id="current-password"
-            name="currentPassword"
-            type="password"
-            value={currentPassword}
-            onChange={(e) => setCurrentPassword(e.target.value)}
-            placeholder="Enter your current password"
-            className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
-          />
-          {errors.form && <p className="text-red-500">{errors.form}</p>}
-          <label
-            htmlFor="newPassword"
-            className="block text-lg font-medium text-gray-700 dark:text-white mb-2"
-          >
-            New Password
-          </label>
-          <Input
-            id="newPassword"
-            name="newPassword"
-            type="password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            placeholder="Enter your new password"
-            className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
-          />
-          {errors.newPassword && (
-            <span className="text-red-500 text-sm">{errors.newPassword}</span>
-          )}
-          <label
-            htmlFor="confirmPassword"
-            className="block text-lg font-medium text-gray-700 dark:text-white mb-2"
-          >
-            Confirm New Password
-          </label>
-          <Input
-            id="confirmPassword"
-            name="confirmPassword"
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            placeholder="Confirm your new password"
-            className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
-          />
+      <ToastProvider placement={"top-right"} />
 
-          {errors.confirmPassword && (
-            <span className="text-red-500 text-sm">
-              {errors.confirmPassword}
-            </span>
-          )}
+      <div className="w-full h-screen">
+        <h1 className="text-3xl font-bold mb-5 ">Change password</h1>
+        <Form
+          className="w-full grid place-items-center align-middle mt-20 "
+          onSubmit={onSubmit}
+        >
+          <div className="flex flex-col gap-4 w-2/4">
+            <label
+              htmlFor="current-password"
+              className="block text-lg font-medium text-gray-700 dark:text-white mb-2"
+            >
+              Current Password
+            </label>
+            <Input
+              id="current-password"
+              name="currentPassword"
+              type="password"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              placeholder="Enter your current password"
+              className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
+            />
+            {errors.form && <p className="text-red-500">{errors.form}</p>}
+            <label
+              htmlFor="newPassword"
+              className="block text-lg font-medium text-gray-700 dark:text-white mb-2"
+            >
+              New Password
+            </label>
+            <Input
+              id="newPassword"
+              name="newPassword"
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              placeholder="Enter your new password"
+              className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
+            />
+            {errors.newPassword && (
+              <span className="text-red-500 text-sm">{errors.newPassword}</span>
+            )}
+            <label
+              htmlFor="confirmPassword"
+              className="block text-lg font-medium text-gray-700 dark:text-white mb-2"
+            >
+              Confirm New Password
+            </label>
+            <Input
+              id="confirmPassword"
+              name="confirmPassword"
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Confirm your new password"
+              className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
+            />
 
-          {
-            <div className="flex gap-4">
-              <Button
-                className="w-full bg-gray-600 hover:bg-gray-500 text-white font-medium py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"
-                type="submit"
-                disabled={
-                  loading ||
-                  !currentPassword ||
-                  !newPassword ||
-                  !confirmPassword
-                }
-              >
-                {loading ? "Changing password..." : "Change password"}
-              </Button>
-              <Button
-                type="reset"
-                variant="bordered"
-                onClick={() => {
-                  setCurrentPassword("");
-                  setNewPassword("");
-                  setConfirmPassword("");
-                  setErrors({});
-                }}
-                className="w-full bg-transparent border dark:text-white border-gray-300 hover:border-gray-500 text-gray-700 font-medium py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"
-              >
-                Reset
-              </Button>
-            </div>
-          }
-        </div>
-      </Form>
-    </div>
+            {errors.confirmPassword && (
+              <span className="text-red-500 text-sm">
+                {errors.confirmPassword}
+              </span>
+            )}
+
+            {
+              <div className="flex gap-4">
+                <Button
+                  className="w-full bg-gray-600 hover:bg-gray-500 text-white font-medium py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"
+                  type="submit"
+                  disabled={
+                    loading ||
+                    !currentPassword ||
+                    !newPassword ||
+                    !confirmPassword
+                  }
+                >
+                  {loading ? "Changing password..." : "Change password"}
+                </Button>
+                <Button
+                  type="reset"
+                  variant="bordered"
+                  onClick={() => {
+                    setCurrentPassword("");
+                    setNewPassword("");
+                    setConfirmPassword("");
+                    setErrors({});
+                  }}
+                  className="w-full bg-transparent border dark:text-white border-gray-300 hover:border-gray-500 text-gray-700 font-medium py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"
+                >
+                  Reset
+                </Button>
+              </div>
+            }
+          </div>
+        </Form>
+      </div>
     </>
   );
 };

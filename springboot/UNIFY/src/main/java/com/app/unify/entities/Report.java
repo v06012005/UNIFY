@@ -49,4 +49,6 @@ public class Report {
 	@Enumerated(EnumType.STRING)
     EntityType entityType;
 	Integer status;
+	@Column(name = "reason", nullable = false)
+	String reason;
 }

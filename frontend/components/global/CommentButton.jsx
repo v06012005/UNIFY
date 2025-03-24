@@ -125,9 +125,9 @@ export default function CommentButton({ children, className = "", postId }) {
                     <CommentItem
                       key={comment.id}
                       comment={comment}
-                      currentUserId={currentUserId} //   currentUserId
-                      onReplySubmit={handleNewComment} //     submit reply
-                      onReplyClick={() => handleReplyClick(comment)} //     click reply
+                      currentUserId={currentUserId}
+                      onReplySubmit={handleNewComment}
+                      onReplyClick={() => handleReplyClick(comment)}
                     />
                   ))
                 ) : (

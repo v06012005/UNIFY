@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.app.unify.dto.global.CommentDTO;
+import com.app.unify.entities.Avatar;
 import com.app.unify.entities.Post;
 import com.app.unify.entities.PostComment;
 import com.app.unify.entities.User;
@@ -75,7 +76,8 @@ public class PostCommentService {
             return List.of();
         }
 
-        List<PostComment> rootComments = postCommentRepository.findTopLevelCommentsWithReplies(postId);
+        // Chỉ lấy comment cấp 1
+        List<PostComment> rootComments = postCommentRepository.findByPostIdAndParentIsNull(postId);
         for (PostComment root : rootComments) {
             loadRepliesRecursively(root);
         }
@@ -109,7 +111,8 @@ public class PostCommentService {
         dto.setUsername(comment.getUser().getUsername()); // Thêm username
         dto.setPostId(comment.getPost().getId());
         dto.setCommentedAt(comment.getCommentedAt());
-
+        Avatar latestAvatar = comment.getUser().getLatestAvatar();
+        dto.setAvatarUrl(latestAvatar != null ? latestAvatar.getUrl() : null);
         // Xử lý replies nếu có
         if (comment.getReplies() != null && !comment.getReplies().isEmpty()) {
             List<CommentDTO> replyDtos = comment.getReplies().stream()

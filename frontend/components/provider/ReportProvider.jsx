@@ -84,7 +84,7 @@ const useFetchReports = () => {
       }
     }, []);
     
-  const createPostReport = useCallback(async (reportedId) => {
+  const createPostReport = useCallback(async (reportedId, reason) => {
     try {
       const token = Cookies.get("token");
       const response = await fetch("http://localhost:8080/reports/post", {
@@ -93,7 +93,7 @@ const useFetchReports = () => {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/x-www-form-urlencoded",
         },
-        body: new URLSearchParams({ reportedId }).toString(),
+        body: new URLSearchParams({ reportedId, reason }).toString(),
       });
   
       const data = await response.json();
@@ -111,7 +111,7 @@ const useFetchReports = () => {
     }
   }, []);
   
-  const createUserReport = useCallback(async (reportedId) => {
+  const createUserReport = useCallback(async (reportedId, reason) => {
     try {
       const token = Cookies.get("token");
       const response = await fetch("http://localhost:8080/reports/user", {
@@ -120,7 +120,7 @@ const useFetchReports = () => {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/x-www-form-urlencoded",
         },
-        body: new URLSearchParams({ reportedId }).toString(),
+        body: new URLSearchParams({ reportedId, reason }).toString(),
       });
   
       const data = await response.json();
@@ -138,7 +138,7 @@ const useFetchReports = () => {
     }
   }, []);
   
-  const createCommentReport = useCallback(async (reportedId) => {
+  const createCommentReport = useCallback(async (reportedId, reason) => {
     try {
       const token = Cookies.get("token");
       const response = await fetch("http://localhost:8080/reports/comment", {
@@ -147,7 +147,7 @@ const useFetchReports = () => {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/x-www-form-urlencoded",
         },
-        body: new URLSearchParams({ reportedId }).toString(),
+        body: new URLSearchParams({ reportedId, reason }).toString(),
       });
   
       const data = await response.json();

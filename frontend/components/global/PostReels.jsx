@@ -52,7 +52,7 @@ const PostReels = forwardRef(({ src, muted, loop, onPauseChange }, ref) => {
       <AnimatePresence>
         {isPaused && (
           <motion.div
-            className="absolute z-10 flex justify-center items-center bg-black bg-opacity-55 rounded-full h-20 w-20"
+            className="absolute z-[5] flex justify-center items-center bg-black bg-opacity-55 rounded-full h-20 w-20"
             initial={{ opacity: 0, scale: 1.8 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 1.4 }}

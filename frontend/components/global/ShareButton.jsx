@@ -25,7 +25,7 @@ const ShareButton = () => {
         onPress={onOpen}
         className="bg-transparent dark:text-white text-xl"
       >
-        <i className="fa-regular fa-paper-plane"></i>20
+        <i className="fa-regular fa-paper-plane"></i>
       </Button>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="2xl">
         <ModalContent>
