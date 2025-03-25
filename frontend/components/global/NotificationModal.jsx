@@ -3,18 +3,24 @@
 import React from "react";
 import { FollowNotification } from "@/components/ui/follow_notification.jsx";
 import { TagNotification } from "@/components/ui/tag_notification";
+import { useApp } from "@/components/provider/AppProvider";
 import useNotification from "@/hooks/useNotification";
 
 const NotificationModal = ({ isNotificationOpen, modalRef, userId }) => {
-  console.log("NotificationModal rendered with props:", { isNotificationOpen, userId });
+  const { user } = useApp();
+  console.log("NotificationModal rendered with props:", {
+    isNotificationOpen,
+    userId,
+  });
 
   const { notifications, markNotificationAsRead, markAllNotificationsAsRead } =
     useNotification(userId);
-
   console.log("Fetched notifications:", notifications);
 
   const sortedNotifications = Array.isArray(notifications)
-    ? [...notifications].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+    ? [...notifications].sort(
+        (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+      )
     : [];
 
   console.log("Sorted notifications:", sortedNotifications);

@@ -43,6 +43,7 @@ public class NotificationController {
     @GetMapping("/{userId}")
     public ResponseEntity<?> getNotifications(@PathVariable String userId) {
         try {
+            logger.info("Fetching notifications for userId: {}", userId);
             List<NotificationDTO> notifications = supabaseServiceImpl.getNotificationsByUserId(userId);
             if (notifications == null || notifications.isEmpty()) {
                 return ResponseEntity.ok("No notifications available for user: " + userId);

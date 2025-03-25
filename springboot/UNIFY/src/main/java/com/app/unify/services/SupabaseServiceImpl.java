@@ -26,6 +26,9 @@ import org.springframework.web.client.RestTemplate;
 import com.app.unify.dto.global.NotificationDTO;
 import com.app.unify.entities.Notification;
 import com.app.unify.mapper.NotificationMapper;
+import com.app.unify.utils.JwtUtil;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class SupabaseServiceImpl implements SupabaseService {
@@ -47,13 +50,15 @@ public class SupabaseServiceImpl implements SupabaseService {
             @Value("${supabase.key}") String supabaseKey) {
         this.supabaseUrl = supabaseUrl;
         this.supabaseKey = supabaseKey;
+        logger.info("Supabase config: url={}, key={}", supabaseUrl, supabaseKey);
     }
 
     private HttpHeaders createHeaders() {
         HttpHeaders headers = new HttpHeaders();
+        headers.set("apikey", supabaseKey);
         headers.set("Authorization", "Bearer " + supabaseKey);
         headers.set("Content-Type", "application/json");
-        logger.info("Headers: Authorization={}", "Bearer " + supabaseKey);
+        logger.info("Headers: Authorization={}, apikey={}", "Bearer " + supabaseKey, supabaseKey);
         return headers;
     }
 
@@ -65,9 +70,9 @@ public class SupabaseServiceImpl implements SupabaseService {
         try {
             String url = supabaseUrl + "/rest/v1/notifications";
             Map<String, Object> data = new HashMap<>();
-            data.put("user_id", notificationDTO.getUserId());
+            data.put("user_id", notificationDTO.getUser().getId());
             data.put("type", notificationDTO.getType());
-            data.put("sender_id", notificationDTO.getSenderId());
+            data.put("sender_id", notificationDTO.getSender().getId());
             data.put("related_entity_id", notificationDTO.getRelatedEntityId());
             data.put("related_entity_type", notificationDTO.getRelatedEntityType());
             data.put("is_read", false); // Giá trị mặc định
@@ -103,7 +108,7 @@ public class SupabaseServiceImpl implements SupabaseService {
             }
 
             logger.info("Raw Response: {}", response);
-            logger.info("Response Body: {}", response.getBody());
+            logger.info("Supabase response Body: {}", response.getBody());
 
             return response.getBody()
                     .stream()

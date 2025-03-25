@@ -4,16 +4,25 @@ import React, { useMemo } from "react";
 import Image from "next/image";
 import FollowButton from "./follow-button";
 import Avatar from "@/public/images/avt.jpg";
-import { useApp } from "../provider/AppProvider";
+import { useApp } from "@/components/provider/AppProvider";
 import { formatDistanceToNow } from "date-fns";
-import PropTypes from "prop-types";
 
 export const FollowNotification = React.memo(
-  ({ isSeen, sender, timestamp, onClick }) => {
+  ({
+    isSeen, // boolean
+    sender, // { username: string, avatar?: string, id: string }
+    timestamp, // string (ISO date format)
+    onClick, // () => void
+  }) => {
     const { user } = useApp();
 
     // Debug log for input props
-    console.debug("FollowNotification props:", { isSeen, sender, timestamp, onClick });
+    console.debug("FollowNotification props:", {
+      isSeen,
+      sender,
+      timestamp,
+      onClick,
+    });
 
     // Check if sender is valid
     if (!sender || !sender.username) {
@@ -66,10 +75,3 @@ export const FollowNotification = React.memo(
     );
   }
 );
-
-FollowNotification.propTypes = {
-  isSeen: PropTypes.bool.isRequired,
-  sender: PropTypes.object.isRequired,
-  timestamp: PropTypes.string.isRequired,
-  onClick: PropTypes.func.isRequired,
-};

@@ -47,14 +47,19 @@ const useNotification = (userId) => {
         if (reset) setPage(2);
         else setPage((prevPage) => prevPage + 1);
       } catch (err) {
+        console.error("Error fetching notifications:", {
+          message: err.message,
+          responseData: err.response?.data,
+          status: err.response?.status,
+        });
         const errorMessage =
-          err.response?.status === 401
+          err.response?.status === 500
+            ? "Server error: " +
+              (err.response?.data?.message || "Unknown error occurred")
+            : err.response?.status === 401
             ? "Unauthorized: Invalid or expired token"
-            : err.response?.status === 500
-            ? "Server error: Please try again later"
-            : err.response?.data?.message || err.message;
+            : err.response?.data?.message || "An unexpected error occurred";
         setError({ message: errorMessage });
-        console.error("Error fetching notifications:", err);
       } finally {
         setLoading(false);
       }
@@ -62,76 +67,76 @@ const useNotification = (userId) => {
     [userId, page, token]
   );
 
-  // Mark notification as read with memoization
-  const markNotificationAsRead = useCallback(
-    async (notificationId) => {
-      console.log("Marking notification as read:", { userId, notificationId });
-      if (!userId || !notificationId) return;
+  // // Mark notification as read with memoization
+  // const markNotificationAsRead = useCallback(
+  //   async (notificationId) => {
+  //     console.log("Marking notification as read:", { userId, notificationId });
+  //     if (!userId || !notificationId) return;
 
-      setLoading(true);
-      try {
-        await axios.post(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/notifications/mark-as-read`,
-          { notificationId, userId },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        console.log("Notification marked as read:", notificationId);
-        setNotifications((prev) =>
-          prev.map((notification) =>
-            notification.id === notificationId
-              ? { ...notification, is_read: true }
-              : notification
-          )
-        );
-      } catch (err) {
-        const errorMessage =
-          err.response?.status === 401
-            ? "Unauthorized: Invalid or expired token"
-            : err.response?.data?.message || err.message;
-        setError({ message: errorMessage });
-        console.error("Error marking notification as read:", err);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [userId, token]
-  );
+  //     setLoading(true);
+  //     try {
+  //       await axios.post(
+  //         `${process.env.NEXT_PUBLIC_API_URL}/api/notifications/mark-as-read`,
+  //         { notificationId, userId },
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+  //       console.log("Notification marked as read:", notificationId);
+  //       setNotifications((prev) =>
+  //         prev.map((notification) =>
+  //           notification.id === notificationId
+  //             ? { ...notification, is_read: true }
+  //             : notification
+  //         )
+  //       );
+  //     } catch (err) {
+  //       const errorMessage =
+  //         err.response?.status === 401
+  //           ? "Unauthorized: Invalid or expired token"
+  //           : err.response?.data?.message || err.message;
+  //       setError({ message: errorMessage });
+  //       console.error("Error marking notification as read:", err);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   },
+  //   [userId, token]
+  // );
 
-  // Mark all notifications as read with memoization
-  const markAllNotificationsAsRead = useCallback(async () => {
-    console.log("Marking all notifications as read for user:", userId);
-    if (!userId) return;
+  // // Mark all notifications as read with memoization
+  // const markAllNotificationsAsRead = useCallback(async () => {
+  //   console.log("Marking all notifications as read for user:", userId);
+  //   if (!userId) return;
 
-    setLoading(true);
-    try {
-      await axios.patch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/notifications/mark-all-as-read`,
-        { userId },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      console.log("All notifications marked as read");
-      setNotifications((prev) =>
-        prev.map((notification) => ({ ...notification, is_read: true }))
-      );
-    } catch (err) {
-      const errorMessage =
-        err.response?.status === 401
-          ? "Unauthorized: Invalid or expired token"
-          : err.response?.data?.message || err.message;
-      setError({ message: errorMessage });
-      console.error("Error marking all notifications as read:", err);
-    } finally {
-      setLoading(false);
-    }
-  }, [userId, token]);
+  //   setLoading(true);
+  //   try {
+  //     await axios.patch(
+  //       `${process.env.NEXT_PUBLIC_API_URL}/api/notifications/mark-all-as-read`,
+  //       { userId },
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
+  //     console.log("All notifications marked as read");
+  //     setNotifications((prev) =>
+  //       prev.map((notification) => ({ ...notification, is_read: true }))
+  //     );
+  //   } catch (err) {
+  //     const errorMessage =
+  //       err.response?.status === 401
+  //         ? "Unauthorized: Invalid or expired token"
+  //         : err.response?.data?.message || err.message;
+  //     setError({ message: errorMessage });
+  //     console.error("Error marking all notifications as read:", err);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }, [userId, token]);
 
   // Supabase Realtime subscription
   useEffect(() => {
@@ -175,8 +180,8 @@ const useNotification = (userId) => {
   const memoizedValue = useMemo(
     () => ({
       notifications,
-      markNotificationAsRead,
-      markAllNotificationsAsRead,
+      // markNotificationAsRead,
+      // markAllNotificationsAsRead,
       loading,
       error,
       hasMore,
@@ -184,8 +189,8 @@ const useNotification = (userId) => {
     }),
     [
       notifications,
-      markNotificationAsRead,
-      markAllNotificationsAsRead,
+      // markNotificationAsRead,
+      // markAllNotificationsAsRead,
       loading,
       error,
       hasMore,
