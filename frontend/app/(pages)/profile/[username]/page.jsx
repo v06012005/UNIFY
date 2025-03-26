@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import FollowerModal from "@/components/global/FollowerModalProfile";
 import FriendModal from "@/components/global/FriendModalProfile";
@@ -11,6 +11,7 @@ import ProfileTabs from "@/components/global/TabProfile/Tabs";
 import { useApp } from "@/components/provider/AppProvider";
 import People from "@/components/global/TabProfile/People";
 import { useFollow } from "@/components/provider/FollowProvider";
+import { useQuery } from "@tanstack/react-query";
 
 const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   return (
@@ -31,8 +32,6 @@ const Page = () => {
   const [userReels, setUserReels] = useState([]);
   const [savedItems, setSavedItems] = useState([]);
   const [taggedPosts, setTaggedPosts] = useState([]);
-  const [followerCount, setFollowerCount] = useState(0);
-  const [followingCount, setFollowingCount] = useState(0);
   const params = useParams();
   const router = useRouter();
   const { user } = useApp();
@@ -51,15 +50,17 @@ const Page = () => {
   const toggleFriend = () => setIsFriendOpen(!isFriendOpen);
   const toggleFollow = () => setIsFollow(!isFollow);
 
-  useEffect(() => {
-    const fetchCounts = async () => {
-      const followers = await countFollowers(user.id);
-      const following = await countFollowing(user.id);
-      setFollowerCount(followers);
-      setFollowingCount(following);
-    };
-    fetchCounts();
-  }, [user]);
+  const { data: followerCount = 0 } = useQuery({
+    queryKey: ["followerCount", user?.id],
+    queryFn: () => countFollowers(user.id),
+    enabled: !!user?.id,
+  });
+
+  const { data: followingCount = 0 } = useQuery({
+    queryKey: ["followingCount", user?.id],
+    queryFn: () => countFollowing(user.id),
+    enabled: !!user?.id,
+  });
 
   return (
     <div className="max-w-4xl mx-auto py-6">
@@ -113,7 +114,7 @@ const Page = () => {
               onClick={toggleFollower}
             >
               <span className="font-bold text-neutral-800 dark:text-white">
-                {followerCount || 0}
+                {followerCount}
               </span>{" "}
               <span className="text-zinc-500 dark:text-zinc-400 font-medium">
                 Followers
@@ -124,7 +125,7 @@ const Page = () => {
               onClick={toggleFollowing}
             >
               <span className="font-bold text-neutral-800 dark:text-white">
-                {followingCount || 0}
+                {followingCount}
               </span>{" "}
               <span className="text-zinc-500 dark:text-zinc-400 font-medium">
                 Following

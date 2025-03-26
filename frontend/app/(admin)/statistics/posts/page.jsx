@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Avatar from "@/public/images/testAvt.jpg";
-import filterIcon from "@/public/images/filter-lightmode.png";
+import filterIcon from "@/public/images/filter_lightmode.png";
 const dummyUsers = Array.from({ length: 50 }, (_, index) => ({
   id: index + 1,
   name: `User ${index + 1}`,
