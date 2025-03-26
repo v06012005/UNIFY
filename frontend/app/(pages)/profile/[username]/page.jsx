@@ -66,35 +66,27 @@ const Page = () => {
       {/* Profile Header */}
       <div className="flex px-4 sm:px-6">
         {/* Avatar */}
-
-
         <div className="w-36 h-36 sm:w-48 sm:h-48 flex-shrink-0">
-
           <div className="relative w-full h-full rounded-full overflow-hidden border-2 border-gray-300">
             {user?.avatar?.url ? (
               <Image
                 src={user.avatar.url}
                 alt="Avatar"
-
                 width={154}
                 height={154}
-
                 className="object-cover w-full h-full"
               />
             ) : (
               <Image
                 src="/images/unify_icon_2.svg"
                 alt="Default Avatar"
-
                 width={154}
                 height={154}
-
                 className="object-cover w-full h-full"
               />
             )}
           </div>
         </div>
-
 
         {/* Profile Info */}
 
@@ -148,7 +140,6 @@ const Page = () => {
           {/* Buttons */}
 
           <div className="mt-6 flex space-x-3">
-
             <button
               className="flex items-center font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 bg-gray-100 dark:bg-neutral-700 dark:hover:bg-zinc-800 transition-colors w-full justify-center"
               onClick={handleClickEdit}

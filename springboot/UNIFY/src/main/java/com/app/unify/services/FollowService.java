@@ -1,9 +1,5 @@
 package com.app.unify.services;
 
-
-
-
-
 import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +12,8 @@ import com.app.unify.entities.User;
 import com.app.unify.repositories.FollowRepository;
 import com.app.unify.repositories.UserRepository;
 import com.app.unify.types.FollowerUserId;
+import com.app.unify.dto.global.NotificationDTO;
+import com.app.unify.services.NotificationService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +27,9 @@ public class FollowService {
 
     @Autowired
     private final UserRepository userRepository;
+
+    @Autowired
+    private final NotificationService notificationService;
 
     @Transactional
     public String followUser(String followingId) {
@@ -54,6 +55,17 @@ public class FollowService {
                     .createAt(LocalDateTime.now()).build();
 
             followRepository.save(newFollow);
+
+            // Send notification to the followed user
+            NotificationDTO notificationDTO = NotificationDTO.builder()
+                    .userId(followingId)
+                    .senderId(currentUserId) // Set sender_id to the current user's ID
+                    .type("FOLLOW")
+                    .message(follower.getUsername() + " has started following you.")
+                    .timestamp(LocalDateTime.now()) // Set timestamp for the notification
+                    .build();
+            notificationService.createAndSendNotification(notificationDTO);
+
             return "Followed successfully!";
         } catch (Exception e) {
             throw new RuntimeException("Error while following user: " + e.getMessage());

@@ -6,26 +6,17 @@ import { TagNotification } from "@/components/ui/tag_notification";
 import useNotification from "@/hooks/useNotification";
 
 const NotificationModal = ({ isNotificationOpen, modalRef, userId }) => {
-  console.log("NotificationModal rendered with props:", { isNotificationOpen, userId });
-
   const { notifications, markNotificationAsRead, markAllNotificationsAsRead } =
     useNotification(userId);
-
-  console.log("Fetched notifications:", notifications);
 
   const sortedNotifications = Array.isArray(notifications)
     ? [...notifications].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
     : [];
 
-  console.log("Sorted notifications:", sortedNotifications);
-
   const renderNotification = (notification) => {
     if (!notification || !notification.type) {
-      console.warn("Invalid notification: ", notification);
       return null;
     }
-
-    console.log("Rendering notification:", notification);
 
     switch (notification.type.toLowerCase()) {
       case "follow":
@@ -43,7 +34,6 @@ const NotificationModal = ({ isNotificationOpen, modalRef, userId }) => {
           <TagNotification key={notification.id} isSeen={notification.isRead} />
         );
       default:
-        console.warn("Unknown notification type:", notification.type);
         return null;
     }
   };
