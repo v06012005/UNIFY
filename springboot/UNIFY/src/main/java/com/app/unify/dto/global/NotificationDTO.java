@@ -20,6 +20,7 @@ public class NotificationDTO {
     private String userId;
     private String senderId;
     private String type; // POST, FOLLOW, TAG, LIKE, COMMENT
+    private String message;
     private Long relatedEntityId;
     private String relatedEntityType; // POST, COMMENT
     private LocalDateTime timestamp;

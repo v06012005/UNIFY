@@ -1,6 +1,7 @@
 package com.app.unify.services;
 
 import java.util.List;
+import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -33,7 +34,11 @@ public class NotificationService {
     }
 
     public void createAndSendNotification(NotificationDTO notificationDTO) {
+        if (notificationDTO == null || notificationDTO.getUserId() == null) {
+            throw new IllegalArgumentException("NotificationDTO or userId cannot be null");
+        }
         Notification notification = notificationMapper.toNotification(notificationDTO);
+        notification.setTimestamp(LocalDateTime.now()); // Ensure timestamp is set
         notificationRepository.save(notification);
         sendNotificationToUser(notification.getUserId(), notification);
     }
@@ -48,11 +53,12 @@ public class NotificationService {
 
     public void markNotificationAsRead(Long notificationId, String userId) {
         Notification notification = notificationRepository.findByIdAndUserId(notificationId, userId);
-        if (notification != null) {
-            notification.setRead(true);
-            notificationRepository.save(notification);
-            sendNotificationToUser(userId, notification);
+        if (notification == null) {
+            throw new IllegalArgumentException("Notification not found for userId: " + userId);
         }
+        notification.setRead(true);
+        notificationRepository.save(notification);
+        sendNotificationToUser(userId, notification);
     }
 
     @Transactional

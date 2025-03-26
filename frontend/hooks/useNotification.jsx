@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { supabase } from "@/supbaseConfig";
+import useWebSocket from "./useWebSocket"; // Import useWebSocket
 
 const useNotification = (userId) => {
   const [notifications, setNotifications] = useState([]);
@@ -16,14 +16,11 @@ const useNotification = (userId) => {
   // Fetch notifications with memoization
   const fetchNotifications = useCallback(
     async (reset = false) => {
-      console.log("Fetching notifications:", { userId, token, page, reset });
       if (!userId) {
-        console.error("Error: userId is undefined or empty");
         setError({ message: "userId is undefined or empty" });
         return;
       }
       if (!token) {
-        console.error("Error: No token found in cookies");
         setError({ message: "No token found" });
         return;
       }
@@ -38,8 +35,11 @@ const useNotification = (userId) => {
             },
           }
         );
-        console.log("Notifications fetched successfully:", response.data);
-        const newNotifications = response.data;
+        const newNotifications = response.data.map((notif) => ({
+          ...notif,
+          senderId: notif.senderId ?? "unknown",
+          userId: notif.userId ?? userId,
+        }));
         setNotifications((prev) =>
           reset ? newNotifications : [...prev, ...newNotifications]
         );
@@ -65,7 +65,6 @@ const useNotification = (userId) => {
   // Mark notification as read with memoization
   const markNotificationAsRead = useCallback(
     async (notificationId) => {
-      console.log("Marking notification as read:", { userId, notificationId });
       if (!userId || !notificationId) return;
 
       setLoading(true);
@@ -79,7 +78,6 @@ const useNotification = (userId) => {
             },
           }
         );
-        console.log("Notification marked as read:", notificationId);
         setNotifications((prev) =>
           prev.map((notification) =>
             notification.id === notificationId
@@ -103,7 +101,6 @@ const useNotification = (userId) => {
 
   // Mark all notifications as read with memoization
   const markAllNotificationsAsRead = useCallback(async () => {
-    console.log("Marking all notifications as read for user:", userId);
     if (!userId) return;
 
     setLoading(true);
@@ -117,7 +114,6 @@ const useNotification = (userId) => {
           },
         }
       );
-      console.log("All notifications marked as read");
       setNotifications((prev) =>
         prev.map((notification) => ({ ...notification, is_read: true }))
       );
@@ -133,43 +129,37 @@ const useNotification = (userId) => {
     }
   }, [userId, token]);
 
-  // Supabase Realtime subscription
+  // WebSocket để nhận thông báo thời gian thực
+  const handleWebSocketMessage = useCallback(
+    (message) => {
+      console.log("New notification received via WebSocket:", message);
+      setNotifications((prev) => {
+        const newNotif = {
+          ...message,
+          senderId: message.senderId ?? "unknown",
+          userId: message.userId ?? userId,
+        };
+        const updated = [newNotif, ...prev].filter(
+          (item, index, self) =>
+            index === self.findIndex((t) => t.id === item.id)
+        );
+        return updated.slice(0, 50); // Giới hạn 50 thông báo
+      });
+    },
+    [userId]
+  );
+
+  // Kết nối WebSocket với topic cụ thể cho userId
+  useWebSocket(
+    userId,
+    handleWebSocketMessage,
+    `/user/${userId}/queue/notifications`
+  );
+
+  // Fetch thông báo ban đầu khi userId thay đổi
   useEffect(() => {
-    console.log("Setting up Supabase subscription for user:", userId);
-    if (!userId) {
-      console.warn("Warning: userId is undefined or empty in useEffect");
-      return;
-    }
-
+    if (!userId) return;
     fetchNotifications(true);
-
-    const subscription = supabase
-      .channel("notifications")
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "notifications",
-          filter: `user_id=eq.${userId}`,
-        },
-        (payload) => {
-          console.log("New notification received via Supabase:", payload.new);
-          setNotifications((prev) => {
-            const updated = [payload.new, ...prev].filter(
-              (item, index, self) =>
-                index === self.findIndex((t) => t.id === item.id)
-            );
-            return updated.slice(0, 50);
-          });
-        }
-      )
-      .subscribe();
-
-    return () => {
-      console.log("Cleaning up Supabase subscription for user:", userId);
-      supabase.removeChannel(subscription);
-    };
   }, [userId, fetchNotifications]);
 
   const memoizedValue = useMemo(

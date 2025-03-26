@@ -60,6 +60,9 @@ public class Notification {
     @Builder.Default
     private boolean isRead = false;
 
+    @Column(name = "message")
+    private String message;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id", insertable = false, updatable = false)
     private User user;
