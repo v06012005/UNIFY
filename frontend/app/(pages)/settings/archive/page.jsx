@@ -24,12 +24,12 @@ const Page = () => {
             <input
               type="text"
               placeholder="Search..."
-              className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none"
+              className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none"
             />
           </div>
 
           <div className="grid grid-cols-4 gap-4">
-            <div className="relative bg-white dark:!bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+            <div className="relative bg-white dark:!bg-neutral-800 rounded-lg shadow-lg overflow-hidden">
               <Image
                 src={dummy}
                 alt="Reel"
@@ -40,13 +40,16 @@ const Page = () => {
                 <p className="text-gray-600 dark:text-white text-sm">
                   Lorem ipsum dolor sit amet, consectetur adipiscing elit.
                 </p>
+                <p className="text-gray-600 dark:text-gray text-sm">
+                  26 - 03 - 2025
+                </p>
                 <div className="mt-2 flex items-center justify-between">
                   <div className="flex items-center">
-                    <NavButton iconClass="fa-solid fa-eye mr-2 dark:text-gray-500" />
+                    <NavButton iconClass="fa-solid fa-bookmark mr-2 dark:text-gray-500" />
                     <span className="text-red-500 ">View</span>
                   </div>
                   <div className="flex items-center">
-                    <NavButton iconClass="fa-solid fa-thumbs-up mr-2 dark:text-gray-500" />
+                    <NavButton iconClass="fa-solid fa-heart mr-2 dark:text-gray-500" />
                     <span className="text-blue-500 ">Like</span>
                   </div>
                 </div>
