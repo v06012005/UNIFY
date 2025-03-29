@@ -245,7 +245,7 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
             <div className="flex items-center">
               <div className="w-10 h-10 rounded-full border-2 border-gray-300 dark:border-gray-600">
                 <Image
-                  src={post.user?.avatar || Avatar}
+                  src={post.user?.avatar?.url || Avatar}
                   alt="User Avatar"
                   width={40} // Add width
                   height={40} // Add height
@@ -315,7 +315,7 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
               <div className="flex items-center gap-3 leading-tight text-gray-800 dark:text-gray-200">
                 <div className="w-10 h-10 rounded-full border-2 border-gray-300 dark:border-gray-600">
                   <Image
-                    src={post.user?.avatar || Avatar}
+                    src={post.user?.avatar?.url || Avatar}
                     alt="User Avatar"
                     className="w-full h-full rounded-full object-cover"
                   />
