@@ -53,6 +53,7 @@ public class PostCommentController {
     @GetMapping("/{postId}")
     public ResponseEntity<List<CommentDTO>> getCommentsByPostId(@PathVariable String postId) {
         List<CommentDTO> comments = postCommentService.getCommentsByPostId(postId);
+        System.out.println("Comments fetched: " + comments.size());
         return ResponseEntity.ok(comments);
     }
 

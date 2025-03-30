@@ -23,10 +23,10 @@ public interface PostCommentRepository extends JpaRepository<PostComment, String
 
 
     // Thêm query mới để fetch replies lồng nhau
-    @Query("SELECT DISTINCT pc FROM PostComment pc LEFT JOIN FETCH pc.replies r WHERE pc.post.id = :postId AND pc.parent IS NULL")
-    List<PostComment> findTopLevelCommentsWithReplies(@Param("postId") String postId);
+    @Query("SELECT DISTINCT pc FROM PostComment pc LEFT JOIN FETCH pc.replies r LEFT JOIN FETCH pc.parent LEFT JOIN FETCH pc.user u WHERE pc.post.id = :postId")
+    List<PostComment> findAllCommentsByPostId(@Param("postId") String postId);
 
     // Query để lấy replies của một parent
-    @Query("SELECT DISTINCT pc FROM PostComment pc LEFT JOIN FETCH pc.replies r WHERE pc.parent = :parent")
+    @Query("SELECT DISTINCT pc FROM PostComment pc LEFT JOIN FETCH pc.replies r LEFT JOIN FETCH pc.parent WHERE pc.parent = :parent")
     List<PostComment> findByParentWithReplies(@Param("parent") PostComment parent);
 }

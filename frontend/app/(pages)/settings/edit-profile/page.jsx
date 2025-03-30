@@ -6,7 +6,6 @@ import { useApp } from "@/components/provider/AppProvider";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Cookies from "js-cookie";
 import { addToast, ToastProvider } from "@heroui/toast";
-import { useToast } from "@/hooks/use-toast";
 
 const Page = () => {
   const defaultAvatar = "/images/unify_icon_2.svg";
@@ -16,7 +15,6 @@ const Page = () => {
   const [errors, setErrors] = useState({});
   const { user, setUser } = useApp();
   const { logoutUser } = useApp();
-  const { toast } = useToast();
   const [userData, setUserData] = useState({
     id: "",
     firstName: "",
@@ -174,7 +172,6 @@ const Page = () => {
 
     if (!file) return;
 
-
     if (!allowedTypes.includes(file.type)) {
       toast({
         title: "Invalid file type",
@@ -271,7 +268,6 @@ const Page = () => {
       };
       console.log("Request data:", JSON.stringify(requestData, null, 2));
 
-
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
         method: "PUT",
         headers: {
@@ -344,7 +340,7 @@ const Page = () => {
       <div className="w-full">
         <div className="h-screen overflow-y-auto">
           <form onSubmit={handleSubmit}>
-            <div className="flex m-5 bg-gray-200 dark:bg-gray-800 rounded-xl items-center pr-5">
+            <div className="flex m-5 bg-gray-200 dark:bg-neutral-800 rounded-xl items-center pr-5">
               <div className="flex-shrink-0 p-2">
                 <div className="w-[100px] h-[100px] rounded-full border-2 border-gray-300 overflow-hidden">
                   <Image
@@ -368,7 +364,7 @@ const Page = () => {
               <div className="flex-grow flex justify-end gap-4">
                 <label
                   htmlFor="avatar"
-                  className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition cursor-pointer"
+                  className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-2 px-4 rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 cursor-pointer shadow-md"
                 >
                   Change Avatar
                   <input
@@ -384,18 +380,17 @@ const Page = () => {
                 <button
                   type="button"
                   onClick={handleDeleteAvatar}
-                  className="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition"
+                  className="bg-gradient-to-r from-red-500 to-rose-600 text-white py-2 px-4 rounded-lg hover:from-red-600 hover:to-rose-700 transition-all duration-300 shadow-md"
                 >
                   Delete Avatar
                 </button>
                 <button
                   type="button"
                   onClick={logoutUser}
-                  className="bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition"
+                  className="bg-gradient-to-r from-gray-600 to-gray-800 text-white py-2 px-4 rounded-lg hover:from-gray-700 hover:to-gray-900 transition-all duration-300 shadow-md"
                 >
                   Logout
                 </button>
-
               </div>
             </div>
 
@@ -649,7 +644,7 @@ const Page = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="px-10 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition focus:outline-none focus:ring-2 focus:ring-blue-500 text-xl"
+                className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-2 px-4 rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 cursor-pointer shadow-md"
               >
                 {loading ? "Saving..." : "Save"}
               </button>

@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.unify.dto.global.PostDTO;
+import com.app.unify.repositories.UserRepository;
 import com.app.unify.services.LikedPostService;
 import com.app.unify.services.MediaService;
 import com.app.unify.services.PostCommentService;
@@ -31,13 +33,17 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/posts")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class PostController {
 
     @Autowired
-    private PostService postService;
+    private final PostService postService;
     private final PostCommentService postCommentService;
     private final LikedPostService likedService;
     private final MediaService mediaService;
+
+    @Autowired
+    private final UserRepository userRepository;
 
     @GetMapping
     public List<PostDTO> getAllPosts() {
@@ -62,9 +68,9 @@ public class PostController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deletePost(@PathVariable("id") String id) {
         try {
-//	    	postCommentService.deleteCommentsByPostId(id);
-//	    	likedService.delete(id);
-//	    	mediaService.deleteById(id);
+            // postCommentService.deleteCommentsByPostId(id);
+            // likedService.delete(id);
+            // mediaService.deleteById(id);
             postService.deletePostById(id);
             return ResponseEntity.ok("Post deleted successfully!");
         } catch (Exception e) {
@@ -86,10 +92,10 @@ public class PostController {
         LocalDateTime endDateTime = endDate.atStartOfDay();
         return postService.getPostsByDate(startDateTime, endDateTime);
     }
-//	@GetMapping("/username/{username}")
-//	public List<PostDTO> getMyPosts(@PathVariable("username") String username) {
-//		return postService.getMyPosts(username);
-//	}
+    // @GetMapping("/username/{username}")
+    // public List<PostDTO> getMyPosts(@PathVariable("username") String username) {
+    // return postService.getMyPosts(username);
+    // }
 
     @GetMapping("/my")
     public ResponseEntity<List<PostDTO>> getMyPosts(@RequestParam String userId) {
@@ -99,7 +105,8 @@ public class PostController {
 
     @GetMapping("/hashtag/{content}")
     public ResponseEntity<List<PostDTO>> getPostsByHashtag(@PathVariable("content") String content) {
-    	return ResponseEntity.ok(postService.getPostsByHashtag("#" + content));
+        return ResponseEntity.ok(postService.getPostsByHashtag("#" + content));
+
     }
 
     @GetMapping("/explorer")
@@ -107,9 +114,12 @@ public class PostController {
         String userId = getCurrentUserId();
         List<PostDTO> posts = postService.getRecommendedPosts(userId);
         return ResponseEntity.ok(posts);
+
+
     }
 
     private String getCurrentUserId() {
+
         var authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || authentication.getPrincipal() == null) {
@@ -125,5 +135,9 @@ public class PostController {
         }
 
         throw new RuntimeException("User not authenticated (401)");
+
     }
+
+
+
 }

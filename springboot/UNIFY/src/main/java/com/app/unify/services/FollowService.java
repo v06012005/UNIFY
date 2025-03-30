@@ -1,7 +1,12 @@
 package com.app.unify.services;
 
+
+
+
+
 import java.time.LocalDateTime;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -19,89 +24,92 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class FollowService {
 
-	private final FollowRepository followRepository;
-	private final UserRepository userRepository;
+    @Autowired
+    private final FollowRepository followRepository;
 
-	@Transactional
-	public String followUser(String followingId) {
-		String currentUserId = getCurrentUserId();
+    @Autowired
+    private final UserRepository userRepository;
 
-		if (currentUserId.equals(followingId)) {
-			return "Can't follow yourself!";
-		}
+    @Transactional
+    public String followUser(String followingId) {
+        String currentUserId = getCurrentUserId();
 
-		User follower = userRepository.findById(currentUserId)
-				.orElseThrow(() -> new RuntimeException("Follower Invalid 1!"));
-		User following = userRepository.findById(followingId)
-				.orElseThrow(() -> new RuntimeException("Following Invalid 2!"));
+        if (currentUserId.equals(followingId)) {
+            return "Can't follow yourself!";
+        }
 
-		FollowerUserId id = new FollowerUserId(currentUserId, followingId);
+        User follower = userRepository.findById(currentUserId)
+                .orElseThrow(() -> new RuntimeException("Follower Invalid 1!"));
+        User following = userRepository.findById(followingId)
+                .orElseThrow(() -> new RuntimeException("Following Invalid 2!"));
 
-		if (followRepository.existsById(id)) {
-			return "You're already following this user";
-		}
+        FollowerUserId id = new FollowerUserId(currentUserId, followingId);
 
-		try {
-			Follower newFollow = Follower.builder().id(id).userFollower(follower).userFollowing(following)
-					.createAt(LocalDateTime.now()).build();
+        if (followRepository.existsById(id)) {
+            return "You're already following this user";
+        }
 
-			followRepository.save(newFollow);
-			return "Followed successfully!";
-		} catch (Exception e) {
-			throw new RuntimeException("Error while following user: " + e.getMessage());
-		}
-	}
+        try {
+            Follower newFollow = Follower.builder().id(id).userFollower(follower).userFollowing(following)
+                    .createAt(LocalDateTime.now()).build();
 
-	@Transactional
-	public String unfollowUser(String followingId) {
-		String currentUserId = getCurrentUserId();
-		FollowerUserId id = new FollowerUserId(currentUserId, followingId);
+            followRepository.save(newFollow);
+            return "Followed successfully!";
+        } catch (Exception e) {
+            throw new RuntimeException("Error while following user: " + e.getMessage());
+        }
+    }
 
-		if (!followRepository.existsById(id)) {
-			return "You're not following this user!";
-		}
+    @Transactional
+    public String unfollowUser(String followingId) {
+        String currentUserId = getCurrentUserId();
+        FollowerUserId id = new FollowerUserId(currentUserId, followingId);
 
-		try {
-			followRepository.deleteById(id);
-			return "Unfollowed successfully";
-		} catch (Exception e) {
-			throw new RuntimeException("Error while unfollowing user: " + e.getMessage());
-		}
-	}
+        if (!followRepository.existsById(id)) {
+            return "You're not following this user!";
+        }
 
-	private String getCurrentUserId() {
-		var authentication = SecurityContextHolder.getContext().getAuthentication();
+        try {
+            followRepository.deleteById(id);
+            return "Unfollowed successfully";
+        } catch (Exception e) {
+            throw new RuntimeException("Error while unfollowing user: " + e.getMessage());
+        }
+    }
 
-		if (authentication == null || authentication.getPrincipal() == null) {
-			throw new RuntimeException("User not authenticated (401)");
-		}
+    private String getCurrentUserId() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
 
-		Object principal = authentication.getPrincipal();
+        if (authentication == null || authentication.getPrincipal() == null) {
+            throw new RuntimeException("User not authenticated (401)");
+        }
 
-		if (principal instanceof UserDetails userDetails) {
-			String userId = userRepository.findByEmail(userDetails.getUsername())
-					.orElseThrow(() -> new RuntimeException("User not found")).getId();
-			return userId;
-		}
+        Object principal = authentication.getPrincipal();
 
-		throw new RuntimeException("User not authenticated (401)");
-	}
+        if (principal instanceof UserDetails userDetails) {
+            String userId = userRepository.findByEmail(userDetails.getUsername())
+                    .orElseThrow(() -> new RuntimeException("User not found")).getId();
+            return userId;
+        }
 
-	public boolean isFollowing(String followerId, String followingId) {
-		return followRepository.existsById(new FollowerUserId(followerId, followingId));
-	}
+        throw new RuntimeException("User not authenticated (401)");
+    }
 
-	public long countFollowers(String userId) {
-		return followRepository.countByUserFollowingId(userId);
-	}
+    public boolean isFollowing(String followerId, String followingId) {
+        return followRepository.existsById(new FollowerUserId(followerId, followingId));
+    }
 
-	public long countFollowing(String userId) {
-		return followRepository.countByUserFollowerId(userId);
-	}
+    public long countFollowers(String userId) {
+        return followRepository.countByUserFollowingId(userId);
+    }
 
-	public boolean isFriend(String userId1, String userId2) {
-		boolean user1FollowsUser2 = isFollowing(userId1, userId2);
-		boolean user2FollowsUser1 = isFollowing(userId2, userId1);
-		return user1FollowsUser2 && user2FollowsUser1;
-	}
+    public long countFollowing(String userId) {
+        return followRepository.countByUserFollowerId(userId);
+    }
+
+    public boolean isFriend(String userId1, String userId2) {
+        boolean user1FollowsUser2 = isFollowing(userId1, userId2);
+        boolean user2FollowsUser1 = isFollowing(userId2, userId1);
+        return user1FollowsUser2 && user2FollowsUser1;
+    }
 }

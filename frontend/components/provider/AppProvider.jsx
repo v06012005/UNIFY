@@ -6,8 +6,6 @@ import React, {
   useEffect,
   useRef,
   useContext,
-
-
 } from "react";
 import { redirect, useRouter, useParams } from "next/navigation";
 import { Client } from "@stomp/stompjs";
@@ -16,11 +14,10 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 import { SuggestedUsersProvider } from "./SuggestedUsersProvider";
-import {dehydrate, HydrationBoundary, useQuery} from "@tanstack/react-query";
-import {getQueryClient} from "@/components/client/QueryClient";
+import { dehydrate, HydrationBoundary, useQuery } from "@tanstack/react-query";
+import { getQueryClient } from "@/components/client/QueryClient";
 import { supabase } from "@/supbaseConfig";
 import { v4 as uuidv4 } from "uuid";
-
 
 const useChat = (user, chatPartner) => {
   const [chatMessages, setChatMessages] = useState([]);
@@ -41,7 +38,7 @@ const useChat = (user, chatPartner) => {
     }
   };
 
-  const {data, isLoading } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["messages", user?.id, chatPartner],
     queryFn: fetchMessages,
     enabled: !!user?.id && !!chatPartner,
@@ -89,30 +86,34 @@ const useChat = (user, chatPartner) => {
 
       if (files.length > 0) {
         try {
-          await Promise.all(files.map(async (item) => {
-            const file = item.file;
-            if (!file || !file.name) {
-              console.error("Invalid file object:", file);
-              return;
-            }
+          await Promise.all(
+            files.map(async (item) => {
+              const file = item.file;
+              if (!file || !file.name) {
+                console.error("Invalid file object:", file);
+                return;
+              }
 
-            const fileName = `${uuidv4()}-${file.name}`;
+              const fileName = `${uuidv4()}-${file.name}`;
 
-            const { data, error } = await supabase.storage
+              const { data, error } = await supabase.storage
                 .from("files")
                 .upload(fileName, file, {
                   cacheControl: "3600",
                   upsert: false,
                 });
 
-            if (error) {
-              console.error("Upload failed:", error);
-              return;
-            }
+              if (error) {
+                console.error("Upload failed:", error);
+                return;
+              }
 
-            console.log("Upload successful:", data);
-            fileUrls.push(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/files/${fileName}`);
-          }));
+              console.log("Upload successful:", data);
+              fileUrls.push(
+                `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/files/${fileName}`
+              );
+            })
+          );
 
           console.log("All files uploaded successfully.");
         } catch (err) {
@@ -129,14 +130,15 @@ const useChat = (user, chatPartner) => {
       };
 
       setChatMessages((prev) =>
-          [...prev, message].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
+        [...prev, message].sort(
+          (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+        )
       );
 
       stompClientRef.current.publish({
         destination: "/app/chat.sendMessage",
         body: JSON.stringify(message),
       });
-
     }
   };
   return { chatMessages, sendMessage };
@@ -262,7 +264,7 @@ export const AppProvider = ({ children }) => {
     try {
       const token = Cookies.get("token");
       if (!token) {
-        console.error("Missing token! User not authenticated.");
+        // console.error("Missing token! User not authenticated.");
         return null;
       }
 
@@ -354,27 +356,24 @@ export const AppProvider = ({ children }) => {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <SuggestedUsersProvider>
-        {" "}
         {
           <UserContext.Provider
-              value={{
-                user,
-                setUser,
-                userFromAPI,
-                setUserFromAPI,
-                loginUser,
-                refreshToken,
-                logoutUser,
-                useChat,
-                getInfoUser,
-                getUserInfoByUsername,
-              }}
+            value={{
+              user,
+              setUser,
+              userFromAPI,
+              setUserFromAPI,
+              loginUser,
+              refreshToken,
+              logoutUser,
+              useChat,
+              getInfoUser,
+              getUserInfoByUsername,
+            }}
           >
             {children}
           </UserContext.Provider>
         }
-      </SuggestedUsersProvider>
     </HydrationBoundary>
   );
 };

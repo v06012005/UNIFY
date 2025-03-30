@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@heroui/react";
 import { useEffect } from "react";
 import { useFollow } from "@/components/provider/FollowProvider";
 

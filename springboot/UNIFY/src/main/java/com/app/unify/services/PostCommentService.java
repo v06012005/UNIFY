@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.app.unify.dto.global.CommentDTO;
+import com.app.unify.entities.Avatar;
 import com.app.unify.entities.Post;
 import com.app.unify.entities.PostComment;
 import com.app.unify.entities.User;
@@ -75,28 +76,32 @@ public class PostCommentService {
             return List.of();
         }
 
-        List<PostComment> rootComments = postCommentRepository.findTopLevelCommentsWithReplies(postId);
-        for (PostComment root : rootComments) {
-            loadRepliesRecursively(root);
+        List<PostComment> allComments = postCommentRepository.findAllCommentsByPostId(postId);
+        // Lọc comment cấp 1
+        List<PostComment> rootComments = allComments.stream()
+            .filter(c -> c.getParent() == null)
+            .collect(Collectors.toList());
+        
+        // Đảm bảo parent được tải cho tất cả comment
+        for (PostComment comment : allComments) {
+            if (comment.getParent() != null) {
+                comment.getParent().getId(); // Buộc tải parent
+            }
         }
+
         return rootComments.stream()
             .map(this::convertToDto)
             .collect(Collectors.toList());
     }
 
     private void loadRepliesRecursively(PostComment comment) {
-        List<PostComment> replies = postCommentRepository.findByParentWithReplies(comment);
+        List<PostComment> replies = postCommentRepository.findByParent(comment);
         comment.setReplies(replies);
         for (PostComment reply : replies) {
             loadRepliesRecursively(reply);
         }
     }
-//    public List<CommentDTO> getCommentsByPostId(String postId) {
-//        List<PostComment> comments = postCommentRepository.findCommentsByPostIdWithUser(postId);
-//        return comments.stream()
-//            .map(this::convertToDto)
-//            .collect(Collectors.toList());
-//    }
+
 
     /**
      * Chuyển đổi từ PostComment thành CommentDTO
@@ -106,18 +111,22 @@ public class PostCommentService {
         dto.setId(comment.getId());
         dto.setContent(comment.getContent());
         dto.setUserId(comment.getUser().getId());
-        dto.setUsername(comment.getUser().getUsername()); // Thêm username
+        dto.setUsername(comment.getUser().getUsername());
         dto.setPostId(comment.getPost().getId());
         dto.setCommentedAt(comment.getCommentedAt());
-
-        // Xử lý replies nếu có
+        dto.setParentId(comment.getParent() != null ? comment.getParent().getId() : null);
+        
+        // Thêm logic lấy avatarUrl
+        Avatar latestAvatar = comment.getUser().getLatestAvatar();
+        dto.setAvatarUrl(latestAvatar != null ? latestAvatar.getUrl() : null);
+        
+        // Xử lý replies
         if (comment.getReplies() != null && !comment.getReplies().isEmpty()) {
             List<CommentDTO> replyDtos = comment.getReplies().stream()
                     .map(this::convertToDto)
                     .collect(Collectors.toList());
             dto.setReplies(replyDtos);
         }
-
         return dto;
     }
 

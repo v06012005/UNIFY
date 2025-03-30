@@ -50,20 +50,20 @@ public class ReportController {
 
 	}
 	@PostMapping("/post")
-    public ResponseEntity<ReportDTO> createPostReport(@RequestParam String reportedId) {
-        ReportDTO reportDTO = reportService.createPostReport(reportedId);
+    public ResponseEntity<ReportDTO> createPostReport(@RequestParam String reportedId, String reason) {
+        ReportDTO reportDTO = reportService.createPostReport(reportedId, reason);
         return ResponseEntity.status(HttpStatus.CREATED).body(reportDTO);
     }
 
     @PostMapping("/user")
-    public ResponseEntity<ReportDTO> createUserReport(@RequestParam String reportedId) {
-        ReportDTO reportDTO = reportService.createUserReport(reportedId);
+    public ResponseEntity<ReportDTO> createUserReport(@RequestParam String reportedId, String reason) {
+        ReportDTO reportDTO = reportService.createUserReport(reportedId, reason);
         return ResponseEntity.status(HttpStatus.CREATED).body(reportDTO);
     }
 
     @PostMapping("/comment")
-    public ResponseEntity<ReportDTO> createCommentReport(@RequestParam String reportedId) {
-        ReportDTO reportDTO = reportService.createCommentReport(reportedId);
+    public ResponseEntity<ReportDTO> createCommentReport(@RequestParam String reportedId, String reason) {
+        ReportDTO reportDTO = reportService.createCommentReport(reportedId, reason);
         return ResponseEntity.status(HttpStatus.CREATED).body(reportDTO);
     }
 	    @PutMapping("/{id}/status")
@@ -71,21 +71,6 @@ public class ReportController {
 	        ReportDTO updatedReport = reportService.updateReportStatus(id, status);
 	        return ResponseEntity.ok(updatedReport);
 	    }
-
-
-
-//    @GetMapping("/approved")
-//    public List<Report> getApprovedReports() {
-//        return reportService.getApprovedReports();
-//    }
-
-
-
-//    @PostMapping
-//    public ResponseEntity<ReportDTO> createReport(@RequestBody @Valid ReportDTO reportDto) {
-//        ReportDTO createdReport = reportService.createReport(reportDto);
-//        return ResponseEntity.status(HttpStatus.CREATED).body(createdReport);
-//    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> removeReport(@PathVariable String id) {

@@ -69,6 +69,9 @@ public class User {
 	String location;
 	String education;
 
+//	status = 1; Khóa tạm thời
+//	status = 2; Khóa vĩnh viễn
+//	status = 0; Bình thường
 	@Column(nullable = false)
 	Integer status;
 
@@ -105,6 +108,10 @@ public class User {
 	@JsonIgnore
 	@OneToMany(mappedBy = "user")
 	Set<Report> reports;
+
+	@JsonIgnore
+	@OneToMany(mappedBy = "user")
+	Set<SavedPost> savedPosts;
 
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
