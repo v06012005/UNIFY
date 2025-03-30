@@ -42,7 +42,6 @@ public class PostController {
     private final LikedPostService likedService;
     private final MediaService mediaService;
 
-
     @Autowired
     private final UserRepository userRepository;
 
@@ -136,6 +135,7 @@ public class PostController {
         }
 
         throw new RuntimeException("User not authenticated (401)");
+
     }
 
 

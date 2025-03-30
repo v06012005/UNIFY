@@ -324,12 +324,10 @@ export default function Reels() {
     setReplyingTo(null);
   };
 
-
   const handleReplyClick = (target) => {
     setReplyingTo(target); // Lưu comment hoặc reply
     console.log("Replying to:", target);
     console.log("Username:", target.username || "Unknown");
-
   };
 
   const handleCancelReply = () => {
@@ -340,8 +338,10 @@ export default function Reels() {
     (postId, newComment) => {
       setCommentsByPost((prev) => {
         const currentComments = Array.isArray(prev[postId]) ? prev[postId] : [];
-        if (newComment.parentId) {
-          const updatedComments = currentComments.map((comment) => {
+
+        // Hàm duyệt đệ quy để cập nhật replies
+        const updateRepliesRecursively = (comments) => {
+          return comments.map((comment) => {
             if (comment.id === newComment.parentId) {
               return {
                 ...comment,
@@ -351,13 +351,25 @@ export default function Reels() {
                 ],
               };
             }
+            if (comment.replies && comment.replies.length > 0) {
+              return {
+                ...comment,
+                replies: updateRepliesRecursively(comment.replies),
+              };
+            }
             return comment;
           });
+        };
+
+        if (newComment.parentId) {
+          // Cập nhật replies đệ quy nếu là reply của comment khác
+          const updatedComments = updateRepliesRecursively(currentComments);
           return {
             ...prev,
             [postId]: updatedComments,
           };
         }
+        // Thêm comment cấp 1 nếu không có parentId
         const updatedComments = [
           { ...newComment, username: user?.username || "Unknown" },
           ...currentComments,
@@ -433,7 +445,6 @@ export default function Reels() {
                         classFollowing="backdrop-blur-lg text-sm p-4 py-1 rounded-2xl font-bold transition-all duration-200 ease-in-out active:scale-125 hover:bg-black/50 border border-gray-300"
                       />
                     )}
-
                   </div>
                 </div>
                 <div className="mt-2 w-[350px]">
@@ -469,9 +480,11 @@ export default function Reels() {
                     // } fa-bookmark hover:opacity-50 focus:opacity-50 transition cursor-pointer`}
                     // onClick={() => handleSave(post.id)}
 
-                    className={`fa-${savedPostsMap[post.id] ? "solid" : "regular"} fa-bookmark
+                    className={`fa-${
+                      savedPostsMap[post.id] ? "solid" : "regular"
+                    } fa-bookmark
         hover:opacity-50 focus:opacity-50 transition cursor-pointer`}
-      onClick={() => toggleBookmark(post.id)}
+                    onClick={() => toggleBookmark(post.id)}
                   />
                 </div>
                 <div className="flex flex-col items-center relative">
@@ -549,9 +562,7 @@ export default function Reels() {
                         comment={comment}
                         currentUserId={currentUserId}
                         onReplySubmit={handleReplySubmit}
-
                         onReplyClick={handleReplyClick}
-
                       />
                     ))
                   ) : (
@@ -575,6 +586,4 @@ export default function Reels() {
       </div>
     </>
   );
-
 }
-

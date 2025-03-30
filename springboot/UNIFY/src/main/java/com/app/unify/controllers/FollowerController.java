@@ -26,7 +26,7 @@ public class FollowerController {
     @PostMapping("/{followingId}")
     public ResponseEntity<String> followUser(@PathVariable String followingId) {
         String response = followService.followUser(followingId);
-        
+
         return ResponseEntity.ok(response);
     }
 

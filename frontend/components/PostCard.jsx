@@ -1,6 +1,5 @@
 "use client";
 
-
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import Image from "next/image";
@@ -41,9 +40,7 @@ export default function PostCard({ post, onClick, style, postId }) {
         }
       } catch (error) {
 
-
         console.error("Lỗi khi fetch số lượt like type2", await response.text());
-
 
       }
     };
@@ -109,3 +106,5 @@ export default function PostCard({ post, onClick, style, postId }) {
     </div>
   );
 }
+
+

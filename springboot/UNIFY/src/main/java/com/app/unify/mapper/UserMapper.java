@@ -12,6 +12,7 @@ import com.app.unify.dto.global.UserDTO;
 import com.app.unify.entities.Avatar;
 import com.app.unify.entities.User;
 
+
 @Mapper(componentModel = "spring", uses = { AvatarMapper.class })
 
 

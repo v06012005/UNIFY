@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 
 import com.app.unify.entities.PostComment;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -30,7 +29,7 @@ public class CommentDTO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     private LocalDateTime commentedAt;
 
-    @JsonIgnoreProperties("replies")
+//    @JsonIgnoreProperties("replies")
     private List<CommentDTO> replies;
 
     public CommentDTO(PostComment comment) {

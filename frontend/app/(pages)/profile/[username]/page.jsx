@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import FollowerModal from "@/components/global/FollowerModalProfile";
 import FriendModal from "@/components/global/FriendModalProfile";
