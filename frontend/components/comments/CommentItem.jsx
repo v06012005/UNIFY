@@ -5,9 +5,22 @@ import { useState } from "react";
 import Reply from "@/components/comments/Reply";
 import Content from "@/components/comments/Content";
 import LikeButton from "@/components/global/LikeButton";
-
 import defaultAvatar from "public/images/unify_icon_2.svg";
 
+// Hàm duyệt đệ quy để lấy tất cả replies phẳng
+const flattenReplies = (replies) => {
+  let flatList = [];
+  const recurse = (replyArray) => {
+    replyArray.forEach((reply) => {
+      flatList.push(reply);
+      if (reply.replies && reply.replies.length > 0) {
+        recurse(reply.replies);
+      }
+    });
+  };
+  recurse(replies);
+  return flatList;
+};
 
 const CommentItem = ({
   comment,
@@ -16,6 +29,8 @@ const CommentItem = ({
   onReplyClick,
 }) => {
   const [isShown, setIsShown] = useState(false);
+  // Lấy tất cả replies phẳng (cấp 2, 3, 4...)
+  const allReplies = comment.replies ? flattenReplies(comment.replies) : [];
 
   return (
     <Card
@@ -24,7 +39,6 @@ const CommentItem = ({
     >
       <div>
         <div className="flex items-center">
-
           <div className="relative w-11 h-11 rounded-full overflow-hidden border-2 border-zinc-300">
             {comment.avatarUrl ? (
               <Image
@@ -44,7 +58,6 @@ const CommentItem = ({
               />
             )}
           </div>
-
           <h4 className="text-base font-bold truncate max-w-96 px-3">
             {comment.username || "Unknown"}
           </h4>
@@ -56,8 +69,10 @@ const CommentItem = ({
         </div>
 
         <div className="indent-14 mb-5">
-          <Content text={comment.content} className="leading-snug text-base dark:text-gray-200 w-fit max-w-full" />
-
+          <Content
+            text={comment.content}
+            className="leading-snug text-base dark:text-gray-200 w-fit max-w-full"
+          />
         </div>
       </div>
 
@@ -66,19 +81,20 @@ const CommentItem = ({
         <Button
           size="sm"
           className="bg-transparent dark:text-white"
-
-          onPress={() => onReplyClick(comment)} // Truyền comment cho cấp 1
-
+          onPress={() => onReplyClick(comment)}
         >
           <i className="fa-solid fa-reply"></i> Reply
         </Button>
-        <Button
-          onPress={() => setIsShown(!isShown)}
-          size="sm"
-          className="bg-transparent dark:text-white"
-        >
-          <i className="fa-solid fa-comments"></i> Show Replies
-        </Button>
+        {comment.replies && comment.replies.length > 0 && (
+          <Button
+            onPress={() => setIsShown(!isShown)}
+            size="sm"
+            className="bg-transparent dark:text-white"
+          >
+            <i className="fa-solid fa-comments"></i>{" "}
+            {isShown ? "Hide Replies" : `Show Replies (${allReplies.length})`}
+          </Button>
+        )}
         <Button
           size="sm"
           className="bg-transparent dark:text-white"
@@ -88,15 +104,15 @@ const CommentItem = ({
         </Button>
       </CardFooter>
 
-      {isShown && comment.replies && comment.replies.length > 0 && (
+      {isShown && allReplies.length > 0 && (
         <div className="w-full flex flex-col items-end">
-          {comment.replies.map((reply) => (
-            < Reply
+          {allReplies.map((reply) => (
+            <Reply
               key={reply.id}
               reply={reply}
               currentUserId={currentUserId}
               onReplySubmit={onReplySubmit}
-              onReplyClick={onReplyClick} // Truyền trực tiếp onReplyClick
+              onReplyClick={onReplyClick}
             />
           ))}
         </div>

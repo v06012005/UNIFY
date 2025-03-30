@@ -10,6 +10,7 @@ import com.app.unify.entities.HashtagDetail;
 @Mapper(componentModel = "spring")
 public interface HashtagDetailMapper {
 
+
     HashtagDetailDTO toHashtagDetailDTO(HashtagDetail hashtagDetail);
 
     HashtagDetail toHashtagDetail(HashtagDetailDTO hashtagDetailDTO);
