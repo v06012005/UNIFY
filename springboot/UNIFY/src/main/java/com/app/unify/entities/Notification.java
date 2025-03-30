@@ -2,6 +2,8 @@ package com.app.unify.entities;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -27,6 +29,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Notification {
 
     @Id
@@ -43,21 +46,22 @@ public class Notification {
     @Enumerated(EnumType.STRING)
     private NotificationType type;
 
-    @Column(name = "content", nullable = false, columnDefinition = "TEXT")
-    private String content;
-
     @Column(name = "related_entity_id")
     private Long relatedEntityId;
 
     @Column(name = "related_entity_type", length = 255)
     @Enumerated(EnumType.STRING)
-    private relatedEntityType relatedEntityType;
+    private RelatedEntityType relatedEntityType;
 
     @Column(name = "timestamp", nullable = false)
     private LocalDateTime timestamp;
 
     @Column(name = "is_read", nullable = false)
+    @Builder.Default
     private boolean isRead = false;
+
+    @Column(name = "message")
+    private String message;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id", insertable = false, updatable = false)
@@ -71,7 +75,7 @@ public class Notification {
         POST, FOLLOW, TAG, LIKE, COMMENT, SHARE, SYSTEM
     }
 
-    public enum relatedEntityType {
+    public enum RelatedEntityType {
         POST, COMMENT
     }
 }

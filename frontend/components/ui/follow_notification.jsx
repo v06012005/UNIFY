@@ -3,14 +3,19 @@
 import React, { useMemo } from "react";
 import Image from "next/image";
 import FollowButton from "./follow-button";
-import Avatar from "@/public/images/avt.jpg";
+import Avatar from "@/public/images/avt-exp.jpg";
 import { useApp } from "../provider/AppProvider";
 import { formatDistanceToNow } from "date-fns";
-import PropTypes from "prop-types";
 
 export const FollowNotification = React.memo(
   ({ isSeen, sender, timestamp, onClick }) => {
     const { user } = useApp();
+
+    // Check if sender is valid
+    if (!sender || !sender.username) {
+      return null; // Render nothing if sender is invalid
+    }
+
     const timeAgo = useMemo(() => {
       let time = formatDistanceToNow(new Date(timestamp), {
         addSuffix: true,
@@ -28,8 +33,10 @@ export const FollowNotification = React.memo(
       >
         <div className="flex items-center gap-4">
           <Image
-            src={sender.avatar || Avatar}
+            src={sender?.avatar?.url || Avatar}
             alt="User"
+            width={400}
+            height={400}
             className="rounded-full w-[64px] h-[64px]"
           />
           <div className="flex flex-col">
@@ -56,10 +63,3 @@ export const FollowNotification = React.memo(
     );
   }
 );
-
-FollowNotification.propTypes = {
-  isSeen: PropTypes.bool.isRequired,
-  sender: PropTypes.object.isRequired,
-  timestamp: PropTypes.string.isRequired,
-  onClick: PropTypes.func.isRequired,
-};

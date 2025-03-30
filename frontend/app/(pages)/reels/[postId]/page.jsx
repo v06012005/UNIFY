@@ -21,9 +21,7 @@ import ReportModal from "@/components/global/Report/ReportModal";
 import { useReports } from "@/components/provider/ReportProvider";
 import { addToast, ToastProvider } from "@heroui/toast";
 import { useQuery } from "@tanstack/react-query";
-
 import { useBookmarks } from "@/components/provider/BookmarkProvider";
-
 export default function Reels() {
   const [isCommentOpen, setIsCommentOpen] = useState(false);
   const [toolStates, setToolStates] = useState({});
@@ -46,9 +44,7 @@ export default function Reels() {
   const currentUserId = user?.id;
   const [replyingTo, setReplyingTo] = useState(null);
   const { createPostReport } = useReports();
-
   const { savedPostsMap, toggleBookmark } = useBookmarks();
-
   const { data: posts, isLoading } = useQuery({
     queryKey: ["posts"],
     queryFn: fetchPosts,
@@ -145,7 +141,7 @@ export default function Reels() {
           if (entry.isIntersecting && !isManuallyPaused) {
             video.play();
 
-            //   không reload
+            //   không reload  
 
             window.history.pushState({}, "", `/reels/${postId}`);
           } else {

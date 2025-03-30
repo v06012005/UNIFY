@@ -48,12 +48,10 @@ const useFetchReports = () => {
     }
   }, []);
 
-
   const fetchPendingReports = useCallback(() => fetchReports("0", setPendingReports), [fetchReports]);
   const fetchApprovedReports = useCallback(() => fetchReports("1,2", setApprovedReports), [fetchReports]);
 
   const createReport = useCallback(async (endpoint, reportedId, reason) => {
-
     try {
       const token = Cookies.get("token");
       const response = await fetch(`http://localhost:8080/reports/${endpoint}`, {

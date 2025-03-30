@@ -62,11 +62,8 @@ const CommentItem = ({
             {comment.username || "Unknown"}
           </h4>
           <h4 className="text-xs truncate w-32 dark:text-gray-500">
-            {comment.commentedAt &&
-            !isNaN(new Date(comment.commentedAt).getTime())
-              ? formatDistanceToNow(new Date(comment.commentedAt), {
-                  addSuffix: true,
-                })
+            {comment.commentedAt && !isNaN(new Date(comment.commentedAt).getTime())
+              ? formatDistanceToNow(new Date(comment.commentedAt), { addSuffix: true })
               : "Vừa xong"}
           </h4>
         </div>

@@ -1,6 +1,11 @@
-
 "use client";
-import { createContext, useContext, useState, useEffect, useCallback } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 
@@ -20,51 +25,41 @@ export const SuggestedUsersProvider = ({ children }) => {
   const [friendUsers, setFriendUsers] = useState([]);
   const [followingUsers, setFollowingUsers] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [currentUserId, setCurrentUserId] = useState("");
+  const [userId, setUserId] = useState("");
   const [error, setError] = useState(null);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   // Hàm chung để gọi API với endpoint và setter
-  const fetchUsers = useCallback(
-    async (endpoint, setter, userId) => {
-      try {
-        const token = Cookies.get("token");
-        if (!token || !userId) return;
-
-        const response = await apiClient.get(`/users/${endpoint}?currentUserId=${userId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        setter(Array.isArray(response.data) ? response.data : []);
-      } catch (err) {
-        setError(err.response?.data?.message || `Failed to fetch ${endpoint} users`);
-      }
-    },
-    []
-  );
 
   const fetchUserInfo = useCallback(async () => {
     try {
       const token = Cookies.get("token");
       if (!token) {
-        setError("No token found, redirecting to login...");
-        window.location.href = "/login";
+        setError("Không tìm thấy token đăng nhập!");
         return null;
       }
 
-      const response = await apiClient.get("/users/my-info", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/users/my-info`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
       if (!response.data?.id) {
-        setError("No user ID retrieved from API!");
+        console.error("Không lấy được ID từ API /users/my-info");
+        setError("Không lấy được ID người dùng!");
         return null;
       }
 
-      setCurrentUserId(response.data.id);
+      setUserId(response.data.id);
       return response.data.id;
     } catch (err) {
-      setError(err.response?.data?.message || "Error fetching user info");
+      console.error(
+        "Lỗi khi lấy thông tin người dùng:",
+        err.response?.data || err.message
+      );
+      setError(
+        err.response?.data?.message || "Lỗi khi lấy thông tin người dùng"
+      );
       if (err.response?.status === 401) {
         Cookies.remove("token");
         window.location.href = "/login";
@@ -73,14 +68,63 @@ export const SuggestedUsersProvider = ({ children }) => {
     }
   }, []);
 
+  const fetchUsers = useCallback(async (endpoint, setter, id) => {
+    try {
+      const token = Cookies.get("token");
+      if (!token || !id) {
+        console.warn(`Không gọi API ${endpoint} vì thiếu token hoặc id`);
+        return;
+      }
+
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/users/${endpoint}?currentUserId=${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      setter(Array.isArray(response.data) ? response.data : []);
+      console.log(`Dữ liệu từ ${endpoint}:`, response.data); // Log để kiểm tra
+    } catch (err) {
+      console.error(
+        `Lỗi khi lấy ${endpoint}:`,
+        err.response?.data || err.message
+      );
+      setError(
+        err.response?.data?.message || `Không thể lấy danh sách ${endpoint}!`
+      );
+    }
+  }, []);
+
   const loadAllData = useCallback(async () => {
     if (isDataLoaded) return;
 
+    if (
+      typeof window !== "undefined" &&
+      window.location.pathname === "/login"
+    ) {
+      return;
+    }
+
     setLoading(true);
     setError(null);
+
+    const token = Cookies.get("token");
+    if (!token) {
+      setLoading(false);
+      window.location.href = "/login";
+      return;
+    }
+
     try {
       const id = await fetchUserInfo();
-      if (!id) return;
+      if (!id) {
+        setLoading(false);
+        return;
+      }
 
       await Promise.all([
         fetchUsers("suggestions", setSuggestedUsers, id),
@@ -90,28 +134,39 @@ export const SuggestedUsersProvider = ({ children }) => {
       ]);
       setIsDataLoaded(true);
     } catch (err) {
-      setError(err.message || "Failed to load user data");
+      setError(err.message || "Lỗi khi tải dữ liệu!");
     } finally {
       setLoading(false);
     }
   }, [fetchUserInfo, fetchUsers, isDataLoaded]);
 
   useEffect(() => {
-    loadAllData();
-  }, [loadAllData]);
+    const token = Cookies.get("token");
+    if (token && !isDataLoaded) {
+      loadAllData();
+    } else if (
+      !token &&
+      typeof window !== "undefined" &&
+      window.location.pathname !== "/login"
+    ) {
+      window.location.href = "/login";
+    }
+  }, [loadAllData, isDataLoaded]);
 
   return (
     <SuggestedUsersContext.Provider
       value={{
         suggestedUsers,
-        getSuggestedUsers: (userId) => fetchUsers("suggestions", setSuggestedUsers, userId),
+        getSuggestedUsers: (id) =>
+          fetchUsers("suggestions", setSuggestedUsers, id),
         followingUsers,
-        getFollowingUsers: (userId) => fetchUsers("following", setFollowingUsers, userId),
+        getFollowingUsers: (id) =>
+          fetchUsers("following", setFollowingUsers, id),
         followerUsers,
-        getFollowerUsers: (userId) => fetchUsers("follower", setFollowerUsers, userId),
+        getFollowerUsers: (id) => fetchUsers("follower", setFollowerUsers, id),
         friendUsers,
-        getFriendUsers: (userId) => fetchUsers("friend", setFriendUsers, userId),
-        currentUserId,
+        getFriendUsers: (id) => fetchUsers("friend", setFriendUsers, id),
+        userId,
         loading,
         error,
       }}
@@ -124,7 +179,9 @@ export const SuggestedUsersProvider = ({ children }) => {
 export const useSuggestedUsers = () => {
   const context = useContext(SuggestedUsersContext);
   if (!context) {
-    throw new Error("useSuggestedUsers must be used within SuggestedUsersProvider!");
+    throw new Error(
+      "useSuggestedUsers phải được sử dụng trong SuggestedUsersProvider!"
+    );
   }
   return context;
 };

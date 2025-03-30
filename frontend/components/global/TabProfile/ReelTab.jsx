@@ -1,28 +1,21 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useApp } from "@/components/provider/AppProvider";
 import axios from "axios";
 import Cookies from "js-cookie";
-
 import { fetchComments } from "app/api/service/commentService";
 import PostDetailModal from "./PostDetailModal";
 
-
-
 const UserReels = ({ username }) => {
   const [selectedPost, setSelectedPost] = useState(null);
-
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [postUsers, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
-
   const [comments, setComments] = useState([]);
   const [isCommentsLoading, setIsCommentsLoading] = useState(false);
   const { user, getUserInfoByUsername } = useApp();
   const commentsContainerRef = useRef(null);
-
   const token = Cookies.get("token");
   
   const loadComments = useCallback(async (postId) => {
@@ -39,7 +32,6 @@ const UserReels = ({ username }) => {
     }
   }, [token]);
 
-
   useEffect(() => {
     if (selectedPost?.id) {
       loadComments(selectedPost.id);
@@ -47,19 +39,16 @@ const UserReels = ({ username }) => {
   }, [selectedPost, loadComments]);
 
   const handleNewComment = (newComment) => {
-
     setComments((prevComments) => [
       { ...newComment, username: user?.username || "Unknown" },
       ...prevComments,
     ]);
     commentsContainerRef.current?.scrollTo({ top: 0, behavior: "smooth" });
-
   };
 
   const getPostUsers = async (username) => {
     if (!token) return;
     try {
-
       const userData = await getUserInfoByUsername(username);
       if (userData) {
         const response = await axios.get(
@@ -68,7 +57,6 @@ const UserReels = ({ username }) => {
         );
         setPosts(response.data || []);
       }
-
     } catch (error) {
       console.error("Error fetching posts:", error);
     } finally {
@@ -106,7 +94,6 @@ const UserReels = ({ username }) => {
     <div className="max-w-3xl mx-auto">
       {loading ? (
         <p className="text-center">Loading...</p>
-
       ) : postUsers.some(post => post.media.some(media => media.mediaType === "VIDEO")) ? (
         <div className="grid grid-cols-3 gap-1">
           {postUsers.filter(post => post.media.some(media => media.mediaType === "VIDEO"))
@@ -127,7 +114,6 @@ const UserReels = ({ username }) => {
           <p>No posts available.</p>
           <button onClick={() => getPostUsers(username)} className="text-blue-500">Try again</button>
         </div>
-
       )}
       {selectedPost && (
         <PostDetailModal post={selectedPost} onClose={() => setSelectedPost(null)} onDelete={handleDeletePost} />

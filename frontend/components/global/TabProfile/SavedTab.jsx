@@ -6,9 +6,7 @@ import Cookies from "js-cookie";
 import SavedPostDetailModal from "./SavedPostDetailModal";
 import { Spinner } from "@heroui/react";
 import { addToast, ToastProvider } from "@heroui/toast";
-
 import { useModal } from "@/components/provider/ModalProvider";
-
 const SavedItems = ({ username }) => {
   const [selectedPost, setSelectedPost] = useState(null);
   const { getUserInfoByUsername } = useApp();
@@ -32,7 +30,6 @@ const SavedItems = ({ username }) => {
   const memoizedBookmarks = useMemo(() => (Array.isArray(bookmarks) ? bookmarks : []), [bookmarks]);
 
   return (
-
     <>
      <ToastProvider placement={"top-right"} />
     <div className="max-w-3xl mx-auto">
@@ -117,7 +114,6 @@ const SavedItems = ({ username }) => {
              ))}
            </div>
          ) : (
-
         <div className="text-center text-gray-500 mt-4">
           <p>No saved posts available.</p>
           <button onClick={fetchBookmarks} className="text-blue-500">

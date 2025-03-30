@@ -9,12 +9,10 @@ import Avatar from "@/public/images/avt.jpg";
 import { redirect } from "next/navigation";
 import { fetchPostById } from "@/app/lib/dal";
 import Image from "next/image";
-
 import { useApp } from "@/components/provider/AppProvider"; 
 import iconVideo from "@/public/vds.svg"; 
 import iconImage from "@/public/imgs.svg"; 
 import OptionsPostModal from "@/components/global/TabProfile/OptionsPostModal";
-
 const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   return (
     <Link
@@ -33,7 +31,6 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState(post?.media?.[0] || null);
   const [comments, setComments] = useState([]);
-
   const [isCommentsLoading, setIsCommentsLoading] = useState(false); 
   const [replyingTo, setReplyingTo] = useState(null); 
   const token = Cookies.get("token");
@@ -180,9 +177,7 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
               <div className="w-full h-full flex items-center justify-center bg-black">
                 <img
                   src={selectedMedia.url}
-
-                  className="max-w-full max-h-full object-contain "
-
+                  className="max-w-full max-h-full object-contain rounded-tl-xl rounded-bl-xl"
                   alt="Post Media"
                 />
               </div>
@@ -250,7 +245,7 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
             <div className="flex items-center">
               <div className="w-10 h-10 rounded-full border-2 border-gray-300 dark:border-gray-600">
                 <Image
-                  src={post.user?.avatar || Avatar}
+                  src={post.user?.avatar?.url || Avatar}
                   alt="User Avatar"
                   width={40} // Add width
                   height={40} // Add height
@@ -266,7 +261,6 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
               content="•••"
               className="text-2xl"
             />
-
              {openList && (
           <OptionsPostModal
             isOwner={isOwner}
@@ -279,7 +273,6 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
             }}
           />
         )}
-
             {/* Modal Delete */}
             {showDeleteModal && (
               <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[9999]">
@@ -322,7 +315,7 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
               <div className="flex items-center gap-3 leading-tight text-gray-800 dark:text-gray-200">
                 <div className="w-10 h-10 rounded-full border-2 border-gray-300 dark:border-gray-600">
                   <Image
-                    src={post.user?.avatar || Avatar}
+                    src={post.user?.avatar?.url || Avatar}
                     alt="User Avatar"
                     className="w-full h-full rounded-full object-cover"
                   />

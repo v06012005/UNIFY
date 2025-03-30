@@ -1,86 +1,113 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
-import useWebSocket from "./useWebSocket";
+import useWebSocket from "./useWebSocket"; // Import useWebSocket
 
 const useNotification = (userId) => {
   const [notifications, setNotifications] = useState([]);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(1);
+  const token = Cookies.get("token");
 
-  const fetchNotifications = useCallback(async () => {
-    try {
-      const token = Cookies.get("token");
-      if (!token) {
-        throw new Error("No token found");
+  // Fetch notifications with memoization
+  const fetchNotifications = useCallback(
+    async (reset = false) => {
+      if (!userId) {
+        setError({ message: "userId is undefined or empty" });
+        return;
       }
-
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/notifications/${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setNotifications(response.data);
-    } catch (error) {
-      if (error.response && error.response.status === 401) {
-        console.error("Unauthorized: Invalid or expired token");
-      } else {
-        console.error(
-          "Error fetching notifications:",
-          error.response?.data || error.message
+      if (!token) {
+        setError({ message: "No token found" });
+        return;
+      }
+      setLoading(true);
+      try {
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/notifications/${userId}`,
+          {
+            params: { page: reset ? 1 : page },
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
-      }
-    }
-  }, [userId]);
-
-  const markNotificationAsRead = async (notificationId) => {
-    try {
-      const token = Cookies.get("token");
-      if (!token) {
-        throw new Error("No token found");
-      }
-
-      await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/mark-notification-as-read`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setNotifications((prev) =>
-        prev.map((notification) =>
-          notification.id === notificationId
-            ? { ...notification, read: true }
-            : notification
-        )
-      );
-    } catch (error) {
-      if (error.response && error.response.status === 401) {
-        console.error("Unauthorized: Invalid or expired token");
-      } else {
-        console.error(
-          "Error marking notification as read:",
-          error.response?.data || error.message
+        const newNotifications = response.data.map((notif) => ({
+          ...notif,
+          senderId: notif.senderId ?? "unknown",
+          userId: notif.userId ?? userId,
+        }));
+        setNotifications((prev) =>
+          reset ? newNotifications : [...prev, ...newNotifications]
         );
+        setHasMore(newNotifications.length > 0);
+        if (reset) setPage(2);
+        else setPage((prevPage) => prevPage + 1);
+      } catch (err) {
+        const errorMessage =
+          err.response?.status === 401
+            ? "Unauthorized: Invalid or expired token"
+            : err.response?.status === 500
+            ? "Server error: Please try again later"
+            : err.response?.data?.message || err.message;
+        setError({ message: errorMessage });
+        console.error("Error fetching notifications:", err);
+      } finally {
+        setLoading(false);
       }
-    }
-  };
+    },
+    [userId, page, token]
+  );
 
-  const markAllNotificationsAsRead = async () => {
+  // Mark notification as read with memoization
+  const markNotificationAsRead = useCallback(
+    async (notificationId) => {
+      if (!userId || !notificationId) return;
+
+      setLoading(true);
+      try {
+        await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/notifications/mark-as-read`,
+          { notificationId, userId },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setNotifications((prev) =>
+          prev.map((notification) =>
+            notification.id === notificationId
+              ? { ...notification, is_read: true }
+              : notification
+          )
+        );
+      } catch (err) {
+        const errorMessage =
+          err.response?.status === 401
+            ? "Unauthorized: Invalid or expired token"
+            : err.response?.data?.message || err.message;
+        setError({ message: errorMessage });
+        console.error("Error marking notification as read:", err);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [userId, token]
+  );
+
+  // Mark all notifications as read with memoization
+  const markAllNotificationsAsRead = useCallback(async () => {
+    if (!userId) return;
+
+    setLoading(true);
     try {
-      const token = Cookies.get("token");
-      if (!token) {
-        throw new Error("No token found");
-      }
-
       await axios.patch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/notifications`,
-        {},
+        `${process.env.NEXT_PUBLIC_API_URL}/api/notifications/mark-all-as-read`,
+        { userId },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -88,35 +115,75 @@ const useNotification = (userId) => {
         }
       );
       setNotifications((prev) =>
-        prev.map((notification) => ({ ...notification, read: true }))
+        prev.map((notification) => ({ ...notification, is_read: true }))
       );
-    } catch (error) {
-      if (error.response && error.response.status === 401) {
-        console.error("Unauthorized: Invalid or expired token");
-      } else {
-        console.error(
-          "Error marking all notifications as read:",
-          error.response?.data || error.message
-        );
-      }
+    } catch (err) {
+      const errorMessage =
+        err.response?.status === 401
+          ? "Unauthorized: Invalid or expired token"
+          : err.response?.data?.message || err.message;
+      setError({ message: errorMessage });
+      console.error("Error marking all notifications as read:", err);
+    } finally {
+      setLoading(false);
     }
-  };
+  }, [userId, token]);
 
+  // WebSocket để nhận thông báo thời gian thực
+  const handleWebSocketMessage = useCallback(
+    (message) => {
+      console.log("New notification received via WebSocket:", message);
+      setNotifications((prev) => {
+        const newNotif = {
+          ...message,
+          senderId: message.senderId ?? "unknown",
+          userId: message.userId ?? userId,
+        };
+        const updated = [newNotif, ...prev].filter(
+          (item, index, self) =>
+            index === self.findIndex((t) => t.id === item.id)
+        );
+        return updated.slice(0, 50); // Giới hạn 50 thông báo
+      });
+    },
+    [userId]
+  );
+
+  // Kết nối WebSocket với topic cụ thể cho userId
   useWebSocket(
     userId,
-    (newNotification) => {
-      setNotifications((prev) => [...prev, newNotification]);
-    },
+    handleWebSocketMessage,
     `/user/${userId}/queue/notifications`
   );
 
+  // Fetch thông báo ban đầu khi userId thay đổi
   useEffect(() => {
-    if (userId) {
-      fetchNotifications();
-    }
+    if (!userId) return;
+    fetchNotifications(true);
   }, [userId, fetchNotifications]);
 
-  return { notifications, markNotificationAsRead, markAllNotificationsAsRead };
+  const memoizedValue = useMemo(
+    () => ({
+      notifications,
+      markNotificationAsRead,
+      markAllNotificationsAsRead,
+      loading,
+      error,
+      hasMore,
+      loadMore: () => fetchNotifications(false),
+    }),
+    [
+      notifications,
+      markNotificationAsRead,
+      markAllNotificationsAsRead,
+      loading,
+      error,
+      hasMore,
+      fetchNotifications,
+    ]
+  );
+
+  return memoizedValue;
 };
 
 export default useNotification;

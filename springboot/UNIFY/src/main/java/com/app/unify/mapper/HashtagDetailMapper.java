@@ -17,6 +17,5 @@ public interface HashtagDetailMapper {
 
     List<HashtagDetail> toHashtagDetailList(List<HashtagDetailDTO> dtoList);
 
-
     List<HashtagDetailDTO> toHashtagDetailDTOList(List<HashtagDetail> hashtags);
 }

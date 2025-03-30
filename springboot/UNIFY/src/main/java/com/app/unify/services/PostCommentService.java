@@ -76,17 +76,19 @@ public class PostCommentService {
             return List.of();
         }
 
+
         List<PostComment> allComments = postCommentRepository.findAllCommentsByPostId(postId);
         // Lọc comment cấp 1
         List<PostComment> rootComments = allComments.stream()
             .filter(c -> c.getParent() == null)
             .collect(Collectors.toList());
-        
+
         // Đảm bảo parent được tải cho tất cả comment
         for (PostComment comment : allComments) {
             if (comment.getParent() != null) {
                 comment.getParent().getId(); // Buộc tải parent
             }
+
         }
 
         return rootComments.stream()
@@ -114,13 +116,15 @@ public class PostCommentService {
         dto.setUsername(comment.getUser().getUsername());
         dto.setPostId(comment.getPost().getId());
         dto.setCommentedAt(comment.getCommentedAt());
+
         dto.setParentId(comment.getParent() != null ? comment.getParent().getId() : null);
-        
+
         // Thêm logic lấy avatarUrl
         Avatar latestAvatar = comment.getUser().getLatestAvatar();
         dto.setAvatarUrl(latestAvatar != null ? latestAvatar.getUrl() : null);
-        
+
         // Xử lý replies
+
         if (comment.getReplies() != null && !comment.getReplies().isEmpty()) {
             List<CommentDTO> replyDtos = comment.getReplies().stream()
                     .map(this::convertToDto)

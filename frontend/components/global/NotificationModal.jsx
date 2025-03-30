@@ -9,11 +9,15 @@ const NotificationModal = ({ isNotificationOpen, modalRef, userId }) => {
   const { notifications, markNotificationAsRead, markAllNotificationsAsRead } =
     useNotification(userId);
 
-  const sortedNotifications = [...notifications].sort(
-    (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
-  );
+  const sortedNotifications = Array.isArray(notifications)
+    ? [...notifications].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+    : [];
 
   const renderNotification = (notification) => {
+    if (!notification || !notification.type) {
+      return null;
+    }
+
     switch (notification.type.toLowerCase()) {
       case "follow":
         return (
@@ -22,7 +26,7 @@ const NotificationModal = ({ isNotificationOpen, modalRef, userId }) => {
             isSeen={notification.isRead}
             sender={notification.sender}
             timestamp={notification.timestamp}
-            onClick={() => markNotificationAsRead(notification.id)}
+            // onClick={() => markNotificationAsRead(notification.id)}
           />
         );
       case "tag":

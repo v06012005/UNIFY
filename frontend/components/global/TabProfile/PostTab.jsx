@@ -1,71 +1,79 @@
 "use client";
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { useApp } from "@/components/provider/AppProvider";
 import axios from "axios";
 import Cookies from "js-cookie";
 import PostDetailModal from "./PostDetailModal";
 import { Spinner } from "@heroui/react";
 import { addToast } from "@heroui/toast";
+import { useQuery } from "@tanstack/react-query";
 
 const UserPosts = ({ username }) => {
   const [selectedPost, setSelectedPost] = useState(null);
-  const [postUsers, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
   const { getUserInfoByUsername } = useApp();
   const token = Cookies.get("token");
 
-  const getPostUsers = useCallback(
-    async (username) => {
-      setLoading(true);
-      try {
-        if (!token) {
-          addToast({
-            title: "Error",
-            description: "Please log in to view posts.",
-            timeout: 3000,
-            shouldShowTimeoutProgess: true,
-            color: "danger",
-          });
-          return;
-        }
+  const fetchPosts = async () => {
+    if (!token) {
+      addToast({
+        title: "Error",
+        description: "Please log in to view posts.",
+        timeout: 3000,
+        shouldShowTimeoutProgess: true,
+        color: "danger",
+      });
+      throw new Error("Please log in to view posts.");
+    }
 
-        const userData = await getUserInfoByUsername(username);
-        if (!userData?.id) {
-          addToast({
-            title: "Error",
-            description: "User not found.",
-            timeout: 3000,
-            shouldShowTimeoutProgess: true,
-            color: "danger",
-          });
-          return;
-        }
+    const userData = await getUserInfoByUsername(username);
+    if (!userData?.id) {
+      addToast({
+        title: "Error",
+        description: "User not found.",
+        timeout: 3000,
+        shouldShowTimeoutProgess: true,
+        color: "danger",
+      });
+      throw new Error("User not found.");
+    }
 
-        const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/posts/my?userId=${userData.id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        setPosts(response.data || []);
-      } catch (error) {
-        addToast({
-          title: "Error",
-          description:
-            "Failed to fetch posts: " + (error.message || "Unknown error"),
-          timeout: 3000,
-          shouldShowTimeoutProgess: true,
-          color: "danger",
-        });
-      } finally {
-        setLoading(false);
-      }
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/posts/my?userId=${userData.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data || [];
+    } catch (error) {
+      addToast({
+        title: "Error",
+        description: "Failed to fetch posts: " + (error.message || "Unknown error"),
+        timeout: 3000,
+        shouldShowTimeoutProgess: true,
+        color: "danger",
+      });
+      throw error;
+    }
+  };
+
+  const { data: postUsers = [], isLoading: loading, refetch } = useQuery({
+    queryKey: ["userPosts", username],
+    queryFn: fetchPosts,
+    enabled: !!username?.trim(),
+    onError: (error) => {
+      addToast({
+        title: "Error",
+        description: error.message || "Failed to fetch posts.",
+        timeout: 3000,
+        shouldShowTimeoutProgess: true,
+        color: "danger",
+      });
     },
-    [token, getUserInfoByUsername]
-  );
+  });
 
   const handleDeletePost = useCallback(
     async (postId) => {
@@ -82,7 +90,7 @@ const UserPosts = ({ username }) => {
           }
         );
 
-        setPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId));
+        refetch();
         addToast({
           title: "Success",
           description: "Post deleted successfully.",
@@ -101,14 +109,8 @@ const UserPosts = ({ username }) => {
         });
       }
     },
-    [token]
+    [token, refetch]
   );
-
-  useEffect(() => {
-    if (username && username.trim() !== "") {
-      getPostUsers(username);
-    }
-  }, [username, getPostUsers]);
 
   const handlePostClick = useCallback((post) => {
     setSelectedPost(post);
@@ -205,10 +207,7 @@ const UserPosts = ({ username }) => {
       ) : (
         <div className="text-center text-gray-500 mt-4">
           <p>No posts available.</p>
-          <button
-            onClick={() => getPostUsers(username)}
-            className="text-blue-500"
-          >
+          <button onClick={refetch} className="text-blue-500">
             Try again
           </button>
         </div>

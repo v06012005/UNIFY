@@ -16,7 +16,6 @@ import com.app.unify.entities.User;
 @Mapper(componentModel = "spring", uses = { AvatarMapper.class })
 
 
-
 public interface UserMapper {
 
     User toUser(UserDTO userDto);

@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import com.app.unify.dto.global.NotificationDTO;
 import com.app.unify.entities.Follower;
 import com.app.unify.entities.User;
 import com.app.unify.repositories.FollowRepository;
@@ -29,6 +30,9 @@ public class FollowService {
 
     @Autowired
     private final UserRepository userRepository;
+
+    @Autowired
+    private final NotificationService notificationService;
 
     @Transactional
     public String followUser(String followingId) {
@@ -54,6 +58,17 @@ public class FollowService {
                     .createAt(LocalDateTime.now()).build();
 
             followRepository.save(newFollow);
+
+            // Send notification to the followed user
+            NotificationDTO notificationDTO = NotificationDTO.builder()
+                    .userId(followingId)
+                    .senderId(currentUserId) // Set sender_id to the current user's ID
+                    .type("FOLLOW")
+                    .message(follower.getUsername() + " has started following you.")
+                    .timestamp(LocalDateTime.now()) // Set timestamp for the notification
+                    .build();
+            notificationService.createAndSendNotification(notificationDTO);
+
             return "Followed successfully!";
         } catch (Exception e) {
             throw new RuntimeException("Error while following user: " + e.getMessage());
@@ -102,6 +117,7 @@ public class FollowService {
     public long countFollowers(String userId) {
         return followRepository.countByUserFollowingId(userId);
     }
+
 
     public long countFollowing(String userId) {
         return followRepository.countByUserFollowerId(userId);
