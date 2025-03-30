@@ -37,7 +37,7 @@ const Page = () => {
   const { user } = useApp();
   const { countFollowers, countFollowing } = useFollow();
 
-  const handleClickView = () => router.push("/settings/archive");
+  const handleClickView = () => router.push(`/settings/archive/${params.username}`);
   const handleClickEdit = () => router.push("/settings/edit-profile");
 
   const [isFollowerOpen, setIsFollowerOpen] = useState(false);

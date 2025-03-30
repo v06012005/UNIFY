@@ -69,14 +69,21 @@ public class PostController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deletePost(@PathVariable("id") String id) {
         try {
-            // postCommentService.deleteCommentsByPostId(id);
-            // likedService.delete(id);
-            // mediaService.deleteById(id);
             postService.deletePostById(id);
             return ResponseEntity.ok("Post deleted successfully!");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error deleting post: " + e.getMessage());
+        }
+    }
+    @PutMapping("/{id}/archive")
+    public ResponseEntity<String> archivePost(@PathVariable("id") String id) {
+        try {
+            postService.archivePostById(id);
+            return ResponseEntity.ok("Successfully moved to archive!");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error archiving  post: " + e.getMessage());
         }
     }
 
@@ -99,8 +106,8 @@ public class PostController {
     // }
 
     @GetMapping("/my")
-    public ResponseEntity<List<PostDTO>> getMyPosts(@RequestParam String userId) {
-        List<PostDTO> posts = postService.getMyPosts(userId);
+    public ResponseEntity<List<PostDTO>> getMyPosts(@RequestParam String userId, @RequestParam Integer status) {
+        List<PostDTO> posts = postService.getMyPosts(userId, status);
         return ResponseEntity.ok(posts);
     }
 

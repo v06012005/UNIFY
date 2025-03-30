@@ -18,11 +18,12 @@ public interface PostService {
     List<PostDTO> getPostsTrending();
 
     void deletePostById(String id);
+    void archivePostById(String id);
 
     List<PostDTO> getPostsByDate(LocalDateTime start, LocalDateTime end);
     // List<PostDTO> getMyPosts(String username);
 
-    List<PostDTO> getMyPosts(String userId);
+    List<PostDTO> getMyPosts(String userId, Integer status);
 
     List<PostDTO> getPostsByHashtag(String hashtag);
 

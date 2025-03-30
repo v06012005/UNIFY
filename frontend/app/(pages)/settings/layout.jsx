@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
-
+import { useApp } from "@/components/provider/AppProvider";
 const NavButton = ({ iconClass, href = "", content = "" }) => {
   const pathname = usePathname();
 
@@ -29,7 +29,8 @@ const Title = ({ content = "" }) => {
   return <p className="my-3 text-zinc-500">{content}</p>;
 };
 
-const layout = ({ children }) => {
+const layout = ({ children}) => {
+  const { user } = useApp();
   return (
     <div className="flex w-full">
       <div className="flex basis-1/4 px-3 flex-col border-r-1 dark:border-neutral-700  w-[300px] h-screen overflow-y-auto">
@@ -46,7 +47,8 @@ const layout = ({ children }) => {
             </li>
             <li className="h-10 mb-3 flex items-center">
               <NavButton
-                href="/settings/archive"
+                // href="/settings/archive"
+                href={user ? `/settings/archive/${user.username}` : "/login"}
                 iconClass="fa-solid fa-box-archive"
                 content="View Archive"
               />

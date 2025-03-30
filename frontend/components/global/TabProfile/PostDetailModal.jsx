@@ -13,6 +13,9 @@ import { useApp } from "@/components/provider/AppProvider";
 import iconVideo from "@/public/vds.svg"; 
 import iconImage from "@/public/imgs.svg"; 
 import OptionsPostModal from "@/components/global/TabProfile/OptionsPostModal";
+import DeletePostModal from "@/components/global/TabProfile/Modal/DeletePostModal";
+import ArchivePostModal from "@/components/global/TabProfile/Modal/ArchivePostModal";
+import RestorePostModal from "@/components/global/TabProfile/Modal/RestorePostModal";
 const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   return (
     <Link
@@ -26,9 +29,11 @@ const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   );
 };
 
-const PostDetailModal = ({ post, onClose, onDelete }) => {
+const PostDetailModal = ({ post, onClose, onArchive, onDelete }) => {
   const [openList, setOpenList] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showArchiveModal, setShowArchiveModal] = useState(false);
+  const [showRestoreModal, setShowRestoreModal] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState(post?.media?.[0] || null);
   const [comments, setComments] = useState([]);
   const [isCommentsLoading, setIsCommentsLoading] = useState(false); 
@@ -150,6 +155,14 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
     setShowDeleteModal(true);
     setOpenList(false);
   };
+  const handleOpenArchiveModal = () => {
+    setShowArchiveModal(true);
+    setOpenList(false);
+  };
+  const handleOpenRestoreModal = () => {
+    setShowRestoreModal(true);
+    setOpenList(false);
+  };
 
   const handleClose = () => {
     setOpenList(false);
@@ -265,6 +278,8 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
           <OptionsPostModal
             isOwner={isOwner}
             onOpenDeleteModal={handleOpenDeleteModal}
+            onOpenArchiveModal={handleOpenArchiveModal}
+            onOpenRestoreModal={handleOpenRestoreModal}
             onClose={() => setOpenList(false)}
             postId={post.id}
             onReport={() => {
@@ -273,36 +288,32 @@ const PostDetailModal = ({ post, onClose, onDelete }) => {
             }}
           />
         )}
-            {/* Modal Delete */}
-            {showDeleteModal && (
-              <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[9999]">
-                <div className="bg-white dark:bg-neutral-800 rounded-xl p-6 w-full max-w-md shadow-2xl transform transition-all duration-200 scale-100 hover:scale-102">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                    Confirm Delete
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-300 mb-6">
-                    Are you sure you want to delete this post?
-                  </p>
-                  <div className="flex justify-end gap-4">
-                    <button
-                      onClick={() => setShowDeleteModal(false)}
-                      className="bg-gray-200 dark:bg-neutral-700 hover:bg-gray-300 dark:hover:bg-neutral-600 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-lg transition-colors"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={() => {
-                        onDelete(post.id);
-                        setShowDeleteModal(false);
-                      }}
-                      className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
+            <DeletePostModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={() => {
+          onDelete(post.id);
+          setShowDeleteModal(false);
+        }}
+      />
+
+      <ArchivePostModal
+        isOpen={showArchiveModal}
+        onClose={() => setShowArchiveModal(false)}
+        onConfirm={() => {
+          onArchive(post.id);
+          setShowArchiveModal(false);
+        }}
+      />
+
+      <RestorePostModal
+        isOpen={showRestoreModal}
+        onClose={() => setShowRestoreModal(false)}
+        onConfirm={() => {
+          onArchive(post.id);
+          setShowRestoreModal(false);
+        }}
+      />
           </div>
 
           <div
