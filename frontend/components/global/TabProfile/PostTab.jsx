@@ -5,7 +5,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import PostDetailModal from "./PostDetailModal";
 import { Spinner } from "@heroui/react";
-import { addToast } from "@heroui/toast";
+import { addToast, ToastProvider } from "@heroui/toast";
 import { useQuery } from "@tanstack/react-query";
 
 const UserPosts = ({ username }) => {
@@ -39,7 +39,7 @@ const UserPosts = ({ username }) => {
 
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/posts/my?userId=${userData.id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/posts/my?userId=${userData.id}&status=1`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -98,6 +98,7 @@ const UserPosts = ({ username }) => {
           shouldShowTimeoutProgess: true,
           color: "success",
         });
+        closeModal();
       } catch (error) {
         addToast({
           title: "Error",
@@ -111,7 +112,44 @@ const UserPosts = ({ username }) => {
     },
     [token, refetch]
   );
+  const handleArchivePost = useCallback(
+    async (postId) => {
+      try {
+        if (!token) return;
 
+        await axios.put(
+          `${process.env.NEXT_PUBLIC_API_URL}/posts/${postId}/archive`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        refetch();
+        addToast({
+          title: "Success",
+          description: "Successfully moved to archive.",
+          timeout: 3000,
+          shouldShowTimeoutProgess: true,
+          color: "success",
+        });
+        closeModal();
+      } catch (error) {
+        addToast({
+          title: "Error",
+          description:
+            "Failed to archive post: " + (error.message || "Unknown error"),
+          timeout: 3000,
+          shouldShowTimeoutProgess: true,
+          color: "danger",
+        });
+      }
+    },
+    [token, refetch]
+  );
   const handlePostClick = useCallback((post) => {
     setSelectedPost(post);
   }, []);
@@ -123,6 +161,8 @@ const UserPosts = ({ username }) => {
   const memoizedPostUsers = useMemo(() => postUsers, [postUsers]);
 
   return (
+    <>
+         <ToastProvider placement={"top-right"} />
     <div className="max-w-3xl mx-auto">
       {loading ? (
         <div className="flex justify-center items-center h-screen">
@@ -218,9 +258,11 @@ const UserPosts = ({ username }) => {
           post={selectedPost}
           onClose={closeModal}
           onDelete={handleDeletePost}
+          onArchive={handleArchivePost}
         />
       )}
     </div>
+    </>
   );
 };
 

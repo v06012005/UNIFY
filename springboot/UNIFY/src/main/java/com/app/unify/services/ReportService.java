@@ -209,7 +209,9 @@ public class ReportService {
             Post post = postRepository.findById(report.getReportedId())
                     .orElseThrow(() -> new ReportException("Post not found!"));
 
-            post.setStatus(0);
+            
+            post.setStatus(2); 
+
             postRepository.save(post);
         }
         if (status == APPROVED && report.getEntityType() == EntityType.USER) {

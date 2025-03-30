@@ -3,6 +3,7 @@ package com.app.unify.services;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import com.app.unify.repositories.HashtagDetailRepository;
 import com.app.unify.repositories.HashtagRepository;
 import com.app.unify.repositories.PostRepository;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -79,10 +81,33 @@ public class PostServiceImp implements PostService {
                 .collect(Collectors.toList());
     }
 
+//    @Override
+//    @CacheEvict(value = "posts", key = "#id")
+//    public void deletePostById(String id) {
+//        postRepository.deleteById(id);
+//    }
     @Override
     @CacheEvict(value = "posts", key = "#id")
     public void deletePostById(String id) {
-        postRepository.deleteById(id);
+        Optional<Post> postOpt = postRepository.findById(id);
+        if (postOpt.isPresent()) {
+            Post post = postOpt.get();
+            post.setStatus(2); 
+            postRepository.save(post); 
+        } else {
+            throw new EntityNotFoundException("Post not found with id: " + id);
+        }
+    }
+    @Override
+    public void archivePostById(String id) {
+        Optional<Post> postOpt = postRepository.findById(id);
+        if (postOpt.isPresent()) {
+            Post post = postOpt.get();
+            post.setStatus(post.getStatus() == 1 ? 0 : 1);
+            postRepository.save(post);
+        } else {
+            throw new EntityNotFoundException("Post not found with id: " + id);
+        }
     }
 
     @Override
@@ -95,8 +120,8 @@ public class PostServiceImp implements PostService {
 //	}
 
     @Override
-    public List<PostDTO> getMyPosts(String username) {
-        return mapper.toPostDTOList(postRepository.findMyPosts(username));
+    public List<PostDTO> getMyPosts(String userId, Integer status) {
+        return mapper.toPostDTOList(postRepository.findMyPosts(userId, status));
     }
 
 	@Override
