@@ -74,7 +74,8 @@ public class User {
 //	status = 0; Bình thường
 	@Column(nullable = false)
 	Integer status;
-
+	@Column(name = "report_approval_count")
+    Integer reportApprovalCount = 0;
 	@Column(name = "work_at")
 	String workAt;
 
