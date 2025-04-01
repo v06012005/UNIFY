@@ -5,7 +5,7 @@ import CommentItem from "@/components/comments/CommentItem";
 import CommentInput from "@/components/comments/CommentInput";
 import Cookies from "js-cookie";
 import Link from "next/link";
-import Avatar from "@/public/images/avt.jpg";
+import Avatar from "@/public/images/unify_icon_2.svg";
 import { redirect } from "next/navigation";
 import { fetchPostById } from "@/app/lib/dal";
 import Image from "next/image";
