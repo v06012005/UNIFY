@@ -179,20 +179,6 @@ public class ReportService {
     }
 
 
-//	public ReportDTO updateReportStatus(String reportId, Integer status) {
-//		Report report = reportRepository.findById(reportId)
-//				.orElseThrow(() -> new ReportException("Report not found!"));
-//
-//		if (status < PENDING || status > CANCELED) {
-//			throw new ReportException("Invalid status value: " + status);
-//		}
-//
-//		report.setStatus(status);
-//		Report updatedReport = reportRepository.save(report);
-//		return reportMapper.toReportDTO(updatedReport);
-//	}
-
-
     public ReportDTO updateReportStatus(String reportId, Integer status) {
         Report report = reportRepository.findById(reportId)
                 .orElseThrow(() -> new ReportException("Report not found!"));
@@ -218,19 +204,17 @@ public class ReportService {
             User user = userRepository.findById(report.getReportedId())
                     .orElseThrow(() -> new ReportException("User not found!"));
 
+            user.setReportApprovalCount(user.getReportApprovalCount() + 1);
 
-            user.setStatus(1);
+            if (user.getReportApprovalCount() >= 5) {
+                user.setStatus(2); 
+            } 
+            else if (user.getReportApprovalCount() >= 3 && user.getStatus() != 2) {
+                user.setStatus(1); // Khóa tạm thời
+            }
 
             userRepository.save(user);
         }
-//        if (status == APPROVED && report.getEntityType() == EntityType.COMMENT) {
-//            PostComment postComment = commentRepository.findById(report.getReportedId())
-//                    .orElseThrow(() -> new ReportException("Comment not found!"));
-
-//
-//            postComment.setStatus(1);
-//            commentRepository.save(postComment);
-//        }
 
         Report updatedReport = reportRepository.save(report);
         return reportMapper.toReportDTO(updatedReport);

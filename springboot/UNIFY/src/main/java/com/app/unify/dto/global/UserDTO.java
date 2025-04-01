@@ -56,6 +56,7 @@ public class UserDTO {
 	private String biography;
 
 	private Integer status;
+	private Integer reportApprovalCount;
 	private String currentPassword;
 	private String newPassword;
 	Set<Role> roles;
