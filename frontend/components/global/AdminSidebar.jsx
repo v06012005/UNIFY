@@ -77,7 +77,7 @@ const AdminSidebar = () => {
                 <NavButton
                   iconClass="fa-solid fa-circle-exclamation"
                   text="Reported Groups"
-                  href="/manage/users/list"
+                  href="/manage/groups/list"
                 />
               </li>
             </ul>
@@ -89,14 +89,14 @@ const AdminSidebar = () => {
                 <NavButton
                   iconClass="fa-solid fa-chart-pie"
                   text="Trends"
-                  href="/manage/users/list"
+                  href="/statistics/posts"
                 />
               </li>
               <li>
                 <NavButton
                   iconClass="fa-regular fa-handshake"
                   text="New Users"
-                  href="/manage/users/list"
+                  href="/statistics/users"
                 />
               </li>
             </ul>

@@ -21,7 +21,7 @@ const layout = ({ children }) => {
           <aside className="w-60 z-50 flex-none">
             <AdminSidebar />
           </aside>
-          <main className="w-full flex-initial z-10 px-5">{children}</main>
+          <main className="w-full flex-initial z-10 pl-5">{children}</main>
         </div>
       </NextThemesProvider>
     </HeroUIProvider>
