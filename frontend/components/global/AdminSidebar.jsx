@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import UnifyLogo from "./FullUnifyLogo";
 import ModeSwitch from "./ModeSwitch";
-import { Accordion, AccordionItem } from "@heroui/react";
+import { Accordion, AccordionItem, Divider, User } from "@heroui/react";
 
 const NavButton = React.memo(function NavButton({
   iconClass,
@@ -14,7 +14,7 @@ const NavButton = React.memo(function NavButton({
     <Link
       title={title}
       href={href}
-      className={`w-full  hover:text-white px-2 dark:hover:bg-neutral-700 hover:bg-neutral-500 rounded-md flex h-10 items-center text-center transition delay-100 ease-in-out duration-150`}
+      className={`w-full rounded-md flex hover:font-bold h-10 items-center transition delay-100 ease-in-out duration-300`}
     >
       <i className={`${iconClass} w-1/5 text-center`}></i> {text}
     </Link>
@@ -23,115 +23,96 @@ const NavButton = React.memo(function NavButton({
 
 const AdminSidebar = () => {
   return (
-    <div className="relative flex flex-row">
-      <div className="flex flex-col border h-screen fixed left-0 top-0 z-50">
+    <div className="relative flex flex-row ">
+      <div className="flex flex-col border h-screen fixed bg-gray-200 left-0 top-0 z-50 p-3">
         <UnifyLogo className="w-52 mx-auto" />
-        <div className="flex flex-col justify-center grow w-60">
-          <Accordion variant="splitted">
-            <AccordionItem
-              key="1"
-              title="User Management"
-              className="dark:bg-neutral-800"
-              startContent={<i className="fa-solid fa-users-gear"></i>}
-            >
-              <ul>
-                <li>
-                  <NavButton
-                    iconClass="fa-regular fa-rectangle-list"
-                    text="User List"
-                    href="/manage/users/list"
-                  />
-                </li>
-                <li>
-                  <NavButton
-                    iconClass="fa-regular fa-rectangle-list"
-                    text="Admin List"
-                    href="/manage/users/list"
-                  />
-                </li>
-              </ul>
-            </AccordionItem>
-            <AccordionItem
-              className="dark:bg-neutral-800"
-              key="2"
-              title="Post Management"
-              startContent={<i className="fa-solid fa-newspaper"></i>}
-            >
-              <ul>
-                <li>
-                  <NavButton
-                    iconClass="fa-regular fa-rectangle-list"
-                    text="Post List"
-                    href="/manage/posts/list"
-                  />
-                </li>
-              </ul>
-            </AccordionItem>
-            <AccordionItem
-              className="dark:bg-neutral-800"
-              key="3"
-              title="Reports"
-              startContent={<i className="fa-solid fa-flag"></i>}
-            >
-              <ul>
-                <li>
-                  <NavButton
-                    iconClass="fa-solid fa-file-pen"
-                    text="Verify Reports"
-                    href="/manage/reports/verify"
-                  />
-                </li>
-                <li>
-                  <NavButton
-                    iconClass="fa-regular fa-rectangle-list"
-                    text="Processed Reports"
-                    href="/manage/reports/processed-reports"
-                  />
-                </li>
-              </ul>
-            </AccordionItem>
-            <AccordionItem
-              className="dark:bg-neutral-800"
-              key="4"
-              title="Statistics"
-              startContent={<i className="fa-solid fa-chart-simple"></i>}
-            >
-              <ul>
-                <li>
-                  <NavButton
-                    iconClass="fa-solid fa-user"
-                    text="User Stats"
-                    href="/statistics/users"
-                  />
-                </li>
-                {/* <li>
-                                    <NavButton iconClass="fa-solid fa-newspaper" text="Post Stats" href="/statistics/posts" />
-                                </li> */}
-              </ul>
-            </AccordionItem>
-            {/* <AccordionItem className='dark:bg-gray-700' key="5" title="Notifications" startContent={<i className="fa-solid fa-bell"></i>}>
-                            <ul>
-                                <li>
-                                    <NavButton iconClass="fa-solid fa-clock-rotate-left" text="All Notifications" href="/manage/notifications/list" />
-                                </li>
-                                <li>
-                                    <NavButton iconClass="fa-solid fa-arrow-up-from-bracket" text="Push A Notification" href="/manage/notifications/add" />
-                                </li>
-                            </ul>
-                        </AccordionItem> */}
-            <AccordionItem
-              className="dark:bg-neutral-800"
-              key="6"
-              title="Quick Settings"
-              startContent={<i className="fa-solid fa-gear"></i>}
-            >
-              <ul>
-                <li className="pl-4">
-                  <ModeSwitch text="Dark Mode" className="" />
-                </li>
-              </ul>
-            </AccordionItem>
-          </Accordion>
+        <Divider className="mt-5 mb-2" />
+        <div className="flex w-full justify-between">
+          <User
+            avatarProps={{
+              src: "https://i.pravatar.cc/150?u=a04258114e29026702d",
+            }}
+            description="Product Designer"
+            name="Jane Doe" className="my-3 justify-start"
+          />
+          <Link href={""} className="my-auto text-xl text-gray-500"><i className="fa-solid fa-right-from-bracket"></i></Link>
+        </div>
+        <Divider className="mt-2" />
+        <div className="flex flex-col grow w-60 overflow-y-auto p-3">
+          <h3 className="font-bold text-xl"><i className="fa-solid fa-users"></i> Users</h3>
+          <div className="pl-5">
+            <ul>
+              <li>
+                <NavButton
+                  iconClass="fa-solid fa-user-xmark"
+                  text="Reported Users"
+                  href="/manage/users/list"
+                />
+              </li>
+              <li>
+                <NavButton
+                  iconClass="fa-solid fa-ban"
+                  text="Blocked Users"
+                  href="/manage/users/list"
+                />
+              </li>
+            </ul>
+          </div>
+          <h3 className="font-bold text-xl mt-5"><i className="fa-solid fa-blog"></i> Posts</h3>
+          <div className="pl-5">
+            <ul>
+              <li>
+                <NavButton
+                  iconClass="fa-solid fa-triangle-exclamation"
+                  text="Reported Posts"
+                  href="/manage/posts/list"
+                />
+              </li>
+            </ul>
+          </div>
+          <h3 className="font-bold text-xl mt-5"><i className="fa-solid fa-users-rays"></i> Groups</h3>
+          <div className="pl-5">
+            <ul>
+              <li>
+                <NavButton
+                  iconClass="fa-solid fa-circle-exclamation"
+                  text="Reported Groups"
+                  href="/manage/users/list"
+                />
+              </li>
+            </ul>
+          </div>
+          <h3 className="font-bold text-xl mt-5"><i className="fa-solid fa-square-poll-vertical"></i> Statistics</h3>
+          <div className="pl-5">
+            <ul>
+              <li>
+                <NavButton
+                  iconClass="fa-solid fa-chart-pie"
+                  text="Trends"
+                  href="/manage/users/list"
+                />
+              </li>
+              <li>
+                <NavButton
+                  iconClass="fa-regular fa-handshake"
+                  text="New Users"
+                  href="/manage/users/list"
+                />
+              </li>
+            </ul>
+          </div>
+          <h3 className="font-bold text-xl mt-5"><i className="fa-solid fa-users"></i> Unify Staffs</h3>
+          <div className="pl-5">
+            <ul>
+              <li>
+                <NavButton
+                  iconClass="fa-solid fa-clipboard-user"
+                  text="All Staffs"
+                  href="/manage/users/list"
+                />
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>

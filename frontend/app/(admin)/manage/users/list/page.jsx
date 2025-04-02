@@ -7,6 +7,11 @@ import filterDarkIcon from "@/public/images/filter_darkmode.png";
 import { useTheme } from "next-themes";
 import Cookies from "js-cookie";
 import Error from "next/error";
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from "@heroui/react";
+import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from "@heroui/react";
+
+
+
 
 const UserManagementPage = () => {
   const { theme, setTheme } = useTheme();
@@ -118,7 +123,7 @@ const UserManagementPage = () => {
   return (
     <div className="py-10 px-6 h-screen w-[78rem]">
       <div className="max-w-7xl mx-auto mb-10 flex justify-between items-center">
-        <h1 className="text-4xl font-bold">User Management</h1>
+        <h1 className="text-4xl font-bold">Reported Users</h1>
         <div className="flex items-center gap-3">
           <input
             type="text"
@@ -135,30 +140,40 @@ const UserManagementPage = () => {
         </div>
       </div>
 
-      <div className="overflow-auto h-[calc(73vh-0.7px)] shadow-lg rounded-lg border border-gray-500">
+      <div className="overflow-auto h-[calc(73vh-0.7px)]">
         {loading ? (
           <p className="text-center text-gray-500">Loading users...</p>
         ) : (
-          <table className="min-w-full">
-            <thead className="sticky top-0 bg-white border-b border-gray-500 dark:bg-black">
-              <tr>
-                <th className="py-3 px-5 text-left w-[8%]"></th>
-                <th className="py-3 px-5 text-left w-[24%]">Username</th>
-                <th className="py-3 px-5 text-left w-[30%]">Email</th>
-                <th className="py-3 px-5 text-center w-[30%]">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentItems.map((user) => (
-                <tr
-                  key={user.id}
-                  className="hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors border-b border-gray-700"
-                >
-                  <td className="py-3 px-5"></td>
-                  <td className="py-3 px-5">{user.username}</td>
-                  <td className="py-3 px-5">{user.email}</td>
-                  <td className="py-3 px-5 flex justify-center gap-1">
-                    {user.status === 0 ? (
+          <Table isStriped aria-label="">
+            <TableHeader>
+              <TableColumn>No.</TableColumn>
+              <TableColumn>Username</TableColumn>
+              <TableColumn>Email</TableColumn>
+              <TableColumn>Report Aproval Count</TableColumn>
+              <TableColumn>Actions</TableColumn>
+            </TableHeader>
+            <TableBody>
+              {currentItems.map((user, index) => (
+                <TableRow key={user.id}>
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{user.username}</TableCell>
+                  <TableCell>{user.email}</TableCell>
+                  <TableCell>{user.reportApprovalCount}</TableCell>
+                  <TableCell>
+                    <Dropdown>
+                      <DropdownTrigger>
+                        <i className="fa-solid fa-ellipsis-vertical hover:bg-gray-200 py-2 px-4 rounded-full hover:cursor-pointer"></i>
+                      </DropdownTrigger>
+                      <DropdownMenu aria-label="Action event example" onAction={(key) => alert(key)}>
+                        <DropdownItem key="new">New file</DropdownItem>
+                        <DropdownItem key="copy">Copy link</DropdownItem>
+                        <DropdownItem key="edit">Edit file</DropdownItem>
+                        <DropdownItem key="delete" className="text-danger" color="danger">
+                          Delete file
+                        </DropdownItem>
+                      </DropdownMenu>
+                    </Dropdown>
+                    {/* {user.status === 0 ? (
                       <>
                         <button
                           className="border border-red-500 text-red-500 px-3 py-1 rounded-md hover:bg-red-500 hover:text-white"
@@ -180,22 +195,68 @@ const UserManagementPage = () => {
                       >
                         Unlock
                       </button>
-                    )}
-                  </td>
-                </tr>
+                    )} */}
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
+          // <table className="min-w-full">
+          //   <thead className="sticky top-0 bg-white dark:bg-black">
+          //     <tr>
+          //       <th className="py-3 px-5 text-left w-[8%]"></th>
+          //       <th className="py-3 px-5 text-left w-[24%]">Username</th>
+          //       <th className="py-3 px-5 text-left w-[30%]">Email</th>
+          //       <th className="py-3 px-5 text-center w-[30%]">Actions</th>
+          //     </tr>
+          //   </thead>
+          //   <tbody>
+          //     {currentItems.map((user) => (
+          //       <tr
+          //         key={user.id}
+          //         className="hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors border-b border-gray-700"
+          //       >
+          //         <td className="py-3 px-5"></td>
+          //         <td className="py-3 px-5">{user.username}</td>
+          //         <td className="py-3 px-5">{user.email}</td>
+          //         <td className="py-3 px-5 flex justify-center gap-1">
+          //           {user.status === 0 ? (
+          //             <>
+          //               <button
+          //                 className="border border-red-500 text-red-500 px-3 py-1 rounded-md hover:bg-red-500 hover:text-white"
+          //                 onClick={() => handlePermDisableUser(user.id)}
+          //               >
+          //                 Permanently disable
+          //               </button>
+          //               <button
+          //                 className="border border-yellow-500 text-yellow-500 px-3 py-1 rounded-md hover:bg-yellow-500 hover:text-white"
+          //                 onClick={() => handleTempDisableUser(user.id)}
+          //               >
+          //                 Temporarily disabled
+          //               </button>
+          //             </>
+          //           ) : (
+          //             <button
+          //               className="border border-green-500 text-green-500 px-3 py-1 rounded-md hover:bg-green-500 hover:text-white"
+          //               onClick={() => handleUnlockUser(user.id)}
+          //             >
+          //               Unlock
+          //             </button>
+          //           )}
+          //         </td>
+          //       </tr>
+          //     ))}
+          //   </tbody>
+          // </table>
         )}
       </div>
 
-      <div className="mt-7 flex justify-center items-center gap-3">
+      {/* <div className="mt-7 flex justify-center items-center gap-3">
         <button
-          className={`px-3 py-1 rounded-md border border-gray-500 ${
-            currentPage === 1
-              ? "cursor-not-allowed opacity-50"
-              : "hover:bg-white hover:text-black"
-          }`}
+          className={`px-3 py-1 rounded-md border border-gray-500 ${currentPage === 1
+            ? "cursor-not-allowed opacity-50"
+            : "hover:bg-white hover:text-black"
+            }`}
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
         >
@@ -206,11 +267,10 @@ const UserManagementPage = () => {
             <button
               key={index}
               className={`px-3 py-1 rounded-md border border-gray-500 
-          ${
-            currentPage === index + 1
-              ? "bg-gray-500 text-white"
-              : "hover:bg-gray-300"
-          }`}
+          ${currentPage === index + 1
+                  ? "bg-gray-500 text-white"
+                  : "hover:bg-gray-300"
+                }`}
               onClick={() => setCurrentPage(index + 1)}
             >
               {index + 1}
@@ -238,11 +298,10 @@ const UserManagementPage = () => {
                   <button
                     key={pageNumber}
                     className={`px-3 py-1 rounded-md border border-gray-500 
-                ${
-                  currentPage === pageNumber
-                    ? "bg-gray-500 text-white"
-                    : "hover:bg-gray-300"
-                }`}
+                ${currentPage === pageNumber
+                        ? "bg-gray-500 text-white"
+                        : "hover:bg-gray-300"
+                      }`}
                     onClick={() => setCurrentPage(pageNumber)}
                   >
                     {pageNumber}
@@ -267,11 +326,10 @@ const UserManagementPage = () => {
           </>
         )}
         <button
-          className={`px-3 py-1 rounded-md border border-gray-500 ${
-            currentPage === totalPages
-              ? "cursor-not-allowed opacity-50"
-              : "hover:bg-white hover:text-black"
-          }`}
+          className={`px-3 py-1 rounded-md border border-gray-500 ${currentPage === totalPages
+            ? "cursor-not-allowed opacity-50"
+            : "hover:bg-white hover:text-black"
+            }`}
           onClick={() =>
             setCurrentPage((prev) => Math.min(prev + 1, totalPages))
           }
@@ -279,7 +337,7 @@ const UserManagementPage = () => {
         >
           <i className="fa fa-arrow-right"></i>
         </button>
-      </div>
+      </div> */}
     </div>
   );
 };
