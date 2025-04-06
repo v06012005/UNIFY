@@ -29,6 +29,7 @@ const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
 const Page = () => {
   const [activeTab, setActiveTab] = useState("post");
   const [userPosts, setUserPosts] = useState([]);
+  const [postIsPrivate, setPostIsPrivate] = useState([]);
   const [userReels, setUserReels] = useState([]);
   const [savedItems, setSavedItems] = useState([]);
   const [taggedPosts, setTaggedPosts] = useState([]);
@@ -180,6 +181,17 @@ const Page = () => {
           </button>
           <button
             className={`py-3 text-sm font-medium flex items-center ${
+              activeTab === "postIsPrivate"
+                ? "text-neutral-900 dark:text-white border-t-2 border-neutral-800 dark:border-white"
+                : "text-neutral-900 dark:text-white"
+            }`}
+            onClick={() => setActiveTab("postIsPrivate")}
+          >
+            <i className="fa-solid fa-lock mr-2"></i>
+            PRIVATE
+          </button>
+          <button
+            className={`py-3 text-sm font-medium flex items-center ${
               activeTab === "reel"
                 ? "text-neutral-900 dark:text-white border-t-2 border-neutral-800 dark:border-white"
                 : "text-neutral-900 dark:text-white"
@@ -219,6 +231,7 @@ const Page = () => {
         <ProfileTabs
           activeTab={activeTab}
           username={params.username}
+          postIsPrivate={postIsPrivate}
           userReels={userReels}
           savedItems={savedItems}
           taggedPosts={taggedPosts}

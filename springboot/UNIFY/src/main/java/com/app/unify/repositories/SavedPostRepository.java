@@ -12,7 +12,7 @@ public interface SavedPostRepository extends JpaRepository<SavedPost, String> {
     // Tìm tất cả bài viết đã lưu của một người dùng
     List<SavedPost> findByUserId(String userId);
 
-
+    List<SavedPost> findByUserIdOrderBySavedAtDesc(String userId);
     // Tìm bản ghi SavedPost theo userId và postId
     Optional<SavedPost> findByUserIdAndPostId(String userId, String postId);
 

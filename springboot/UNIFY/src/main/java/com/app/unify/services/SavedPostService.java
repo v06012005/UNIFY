@@ -69,7 +69,7 @@ public class SavedPostService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        return savedPostRepository.findByUserId(user.getId())
+        return savedPostRepository.findByUserIdOrderBySavedAtDesc(user.getId())
                 .stream()
                 .map(savedPostMapper::toSavedPostDTO)
                 .collect(Collectors.toList());
