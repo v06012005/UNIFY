@@ -18,6 +18,7 @@ import com.app.unify.mapper.PostMapper;
 import com.app.unify.repositories.HashtagDetailRepository;
 import com.app.unify.repositories.HashtagRepository;
 import com.app.unify.repositories.PostRepository;
+import com.app.unify.types.Audience;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -120,8 +121,8 @@ public class PostServiceImp implements PostService {
 //	}
 
     @Override
-    public List<PostDTO> getMyPosts(String userId, Integer status) {
-        return mapper.toPostDTOList(postRepository.findMyPosts(userId, status));
+    public List<PostDTO> getMyPosts(String userId, Integer status, Audience audience) {
+        return mapper.toPostDTOList(postRepository.findMyPosts(userId, status, audience));
     }
 
 	@Override

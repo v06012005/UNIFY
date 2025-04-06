@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.app.unify.dto.global.PostDTO;
+import com.app.unify.types.Audience;
 
 public interface PostService {
 
@@ -23,7 +24,7 @@ public interface PostService {
     List<PostDTO> getPostsByDate(LocalDateTime start, LocalDateTime end);
     // List<PostDTO> getMyPosts(String username);
 
-    List<PostDTO> getMyPosts(String userId, Integer status);
+    List<PostDTO> getMyPosts(String userId, Integer status, Audience audience);
 
     List<PostDTO> getPostsByHashtag(String hashtag);
 

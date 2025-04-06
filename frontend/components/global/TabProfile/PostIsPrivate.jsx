@@ -8,7 +8,7 @@ import { Spinner } from "@heroui/react";
 import { addToast, ToastProvider } from "@heroui/toast";
 import { useQuery } from "@tanstack/react-query";
 
-const UserPosts = ({ username }) => {
+const PostIsPrivate = ({ username }) => {
   const [selectedPost, setSelectedPost] = useState(null);
   const { getUserInfoByUsername } = useApp();
   const token = Cookies.get("token");
@@ -39,7 +39,7 @@ const UserPosts = ({ username }) => {
 
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/posts/my?userId=${userData.id}&status=1&audience=PUBLIC`,
+        `${process.env.NEXT_PUBLIC_API_URL}/posts/my?userId=${userData.id}&status=1&audience=PRIVATE`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -61,7 +61,7 @@ const UserPosts = ({ username }) => {
   };
 
   const { data: postUsers = [], isLoading: loading, refetch } = useQuery({
-    queryKey: ["userPosts", username],
+    queryKey: ["postIsPrivate", username],
     queryFn: fetchPosts,
     enabled: !!username?.trim(),
     onError: (error) => {
@@ -266,4 +266,4 @@ const UserPosts = ({ username }) => {
   );
 };
 
-export default React.memo(UserPosts);
+export default React.memo(PostIsPrivate);
