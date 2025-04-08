@@ -124,6 +124,9 @@ public class User {
 	@OneToMany(mappedBy = "user")
 	List<Token> tokens;
 	public Avatar getLatestAvatar() {
+		if (avatars == null) {
+	        return null;
+	    }
         return avatars.stream()
                 .max(Comparator.comparing(Avatar::getChangedDate))
                 .orElse(null);

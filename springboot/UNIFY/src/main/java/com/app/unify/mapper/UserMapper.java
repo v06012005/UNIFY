@@ -17,7 +17,6 @@ import com.app.unify.entities.User;
 
 
 public interface UserMapper {
-
     User toUser(UserDTO userDto);
 
     @Mapping(target = "avatar", source = "user.latestAvatar")
