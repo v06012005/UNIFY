@@ -170,6 +170,7 @@ export const AppProvider = ({ children }) => {
     location: "",
     education: "",
     status: 0,
+    reportApprovalCount: "",
     workAt: "",
     biography: "",
     avatar: { url: "" },

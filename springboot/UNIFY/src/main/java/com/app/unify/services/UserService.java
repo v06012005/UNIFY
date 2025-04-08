@@ -59,7 +59,9 @@ public class UserService {
 
 	public UserDTO createUser(UserDTO userDto) {
 		userDto.setPassword(EncryptPasswordUtil.encryptPassword(userDto.getPassword()));
-
+		if (userDto.getReportApprovalCount() == null) {
+	        userDto.setReportApprovalCount(0);
+	    }
 		Role role = roleRepository.findByName("USER").orElseThrow(() -> new RuntimeException("Role not found !"));
 		userDto.setRoles(Collections.singleton(role));
 
@@ -94,7 +96,9 @@ public class UserService {
 					.orElseThrow(() -> new UserNotFoundException("User not found!"));
 
 			userDto.setRoles(Collections.singleton(role));
+			
 			User updatedUser = userMapper.toUser(userDto);
+			updatedUser.setReportApprovalCount(existingUser.getReportApprovalCount());
 			if (userDto.getAvatar() != null) {
 				Avatar newAvatar = avatarMapper.toAvatar(userDto.getAvatar());
 				newAvatar.setChangedDate(LocalDateTime.now());
