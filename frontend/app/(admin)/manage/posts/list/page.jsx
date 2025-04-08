@@ -1,238 +1,193 @@
 "use client";
-import { useEffect, useState } from "react";
+import React, { useState, useEffect, useCallback, Suspense } from "react";
 import Image from "next/image";
-import avatar from "@/public/images/testreel.jpg";
-import avatar2 from "@/public/images/testAvt.jpg";
-import { Input } from "@/components/ui/input";
-import Link from "next/link";
-import { fetchPostList, fetchPostsByDate } from "@/app/lib/dal";
-import { Autocomplete, AutocompleteItem, Spinner } from "@heroui/react";
-import { DateRangePicker } from "@heroui/react";
-import { Input as HeroInput } from "@heroui/react";
-import { Button } from "@heroui/react";
-import { cn } from "@/lib/utils";
+import Avatar from "@/public/images/testAvt.jpg";
+import filterLightIcon from "@/public/images/filter_lightmode.png";
+import filterDarkIcon from "@/public/images/filter_darkmode.png";
+import { useTheme } from "next-themes";
+import Cookies from "js-cookie";
+import Error from "next/error";
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Input } from "@heroui/react";
+import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from "@heroui/react";
+import TableLoading from "@/components/loading/TableLoading";
 
 
-const Caption = ({ text, maxLength = 100 }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const toggleExpanded = () => setIsExpanded(!isExpanded);
-
-  return (
-    <div className="line-clamp-3">
-      {isExpanded ? text : `${text.slice(0, maxLength)}...`}
-      <button
-        onClick={toggleExpanded}
-        className="text-gray-500 font-semibold ml-2"
-      >
-        {isExpanded ? "Less" : "More"}
-      </button>
-    </div>
-  );
-};
 
 
-export const animals = [
-  { label: "By date", key: "date", description: "Filtering all posts from a specific range.", startContent: <i className="fa-solid fa-calendar-days"></i> },
-  { label: "By user", key: "user", description: "Fetching posts from a specific user.", startContent: <i className="fa-solid fa-user"></i> },
-  // { label: "By audience", key: "audience", description: "See all posts with a specific audience type.", startContent: <i className="fa-solid fa-bullhorn"></i> }
-];
-
-const Postlist = () => {
-  const [popupState, setPopupState] = useState({});
+const UserManagementPage = () => {
+  const { theme, setTheme } = useTheme();
+  const [loading, setLoading] = useState(true);
+  const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const postsPerPage = 6;
-  const [posts, setPosts] = useState([]);
-  const [filter, setFilter] = useState("");
-  const [start, setStart] = useState("");
-  const [end, setEnd] = useState("");
-  const [isEnabled, setIsEnabled] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  const togglePopup = (postId) => {
-    setPopupState((prev) => ({
-      ...prev,
-      [postId]: !prev[postId],
-    }));
-  };
-
-  const handleDateChange = (date) => {
-    const startDay = date.start?.day < 10 ? "0" + date.start?.day : date.start?.day;
-    const endDay = date.end?.day < 10 ? "0" + date.end?.day : date.end?.day;
-    const startMonth = date.start?.month < 10 ? "0" + date.start?.month : date.start?.month;
-    const endMonth = date.end?.month < 10 ? "0" + date.end?.month : date.end?.month;
-
-    const startDate = date.start?.year + "-" + startMonth + "-" + startDay;
-    const endDate = date.end?.year + "-" + endMonth + "-" + endDay;
-    setStart(startDate);
-    setEnd(endDate);
-    setLoading(true);
-  }
+  const itemsPerPage = 9;
 
   useEffect(() => {
-    async function getPostList() {
-      if (filter === "date" && start !== "" && end !== "" && start.length === 10 && end.length === 10) {
-        const postlist = await fetchPostsByDate(start, end);
-        setPosts(postlist);
-        setLoading(false);
-      } else {
-        setPosts([]);
+    const fetchUsers = async () => {
+      setLoading(true);
+      try {
+        const token = Cookies.get("token");
+        const response = await fetch("http://localhost:8080/users", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+        if (!response.ok) {
+          throw new Error("Không có quyền truy cập hoặc lỗi hệ thống");
+        }
+        const data = await response.json();
+        if (data.length === 0) {
+          console.warn("API không trả về người dùng nào.");
+        }
+        setUsers(data);
+        setFilteredUsers(data);
+      } catch (error) {
+        console.error("Lỗi khi tải danh sách người dùng: ", error);
+      } finally {
         setLoading(false);
       }
+    };
+    fetchUsers();
+  }, []);
+
+  const handleTempDisableUser = useCallback(async (userId) => {
+    try {
+      const token = Cookies.get("token");
+      await fetch(`http://localhost:8080/users/tempDisable/${userId}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      setUsers((prev) =>
+        prev.map((user) => (user.id === userId ? { ...user, status: 2 } : user))
+      );
+    } catch (error) {
+      console.error("Lỗi khi xóa người dùng: ", error);
     }
-    getPostList();
+  }, []);
 
-
-    if (end !== "" && start !== "" && start?.length === 10 && end?.length === 10 && !isEnabled) {
-      setIsEnabled(true);
-    } else {
-      setIsEnabled(false)
+  const handlePermDisableUser = useCallback(async (userId) => {
+    try {
+      const token = Cookies.get("token");
+      await fetch(`http://localhost:8080/users/permDisable/${userId}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      setUsers((prev) =>
+        prev.map((user) => (user.id === userId ? { ...user, status: 1 } : user))
+      );
+    } catch (error) {
+      console.error("Lỗi khi xóa người dùng: ", error);
     }
-  }, [start, end, filter])
+  }, []);
 
-  // Tạo dữ liệu mẫu
-  // const posts = Array.from({ length: 24 }, (_, index) => ({
-  //   id: index + 1,
-  //   avatar,
-  //   name: `User${index + 1}`,
-  //   time: `${index + 1}h`,
-  //   image: avatar2,
-  // }));
+  const handleUnlockUser = useCallback(async (userId) => {
+    try {
+      const token = Cookies.get("token");
+      await fetch(`http://localhost:8080/users/unlock/${userId}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      setUsers((prev) =>
+        prev.map((user) => (user.id === userId ? { ...user, status: 0 } : user))
+      );
+    } catch (error) {
+      console.error("Lỗi khi xóa người dùng: ", error);
+    }
+  }, []);
 
-  // Tính toán vị trí bài viết dựa trên trang hiện tại
-  const indexOfLastPost = currentPage * postsPerPage;
-  const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = posts?.slice(indexOfFirstPost, indexOfLastPost);
+  useEffect(() => {
+    setFilteredUsers(
+      users.filter((user) =>
+        user.username?.toLowerCase().includes(search.toLowerCase())
+      )
+    );
+  }, [search, users]);
 
-  // Số trang
-  const totalPages = Math.ceil(posts?.length / postsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
+
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
 
   return (
-    <div className="m-4">
-      <div className="w-full flex justify-around">
-        <div className="m-3 flex">
-          <h1 className="font-bold text-3xl pr-96">Post Manager</h1>
-          <Input
-            placeholder="Search..."
-            className="w-[600px] h-12 dark:border-white font-bold"
-          />
+    <div className="py-10 px-6 h-screen">
+      <div className="mx-auto mb-3 flex justify-between items-center pr-5">
+        <div className="pl-4 w-1/2">
+          <h1 className={`text-4xl font-black uppercase`}>Reported Posts</h1>
+          <p className="text-gray-500">Manage all reports about posts that violated UNIFY's policies.</p>
         </div>
-
-      </div>
-      <div className="ml-8 mt-4 flex">
-        <Autocomplete onSelectionChange={(newVal) => { setFilter(newVal) }}
-          allowsCustomValue
-          className="max-w-xs"
-          defaultItems={animals}
-          label="Post filtering"
-          labelPlacement="outside"
-          placeholder="Select filtering criteria"
-          variant="bordered"
-        >
-          {(item) => <AutocompleteItem startContent={item.startContent} key={item.key}>{item.label}</AutocompleteItem>}
-        </Autocomplete>
-        {filter === "date" && (
-          <DateRangePicker onChange={(val) => handleDateChange(val)} labelPlacement="outside" className="max-w-xs ml-3" label="Date range" />
-        )}
-        {filter === "user" && (
-          <HeroInput label="Email" type="email" variant="flat" labelPlacement="outside" placeholder="Enter user's email..." className="max-w-xs ml-3" />
-        )}
-      </div>
-      {loading && (
-        <div className="flex justify-center items-center h-screen">
-          <Spinner labelColor="primary" color="primary" label="Processing, please wait..." variant="simple" />
-        </div>
-      )}
-      <div className="grid grid-cols-3 gap-6 p-10">
-        {currentPosts?.map((post) => (
-          <div key={post.id} className="p-4  ">
-            <div className="flex items-center w-full mb-4 relative">
-              <Image
-                src={post.user?.avatar ? post.user.avatar : avatar}
-                alt="Avatar"
-                className="w-12 h-12 rounded-full"
-              />
-              <div className="ml-3">
-                <span className="font-bold text-base">{post.user.username}</span>
-                <span className="text-sm text-gray-400">• {post.postedAt}</span>
-              </div>
-              <div className="absolute right-0">
-                <i
-                  className="fa-solid fa-ellipsis hover:opacity-50 focus:opacity-50 transition cursor-pointer"
-                  onClick={() => togglePopup(post.id)}
-                ></i>
-                {popupState[post.id] && (
-                  <div
-                    id="overmore"
-                    className="absolute right-0 top-full mt-2 w-44 backdrop-blur-xl p-2 rounded-lg shadow-lg text-white  "
-                  >
-                    <ul className="text-sm w">
-                      <Link href={`${post.id}`}>
-                        <li className="cursor-pointer  hover:bg-zinc-800  font-bold  text-left p-2 rounded-sm">
-                          Show detail
-                        </li>
-                      </Link>
-                    </ul>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <Image
-              src={post.media[0]?.url ? post.media[0].url : avatar2}
-              alt="Main display"
-              width={100}
-              height={120}
-              className="rounded-lg w-full shadow-lg object-cover"
-            />
-            <div className="mt-4">
-              <Caption text={post.captions} />
-            </div>
-          </div>
-        ))}
-      </div>
-      {/* {///////} */}
-      <div className="flex justify-center items-center  ">
-        {currentPosts?.length > 0 && (
-          <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            className={`px-4 py-2 mx-1 rounded-md ${currentPage === 1
-              ? "border hover:cursor-not-allowed"
-              : "dark:bg-white dark:text-black dark:hover:bg-black dark:hover:text-white bg-black text-white hover:bg-white hover:text-black "
-              }`}
-            disabled={currentPage === 1}
-          >
-            <i className="fa fa-arrow-left"></i>
-          </button>
-        )}
-        {Array.from({ length: totalPages }, (_, index) => (
-          <button
-            key={index}
-            onClick={() => setCurrentPage(index + 1)}
-            className={`px-4 py-2 mx-1 rounded-md ${currentPage === index + 1
-              ? "border hover:cursor-not-allowed"
-              : "dark:bg-white dark:text-black dark:hover:bg-black dark:hover:text-white bg-black text-white hover:bg-white hover:border hover:text-black "
-              }`}
-          >
-            {index + 1}
-          </button>
-        ))}
-        {currentPosts?.length > 0 && (
-          <button
-            onClick={() =>
-              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+        <div className="flex items-center w-1/2">
+          <Input label="" className="w-full"
+            labelPlacement="inside"
+            placeholder="Enter Post ID or Hashtags"
+            startContent={
+              <i className="fa-solid fa-magnifying-glass"></i>
             }
-            className={`px-4 py-2 mx-1 rounded-md ${currentPage === totalPages
-              ? "border hover:cursor-not-allowed"
-              : "dark:bg-white dark:text-black dark:hover:bg-black dark:hover:text-white bg-black text-white hover:bg-white hover:text-black "
-              }`}
-            disabled={currentPage === totalPages}
-          >
-            <i className="fa fa-arrow-right"></i>
-          </button>
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            type="text" />
+          {/* <input
+            type="text"
+            className="bg-white border border-gray-500 text-black px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-black dark:bg-black dark:text-white"
+            placeholder="Search users..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          /> */}
+        </div>
+      </div>
+
+      <div className="overflow-auto h-[calc(73vh-0.7px)]">
+        {loading ? (
+          // <p className="text-center text-gray-500">Loading users...</p>
+          <TableLoading tableHeaders={["No.", "Username", "Email", "Report Approval Count", "Actions"]} />
+        ) : (
+          <Table className="rounded-lg" isStriped aria-label="">
+            <TableHeader>
+              <TableColumn>No.</TableColumn>
+              <TableColumn>Username</TableColumn>
+              <TableColumn>Email</TableColumn>
+              <TableColumn>Report Aproval Count</TableColumn>
+              <TableColumn>Actions</TableColumn>
+            </TableHeader>
+            <TableBody>
+              {currentItems.map((user, index) => (
+                <TableRow key={user.id}>
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{user.username}</TableCell>
+                  <TableCell>{user.email}</TableCell>
+                  <TableCell>{user.reportApprovalCount}</TableCell>
+                  <TableCell>
+                    <Dropdown>
+                      <DropdownTrigger>
+                        <i className="fa-solid fa-ellipsis-vertical hover:bg-gray-200 py-2 px-4 rounded-full hover:cursor-pointer"></i>
+                      </DropdownTrigger>
+                      <DropdownMenu aria-label="Action event example" onAction={(key) => alert(key)}>
+                        <DropdownItem key="view"><i className="fa-solid fa-eye"></i> View Profile</DropdownItem>
+                        <DropdownItem key="temp" className="text-warning-500" color="warning"><i className="fa-solid fa-eye-slash"></i> Temporarily Disable</DropdownItem>
+                        <DropdownItem key="perm" className="text-danger" color="danger"><i className="fa-solid fa-user-slash"></i> Permanently Disable</DropdownItem>
+                      </DropdownMenu>
+                    </Dropdown>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         )}
       </div>
     </div>
   );
 };
 
-export default Postlist;
+export default UserManagementPage;

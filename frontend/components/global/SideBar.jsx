@@ -9,6 +9,7 @@ import NotificationModal from "@/components/global/NotificationModal";
 import UnifyLogoIcon from "./UnifyLogoIcon";
 import { useApp } from "@/components/provider/AppProvider";
 import { useParams, useRouter } from "next/navigation";
+import { Avatar } from "@heroui/react";
 const NavButton = React.memo(function NavButton({
   iconClass,
   href = "",
@@ -55,6 +56,13 @@ const SideBar = () => {
     }
   };
 
+  const handleReload = (e) => {
+    if (window.location.pathname === '/') {
+      e.preventDefault();
+      window.location.reload();
+    }
+  };
+
   const handleClickOutsideSearch = (e) => {
     if (
       searchComponentRef.current &&
@@ -89,11 +97,13 @@ const SideBar = () => {
           />
           <ul className="text-2xl flex flex-col justify-center grow w-full">
             <li className="h-16  ">
-              <NavButton
-                title="Home"
-                href="/"
-                iconClass={"fa-solid fa-house"}
-              />
+              <Link
+                title={"Home"}
+                href={"/"} onClick={handleReload}
+                className={`w-full dark:hover:text-black dark:hover:bg-gray-200 flex h-full items-center text-center transition delay-100 ease-in-out duration-100 hover:bg-[#D9D9D9]`}
+              >
+                <i className={`fa-solid fa-house w-full`}></i>
+              </Link>
             </li>
             <li className="h-16">
               <span onClick={toggleSearch} ref={toggleRef}>
@@ -149,11 +159,7 @@ const SideBar = () => {
                   href={`/profile/${user.username}`}
                   className="w-full flex h-full items-center"
                 >
-                  <Image
-                    src={avatar}
-                    alt="User profile image"
-                    className="h-8 w-8 mx-auto rounded-full"
-                  />
+                  <Avatar className="mx-auto" src="/images/test1.png" />
                 </Link>
               )}
             </li>
