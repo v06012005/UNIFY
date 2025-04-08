@@ -179,8 +179,6 @@ export const fetchPosts = async () => {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      cache: "force-cache",
-      next: { revalidate: 3600 },
     });
 
     if (!response.ok) {
