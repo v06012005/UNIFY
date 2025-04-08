@@ -7,8 +7,9 @@ import org.mapstruct.Mapper;
 import com.app.unify.dto.global.PostDTO;
 import com.app.unify.dto.response.PostsDataResponse;
 import com.app.unify.entities.Post;
+import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {UserMapper.class, AvatarMapper.class})
 public interface PostMapper {
 
     Post toPost(PostDTO postDTO);

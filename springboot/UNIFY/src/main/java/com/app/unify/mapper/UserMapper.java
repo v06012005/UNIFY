@@ -11,32 +11,22 @@ import org.mapstruct.MappingTarget;
 import com.app.unify.dto.global.UserDTO;
 import com.app.unify.entities.Avatar;
 import com.app.unify.entities.User;
+import org.springframework.beans.factory.annotation.Autowired;
 
 
 @Mapper(componentModel = "spring", uses = { AvatarMapper.class })
 
 
-public interface UserMapper {
-    User toUser(UserDTO userDto);
+public abstract class UserMapper {
 
-    @Mapping(target = "avatar", source = "user.latestAvatar")
-    UserDTO toUserDTO(User user);
+    @Autowired
+    protected AvatarMapper avatarMapper;
 
-    @AfterMapping
-    default void linkAvatarsToUser(@MappingTarget User user, UserDTO userDto, @Context AvatarMapper avatarMapper) {
-        if (userDto.getAvatar() != null) {
-            Avatar existingAvatar = user.getAvatars().stream()
-                    .filter(a -> a.getUrl().equals(userDto.getAvatar().getUrl()))
-                    .findFirst()
-                    .orElse(null);
+    public abstract User toUser(UserDTO userDto);
 
-            if (existingAvatar == null) {
-                Avatar newAvatar = avatarMapper.toAvatar(userDto.getAvatar());
-                newAvatar.setChangedDate(LocalDateTime.now());
-                user.addAvatar(newAvatar);
-            } else {
-                existingAvatar.setChangedDate(LocalDateTime.now());
-            }
-        }
+    @Mapping(target = "avatar", expression = "java(avatarMapper.toAvatarDTO(user.getLatestAvatar()))")
+    public abstract UserDTO toUserDTO(User user);
+
+
     }
-}
+
