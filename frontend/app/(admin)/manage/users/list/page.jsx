@@ -122,8 +122,11 @@ const UserManagementPage = () => {
 
   return (
     <div className="py-10 px-6 h-screen w-[78rem]">
-      <div className="max-w-7xl mx-auto mb-10 flex justify-between items-center">
-        <h1 className="text-4xl font-bold">Reported Users</h1>
+      <div className="max-w-7xl mx-auto mb-3 flex justify-between items-center">
+        <div className="pl-4">
+          <h1 className="text-4xl font-bold">Reported Users</h1>
+          <p className="text-gray-500">Manage all reports about users who violated UNIFY's policies.</p>
+        </div>
         <div className="flex items-center gap-3">
           <input
             type="text"
@@ -165,12 +168,9 @@ const UserManagementPage = () => {
                         <i className="fa-solid fa-ellipsis-vertical hover:bg-gray-200 py-2 px-4 rounded-full hover:cursor-pointer"></i>
                       </DropdownTrigger>
                       <DropdownMenu aria-label="Action event example" onAction={(key) => alert(key)}>
-                        <DropdownItem key="new">New file</DropdownItem>
-                        <DropdownItem key="copy">Copy link</DropdownItem>
-                        <DropdownItem key="edit">Edit file</DropdownItem>
-                        <DropdownItem key="delete" className="text-danger" color="danger">
-                          Delete file
-                        </DropdownItem>
+                        <DropdownItem key="view"><i className="fa-solid fa-eye"></i> View Profile</DropdownItem>
+                        <DropdownItem key="temp" className="text-warning-500" color="warning"><i className="fa-solid fa-eye-slash"></i> Temporarily Disable</DropdownItem>
+                        <DropdownItem key="perm" className="text-danger" color="danger"><i className="fa-solid fa-user-slash"></i> Permanently Disable</DropdownItem>
                       </DropdownMenu>
                     </Dropdown>
                     {/* {user.status === 0 ? (

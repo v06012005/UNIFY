@@ -27,6 +27,7 @@ import com.app.unify.services.LikedPostService;
 import com.app.unify.services.MediaService;
 import com.app.unify.services.PostCommentService;
 import com.app.unify.services.PostService;
+import com.app.unify.types.Audience;
 
 import lombok.RequiredArgsConstructor;
 
@@ -105,8 +106,8 @@ public class PostController {
     // }
 
     @GetMapping("/my")
-    public ResponseEntity<List<PostDTO>> getMyPosts(@RequestParam String userId, @RequestParam Integer status) {
-        List<PostDTO> posts = postService.getMyPosts(userId, status);
+    public ResponseEntity<List<PostDTO>> getMyPosts(@RequestParam String userId, @RequestParam Integer status, @RequestParam Audience audience) {
+        List<PostDTO> posts = postService.getMyPosts(userId, status, audience);
         return ResponseEntity.ok(posts);
     }
 

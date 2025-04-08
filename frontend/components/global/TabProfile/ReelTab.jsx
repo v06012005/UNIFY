@@ -52,7 +52,7 @@ const UserReels = ({ username }) => {
       const userData = await getUserInfoByUsername(username);
       if (userData) {
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/posts/my?userId=${userData.id}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/posts/my?userId=${userData.id}&status=1&audience=PUBLIC`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setPosts(response.data || []);
