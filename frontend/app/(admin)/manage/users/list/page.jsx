@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, Suspense } from "react";
 import Image from "next/image";
 import Avatar from "@/public/images/testAvt.jpg";
 import filterLightIcon from "@/public/images/filter_lightmode.png";
@@ -7,8 +7,10 @@ import filterDarkIcon from "@/public/images/filter_darkmode.png";
 import { useTheme } from "next-themes";
 import Cookies from "js-cookie";
 import Error from "next/error";
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from "@heroui/react";
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Input } from "@heroui/react";
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from "@heroui/react";
+import TableLoading from "@/components/loading/TableLoading";
+import { getUser } from "@/app/lib/dal";
 
 
 
@@ -21,6 +23,7 @@ const UserManagementPage = () => {
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
+
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -123,37 +126,35 @@ const UserManagementPage = () => {
   return (
     <div className="py-10 px-6 h-screen w-[78rem]">
       <div className="max-w-7xl mx-auto mb-3 flex justify-between items-center">
-        <div className="pl-4">
+        <div className="pl-4 w-1/2">
           <h1 className="text-4xl font-bold">Reported Users</h1>
           <p className="text-gray-500">Manage all reports about users who violated UNIFY's policies.</p>
         </div>
-        <div className="flex items-center gap-3">
-          <input
-            type="text"
-            className="bg-white border border-gray-500 text-black px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-black dark:bg-black dark:text-white"
-            placeholder="Search users..."
+        <div className="flex items-center w-1/2">
+          <Input label="" className="w-full"
+            labelPlacement="inside"
+            placeholder="Enter email"
+            startContent={
+              <i className="fa-solid fa-magnifying-glass"></i>
+            }
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-          />
-          <Image
-            src={theme === "dark" ? filterDarkIcon : filterLightIcon}
-            alt="filter"
-            className={"size-6 cursor-pointer"}
-          />
+            type="text" />
         </div>
       </div>
 
       <div className="overflow-auto h-[calc(73vh-0.7px)]">
         {loading ? (
-          <p className="text-center text-gray-500">Loading users...</p>
+          // <p className="text-center text-gray-500">Loading users...</p>
+          <TableLoading tableHeaders={["No.", "Username", "Email", "Report Approval Count", "Actions"]} />
         ) : (
-          <Table isStriped aria-label="">
+          <Table className="rounded-lg" isStriped aria-label="">
             <TableHeader>
-              <TableColumn>No.</TableColumn>
-              <TableColumn>Username</TableColumn>
-              <TableColumn>Email</TableColumn>
-              <TableColumn>Report Aproval Count</TableColumn>
-              <TableColumn>Actions</TableColumn>
+              <TableColumn className="text-md">No.</TableColumn>
+              <TableColumn className="text-md">Username</TableColumn>
+              <TableColumn className="text-md">Email</TableColumn>
+              <TableColumn className="text-md">Report Approval Count</TableColumn>
+              <TableColumn className="text-md">Actions</TableColumn>
             </TableHeader>
             <TableBody>
               {currentItems.map((user, index) => (
@@ -173,29 +174,6 @@ const UserManagementPage = () => {
                         <DropdownItem key="perm" className="text-danger" color="danger"><i className="fa-solid fa-user-slash"></i> Permanently Disable</DropdownItem>
                       </DropdownMenu>
                     </Dropdown>
-                    {/* {user.status === 0 ? (
-                      <>
-                        <button
-                          className="border border-red-500 text-red-500 px-3 py-1 rounded-md hover:bg-red-500 hover:text-white"
-                          onClick={() => handlePermDisableUser(user.id)}
-                        >
-                          Permanently disable
-                        </button>
-                        <button
-                          className="border border-yellow-500 text-yellow-500 px-3 py-1 rounded-md hover:bg-yellow-500 hover:text-white"
-                          onClick={() => handleTempDisableUser(user.id)}
-                        >
-                          Temporarily disabled
-                        </button>
-                      </>
-                    ) : (
-                      <button
-                        className="border border-green-500 text-green-500 px-3 py-1 rounded-md hover:bg-green-500 hover:text-white"
-                        onClick={() => handleUnlockUser(user.id)}
-                      >
-                        Unlock
-                      </button>
-                    )} */}
                   </TableCell>
                 </TableRow>
               ))}

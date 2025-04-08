@@ -12,16 +12,17 @@ import ShareButton from "./ShareButton";
 import CommentForm from "./CommentForm";
 import PostVideo from "./PostVideo";
 import { fetchPosts } from "@/app/lib/dal";
-import { Spinner } from "@heroui/react";
+import { Avatar, Spinner } from "@heroui/react";
 import { useApp } from "../provider/AppProvider";
 import { useQuery } from "@tanstack/react-query";
 import Slider from "./Slider";
 
-const User = ({ href = "", username = "", firstname = "", lastname = "" }) => {
+const User = ({ href = "", username = "", firstname = "", lastname = "", avatar = "" }) => {
   return (
     <Link href={href}>
       <div className="flex mb-4">
-        <Image src={avatar} alt="Avatar" className="rounded-full w-14 h-14" />
+        <Avatar className="" size="lg" src={avatar} />
+        {/* <Image src={avatar} alt="Avatar" className="rounded-full w-14 h-14" /> */}
         <div className="ml-5">
           <p className="my-auto text-lg font-bold">@{username}</p>
           <p className="my-auto">
@@ -87,6 +88,7 @@ const Post = () => {
       {posts.map((post) => (
         <div className="w-3/4 mb-8 mx-auto pb-8" key={post.id}>
           <User
+            avatar={post?.user?.avatar?.url}
             href="/profile"
             username={post.user?.username}
             firstname={post.user?.firstName}
