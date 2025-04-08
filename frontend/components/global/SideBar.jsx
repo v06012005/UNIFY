@@ -156,15 +156,17 @@ const SideBar = () => {
             <li className="h-16 flex justify-center items-center">
               {user && (
                 <Link title="Your profile" href={`/profile/${user.username}`} className="">
-                  <div className="w-10 h-10 rounded-full border-2 border-white overflow-hidden ">
-                    <Image
-                      src={user?.avatar?.url}
-                      alt="Avatar"
-                      width={48}
-                      height={48}
-                      className="object-cover w-full h-full"
-                    />
-                  </div>
+                {user?.avatar?.url && (
+  <div className="w-12 h-12 rounded-full border-2 border-gray-300 overflow-hidden">
+    <Image
+      src={user.avatar.url}
+      alt="Avatar"
+      width={48}
+      height={48}
+      className="object-cover w-full h-full"
+    />
+  </div>
+)}
                 </Link>
               )}
             </li>

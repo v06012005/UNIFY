@@ -22,15 +22,17 @@ import { addToast, ToastProvider } from "@heroui/toast";
 const User = ({ user }) => {
   return (
     <div className="flex w-full items-center">
-      <div className="w-14 h-14 rounded-full border-2 border-gray-300 overflow-hidden">
-        <Image
-          src={user?.avatar?.url}
-          alt="Avatar"
-          width={48}
-          height={48}
-          className="object-cover w-full h-full"
-        />
-      </div>
+     {user?.avatar?.url && (
+  <div className="w-14 h-14 rounded-full border-2 border-gray-300 overflow-hidden">
+    <Image
+      src={user.avatar.url}
+      alt="Avatar"
+      width={48}
+      height={48}
+      className="object-cover w-full h-full"
+    />
+  </div>
+)}
       <div className="ml-5">
         <p className="text-lg font-bold">{user?.username}</p>
         <p>{user?.firstName + " " + user?.lastName}</p>
@@ -38,7 +40,6 @@ const User = ({ user }) => {
     </div>
   );
 };
-
 
 const Page = () => {
   const { openModal } = useModal();
