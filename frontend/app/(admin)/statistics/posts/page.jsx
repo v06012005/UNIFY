@@ -1,145 +1,219 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import Image from "next/image";
-import Avatar from "@/public/images/testAvt.jpg";
-import filterIcon from "@/public/images/filter_lightmode.png";
-const dummyUsers = Array.from({ length: 50 }, (_, index) => ({
-  id: index + 1,
-  name: `User ${index + 1}`,
-  email: `user${index + 1}@example.com`,
-  avatar: Avatar,
-}));
+import React from "react";
+import dynamic from "next/dynamic";
+import { useTheme } from "next-themes";
+import { Tabs, Tab, Card, CardBody } from "@heroui/react";
 
-const UserManagementPage = () => {
-  const [users, setUsers] = useState([]);
-  const [filteredUsers, setFilteredUsers] = useState([]);
-  const [search, setSearch] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 20;
+const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
-  useEffect(() => {
-    setUsers(dummyUsers);
-    setFilteredUsers(dummyUsers);
-  }, []);
+const UserStatisticsPage = () => {
+  const { theme, setTheme } = useTheme();
 
-  useEffect(() => {
-    const filtered = users.filter((user) =>
-      user.name.toLowerCase().includes(search.toLowerCase())
-    );
-    setFilteredUsers(filtered);
-    setCurrentPage(1);
-  }, [search, users]);
+  const series = [
+    {
+      name: "New Users",
+      data: [10, 41, 35, 51, 49, 62, 69, 91, 148, 75, 175, 61],
+    },
+    {
+      name: "Returning Users",
+      data: [5, 25, 15, 30, 24, 35, 50, 70, 90, 74, 93, 28],
+    },
+  ];
 
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
-
-  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+  const options = {
+    chart: {
+      type: "line",
+      toolbar: { show: true },
+      zoom: { enabled: true },
+      foreColor: theme === "dark" ? "#fff" : "#000",
+    },
+    xaxis: {
+      categories: [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ],
+      labels: {
+        style: {
+          colors: theme === "dark" ? "#fff" : "#000",
+          fontSize: "13px",
+        },
+      },
+      title: {
+        text: "Months",
+        style: { color: `${theme === "dark" ? "#fff" : "#000"}` },
+      },
+    },
+    yaxis: {
+      title: {
+        text: "Users",
+        style: { color: `${theme === "dark" ? "#fff" : "#000"}` },
+      },
+      labels: {
+        style: {
+          colors: `${theme === "dark" ? "#fff" : "#000"}`,
+          fontSize: "12px",
+        },
+      },
+    },
+    stroke: {
+      curve: "smooth",
+      width: 2,
+    },
+    colors: ["#1E90FF", "#FF5733"],
+    tooltip: {
+      theme: "dark",
+    },
+    legend: {
+      position: "top",
+      labels: {
+        colors: theme === "dark" ? "#fff" : "#000",
+        useSeriesColors: false,
+      },
+    },
+  };
 
   return (
-    <div className="py-5 px-7 h-screen w-[78rem]">
-      <div className="w-full flex justify-between items-center">
-        <h1 className="text-2xl font-black">User Management</h1>
-        <button className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-black">
-          Add User
-        </button>
+    <div className="min-h-screen bg-gray-50 py-10 px-6 dark:bg-black">
+      <div className="max-w-7xl mx-auto mb-3">
+        <h1 className="text-4xl font-bold text-gray-800 dark:text-white">
+          Post Statistics
+        </h1>
       </div>
 
-      <div className="mt-5 flex items-center gap-4">
-        <input
-          type="text"
-          className="border border-gray-300 px-4 py-2 rounded-md w-full"
-          placeholder="Search users..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <Image
-          src={filterIcon}
-          alt="filter"
-          className={"size-7 justify-self-center mr-3 hover:cursor-pointer"}
-        />
-      </div>
-
-      <div className="mt-5">
-        <div className={`overflow-auto max-h-[525px] shadow-md rounded-lg`}>
-          <table className="min-w-full bg-white table-auto">
-            <thead className="shadow-inner sticky top-0 bg-white">
-              <tr>
-                <th className="py-3 px-5 text-left w-[7%]"></th>
-                <th className="py-3 px-5 text-left w-[25%]">Name</th>
-                <th className="py-3 px-5 text-left w-[43%]">Email</th>
-                <th className="py-3 px-5 text-center w-1/6">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {currentItems.map((user) => (
-                <tr key={user.id} className="hover:bg-gray-100">
-                  <td className="py-3 px-5">
-                    <Image
-                      src={user.avatar}
-                      alt={user.name}
-                      className="w-12 h-12 rounded-full"
-                    />
-                  </td>
-                  <td className="py-3 px-5">{user.name}</td>
-                  <td className="py-3 px-5">{user.email}</td>
-                  <td className="py-3 px-5 text-center">
-                    <button className="border border-green-500 text-green-500 px-3 py-1 rounded-md hover:bg-green-500 hover:text-white mr-2">
-                      Edit
-                    </button>
-                    <button className="border border-red-500 text-red-500 px-3 py-1 rounded-md hover:bg-red-500 hover:text-white">
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Pagination */}
-      <div className="mt-7 flex items-center gap-3">
-        <button
-          className={`px-3 py-1 rounded-md ${
-            currentPage === 1
-              ? "border hover:cursor-not-allowed"
-              : "bg-gray-600 text-white hover:bg-black"
-          }`}
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
-        >
-          <i className="fa fa-arrow-left"></i>
-        </button>
-        {[...Array(totalPages)].map((_, index) => (
-          <button
-            key={index}
-            className={`px-3 py-1 rounded-md ${
-              currentPage === index + 1
-                ? "bg-black text-white"
-                : "bg-gray-300 hover:bg-gray-400"
-            }`}
-            onClick={() => setCurrentPage(index + 1)}
+      <div className="flex w-full flex-col">
+        <Tabs aria-label="Options" color="primary" variant="bordered">
+          <Tab
+            key="table"
+            title={
+              <div className="flex items-center space-x-2">
+                <span>Table</span>
+              </div>
+            }
           >
-            {index + 1}
-          </button>
-        ))}
-        <button
-          className={`px-3 py-1 rounded-md ${
-            currentPage === totalPages
-              ? "border hover:cursor-not-allowed"
-              : "bg-gray-600 text-white hover:bg-black"
-          }`}
-          onClick={() =>
-            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-          }
-          disabled={currentPage === totalPages}
-        >
-          <i className="fa fa-arrow-right"></i>
-        </button>
+            <div className="bg-white shadow-lg rounded-lg p-6 max-w-7xl mx-auto dark:bg-gray-800">
+              <h2 className="text-xl font-semibold text-gray-600 mb-5 dark:text-white">
+                Recent Users
+              </h2>
+              <table className="min-w-full border-collapse table-auto rounded-none">
+                <thead>
+                  <tr className="dark:bg-slate-600 text-left">
+                    <th className="py-3 px-5 text-sm font-semibold text-gray-600 dark:text-white">
+                      Name
+                    </th>
+                    <th className="py-3 px-5 text-sm font-semibold text-gray-600 dark:text-white">
+                      Email
+                    </th>
+                    <th className="py-3 px-5 text-sm font-semibold text-gray-600 dark:text-white">
+                      Date Registered
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    {
+                      name: "John Doe",
+                      email: "johndoe@example.com",
+                      date: "2025-01-18",
+                    },
+                    {
+                      name: "Jane Smith",
+                      email: "janesmith@example.com",
+                      date: "2025-01-17",
+                    },
+                    {
+                      name: "Sam Wilson",
+                      email: "samwilson@example.com",
+                      date: "2025-01-15",
+                    },
+                  ].map((user, index) => (
+                    <tr
+                      key={index}
+                      className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                        } hover:bg-gray-100 transition-colors`}
+                    >
+                      <td className="py-3 px-5 text-sm text-gray-700">{user.name}</td>
+                      <td className="py-3 px-5 text-sm text-gray-700">
+                        {user.email}
+                      </td>
+                      <td className="py-3 px-5 text-sm text-gray-700">{user.date}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Tab>
+          <Tab
+            key="chart"
+            title={
+              <div className="flex items-center space-x-2">
+                <span>Chart</span>
+              </div>
+            }>
+            <Card>
+              <CardBody>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mx-auto mb-10">
+                  <div className="bg-white shadow-lg rounded-lg p-6 border-l-4 border-blue-500 dark:bg-gray-800">
+                    <h2 className="text-lg font-semibold text-gray-600 dark:text-white">
+                      Total Users
+                    </h2>
+                    <p className="text-3xl font-bold text-blue-500 mt-3">1,245</p>
+                    <p className="text-sm text-gray-500 mt-1 dark:text-gray-300">
+                      All registered users
+                    </p>
+                  </div>
+                  <div className="bg-white shadow-lg rounded-lg p-6 border-l-4 border-green-500 dark:bg-gray-800">
+                    <h2 className="text-lg font-semibold text-gray-600 dark:text-white">
+                      New Users This Month
+                    </h2>
+                    <p className="text-3xl font-bold text-green-500 mt-3">128</p>
+                    <p className="text-sm text-gray-500 mt-1 dark:text-gray-300">
+                      Compared to last month
+                    </p>
+                  </div>
+                  <div className="bg-white shadow-lg rounded-lg p-6 border-l-4 border-yellow-500 dark:bg-gray-800">
+                    <h2 className="text-lg font-semibold text-gray-600 dark:text-white">
+                      Active Users
+                    </h2>
+                    <p className="text-3xl font-bold text-yellow-500 mt-3">765</p>
+                    <p className="text-sm text-gray-500 mt-1 dark:text-gray-300">
+                      Users with recent activity
+                    </p>
+                  </div>
+                </div>
+
+                <div className="bg-white shadow-lg rounded-lg p-6 w-full mx-auto mb-10 dark:bg-gray-700 text-white">
+                  <h2 className="text-xl font-semibold text-gray-600 mb-5 dark:text-white">
+                    User Growth
+                  </h2>
+                  <Chart
+                    options={options}
+                    series={series}
+                    type="line"
+                    height={350}
+                    className="text-black dark:text-white"
+                  />
+                </div>
+              </CardBody>
+            </Card>
+          </Tab>
+        </Tabs>
       </div>
+
+
+
+
     </div>
   );
 };
 
-export default UserManagementPage;
+export default UserStatisticsPage;

@@ -6,6 +6,8 @@ import RootProviders from "@/components/provider/RootProviders";
 import React, { Suspense } from "react";
 import Spinner from "@/components/loading/Spinner";
 import Logo from "@/public/images/unify_1.svg";
+import { Montserrat, Roboto } from "next/font/google";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,6 +18,13 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+
+const montserrat = Montserrat({
+  weight: ['400', '700'],
+  style: ['normal', 'italic'],
+  subsets: ['latin'],
+  display: 'swap',
+})
 
 export const metadata = {
   title: "Unify",
@@ -32,7 +41,7 @@ export default async function RootLayout({ children }) {
         />
       </Head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} flex w-full`}
+        className={`${geistSans.variable} ${geistMono.variable} ${montserrat.className} flex w-full`}
       >
         <Suspense
           fallback={
