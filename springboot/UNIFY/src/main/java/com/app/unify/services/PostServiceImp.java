@@ -93,8 +93,8 @@ public class PostServiceImp implements PostService {
         Optional<Post> postOpt = postRepository.findById(id);
         if (postOpt.isPresent()) {
             Post post = postOpt.get();
-            post.setStatus(2); 
-            postRepository.save(post); 
+            post.setStatus(2);
+            postRepository.save(post);
         } else {
             throw new EntityNotFoundException("Post not found with id: " + id);
         }
