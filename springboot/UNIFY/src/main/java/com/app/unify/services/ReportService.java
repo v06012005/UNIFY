@@ -195,8 +195,8 @@ public class ReportService {
             Post post = postRepository.findById(report.getReportedId())
                     .orElseThrow(() -> new ReportException("Post not found!"));
 
-            
-            post.setStatus(2); 
+
+            post.setStatus(2);
 
             postRepository.save(post);
         }
@@ -207,8 +207,8 @@ public class ReportService {
             user.setReportApprovalCount(user.getReportApprovalCount() + 1);
 
             if (user.getReportApprovalCount() >= 5) {
-                user.setStatus(2); 
-            } 
+                user.setStatus(2);
+            }
             else if (user.getReportApprovalCount() >= 3 && user.getStatus() != 2) {
                 user.setStatus(1); // Khóa tạm thời
             }
