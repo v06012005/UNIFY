@@ -11,13 +11,10 @@ export const FollowNotification = React.memo(
   ({ isSeen, sender, timestamp, onClick }) => {
     const { user } = useApp();
 
-    // Check if sender is valid
-    if (!sender || !sender.username) {
-      return null; // Render nothing if sender is invalid
-    }
+    if (!sender || !sender.fullName) return null;
 
     const timeAgo = useMemo(() => {
-      let time = formatDistanceToNow(new Date(timestamp), {
+      const time = formatDistanceToNow(new Date(timestamp), {
         addSuffix: true,
         includeSeconds: true,
       });
@@ -27,23 +24,23 @@ export const FollowNotification = React.memo(
     return (
       <div
         onClick={onClick}
-        className={`p-2 px-4 rounded-lg items-center max-h-[88px] ${
+        className={`p-2 px-4 rounded-lg items-center max-h-[88px] cursor-pointer ${
           isSeen ? "" : "bg-gray-100 dark:bg-gray-800"
         }`}
       >
         <div className="flex items-center gap-4">
           <Image
-            src={sender?.avatar?.url || Avatar}
+            src={sender?.avatar || Avatar}
             alt="User"
             width={400}
             height={400}
             className="rounded-full w-[64px] h-[64px]"
           />
-          <div className="flex flex-col">
-            <div className="flex gap-2">
+          <div className="flex flex-col flex-grow">
+            <div className="flex gap-2 justify-between items-center">
               <p className="text-md">
                 <strong className="font-extrabold text-lg">
-                  {sender.username}
+                  {sender.fullName}
                 </strong>{" "}
                 has started following you.{" "}
                 <small className="text-gray-400 text-sm">{timeAgo}</small>

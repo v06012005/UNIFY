@@ -1,25 +1,16 @@
 package com.app.unify.repositories;
 
-import java.util.List;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-
 import com.app.unify.entities.Notification;
+import com.app.unify.entities.NotificationType;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface NotificationRepository extends JpaRepository<Notification, Long> {
+import java.util.List;
+import java.util.Optional;
 
-    List<Notification> findByUserIdOrderByTimestampDesc(String userId);
+public interface NotificationRepository extends MongoRepository<Notification, String> {
+    List<Notification> findByReceiverOrderByTimestampDesc(String receiver);
 
-    Notification findByIdAndUserId(Long id, String userId);
+    Optional<Notification> findTopBySenderAndReceiverAndTypeOrderByTimestampDesc(String sender, String receiver, NotificationType type);
 
-    @Modifying
-    @Query("UPDATE Notification n SET n.isRead = :isRead WHERE n.id = :id AND n.userId = :userId")
-    void updateIsReadByIdAndUserId(Boolean isRead, Long id, String userId);
-
-    @Modifying
-    @Query("UPDATE Notification n SET n.isRead = true WHERE n.userId = :userId")
-    void markAllAsReadByUserId(@Param("userId") String userId);
+    void deleteBySenderAndReceiverAndType(String sender, String receiver, NotificationType type);
 }

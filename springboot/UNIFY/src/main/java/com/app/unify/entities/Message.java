@@ -20,7 +20,6 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Message {
-
 	@Id
 	String id;
 	String sender;
@@ -28,5 +27,4 @@ public class Message {
 	String content;
 	LocalDateTime timestamp;
 	List<String> fileUrls;
-
 }

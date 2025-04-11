@@ -1,94 +1,122 @@
 package com.app.unify.services;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.stereotype.Service;
-
 import com.app.unify.dto.global.NotificationDTO;
 import com.app.unify.entities.Notification;
+import com.app.unify.entities.NotificationType;
 import com.app.unify.mapper.NotificationMapper;
 import com.app.unify.repositories.NotificationRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Service;
 
-import jakarta.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
-@Transactional
 public class NotificationService {
 
-    private final NotificationRepository notificationRepository;
-    private final SimpMessageSendingOperations messageSendingOperations;
-    private final NotificationMapper notificationMapper;
+    @Autowired
+    private NotificationRepository notificationRepository;
 
     @Autowired
-    public NotificationService(
-            NotificationRepository notificationRepository,
-            SimpMessageSendingOperations messageSendingOperations,
-            NotificationMapper notificationMapper) {
-        this.notificationRepository = notificationRepository;
-        this.messageSendingOperations = messageSendingOperations;
-        this.notificationMapper = notificationMapper;
+    private NotificationMapper notificationMapper;
+
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
+
+    public Notification saveNotification(Notification notification) {
+        return notificationRepository.save(notification);
     }
 
-    public void createAndSendNotification(NotificationDTO notificationDTO) {
-        if (notificationDTO == null || notificationDTO.getUserId() == null) {
-            throw new IllegalArgumentException("NotificationDTO or userId cannot be null");
+    public void sendNotification(String receiverId, NotificationDTO notificationDTO) {
+        simpMessagingTemplate.convertAndSend("/user/" + receiverId + "/queue/notifications", notificationDTO);
+    }
+
+    public void createAndSendNotification(String senderId, String receiverId, NotificationType type) {
+        if (type == NotificationType.FOLLOW || type == NotificationType.LIKE) {
+            handleFollowOrLikeNotification(senderId, receiverId, type);
+        } else {
+            // Gửi trực tiếp cho các loại còn lại
+            sendNewNotification(senderId, receiverId, type);
         }
-        Notification notification = notificationMapper.toNotification(notificationDTO);
-        notification.setTimestamp(LocalDateTime.now()); // Ensure timestamp is set
-        notificationRepository.save(notification);
-        sendNotificationToUser(notification.getUserId(), notification);
     }
 
-    @Cacheable(value = "notifications", key = "#userId")
-    public List<NotificationDTO> getNotificationsByUserID(String userId) {
-        return notificationRepository.findByUserIdOrderByTimestampDesc(userId)
+    private void handleFollowOrLikeNotification(String senderId, String receiverId, NotificationType type) {
+        Notification existing = notificationRepository
+                .findTopBySenderAndReceiverAndTypeOrderByTimestampDesc(senderId, receiverId, type)
+                .orElse(null);
+
+        if (existing != null) {
+            // FOLLOW: check thời gian
+            if (type == NotificationType.FOLLOW) {
+                LocalDateTime now = LocalDateTime.now();
+                LocalDateTime lastSentTime = existing.getTimestamp();
+
+                // Nếu chưa đủ 1 phút -> không gửi lại
+                if (lastSentTime.isAfter(now.minusMinutes(1))) {
+                    return; // Bỏ qua gửi mới
+                }
+            }
+
+            // Nếu đủ điều kiện thì xóa cái cũ
+            notificationRepository.deleteBySenderAndReceiverAndType(senderId, receiverId, type);
+        }
+
+        if (type == NotificationType.FOLLOW) {
+            // Delay 3 giây rồi gửi lại
+            new Thread(() -> {
+                try {
+                    Thread.sleep(3000);
+                    sendNewNotification(senderId, receiverId, type);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+        } else {
+            // LIKE gửi lại ngay
+            sendNewNotification(senderId, receiverId, type);
+        }
+    }
+
+    private void sendNewNotification(String senderId, String receiverId, NotificationType type) {
+        String message = generateMessage(senderId, type);
+        Notification notification = Notification.builder()
+                .sender(senderId)
+                .receiver(receiverId)
+                .type(type)
+                .message(message)
+                .timestamp(LocalDateTime.now())
+                .isRead(false)
+                .build();
+
+        Notification savedNotification = saveNotification(notification);
+        NotificationDTO notificationDTO = notificationMapper.toNotificationDTO(savedNotification);
+        sendNotification(receiverId, notificationDTO);
+    }
+
+    public List<NotificationDTO> getNotificationsForUser(String receiverId) {
+        return notificationRepository.findByReceiverOrderByTimestampDesc(receiverId)
                 .stream()
                 .map(notificationMapper::toNotificationDTO)
-                .toList();
+                .collect(Collectors.toList());
     }
 
-    public void markNotificationAsRead(Long notificationId, String userId) {
-        Notification notification = notificationRepository.findByIdAndUserId(notificationId, userId);
-        if (notification == null) {
-            throw new IllegalArgumentException("Notification not found for userId: " + userId);
-        }
-        notification.setRead(true);
-        notificationRepository.save(notification);
-        sendNotificationToUser(userId, notification);
+    public void markAllAsRead(String receiverId) {
+        List<Notification> notifications = notificationRepository.findByReceiverOrderByTimestampDesc(receiverId);
+        notifications.forEach(notification -> notification.setRead(true));
+        notificationRepository.saveAll(notifications);
     }
 
-    @Transactional
-    public void markAllNotificationsAsRead(String userId) {
-        List<Notification> notifications = notificationRepository.findByUserIdOrderByTimestampDesc(userId);
-        if (!notifications.isEmpty()) {
-            notificationRepository.markAllAsReadByUserId(userId);
-            sendNotificationsToUser(userId, notifications);
-        }
-    }
-
-    public void sendAllNotifications() {
-        notificationRepository.findAll()
-                .forEach(this::sendSingleNotification);
-    }
-
-    // Helper methods
-    private void sendNotificationToUser(String userId, Notification notification) {
-        NotificationDTO dto = notificationMapper.toNotificationDTO(notification);
-        messageSendingOperations.convertAndSendToUser(userId, "/queue/notifications", dto);
-    }
-
-    private void sendNotificationsToUser(String userId, List<Notification> notifications) {
-        List<NotificationDTO> dtos = notifications.stream()
-                .map(notificationMapper::toNotificationDTO)
-                .toList();
-        messageSendingOperations.convertAndSendToUser(userId, "/queue/notifications", dtos);
-    }
-
-    private void sendSingleNotification(Notification notification) {
-        sendNotificationToUser(notification.getUserId(), notification);
+    private String generateMessage(String senderId, NotificationType type) {
+        return switch (type) {
+            case FOLLOW -> senderId + " is following you.";
+            case LIKE -> senderId + " liked your post.";
+            case COMMENT -> senderId + " commented on your post.";
+            case MESSAGE -> senderId + " sent you a message.";
+            case TAG -> senderId + " tagged you in a post.";
+            case SHARE -> senderId + " shared your post.";
+            default -> "You have a new notification.";
+        };
     }
 }
