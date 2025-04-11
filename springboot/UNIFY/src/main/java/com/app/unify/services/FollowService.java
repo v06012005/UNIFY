@@ -1,25 +1,21 @@
 package com.app.unify.services;
 
 
-
-
-
-import java.time.LocalDateTime;
-
+import com.app.unify.entities.Follower;
+import com.app.unify.entities.NotificationType;
+import com.app.unify.entities.User;
+import com.app.unify.mapper.NotificationMapper;
+import com.app.unify.repositories.FollowRepository;
+import com.app.unify.repositories.UserRepository;
+import com.app.unify.types.FollowerUserId;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import com.app.unify.dto.global.NotificationDTO;
-import com.app.unify.entities.Follower;
-import com.app.unify.entities.User;
-import com.app.unify.repositories.FollowRepository;
-import com.app.unify.repositories.UserRepository;
-import com.app.unify.types.FollowerUserId;
-
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +30,9 @@ public class FollowService {
     @Autowired
     private final NotificationService notificationService;
 
+    @Autowired
+    private final NotificationMapper notificationMapper;
+
     @Transactional
     public String followUser(String followingId) {
         String currentUserId = getCurrentUserId();
@@ -42,10 +41,8 @@ public class FollowService {
             return "Can't follow yourself!";
         }
 
-        User follower = userRepository.findById(currentUserId)
-                .orElseThrow(() -> new RuntimeException("Follower Invalid 1!"));
-        User following = userRepository.findById(followingId)
-                .orElseThrow(() -> new RuntimeException("Following Invalid 2!"));
+        User follower = userRepository.findById(currentUserId).orElseThrow(() -> new RuntimeException("Follower Invalid 1!"));
+        User following = userRepository.findById(followingId).orElseThrow(() -> new RuntimeException("Following Invalid 2!"));
 
         FollowerUserId id = new FollowerUserId(currentUserId, followingId);
 
@@ -54,21 +51,16 @@ public class FollowService {
         }
 
         try {
-            Follower newFollow = Follower.builder().id(id).userFollower(follower).userFollowing(following)
-                    .createAt(LocalDateTime.now()).build();
-
+            Follower newFollow = Follower
+                    .builder()
+                    .id(id)
+                    .userFollower(follower)
+                    .userFollowing(following)
+                    .createAt(LocalDateTime.now())
+                    .build();
             followRepository.save(newFollow);
 
-            // Send notification to the followed user
-            NotificationDTO notificationDTO = NotificationDTO.builder()
-                    .userId(followingId)
-                    .senderId(currentUserId) // Set sender_id to the current user's ID
-                    .type("FOLLOW")
-                    .message(follower.getUsername() + " has started following you.")
-                    .timestamp(LocalDateTime.now()) // Set timestamp for the notification
-                    .build();
-            notificationService.createAndSendNotification(notificationDTO);
-
+            notificationService.createAndSendNotification(currentUserId, followingId, NotificationType.FOLLOW);
             return "Followed successfully!";
         } catch (Exception e) {
             throw new RuntimeException("Error while following user: " + e.getMessage());
@@ -93,7 +85,9 @@ public class FollowService {
     }
 
     private String getCurrentUserId() {
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        var authentication = SecurityContextHolder
+                .getContext()
+                .getAuthentication();
 
         if (authentication == null || authentication.getPrincipal() == null) {
             throw new RuntimeException("User not authenticated (401)");
@@ -102,8 +96,7 @@ public class FollowService {
         Object principal = authentication.getPrincipal();
 
         if (principal instanceof UserDetails userDetails) {
-            String userId = userRepository.findByEmail(userDetails.getUsername())
-                    .orElseThrow(() -> new RuntimeException("User not found")).getId();
+            String userId = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(() -> new RuntimeException("User not found")).getId();
             return userId;
         }
 

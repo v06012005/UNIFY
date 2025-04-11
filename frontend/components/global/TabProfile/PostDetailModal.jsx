@@ -327,6 +327,8 @@ const PostDetailModal = ({ post, onClose, onArchive, onDelete }) => {
                 <div className="w-10 h-10 rounded-full border-2 border-gray-300 dark:border-gray-600">
                   <Image
                     src={post.user?.avatar?.url || Avatar}
+                    width={1000}
+                    height={1000}
                     alt="User Avatar"
                     className="w-full h-full rounded-full object-cover"
                   />

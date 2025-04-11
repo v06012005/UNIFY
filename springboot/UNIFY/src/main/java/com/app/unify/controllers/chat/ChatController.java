@@ -42,5 +42,4 @@ public class ChatController {
 	public List<Message> getMessagesBetweenUsers(@PathVariable String user1, @PathVariable String user2) {
 		return messageService.getMessagesBySenderAndReceiver(user1, user2);
 	}
-
 }
