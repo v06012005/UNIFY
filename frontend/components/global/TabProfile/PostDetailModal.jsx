@@ -100,7 +100,7 @@ const PostDetailModal = ({ post, onClose, onArchive, onDelete }) => {
     const enrichedComment = {
       ...newComment,
       username: user?.username || "Unknown",
-      user: { avatar: user?.avatar || "/default-avatar.jpg" }, // Thêm thông tin user
+      user: { avatar: user?.avatar || "/unify_icon_2.svg" }, 
     };
     setComments((prevComments) => {
       if (newComment.parentId) {
@@ -190,7 +190,7 @@ const PostDetailModal = ({ post, onClose, onArchive, onDelete }) => {
               <div className="w-full h-full flex items-center justify-center bg-black">
                 <img
                   src={selectedMedia.url}
-                  className="max-w-full max-h-full object-contain rounded-tl-xl rounded-bl-xl"
+                  className="max-w-full max-h-full object-contain rounded mr-2"
                   alt="Post Media"
                 />
               </div>
@@ -260,8 +260,8 @@ const PostDetailModal = ({ post, onClose, onArchive, onDelete }) => {
                 <Image
                   src={post.user?.avatar?.url || Avatar}
                   alt="User Avatar"
-                  width={40} // Add width
-                  height={40} // Add height
+                  width={40}
+                  height={40} 
                   className="w-full h-full rounded-full object-cover"
                 />
               </div>

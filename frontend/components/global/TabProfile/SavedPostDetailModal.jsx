@@ -5,7 +5,7 @@ import CommentItem from "@/components/comments/CommentItem";
 import CommentInput from "@/components/comments/CommentInput";
 import Cookies from "js-cookie";
 import Link from "next/link";
-import Avatar from "@/public/images/avt.jpg";
+import Avatar from "@/public/images/unify_icon_2.svg";
 import { redirect } from "next/navigation";
 import { fetchPostById } from "@/app/lib/dal";
 import { useBookmarks } from "@/components/provider/BookmarkProvider";
@@ -294,7 +294,7 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
             <div className="flex items-center">
               <div className="w-10 h-10 rounded-full border-2 border-gray-300 dark:border-gray-600">
                 <Image
-                  src={post.user?.avatar || Avatar}
+                  src={post.user?.avatar?.url || Avatar}
                   alt="User Avatar"
                   width={40} // Add width
                   height={40} // Add height
@@ -367,6 +367,8 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
                   <Image
                     src={post.user?.avatar?.url || Avatar}
                     alt="User Avatar"
+                    width={40} // Add width
+                    height={40} // Add height
                     className="w-full h-full rounded-full object-cover"
                   />
                 </div>

@@ -6,6 +6,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { fetchComments } from "app/api/service/commentService";
 import PostDetailModal from "./PostDetailModal";
+import { Spinner } from "@heroui/react";
 
 const UserReels = ({ username }) => {
   const [selectedPost, setSelectedPost] = useState(null);
@@ -93,7 +94,14 @@ const UserReels = ({ username }) => {
   return (
     <div className="max-w-3xl mx-auto">
       {loading ? (
-        <p className="text-center">Loading...</p>
+        // <p className="text-center">Loading...</p>
+        <div className="flex justify-center items-center h-screen">
+          <Spinner
+            color="primary"
+            label="Loading posts..."
+            labelColor="primary"
+          />
+        </div>
       ) : postUsers.some(post => post.media.some(media => media.mediaType === "VIDEO")) ? (
         <div className="grid grid-cols-3 gap-1">
           {postUsers.filter(post => post.media.some(media => media.mediaType === "VIDEO"))
