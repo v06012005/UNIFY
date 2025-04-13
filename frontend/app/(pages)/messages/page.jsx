@@ -14,8 +14,10 @@ import { useApp } from "@/components/provider/AppProvider";
 import { useState, useRef, useEffect } from "react";
 import Picker from "emoji-picker-react";
 import { Smile, Send, Plus } from "lucide-react";
-import { useCall } from "@/components/provider/CallProvider";
+import {useCall} from "@/hooks/useCall"
 import useChat from "@/hooks/useChat";
+import {useCallStore} from "@/store/useCallStore";
+import { getUser } from "@/app/lib/dal";
 
 const Page = () => {
   const { user } = useApp();
@@ -58,6 +60,8 @@ const Page = () => {
   };
 
   const [files, setFiles] = useState([]);
+
+
   const avatar =
     "https://file.hstatic.net/1000292100/file/img_1907_grande_e05accd5a03247069db4f3169cfb8b11_grande.jpg";
 
@@ -77,7 +81,7 @@ const Page = () => {
 
   const handleCall = () => {
     const callWindow = window.open(
-      "/video-call",
+      "/test-video",
       "CallWindow",
       `width=1200,height=600,left=${(window.screen.width - 1200) / 2},top=${
         (window.screen.height - 600) / 3
@@ -85,7 +89,7 @@ const Page = () => {
     );
     if (callWindow) {
       callWindow.onload = () => {
-        callWindow.postMessage({ chatPartner }, window.location.origin);
+        call();
       };
     }
   };
@@ -93,7 +97,7 @@ const Page = () => {
   const handleVideoCall = () => {
     setToggleCamera(true);
     const callWindow = window.open(
-      "/video-call",
+      "/test-video",
       "CallWindow",
       `width=1200,height=600,left=${(window.screen.width - 1200) / 2},top=${
         (window.screen.height - 600) / 3
@@ -110,6 +114,12 @@ const Page = () => {
   };
 
   useEffect(() => {
+    async function fetchUser() {
+      const user = await getUser();
+      setMe(user.id);
+    }
+    fetchUser();
+    setIdToCall('58d8ce36-2c82-4d75-b71b-9d34a3370b16');
     const handleClickOutside = (event) => {
       if (pickerRef.current && !pickerRef.current.contains(event.target)) {
         setShowPicker(false);
