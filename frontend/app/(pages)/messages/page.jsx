@@ -17,6 +17,7 @@ import { Smile, Send, Plus } from "lucide-react";
 import {useCall} from "@/hooks/useCall"
 import useChat from "@/hooks/useChat";
 import {useCallStore} from "@/store/useCallStore";
+import { getUser } from "@/app/lib/dal";
 
 const Page = () => {
   const { user } = useApp();
@@ -59,6 +60,8 @@ const Page = () => {
   };
 
   const [files, setFiles] = useState([]);
+
+
   const avatar =
     "https://file.hstatic.net/1000292100/file/img_1907_grande_e05accd5a03247069db4f3169cfb8b11_grande.jpg";
 
@@ -78,7 +81,7 @@ const Page = () => {
 
   const handleCall = () => {
     const callWindow = window.open(
-      "/video-call",
+      "/test-video",
       "CallWindow",
       `width=1200,height=600,left=${(window.screen.width - 1200) / 2},top=${
         (window.screen.height - 600) / 3
@@ -86,7 +89,7 @@ const Page = () => {
     );
     if (callWindow) {
       callWindow.onload = () => {
-        callWindow.postMessage({ chatPartner }, window.location.origin);
+        call();
       };
     }
   };
@@ -94,7 +97,7 @@ const Page = () => {
   const handleVideoCall = () => {
     setToggleCamera(true);
     const callWindow = window.open(
-      "/video-call",
+      "/test-video",
       "CallWindow",
       `width=1200,height=600,left=${(window.screen.width - 1200) / 2},top=${
         (window.screen.height - 600) / 3
@@ -111,7 +114,11 @@ const Page = () => {
   };
 
   useEffect(() => {
-    setMe(user.id);
+    async function fetchUser() {
+      const user = await getUser();
+      setMe(user.id);
+    }
+    fetchUser();
     setIdToCall('58d8ce36-2c82-4d75-b71b-9d34a3370b16');
     const handleClickOutside = (event) => {
       if (pickerRef.current && !pickerRef.current.contains(event.target)) {
@@ -246,7 +253,7 @@ const Page = () => {
             </div>
             <div className="flex w-1/3 items-center justify-end text-2xl">
               <button
-                onClick={callUser}
+                onClick={handleCall}
                 title="Call"
                 className="mr-2 p-2 rounded-md dark:hover:bg-gray-700 hover:bg-gray-300 transition ease-in-out duration-200"
               >

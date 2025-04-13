@@ -4,10 +4,25 @@ import {Phone, PhoneIncoming, PhoneOff} from "lucide-react";
 
 export default function InComingCall() {
 
-    const {caller, callAccepted} = useCallStore();
-    const {answerCall, leaveCall} = useCall();
+    const {incomingCall} = useCallStore();
+    const {rejectCall, answerCall} = useCall();
 
-    if(!caller) return null;
+    const handleAnswerCall = () => {
+      const windown =   window.open(
+          "/test-call",
+          "_blank",
+          `width=1200,height=600,left=${(window.screen.width - 1200) / 2},top=${
+            (window.screen.height - 600) / 3
+          }`
+        );
+        if(windown){
+            windown.onload = () => {
+                answerCall();
+            }
+        }
+    }
+
+    if(!incomingCall) return null;
 
     return (
         <div className="fixed inset-0 z-50 bg-black/50 flex justify-center items-center">
@@ -19,13 +34,13 @@ export default function InComingCall() {
                     </h2>
                     <div className="flex justify-center gap-4">
                         <button
-                            onClick={answerCall}
+                            onClick={handleAnswerCall}
                             className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl shadow"
                         >
                             <Phone className="w-5 h-5"/> Accept
                         </button>
                         <button
-                            onClick={leaveCall}
+                            onClick={rejectCall}
                             className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl shadow"
                         >
                             <PhoneOff className="w-5 h-5"/> Decline
