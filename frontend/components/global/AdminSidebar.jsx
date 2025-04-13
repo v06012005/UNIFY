@@ -30,6 +30,7 @@ const AdminSidebar = () => {
   const { account } = useApp();
   const [admin, setAdmin] = useState();
   const [loading, setLoading] = useState(true);
+  const { user } = useApp();
 
   useEffect(() => {
     const fetchAdminAccount = async () => {
@@ -53,15 +54,15 @@ const AdminSidebar = () => {
         <UnifyLogo className="w-52 mx-auto" />
         <Divider className="mt-5 mb-2" />
         <div className="flex w-full justify-between">
-          {/* <User
+          <User
             avatarProps={{
-              src: "https://i.pravatar.cc/150?u=a04258114e29026702d",
+              src: `${user?.avatar?.url}`,
             }}
-            description="Product Designer"
-            name="Jane Doe" className="my-3 justify-start"
-          /> */}
+            description={`Admin`}
+            name={`${user.firstName} ${user.lastName}`} className="my-3 justify-start"
+          />
           <div>
-            <Avatar src={account?.avatar?.url} />
+            {/* <Avatar src={account?.avatar?.url} /> */}
           </div>
           <Link href={""} className="my-auto text-xl text-zinc-500 hover:text-red-500"><i className="fa-solid fa-right-from-bracket"></i></Link>
         </div>

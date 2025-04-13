@@ -14,116 +14,157 @@ import {
   ModalFooter,
   Button,
   useDisclosure,
+  Card,
+  CardHeader,
+  CardBody,
+  User,
 } from "@heroui/react";
+import Cookies from "js-cookie";
+import { cn } from "@/lib/utils";
+import clsx from "clsx";
 
-const Caption = ({ text, maxLength = 100 }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const toggleExpanded = () => setIsExpanded(!isExpanded);
-
+const MyHeading2 = ({ content = "Heading 2" }) => {
   return (
-    <div className="leading-snug text-wrap">
-      {isExpanded ? text : `${text.slice(0, maxLength)}...`}
-      <button
-        onClick={toggleExpanded}
-        className="text-blue-500 font-semibold ml-2 hover:underline"
-      >
-        {isExpanded ? "Less" : "More"}
-      </button>
-    </div>
-  );
-};
-
-const Hashtag = ({ content = "", to = "" }) => {
-  return (
-    <Link
-      href={to}
-      className="text-lg text-sky-500 mr-4 hover:underline hover:decoration-sky-500"
-    >
-      {content}
-    </Link>
-  );
-};
+    <h2 className="font-bold text-2xl my-4">{content}</h2>
+  )
+}
 
 const PostDetail = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [post, setPost] = useState(null);
+  const [report, setReport] = useState(null);
   const { postId } = useParams();
 
   useEffect(() => {
-    async function getPost() {
-
-      console.log(postId)
-      const post = await fetchPostById(postId);
-      setPost(post);
-      // setLoading(false);
+    async function getReportedPost() {
+      try {
+        const token = Cookies.get("token");
+        const response = await fetch(`http://localhost:8080/reports/${postId}`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+        if (!response.ok) {
+          throw new Error("Encounterd an error.");
+        }
+        const data = await response.json();
+        if (data.length === 0) {
+          console.warn("Cannot fetch the reported post.");
+        };
+        // const reporter = await fetchPostById(data.reportedId);
+        setReport(data);
+        setPost(data.reportedEntity);
+      } catch (error) {
+        alert(`An error has occured: ${postId}`)
+      }
     }
-    getPost();
+    getReportedPost();
   }, [])
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen  p-6">
-      <h1 className="font-bold text-3xl mb-8">Post Detail</h1>
-
-      <div className="w-full max-w-4xl  ">
-        <div className="flex items-center mb-4">
-          <Image src={avatar} alt="Avatar" className="w-12 h-12 rounded-full" />
-          <div className="ml-4">
-            <span className="block font-bold text-lg">{post?.user?.username}</span>
-            <span className="text-sm text-gray-400">• 5h</span>
-          </div>
+    <div className="h-screen p-6">
+      <div className="mb-4">
+        <h1 className="font-bold text-3xl uppercase">Reported Post Details</h1>
+        <p className="text-gray-500">Show all the details about the reported post.</p>
+      </div>
+      <div className="flex w-1/3">
+        <Button size="lg" color="success"><i className="fa-solid fa-thumbs-up"></i> Approve</Button>
+        <Button size="lg" className="ml-3" color="danger"><i className="fa-solid fa-circle-minus"></i> Deny</Button>
+      </div>
+      <MyHeading2 content="Basic Info" />
+      <div>
+        <ul>
+          <li><p className="font-bold">Reported Date: <span className="font-normal">{new Date(report?.reportedAt).toLocaleString('en-US', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+          })}</span></p></li>
+          <li>
+            <p className="font-bold">
+              Status: <span className={clsx("font-normal p-1 rounded italic", {
+                "bg-primary-200": report?.status === 0,
+                "bg-success-200": report?.status === 1,
+                "bg-red-200": report?.status === 2,
+                "bg-warning-200": report?.status === 3,
+                "bg-zinc-300": report?.status === 4
+              })}>
+                {report?.status === 0 ? "Pending" : report?.status === 1 ? "Approved" : report?.status === 2 ? "Rejected" : report?.status === 3 ? "Resolved" : "Cancled"}
+              </span>
+            </p>
+          </li>
+          <li><p className="font-bold">Reporter's ID: <span className="font-normal">{report?.userId}</span></p></li>
+          <li><p className="font-bold">Reported Post's ID: <span className="font-normal">{report?.reportedId}</span></p></li>
+        </ul>
+      </div>
+      <div className="flex justify-around w-3/4 mx-auto my-4 ">
+        <Card className="py-2 shadow-none border w-1/3">
+          <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
+            <h4 className="font-bold text-large">Reporter</h4>
+          </CardHeader>
+          <CardBody className="overflow-visible">
+            <User
+              avatarProps={{
+                src: `${""}`,
+              }}
+              description={`mattle1@gmail.com`}
+              name={`Matt Le`} className="my-3 justify-start"
+            />
+          </CardBody>
+        </Card>
+        <div className="flex">
+          <i className="fa-regular my-auto fa-circle-right text-4xl"></i>
         </div>
+        <Card className="py-2 shadow-none border w-1/3">
+          <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
+            <h4 className="font-bold text-large text-red-500">Reported Post Owner</h4>
+          </CardHeader>
+          <CardBody className="overflow-visible">
+            <User
+              avatarProps={{
+                src: `${post?.user?.avatar?.url}`,
+              }}
+              description={`${post?.user?.email}`}
+              name={`${post?.user?.firstName} ${post?.user?.lastName}`} className="my-3 justify-start"
+            />
+          </CardBody>
+        </Card>
+      </div>
+      <MyHeading2 content="Reported Reason" />
+      <div className="w-3/4 mx-auto bg-zinc-100 p-3 max-h-52 overflow-y-auto rounded-lg">
+        <p>{report?.reason}</p>
+      </div>
+      <MyHeading2 content="Post Details" />
 
+      <div className="w-full">
         <div className="flex flex-col md:flex-row">
-          <div className="w-full md:w-1/2 mb-6 md:mb-0 md:mr-6">
+          <div className="w-1/3 md:w-1/2 mb-6 md:mb-0 md:mr-6">
             <div className="border rounded-md flex h-full cursor-pointer select-none" onClick={onOpen}>
               <i className="fa-solid fa-photo-film fa-2xl m-auto"> Media</i>
             </div>
-            {/* <Image
-              src={avatar2}
-              alt="Main display"
-              className="rounded-lg shadow-lg w-full"
-            /> */}
+            <div className=" dark:text-white text-3xl flex justify-around w-1/3 mx-auto mt-4">
+              <div className="flex flex-col items-cente ">
+                <i className="fa-solid fa-heart focus:opacity-50 transition text-red-500"></i>
+                <span className="text-sm">47k</span>
+              </div>
+
+              <div className="flex flex-col items-center ml-4">
+                <i className="fa-regular fa-comment focus:opacity-50 transition"></i>
+                <span className="text-sm">47k</span>
+              </div>
+
+              <div className="flex flex-col items-center ml-4">
+                <i className="fa-regular fa-paper-plane focus:opacity-50 transition"></i>
+                <span className="text-sm">47k</span>
+              </div>
+            </div>
           </div>
 
-          <div className="w-full md:w-1/2">
-            <Caption
-              text={post?.captions ? post?.captions : ""}
-            />
-            <div className="mt-2 flex flex-wrap">
-              <Hashtag content="#myhashtag"></Hashtag>
-              <Hashtag content="#myhashtag"></Hashtag>
-              <Hashtag content="#myhashtag"></Hashtag>
-              <Hashtag content="#myhashtag"></Hashtag>
-              <Hashtag content="#myhashtag"></Hashtag>
-              <Hashtag content="#myhashtag"></Hashtag>
-              <Hashtag content="#myhashtag"></Hashtag>
-              <Hashtag content="#myhashtag"></Hashtag>
-              <Hashtag content="#myhashtag"></Hashtag>
-              <Hashtag content="#myhashtag"></Hashtag>
-              <Hashtag content="#myhashtag"></Hashtag>
-            </div>
-            <div className=" dark:text-white text-3xl flex mt-4">
-              <div className="flex flex-col items-cente ">
-                <i className="fa-solid fa-heart   focus:opacity-50 transition cursor-pointer text-red-500"></i>
-                <span className="text-sm">47k</span>
-              </div>
-
-              <div className="flex flex-col items-center ml-4">
-                <i className="fa-regular fa-comment hover:opacity-50 focus:opacity-50 transition cursor-pointer"></i>
-                <span className="text-sm">47k</span>
-              </div>
-
-              <div className="flex flex-col items-center ml-4">
-                <i className="fa-regular fa-paper-plane hover:opacity-50 focus:opacity-50 transition"></i>
-                <span className="text-sm">47k</span>
-              </div>
-            </div>
-            <div className="flex justify-end  ">
-              <button className="px-6 py-3 bg-red-600 text-white font-semibold text-lg rounded-lg shadow-lg hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300 transition duration-300 ease-in-out flex items-center">
-                <i className="fas fa-trash-alt mr-2"></i>
-                Delete
-              </button>
-            </div>
+          <div className="w-full md:w-2/3 bg-zinc-100 p-2 rounded-lg">
+            {post?.captions ? post.captions : (<p className="italic">This post contains no captions.</p>)}
           </div>
         </div>
       </div>
