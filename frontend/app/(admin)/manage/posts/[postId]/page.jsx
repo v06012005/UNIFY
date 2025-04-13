@@ -70,11 +70,11 @@ const PostDetail = () => {
         <p className="text-gray-500">Show all the details about the reported post.</p>
       </div>
       <div className="flex w-1/3">
-        <Button size="lg" color="success"><i className="fa-solid fa-thumbs-up"></i> Approve</Button>
-        <Button size="lg" className="ml-3" color="danger"><i className="fa-solid fa-circle-minus"></i> Deny</Button>
+        <button className="border rounded-md bg-green-500 font-bold text-white p-3"><i className="fa-solid fa-thumbs-up"></i> Approve</button>
+        <button className="border rounded-md bg-red-500 font-bold ml-3 text-white p-3"><i className="fa-solid fa-circle-minus"></i> Deny</button>
       </div>
       <MyHeading2 content="Basic Info" />
-      <div>
+      <div className="w-3/4 pl-5">
         <ul>
           <li><p className="font-bold">Reported Date: <span className="font-normal">{new Date(report?.reportedAt).toLocaleString('en-US', {
             day: '2-digit',
@@ -100,8 +100,8 @@ const PostDetail = () => {
           <li><p className="font-bold">Reported Post's ID: <span className="font-normal">{report?.reportedId}</span></p></li>
         </ul>
       </div>
-      <div className="flex justify-around w-3/4 mx-auto my-4 ">
-        <Card className="py-2 shadow-none border w-1/3">
+      <div className="flex w-3/4 pl-5 my-4 ">
+        <Card className="py-2 shadow-none border rounded-md w-1/3">
           <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
             <h4 className="font-bold text-large">Reporter</h4>
           </CardHeader>
@@ -115,10 +115,10 @@ const PostDetail = () => {
             />
           </CardBody>
         </Card>
-        <div className="flex">
+        <div className="flex mx-5">
           <i className="fa-regular my-auto fa-circle-right text-4xl"></i>
         </div>
-        <Card className="py-2 shadow-none border w-1/3">
+        <Card className="py-2 shadow-none border rounded-md w-1/3">
           <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
             <h4 className="font-bold text-large text-red-500">Reported Post Owner</h4>
           </CardHeader>
@@ -134,32 +134,16 @@ const PostDetail = () => {
         </Card>
       </div>
       <MyHeading2 content="Reported Reason" />
-      <div className="w-3/4 mx-auto bg-zinc-100 p-3 max-h-52 overflow-y-auto rounded-lg">
-        <p>{report?.reason}</p>
+      <div className="w-full pl-5 max-h-52 overflow-y-auto">
+        <p className="p-3 bg-zinc-100 rounded-md">{report?.reason}</p>
       </div>
       <MyHeading2 content="Post Details" />
 
-      <div className="w-full">
+      <div className="w-full pb-5 pl-5">
         <div className="flex flex-col md:flex-row">
           <div className="w-1/3 md:w-1/2 mb-6 md:mb-0 md:mr-6">
-            <div className="border rounded-md flex h-full cursor-pointer select-none" onClick={onOpen}>
+            <div className="border rounded-md flex h-32 cursor-pointer select-none" onClick={onOpen}>
               <i className="fa-solid fa-photo-film fa-2xl m-auto"> Media</i>
-            </div>
-            <div className=" dark:text-white text-3xl flex justify-around w-1/3 mx-auto mt-4">
-              <div className="flex flex-col items-cente ">
-                <i className="fa-solid fa-heart focus:opacity-50 transition text-red-500"></i>
-                <span className="text-sm">47k</span>
-              </div>
-
-              <div className="flex flex-col items-center ml-4">
-                <i className="fa-regular fa-comment focus:opacity-50 transition"></i>
-                <span className="text-sm">47k</span>
-              </div>
-
-              <div className="flex flex-col items-center ml-4">
-                <i className="fa-regular fa-paper-plane focus:opacity-50 transition"></i>
-                <span className="text-sm">47k</span>
-              </div>
             </div>
           </div>
 
