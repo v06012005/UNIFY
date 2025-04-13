@@ -1,23 +1,49 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { FollowNotification } from "@/components/ui/follow_notification.jsx";
 import { TagNotification } from "@/components/ui/tag_notification";
 import useNotification from "@/hooks/useNotification";
 
 const NotificationModal = ({ isNotificationOpen, modalRef, userId }) => {
-  const { notifications, markNotificationAsRead, markAllNotificationsAsRead } =
+  const { notifications, error, markNotificationAsRead, markAllNotificationsAsRead } =
     useNotification(userId);
 
-  const sortedNotifications = Array.isArray(notifications)
-    ? [...notifications].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-    : [];
+  const [modalWidth, setModalWidth] = useState(0);
+
+  useEffect(() => {
+    if (!userId) {
+      console.warn("⚠️ Missing userId for NotificationModal");
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    if (isNotificationOpen) {
+      setModalWidth(448); // Open modal width
+    } else {
+      setModalWidth(0); // Close modal width
+    }
+  }, [isNotificationOpen]);
+
+  useEffect(() => {
+    console.log("Notifications updated in NotificationModal:", notifications);
+  }, [notifications]);
+
+  const sortedNotifications = useMemo(() => {
+    return Array.isArray(notifications)
+      ? [...notifications].sort(
+          (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+        )
+      : [];
+  }, [notifications]);
 
   const renderNotification = (notification) => {
     if (!notification || !notification.type) {
       return null;
     }
-
+  
+    console.log("Notification object:", notification);
+  
     switch (notification.type.toLowerCase()) {
       case "follow":
         return (
@@ -26,7 +52,6 @@ const NotificationModal = ({ isNotificationOpen, modalRef, userId }) => {
             isSeen={notification.isRead}
             sender={notification.sender}
             timestamp={notification.timestamp}
-            // onClick={() => markNotificationAsRead(notification.id)}
           />
         );
       case "tag":
@@ -36,7 +61,15 @@ const NotificationModal = ({ isNotificationOpen, modalRef, userId }) => {
       default:
         return null;
     }
-  };
+  };  
+
+  if (error) {
+    return (
+      <div className="text-center text-red-500 dark:text-red-400 mt-10">
+        Error: {error}
+      </div>
+    );
+  }
 
   return (
     <div className="fixed left-20 bg-black border-l-1 dark:border-neutral-700 bg-opacity-50 flex justify-start">
@@ -46,7 +79,7 @@ const NotificationModal = ({ isNotificationOpen, modalRef, userId }) => {
           isNotificationOpen ? "animate-fadeScale" : "animate-fadeOut"
         } transition-all ease-in-out duration-300  dark:border-neutral-700`}
         style={{
-          width: isNotificationOpen ? 448 : 0,
+          width: modalWidth,
         }}
       >
         <h1 className="font-bold text-2xl mb-4 px-5 pt-5">Notifications</h1>

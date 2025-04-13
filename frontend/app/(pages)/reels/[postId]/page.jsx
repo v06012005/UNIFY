@@ -31,6 +31,8 @@ export default function Reels() {
   const [commentsByPost, setCommentsByPost] = useState({});
   const [currentPostId, setCurrentPostId] = useState(null);
   const [pausedStates, setPausedStates] = useState({});
+  const [isMutedGlobally, setIsMutedGlobally] = useState(true);
+  const [activePostId, setActivePostId] = useState(null);
   const [isCommentsLoading, setIsCommentsLoading] = useState(false);
   const [modalStates, setModalStates] = useState({});
   const { user } = useApp();
@@ -55,23 +57,33 @@ export default function Reels() {
     console.log("Posts from useQuery:", posts);
   }, [postId, posts]);
 
+
   useEffect(() => {
     async function getVideoPosts() {
       try {
-        const homePosts = posts || (await fetchPosts());
-        console.log("Fetched posts:", homePosts);
+        const homePosts = await fetchPosts();
         const filteredPosts = homePosts.filter((post) =>
           post.media.some((media) => media.mediaType === "VIDEO")
         );
-        setVideoPosts(filteredPosts);
+
+        let sortedPosts = [...filteredPosts];
+        if (postId) {
+          const targetIndex = sortedPosts.findIndex((p) => p.id === postId);
+          if (targetIndex !== -1) {
+            const [targetPost] = sortedPosts.splice(targetIndex, 1);
+            sortedPosts.unshift(targetPost);
+            console.log("Moved video to top:", postId);
+            setActivePostId(postId);
+          }
+        }
+
+        setVideoPosts(sortedPosts);
         setPausedStates(
-          filteredPosts.reduce(
-            (acc, post) => ({ ...acc, [post.id]: false }),
-            {}
-          )
+          sortedPosts.reduce((acc, post) => ({ ...acc, [post.id]: false }), {})
         );
+
         setToolStates(
-          filteredPosts.reduce(
+          sortedPosts.reduce(
             (acc, post) => ({
               ...acc,
               [post.id]: {
@@ -84,42 +96,22 @@ export default function Reels() {
             {}
           )
         );
-        setCommentsByPost(
-          filteredPosts.reduce((acc, post) => ({ ...acc, [post.id]: [] }), {})
-        );
-        setModalStates(
-          filteredPosts.reduce(
-            (acc, post) => ({ ...acc, [post.id]: false }),
-            {}
-          )
-        );
 
         if (token) {
           await Promise.all(
-            filteredPosts.map(async (post) => {
-              try {
-                const data = await fetchComments(post.id, token);
-                setCommentsByPost((prev) => ({
-                  ...prev,
-                  [post.id]: data,
-                }));
-              } catch (error) {
-                console.error(
-                  `Failed to fetch comments for post ${post.id}:`,
-                  error
-                );
-              }
+            sortedPosts.map(async (post) => {
+              const data = await fetchComments(post.id, token);
+              setCommentsByPost((prev) => ({
+                ...prev,
+                [post.id]: data,
+              }));
             })
           );
         }
 
-        // Chỉ chuyển hướng nếu postId không hợp lệ hoặc không có
-        if (filteredPosts.length > 0) {
-          const postExists = filteredPosts.some((post) => post.id === postId);
-          if (!postId || !postExists) {
-            console.log("Redirecting to first post:", filteredPosts[0].id);
-            window.history.pushState({}, "", `/reels/${filteredPosts[0].id}`);
-          }
+        if (sortedPosts.length > 0 && !postId) {
+          window.history.pushState({}, "", `/reels/${sortedPosts[0].id}`);
+          setActivePostId(sortedPosts[0].id);
         }
       } catch (error) {
         console.error("Failed to fetch video posts:", error);
@@ -128,52 +120,95 @@ export default function Reels() {
       }
     }
     getVideoPosts();
-  }, [isLoading, posts, token, postId]);
+  }, [token, postId]);
+
 
   useEffect(() => {
+    if (loading || videoPosts.length === 0) return;
+  
+    videoRefs.current.forEach((video) => {
+      if (video) {
+        video.pause();
+        video.muted = true;
+        video.currentTime = 0; // Reset chỉ khi danh sách video thay đổi
+      }
+    });
+  }, [videoPosts, loading]);
+
+  useEffect(() => {
+    if (loading || videoPosts.length === 0) return;
+  
     const observer = new IntersectionObserver(
       (entries) => {
+        let newActivePostId = null;
+  
         entries.forEach((entry) => {
           const video = entry.target;
           const postId = video.dataset.postId;
           const isManuallyPaused = pausedStates[postId];
-
-          if (entry.isIntersecting && !isManuallyPaused) {
-            video.play();
-
-            //   không reload  
-
-            window.history.pushState({}, "", `/reels/${postId}`);
+  
+          if (entry.isIntersecting) {
+            if (!isManuallyPaused) {
+              video.playbackRate = 1;
+              video.muted = isMutedGlobally;
+              video.play().catch((err) => console.error("Play error:", err));
+              newActivePostId = postId;
+              window.history.pushState({}, "", `/reels/${postId}`);
+            }
           } else {
             video.pause();
-            if (!isManuallyPaused) video.currentTime = 0;
-            setToolStates((prev) => ({
-              ...prev,
-              [postId]: { ...prev[postId], isPopupOpen: false },
-            }));
-            setModalStates((prev) => ({
-              ...prev,
-              [postId]: false,
-            }));
+            video.muted = true;
           }
         });
+  
+        videoRefs.current.forEach((video) => {
+          if (video && video.dataset.postId !== newActivePostId) {
+            video.pause();
+            video.muted = true;
+          }
+        });
+  
+        setActivePostId(newActivePostId);
       },
       { threshold: 0.7 }
     );
-
+  
     videoRefs.current.forEach((video, index) => {
       if (video && videoPosts[index]) {
         video.dataset.postId = videoPosts[index].id;
         observer.observe(video);
       }
     });
-
+  
     return () => {
       videoRefs.current.forEach((video) => {
         if (video) observer.unobserve(video);
       });
     };
-  }, [videoPosts, pausedStates]);
+  }, [videoPosts, pausedStates, isMutedGlobally, loading]); // Giữ nguyên dependency
+
+  const handlePauseChange = useCallback((postId, isPaused) => {
+    setPausedStates((prev) => ({ ...prev, [postId]: isPaused }));
+    const video = videoRefs.current.find((v) => v?.dataset.postId === postId);
+    if (video) {
+      if (isPaused) {
+        video.pause(); // Dừng video
+      } else {
+        video.muted = isMutedGlobally;
+        video.play().catch((err) => console.error("Play error:", err)); // Phát tiếp từ vị trí hiện tại
+        setActivePostId(postId);
+      }
+    }
+  }, [isMutedGlobally]);
+
+  const handleMuteChange = useCallback((isMuted) => {
+    console.log("handleMuteChange called with", isMuted, "from", new Error().stack);
+    setIsMutedGlobally(isMuted);
+    videoRefs.current.forEach((video) => {
+      if (video) video.muted = isMuted;
+    });
+  }, []);
+  // Xử lý pause/play
 
   useEffect(() => {
     const handlePopState = () => {
@@ -235,9 +270,7 @@ export default function Reels() {
     }
   }, [videoPosts, loadComments]);
 
-  const handlePauseChange = useCallback((postId, isPaused) => {
-    setPausedStates((prev) => ({ ...prev, [postId]: isPaused }));
-  }, []);
+
 
   const toggleToolState = (postId, key) => {
     setToolStates((prev) => ({
@@ -414,14 +447,14 @@ export default function Reels() {
                 (media, mediaIndex) =>
                   media.mediaType === "VIDEO" && (
                     <PostReels
-                      key={mediaIndex}
-                      src={media.url}
-                      ref={(el) => (videoRefs.current[index] = el)}
-                      loop
-                      onPauseChange={(isPaused) =>
-                        handlePauseChange(post.id, isPaused)
-                      }
-                    />
+                    key={mediaIndex}
+                    src={media.url}
+                    ref={(el) => (videoRefs.current[index] = el)}
+                    loop
+                    muted={isMutedGlobally} // Truyền isMutedGlobally
+                    onPauseChange={(isPaused) => handlePauseChange(post.id, isPaused)}
+                    onMuteChange={handleMuteChange}
+                  />
                   )
               )}
               <div className="absolute bottom-4 left-4 flex flex-col text-white">

@@ -57,7 +57,7 @@ const SideBar = () => {
   };
 
   const handleReload = (e) => {
-    if (window.location.pathname === '/') {
+    if (window.location.pathname === "/") {
       e.preventDefault();
       window.location.reload();
     }
@@ -99,7 +99,8 @@ const SideBar = () => {
             <li className="h-16  ">
               <Link
                 title={"Home"}
-                href={"/"} onClick={handleReload}
+                href={"/"}
+                onClick={handleReload}
                 className={`w-full dark:hover:text-black dark:hover:bg-gray-200 flex h-full items-center text-center transition delay-100 ease-in-out duration-100 hover:bg-[#D9D9D9]`}
               >
                 <i className={`fa-solid fa-house w-full`}></i>
@@ -152,14 +153,20 @@ const SideBar = () => {
                 iconClass={"fa-regular fa-square-plus"}
               />
             </li>
-            <li className="h-16">
+            <li className="h-16 flex justify-center items-center">
               {user && (
-                <Link
-                  title="Your profile"
-                  href={`/profile/${user.username}`}
-                  className="w-full flex h-full items-center"
-                >
-                  <Avatar className="mx-auto" src="/images/test1.png" />
+                <Link title="Your profile" href={`/profile/${user.username}`} className="">
+                {user?.avatar?.url && (
+  <div className="w-12 h-12 rounded-full border-2 border-gray-300 overflow-hidden">
+    <Image
+      src={user.avatar.url}
+      alt="Avatar"
+      width={48}
+      height={48}
+      className="object-cover w-full h-full"
+    />
+  </div>
+)}
                 </Link>
               )}
             </li>

@@ -1,189 +1,172 @@
 "use client";
 
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
-import useWebSocket from "./useWebSocket"; // Import useWebSocket
+import { Client } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 const useNotification = (userId) => {
   const [notifications, setNotifications] = useState([]);
-  const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
+  const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const stompClientRef = useRef(null);
   const token = Cookies.get("token");
 
-  // Fetch notifications with memoization
+  // 🟢 Fetch thông báo
   const fetchNotifications = useCallback(
     async (reset = false) => {
-      if (!userId) {
-        setError({ message: "userId is undefined or empty" });
+      if (!userId || !token) {
+        console.warn("⚠️ Missing userId or token");
         return;
       }
-      if (!token) {
-        setError({ message: "No token found" });
-        return;
-      }
+
       setLoading(true);
       try {
-        const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/notifications/${userId}`,
+        console.log("🔄 Fetching notifications...");
+        const { data } = await axios.get(
+          `${API_URL}/api/notifications/${userId}`,
           {
             params: { page: reset ? 1 : page },
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
           }
         );
-        const newNotifications = response.data.map((notif) => ({
-          ...notif,
-          senderId: notif.senderId ?? "unknown",
-          userId: notif.userId ?? userId,
+
+        const formatted = data.map((n) => ({
+          id: n.id,
+          sender: n.sender,
+          receiver: n.receiver,
+          type: n.type,
+          timestamp: n.timestamp,
+          isRead: n.read,
+          message: n.message,
         }));
+
         setNotifications((prev) =>
-          reset ? newNotifications : [...prev, ...newNotifications]
+          reset ? formatted : [...prev, ...formatted]
         );
-        setHasMore(newNotifications.length > 0);
-        if (reset) setPage(2);
-        else setPage((prevPage) => prevPage + 1);
+        setHasMore(formatted.length > 0);
+        setPage(reset ? 2 : page + 1);
       } catch (err) {
-        const errorMessage =
-          err.response?.status === 401
-            ? "Unauthorized: Invalid or expired token"
-            : err.response?.status === 500
-            ? "Server error: Please try again later"
-            : err.response?.data?.message || err.message;
-        setError({ message: errorMessage });
-        console.error("Error fetching notifications:", err);
+        setError(err.response?.data?.message || err.message);
+        console.error("❌ Error fetching notifications:", err);
       } finally {
         setLoading(false);
       }
     },
-    [userId, page, token]
+    [userId, token, page]
   );
 
-  // Mark notification as read with memoization
+  // 🟢 Đánh dấu một thông báo là đã đọc
   const markNotificationAsRead = useCallback(
     async (notificationId) => {
       if (!userId || !notificationId) return;
-
-      setLoading(true);
       try {
         await axios.post(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/notifications/mark-as-read`,
+          `${API_URL}/api/notifications/mark-as-read`,
           { notificationId, userId },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+          { headers: { Authorization: `Bearer ${token}` } }
         );
         setNotifications((prev) =>
-          prev.map((notification) =>
-            notification.id === notificationId
-              ? { ...notification, is_read: true }
-              : notification
+          prev.map((n) =>
+            n.id === notificationId ? { ...n, isRead: true } : n
           )
         );
       } catch (err) {
-        const errorMessage =
-          err.response?.status === 401
-            ? "Unauthorized: Invalid or expired token"
-            : err.response?.data?.message || err.message;
-        setError({ message: errorMessage });
-        console.error("Error marking notification as read:", err);
-      } finally {
-        setLoading(false);
+        console.error("❌ Error marking notification as read:", err);
       }
     },
     [userId, token]
   );
 
-  // Mark all notifications as read with memoization
+  // 🟢 Đánh dấu tất cả là đã đọc
   const markAllNotificationsAsRead = useCallback(async () => {
     if (!userId) return;
-
-    setLoading(true);
     try {
       await axios.patch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/notifications/mark-all-as-read`,
+        `${API_URL}/api/notifications/mark-all-as-read`,
         { userId },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-      setNotifications((prev) =>
-        prev.map((notification) => ({ ...notification, is_read: true }))
-      );
+      setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
     } catch (err) {
-      const errorMessage =
-        err.response?.status === 401
-          ? "Unauthorized: Invalid or expired token"
-          : err.response?.data?.message || err.message;
-      setError({ message: errorMessage });
-      console.error("Error marking all notifications as read:", err);
-    } finally {
-      setLoading(false);
+      console.error("❌ Error marking all notifications as read:", err);
     }
   }, [userId, token]);
 
-  // WebSocket để nhận thông báo thời gian thực
-  const handleWebSocketMessage = useCallback(
-    (message) => {
-      console.log("New notification received via WebSocket:", message);
+  // 🟢 Xử lý WebSocket message
+  const handleWebSocketMessage = useCallback((message) => {
+    try {
+      const parsed = JSON.parse(message.body);
+      const newNotif = {
+        id: parsed.id,
+        sender: parsed.sender,
+        receiver: parsed.receiver,
+        type: parsed.type,
+        timestamp: parsed.timestamp,
+        isRead: parsed.isRead,
+        message: parsed.message,
+      };
+
       setNotifications((prev) => {
-        const newNotif = {
-          ...message,
-          senderId: message.senderId ?? "unknown",
-          userId: message.userId ?? userId,
-        };
-        const updated = [newNotif, ...prev].filter(
-          (item, index, self) =>
-            index === self.findIndex((t) => t.id === item.id)
-        );
-        return updated.slice(0, 50); // Giới hạn 50 thông báo
+        const exists = prev.find((n) => n.id === newNotif.id);
+        if (exists) return prev;
+        return [newNotif, ...prev];
       });
-    },
-    [userId]
-  );
+    } catch (err) {
+      console.error("❌ Error processing WebSocket message:", err);
+    }
+  }, []);
 
-  // Kết nối WebSocket với topic cụ thể cho userId
-  useWebSocket(
-    userId,
-    handleWebSocketMessage,
-    `/user/${userId}/queue/notifications`
-  );
-
-  // Fetch thông báo ban đầu khi userId thay đổi
+  // 🟢 Khởi tạo WebSocket
   useEffect(() => {
-    if (!userId) return;
+    if (!userId || !token) {
+      console.warn("⚠️ Missing userId or token for WebSocket");
+      return;
+    }
+
+    console.log("🔌 Initializing WebSocket...");
     fetchNotifications(true);
-  }, [userId, fetchNotifications]);
 
-  const memoizedValue = useMemo(
-    () => ({
-      notifications,
-      markNotificationAsRead,
-      markAllNotificationsAsRead,
-      loading,
-      error,
-      hasMore,
-      loadMore: () => fetchNotifications(false),
-    }),
-    [
-      notifications,
-      markNotificationAsRead,
-      markAllNotificationsAsRead,
-      loading,
-      error,
-      hasMore,
-      fetchNotifications,
-    ]
-  );
+    const socket = new SockJS(`${API_URL}/ws?token=${token}`);
+    const client = new Client({
+      webSocketFactory: () => socket,
+      reconnectDelay: 5000,
+      onConnect: () => {
+        console.log("✅ WebSocket connected");
+        client.subscribe(
+          `/user/${userId}/queue/notifications`,
+          handleWebSocketMessage
+        );
+      },
+      onStompError: (frame) => console.error("❌ STOMP Error:", frame),
+    });
 
-  return memoizedValue;
+    client.activate();
+    stompClientRef.current = client;
+
+    return () => {
+      if (stompClientRef.current) {
+        stompClientRef.current.deactivate();
+        stompClientRef.current = null;
+        console.log("✅ WebSocket disconnected");
+      }
+    };
+  }, [userId, token, fetchNotifications, handleWebSocketMessage]);
+
+  return {
+    notifications,
+    markNotificationAsRead,
+    markAllNotificationsAsRead,
+    loading,
+    error,
+    hasMore,
+    loadMore: () => fetchNotifications(false),
+  };
 };
 
 export default useNotification;

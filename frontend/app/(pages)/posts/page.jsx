@@ -21,11 +21,21 @@ import { addToast, ToastProvider } from "@heroui/toast";
 
 const User = ({ user }) => {
   return (
-    <div className="flex mb-4 w-full my-auto">
-      <Image src={avatar} alt="Avatar" className="rounded-full w-14 h-14" />
+    <div className="flex w-full items-center">
+     {user?.avatar?.url && (
+  <div className="w-14 h-14 rounded-full border-2 border-gray-300 overflow-hidden">
+    <Image
+      src={user.avatar.url}
+      alt="Avatar"
+      width={48}
+      height={48}
+      className="object-cover w-full h-full"
+    />
+  </div>
+)}
       <div className="ml-5">
-        <p className="my-auto text-lg font-bold">{user?.username}</p>
-        <p className="my-auto">{user?.firstName + " " + user?.lastName}</p>
+        <p className="text-lg font-bold">{user?.username}</p>
+        <p>{user?.firstName + " " + user?.lastName}</p>
       </div>
     </div>
   );
@@ -321,7 +331,7 @@ const Page = () => {
                 <div
                   className={cn(
                     previews.length > 0 &&
-                    "mt-4 grid grid-cols-4 gap-2 items-stretch",
+                      "mt-4 grid grid-cols-4 gap-2 items-stretch",
                     previews.length < 1 && "h-full"
                   )}
                 >

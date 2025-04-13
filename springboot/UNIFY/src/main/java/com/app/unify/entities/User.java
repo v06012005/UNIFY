@@ -120,10 +120,15 @@ public class User {
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
 	List<Avatar> avatars = new ArrayList<>();
+
 	@JsonIgnore
 	@OneToMany(mappedBy = "user")
 	List<Token> tokens;
+
 	public Avatar getLatestAvatar() {
+		if (avatars == null) {
+	        return null;
+	    }
         return avatars.stream()
                 .max(Comparator.comparing(Avatar::getChangedDate))
                 .orElse(null);
