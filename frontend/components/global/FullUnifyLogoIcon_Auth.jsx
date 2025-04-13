@@ -7,7 +7,16 @@ import dark from "@/public/images/unify_darkmode_full.svg";
 import { useTheme } from "next-themes";
 
 const UnifyLogo = ({ className = "" }) => {
+
+  const [isClient, setIsClient] = useState(false);
+
   const { theme, setTheme } = useTheme();
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) return null;
 
   return (
     <Image

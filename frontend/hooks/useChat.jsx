@@ -8,6 +8,7 @@ import SockJS from "sockjs-client";
 import { supabase } from "@/supbaseConfig";
 
 const useChat = (user, chatPartner) => {
+
   const [chatMessages, setChatMessages] = useState([]);
   const stompClientRef = useRef(null);
   const messagesEndRef = useRef(null);

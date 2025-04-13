@@ -14,8 +14,9 @@ import { useApp } from "@/components/provider/AppProvider";
 import { useState, useRef, useEffect } from "react";
 import Picker from "emoji-picker-react";
 import { Smile, Send, Plus } from "lucide-react";
-import { useCall } from "@/components/provider/CallProvider";
+import {useCall} from "@/hooks/useCall"
 import useChat from "@/hooks/useChat";
+import {useCallStore} from "@/store/useCallStore";
 
 const Page = () => {
   const { user } = useApp();
@@ -110,6 +111,8 @@ const Page = () => {
   };
 
   useEffect(() => {
+    setMe(user.id);
+    setIdToCall('58d8ce36-2c82-4d75-b71b-9d34a3370b16');
     const handleClickOutside = (event) => {
       if (pickerRef.current && !pickerRef.current.contains(event.target)) {
         setShowPicker(false);
@@ -243,7 +246,7 @@ const Page = () => {
             </div>
             <div className="flex w-1/3 items-center justify-end text-2xl">
               <button
-                onClick={handleCall}
+                onClick={callUser}
                 title="Call"
                 className="mr-2 p-2 rounded-md dark:hover:bg-gray-700 hover:bg-gray-300 transition ease-in-out duration-200"
               >

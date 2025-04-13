@@ -5,11 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1dc806c8-9b06-409a-84de-1db3bd7b8131" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/global/chat/InComingCallModal.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/store/useCallStore.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/lib/dal.js" beforeDir="false" afterPath="$PROJECT_DIR$/app/lib/dal.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/global/Post.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/global/Post.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../springboot/UNIFY/.env.example" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(pages)/layout.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(pages)/layout.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(pages)/messages/page.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(pages)/messages/page.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/global/FullUnifyLogoIcon_Auth.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/global/FullUnifyLogoIcon_Auth.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/provider/RootProviders.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/provider/RootProviders.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hooks/useChat.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/hooks/useChat.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,7 +43,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "fix/call",
     "ignore.virus.scanning.warn.message": "true",
     "last_opened_file_path": "D:/UNIFY_V2/UNIFY/frontend",
     "node.js.detected.package.eslint": "true",
@@ -113,6 +118,7 @@
       <workItem from="1740565690856" duration="40439000" />
       <workItem from="1740900869066" duration="6372000" />
       <workItem from="1744112311730" duration="4945000" />
+      <workItem from="1744528138271" duration="9151000" />
     </task>
     <servers />
   </component>
