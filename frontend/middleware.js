@@ -14,6 +14,14 @@ export default async function middleware(req) {
     // 3. Decrypt the session from the cookie
     const session = await verifySession();
 
+
+    // if (isProtectedRoute && session?.isAuth) {
+    //     const user = await getUser();
+    //     if (user?.roles[0]?.id === 1 || user?.roles[0]?.id === 3) { // Assuming role id 1 is for ADMIN, 3 is for OWNER
+    //         return NextResponse.redirect(new URL('/manage/users/list', req.nextUrl))
+    //     }
+    // }
+
     if (isProtectedRoute && session?.isAuth) {
         const user = await getUser();
         if (user?.roles[0]?.id === 2) { // Assuming role id 2 is for USER
