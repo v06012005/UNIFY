@@ -1,7 +1,7 @@
 package com.app.unify.repositories;
 
 import com.app.unify.entities.Notification;
-import com.app.unify.entities.NotificationType;
+import com.app.unify.types.NotificationType;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;

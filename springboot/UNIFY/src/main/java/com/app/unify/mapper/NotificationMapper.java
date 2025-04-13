@@ -3,35 +3,35 @@ package com.app.unify.mapper;
 import com.app.unify.dto.global.NotificationDTO;
 import com.app.unify.entities.Avatar;
 import com.app.unify.entities.Notification;
-import com.app.unify.repositories.UserRepository;
+import com.app.unify.entities.User;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Map;
 
 @Mapper(componentModel = "spring")
 public abstract class NotificationMapper {
+    public NotificationDTO toNotificationDTO(Notification notification, Map<String, User> userMap) {
+        User sender = userMap.get(notification.getSender());
 
-    @Autowired
-    protected UserRepository userRepository;
+        NotificationDTO.SenderDTO senderDTO = sender != null
+                ? NotificationDTO.SenderDTO.builder()
+                .id(sender.getId())
+                .fullName(sender.getFirstName() + " " + sender.getLastName())
+                .avatar(getAvatarUrl(sender.getLatestAvatar()))
+                .build()
+                : null;
 
-    @Mapping(target = "sender", expression = "java(toSenderDTO(notification.getSender()))")
-    @Mapping(source = "timestamp", target = "timestamp", dateFormat = "yyyy-MM-dd'T'HH:mm:ss")
-    @Mapping(target = "isRead", source = "read")
-    public abstract NotificationDTO toNotificationDTO(Notification notification);
-
-    protected NotificationDTO.SenderDTO toSenderDTO(String senderId) {
-        return userRepository.findById(senderId)
-                .map(user -> {
-                    Avatar latestAvatar = user.getLatestAvatar();
-                    return NotificationDTO.SenderDTO.builder()
-                            .id(user.getId())
-                            .fullName(user.getFirstName() + " " + user.getLastName())
-                            .avatar(latestAvatar != null ? latestAvatar.getUrl() : null)
-                            .build();
-                })
-                .orElse(null);
+        return NotificationDTO.builder()
+                .id(notification.getId())
+                .sender(senderDTO)
+                .message(notification.getMessage())
+                .type(notification.getType())
+                .timestamp(notification.getTimestamp())
+                .isRead(notification.isRead())
+                .build();
     }
 
-//    @Mapping(source = "timestamp", target = "timestamp", dateFormat = "yyyy-MM-dd'T'HH:mm:ss")
-//    Notification toNotification(NotificationDTO notificationDTO);
+    private String getAvatarUrl(Avatar avatar) {
+        return avatar != null ? avatar.getUrl() : null;
+    }
 }
