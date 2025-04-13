@@ -2,28 +2,37 @@ package com.app.unify.services;
 
 import com.app.unify.dto.global.NotificationDTO;
 import com.app.unify.entities.Notification;
-import com.app.unify.entities.NotificationType;
+import com.app.unify.entities.User;
 import com.app.unify.mapper.NotificationMapper;
 import com.app.unify.repositories.NotificationRepository;
+import com.app.unify.repositories.UserRepository;
+import com.app.unify.types.NotificationType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
 public class NotificationService {
-
-    @Autowired
     private NotificationRepository notificationRepository;
-
-    @Autowired
     private NotificationMapper notificationMapper;
+    private SimpMessagingTemplate simpMessagingTemplate;
+    private UserRepository userRepository;
 
     @Autowired
-    private SimpMessagingTemplate simpMessagingTemplate;
+    public NotificationService(NotificationRepository notificationRepository,
+                               NotificationMapper notificationMapper,
+                               SimpMessagingTemplate simpMessagingTemplate,
+                               UserRepository userRepository) {
+        this.notificationRepository = notificationRepository;
+        this.notificationMapper = notificationMapper;
+        this.simpMessagingTemplate = simpMessagingTemplate;
+        this.userRepository = userRepository;
+    }
 
     public Notification saveNotification(Notification notification) {
         return notificationRepository.save(notification);
@@ -37,7 +46,6 @@ public class NotificationService {
         if (type == NotificationType.FOLLOW || type == NotificationType.LIKE) {
             handleFollowOrLikeNotification(senderId, receiverId, type);
         } else {
-            // Gửi trực tiếp cho các loại còn lại
             sendNewNotification(senderId, receiverId, type);
         }
     }
@@ -48,23 +56,19 @@ public class NotificationService {
                 .orElse(null);
 
         if (existing != null) {
-            // FOLLOW: check thời gian
             if (type == NotificationType.FOLLOW) {
                 LocalDateTime now = LocalDateTime.now();
                 LocalDateTime lastSentTime = existing.getTimestamp();
 
-                // Nếu chưa đủ 1 phút -> không gửi lại
                 if (lastSentTime.isAfter(now.minusMinutes(1))) {
-                    return; // Bỏ qua gửi mới
+                    return;
                 }
             }
 
-            // Nếu đủ điều kiện thì xóa cái cũ
             notificationRepository.deleteBySenderAndReceiverAndType(senderId, receiverId, type);
         }
 
         if (type == NotificationType.FOLLOW) {
-            // Delay 3 giây rồi gửi lại
             new Thread(() -> {
                 try {
                     Thread.sleep(3000);
@@ -74,7 +78,6 @@ public class NotificationService {
                 }
             }).start();
         } else {
-            // LIKE gửi lại ngay
             sendNewNotification(senderId, receiverId, type);
         }
     }
@@ -91,14 +94,28 @@ public class NotificationService {
                 .build();
 
         Notification savedNotification = saveNotification(notification);
-        NotificationDTO notificationDTO = notificationMapper.toNotificationDTO(savedNotification);
+
+        List<User> users = userRepository.findAllById(List.of(senderId, receiverId));
+        Map<String, User> userMap = users.stream()
+                .collect(Collectors.toMap(User::getId, user -> user));
+        NotificationDTO notificationDTO = notificationMapper.toNotificationDTO(savedNotification, userMap);
         sendNotification(receiverId, notificationDTO);
     }
 
     public List<NotificationDTO> getNotificationsForUser(String receiverId) {
-        return notificationRepository.findByReceiverOrderByTimestampDesc(receiverId)
-                .stream()
-                .map(notificationMapper::toNotificationDTO)
+        List<Notification> notifications = notificationRepository.findByReceiverOrderByTimestampDesc(receiverId);
+        List<User> users = userRepository.findAllById(
+                notifications.stream()
+                        .map(Notification::getSender)
+                        .distinct()
+                        .collect(Collectors.toList())
+        );
+
+        Map<String, User> userMap = users.stream()
+                .collect(Collectors.toMap(User::getId, user -> user));
+
+        return notifications.stream()
+                .map(notification -> notificationMapper.toNotificationDTO(notification, userMap))
                 .collect(Collectors.toList());
     }
 

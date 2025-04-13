@@ -1,5 +1,5 @@
 package com.app.unify.types;
 
 public enum MessageType {
-	CHAT, JOIN, LEAVE, NOTIFICATION
+    CHAT, JOIN, LEAVE, NOTIFICATION
 }
