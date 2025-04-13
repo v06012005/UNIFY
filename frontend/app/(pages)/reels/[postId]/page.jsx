@@ -57,7 +57,6 @@ export default function Reels() {
     console.log("Posts from useQuery:", posts);
   }, [postId, posts]);
 
-
   useEffect(() => {
     async function getVideoPosts() {
       try {
@@ -122,10 +121,9 @@ export default function Reels() {
     getVideoPosts();
   }, [token, postId]);
 
-
   useEffect(() => {
     if (loading || videoPosts.length === 0) return;
-  
+
     videoRefs.current.forEach((video) => {
       if (video) {
         video.pause();
@@ -137,16 +135,16 @@ export default function Reels() {
 
   useEffect(() => {
     if (loading || videoPosts.length === 0) return;
-  
+
     const observer = new IntersectionObserver(
       (entries) => {
         let newActivePostId = null;
-  
+
         entries.forEach((entry) => {
           const video = entry.target;
           const postId = video.dataset.postId;
           const isManuallyPaused = pausedStates[postId];
-  
+
           if (entry.isIntersecting) {
             if (!isManuallyPaused) {
               video.playbackRate = 1;
@@ -160,26 +158,26 @@ export default function Reels() {
             video.muted = true;
           }
         });
-  
+
         videoRefs.current.forEach((video) => {
           if (video && video.dataset.postId !== newActivePostId) {
             video.pause();
             video.muted = true;
           }
         });
-  
+
         setActivePostId(newActivePostId);
       },
       { threshold: 0.7 }
     );
-  
+
     videoRefs.current.forEach((video, index) => {
       if (video && videoPosts[index]) {
         video.dataset.postId = videoPosts[index].id;
         observer.observe(video);
       }
     });
-  
+
     return () => {
       videoRefs.current.forEach((video) => {
         if (video) observer.unobserve(video);
@@ -187,22 +185,30 @@ export default function Reels() {
     };
   }, [videoPosts, pausedStates, isMutedGlobally, loading]); // Giữ nguyên dependency
 
-  const handlePauseChange = useCallback((postId, isPaused) => {
-    setPausedStates((prev) => ({ ...prev, [postId]: isPaused }));
-    const video = videoRefs.current.find((v) => v?.dataset.postId === postId);
-    if (video) {
-      if (isPaused) {
-        video.pause(); // Dừng video
-      } else {
-        video.muted = isMutedGlobally;
-        video.play().catch((err) => console.error("Play error:", err)); // Phát tiếp từ vị trí hiện tại
-        setActivePostId(postId);
+  const handlePauseChange = useCallback(
+    (postId, isPaused) => {
+      setPausedStates((prev) => ({ ...prev, [postId]: isPaused }));
+      const video = videoRefs.current.find((v) => v?.dataset.postId === postId);
+      if (video) {
+        if (isPaused) {
+          video.pause(); // Dừng video
+        } else {
+          video.muted = isMutedGlobally;
+          video.play().catch((err) => console.error("Play error:", err)); // Phát tiếp từ vị trí hiện tại
+          setActivePostId(postId);
+        }
       }
-    }
-  }, [isMutedGlobally]);
+    },
+    [isMutedGlobally]
+  );
 
   const handleMuteChange = useCallback((isMuted) => {
-    console.log("handleMuteChange called with", isMuted, "from", new Error().stack);
+    console.log(
+      "handleMuteChange called with",
+      isMuted,
+      "from",
+      new Error().stack
+    );
     setIsMutedGlobally(isMuted);
     videoRefs.current.forEach((video) => {
       if (video) video.muted = isMuted;
@@ -269,8 +275,6 @@ export default function Reels() {
       });
     }
   }, [videoPosts, loadComments]);
-
-
 
   const toggleToolState = (postId, key) => {
     setToolStates((prev) => ({
@@ -447,14 +451,16 @@ export default function Reels() {
                 (media, mediaIndex) =>
                   media.mediaType === "VIDEO" && (
                     <PostReels
-                    key={mediaIndex}
-                    src={media.url}
-                    ref={(el) => (videoRefs.current[index] = el)}
-                    loop
-                    muted={isMutedGlobally} // Truyền isMutedGlobally
-                    onPauseChange={(isPaused) => handlePauseChange(post.id, isPaused)}
-                    onMuteChange={handleMuteChange}
-                  />
+                      key={mediaIndex}
+                      src={media.url}
+                      ref={(el) => (videoRefs.current[index] = el)}
+                      loop
+                      muted={isMutedGlobally} // Truyền isMutedGlobally
+                      onPauseChange={(isPaused) =>
+                        handlePauseChange(post.id, isPaused)
+                      }
+                      onMuteChange={handleMuteChange}
+                    />
                   )
               )}
               <div className="absolute bottom-4 left-4 flex flex-col text-white">
@@ -507,16 +513,19 @@ export default function Reels() {
                   />
                 </div>
                 <div className="flex flex-col items-center">
-                  <i
-                    // className={`fa-${
-                    //   toolStates[post.id]?.isSaved ? "solid" : "regular"
-                    // } fa-bookmark hover:opacity-50 focus:opacity-50 transition cursor-pointer`}
-                    // onClick={() => handleSave(post.id)}
-
+                  {/* <i
                     className={`fa-${
                       savedPostsMap[post.id] ? "solid" : "regular"
                     } fa-bookmark
         hover:opacity-50 focus:opacity-50 transition cursor-pointer`}
+                    onClick={() => toggleBookmark(post.id)}
+                  /> */}
+                  <i
+                    className={`fa-${
+                      savedPostsMap[post.id] ? "solid" : "regular"
+                    } fa-bookmark
+  ${savedPostsMap[post.id] ? "text-yellow-400" : "text-white"}
+  hover:opacity-50 focus:opacity-50 transition cursor-pointer`}
                     onClick={() => toggleBookmark(post.id)}
                   />
                 </div>

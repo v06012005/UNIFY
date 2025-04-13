@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import avatar from "@/public/images/test1.png";
+import avatar from "@/public/images/unify_icon_2.svg";
 import SearchHorizontalToggle from "@/components/global/SearchHorizontalToggle";
 import NotificationModal from "@/components/global/NotificationModal";
 import UnifyLogoIcon from "./UnifyLogoIcon";
@@ -155,18 +155,20 @@ const SideBar = () => {
             </li>
             <li className="h-16 flex justify-center items-center">
               {user && (
-                <Link title="Your profile" href={`/profile/${user.username}`} className="">
-                {user?.avatar?.url && (
-  <div className="w-12 h-12 rounded-full border-2 border-gray-300 overflow-hidden">
-    <Image
-      src={user.avatar.url}
-      alt="Avatar"
-      width={48}
-      height={48}
-      className="object-cover w-full h-full"
-    />
-  </div>
-)}
+                <Link
+                  title="Your profile"
+                  href={`/profile/${user.username}`}
+                  className=""
+                >
+                  <div className="w-8 h-8 rounded-full border-2 border-gray-300 overflow-hidden">
+                    <Image
+                      src={user.avatar?.url || avatar}
+                      alt="Avatar"
+                      width={30}
+                      height={30}
+                      className="object-cover w-full h-full"
+                    />
+                  </div>
                 </Link>
               )}
             </li>
