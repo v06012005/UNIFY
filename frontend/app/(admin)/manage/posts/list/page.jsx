@@ -1,34 +1,38 @@
 "use client";
 import React, { useState, useEffect, useCallback, Suspense } from "react";
 import Image from "next/image";
-import Avatar from "@/public/images/testAvt.jpg";
-import filterLightIcon from "@/public/images/filter_lightmode.png";
-import filterDarkIcon from "@/public/images/filter_darkmode.png";
-import { useTheme } from "next-themes";
 import Cookies from "js-cookie";
 import Error from "next/error";
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Input } from "@heroui/react";
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from "@heroui/react";
 import TableLoading from "@/components/loading/TableLoading";
+import { useRouter } from "next/navigation";
 
-
-
-
-const UserManagementPage = () => {
-  const { theme, setTheme } = useTheme();
+const PostManagementPage = () => {
   const [loading, setLoading] = useState(true);
-  const [users, setUsers] = useState([]);
-  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [posts, setPosts] = useState([]);
+  const [filteredPosts, setFilteredPosts] = useState([]);
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
+  const router = useRouter();
+
+  const handleClick = (key, postId) => {
+    switch (key) {
+      case "view":
+        router.push("/manage/posts/" + postId);
+        break;
+      default:
+        break;
+    }
+  }
 
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchPosts = async () => {
       setLoading(true);
       try {
         const token = Cookies.get("token");
-        const response = await fetch("http://localhost:8080/users", {
+        const response = await fetch("http://localhost:8080/reports/allPosts", {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -42,84 +46,24 @@ const UserManagementPage = () => {
         if (data.length === 0) {
           console.warn("API không trả về người dùng nào.");
         }
-        setUsers(data);
-        setFilteredUsers(data);
+        setPosts(data);
+        setFilteredPosts(data);
       } catch (error) {
         console.error("Lỗi khi tải danh sách người dùng: ", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchUsers();
-  }, []);
-
-  const handleTempDisableUser = useCallback(async (userId) => {
-    try {
-      const token = Cookies.get("token");
-      await fetch(`http://localhost:8080/users/tempDisable/${userId}`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-      setUsers((prev) =>
-        prev.map((user) => (user.id === userId ? { ...user, status: 2 } : user))
-      );
-    } catch (error) {
-      console.error("Lỗi khi xóa người dùng: ", error);
-    }
-  }, []);
-
-  const handlePermDisableUser = useCallback(async (userId) => {
-    try {
-      const token = Cookies.get("token");
-      await fetch(`http://localhost:8080/users/permDisable/${userId}`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-      setUsers((prev) =>
-        prev.map((user) => (user.id === userId ? { ...user, status: 1 } : user))
-      );
-    } catch (error) {
-      console.error("Lỗi khi xóa người dùng: ", error);
-    }
-  }, []);
-
-  const handleUnlockUser = useCallback(async (userId) => {
-    try {
-      const token = Cookies.get("token");
-      await fetch(`http://localhost:8080/users/unlock/${userId}`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-      setUsers((prev) =>
-        prev.map((user) => (user.id === userId ? { ...user, status: 0 } : user))
-      );
-    } catch (error) {
-      console.error("Lỗi khi xóa người dùng: ", error);
-    }
+    fetchPosts();
   }, []);
 
   useEffect(() => {
-    setFilteredUsers(
-      users.filter((user) =>
-        user.username?.toLowerCase().includes(search.toLowerCase())
+    setFilteredPosts(
+      posts.filter((post) =>
+        post?.user?.username?.toLowerCase().includes(search.toLowerCase())
       )
     );
-  }, [search, users]);
-
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
-
-  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+  }, [search, posts]);
 
   return (
     <div className="py-10 px-6 h-screen">
@@ -151,32 +95,39 @@ const UserManagementPage = () => {
       <div className="overflow-auto h-[calc(73vh-0.7px)]">
         {loading ? (
           // <p className="text-center text-gray-500">Loading users...</p>
-          <TableLoading tableHeaders={["No.", "Username", "Email", "Report Approval Count", "Actions"]} />
+          <TableLoading tableHeaders={["No.", "Reported At", "Post ID", "Reason", "Actions"]} />
         ) : (
           <Table className="rounded-lg" isStriped aria-label="">
             <TableHeader>
               <TableColumn>No.</TableColumn>
-              <TableColumn>Username</TableColumn>
-              <TableColumn>Email</TableColumn>
-              <TableColumn>Report Aproval Count</TableColumn>
+              <TableColumn>Reported At</TableColumn>
+              <TableColumn>Post ID</TableColumn>
+              <TableColumn>Reason</TableColumn>
               <TableColumn>Actions</TableColumn>
             </TableHeader>
             <TableBody>
-              {currentItems.map((user, index) => (
-                <TableRow key={user.id}>
+              {posts.map((post, index) => (
+                <TableRow key={post.id}>
                   <TableCell>{index + 1}</TableCell>
-                  <TableCell>{user.username}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.reportApprovalCount}</TableCell>
+                  <TableCell>{new Date(post.reportedAt).toLocaleString('en-US', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                  </TableCell>
+                  <TableCell>{post.reportedId}</TableCell>
+                  <TableCell>{post.reason}</TableCell>
                   <TableCell>
                     <Dropdown>
                       <DropdownTrigger>
                         <i className="fa-solid fa-ellipsis-vertical hover:bg-gray-200 py-2 px-4 rounded-full hover:cursor-pointer"></i>
                       </DropdownTrigger>
-                      <DropdownMenu aria-label="Action event example" onAction={(key) => alert(key)}>
-                        <DropdownItem key="view"><i className="fa-solid fa-eye"></i> View Profile</DropdownItem>
-                        <DropdownItem key="temp" className="text-warning-500" color="warning"><i className="fa-solid fa-eye-slash"></i> Temporarily Disable</DropdownItem>
-                        <DropdownItem key="perm" className="text-danger" color="danger"><i className="fa-solid fa-user-slash"></i> Permanently Disable</DropdownItem>
+                      <DropdownMenu aria-label="Action event example" onAction={(key) => handleClick(key, post.id)}>
+                        <DropdownItem key="view"><i className="fa-solid fa-eye"></i> View Details</DropdownItem>
+                        <DropdownItem key="temp" className="text-success-500" color="success"><i className="fa-solid fa-thumbs-up"></i> Approve This Report</DropdownItem>
+                        <DropdownItem key="perm" className="text-danger" color="danger"><i className="fa-solid fa-ban"></i> Reject This Report</DropdownItem>
                       </DropdownMenu>
                     </Dropdown>
                   </TableCell>
@@ -190,4 +141,4 @@ const UserManagementPage = () => {
   );
 };
 
-export default UserManagementPage;
+export default PostManagementPage;

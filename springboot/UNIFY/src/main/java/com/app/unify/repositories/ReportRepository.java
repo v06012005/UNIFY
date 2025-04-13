@@ -3,6 +3,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.app.unify.entities.Report;
@@ -19,7 +20,5 @@ public interface ReportRepository extends JpaRepository<Report, String> {
     List<Report> findByEntityType(EntityType entityType);
     boolean existsByUserIdAndReportedIdAndEntityType(String userId, String reportedId, EntityType entityType);
     List<Report> findByStatusAndEntityType(Integer status, EntityType entityType);
-
-
 }
 
