@@ -49,7 +49,7 @@ const ReportUserModal = ({ isOpen, onClose, onSubmit, userId }) => {
     <>
       <div className="fixed inset-0 bg-black/60 flex items-center justify-center">
         <div className="bg-white dark:bg-neutral-900 rounded-lg shadow-xl w-[500px] max-w-[90%] mx-4 p-4 z-[9999]">
-          <h2 className="text-lg font-semibold text-center border-b pb-2 mb-4">
+          <h2 className="text-lg font-semibold text-center border-b border-neutral-800 pb-2 mb-4">
             Why are you reporting this post?
           </h2>
 
@@ -75,10 +75,10 @@ const ReportUserModal = ({ isOpen, onClose, onSubmit, userId }) => {
             ))}
           </div>
 
-          <div className="flex item-center gap-2">
+          <div className="flex item-center gap-2 mx-3">
             <button
               onClick={handleSubmit}
-              className="w-full py-2 bg-red-500 dark:disabled:bg-neutral-500 text-white font-semibold rounded-md hover:bg-red-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+              className="w-full py-1 bg-red-500 dark:disabled:bg-neutral-500 text-white font-semibold rounded-md hover:bg-red-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
               disabled={
                 !selectedReason ||
                 selectedReason === "Other" ||
@@ -89,7 +89,7 @@ const ReportUserModal = ({ isOpen, onClose, onSubmit, userId }) => {
             </button>
             <button
               onClick={handleClose}
-              className="w-full py-2 bg-gray-100 text-gray-700 font-semibold rounded-md hover:bg-gray-200"
+              className="w-full py-1 bg-gray-100 text-gray-700 font-semibold rounded-md hover:bg-gray-200"
             >
               Cancel
             </button>
