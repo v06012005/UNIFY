@@ -1,6 +1,6 @@
 "use client";
 
-import React, {useEffect} from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import dummy from "@/public/images/dummy.png";
 import avatar from "@/public/images/test1.png";
@@ -90,7 +90,7 @@ const Post = () => {
         <div className="w-3/4 mb-8 mx-auto pb-8" key={post.id}>
           <User
             avatar={post?.user?.avatar?.url}
-            href="/profile"
+            href={`/othersProfile/${post?.user?.username}`}
             username={post.user?.username}
             firstname={post.user?.firstName}
             lastname={post.user?.lastName}
