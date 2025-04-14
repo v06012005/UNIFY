@@ -14,7 +14,6 @@ import { useApp } from "@/components/provider/AppProvider";
 import { useState, useRef, useEffect } from "react";
 import Picker from "emoji-picker-react";
 import { Smile, Send, Plus } from "lucide-react";
-import {useCall} from "@/hooks/useCall"
 import useChat from "@/hooks/useChat";
 import {useCallStore} from "@/store/useCallStore";
 import { getUser } from "@/app/lib/dal";
@@ -33,7 +32,6 @@ const Page = () => {
   const [showPicker, setShowPicker] = useState(false);
   const pickerRef = useRef(null);
   const messagesEndRef = useRef(null);
-  const { setToggleCamera } = useCall();
   const [isOpenChat, setIsOpenChat] = useState(false);
 
   const MAX_FILE_SIZE_MB = 50;
@@ -115,12 +113,7 @@ const Page = () => {
   };
 
   useEffect(() => {
-    async function fetchUser() {
-      const user = await getUser();
-      setMe(user.id);
-    }
-    fetchUser();
-    setIdToCall('58d8ce36-2c82-4d75-b71b-9d34a3370b16');
+
     const handleClickOutside = (event) => {
       if (pickerRef.current && !pickerRef.current.contains(event.target)) {
         setShowPicker(false);

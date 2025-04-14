@@ -1,302 +1,208 @@
-"use client";
 
-import {useEffect, useRef, useState} from "react";
-import { useCall } from "@/components/provider/CallProvider";
-import { Mic, MicOff, Phone, PhoneOff, Video, VideoOff } from "lucide-react";
-import axios from "axios";
-import Cookies from "js-cookie";
+'use client';
 
-const VideoCallPage = () => {
+import { usePeer } from "@/components/provider/PeerProvider";
 
-    const {
-        callAccepted,
-        callEnded,
-        isOffCamera,
-        receiverScreen,
-        setName,
-        name,
-        idToCall,
-        setIdToCall,
-        btnRef,
-        leaveCall,
-        callUser,
-        receiver,
-        answerCall,
-        toggleAudio,
-        toggleMicrophone,
-        toggleVideo,
-        toggleCamera,
-        myScreen,
-        stream,
-        callDuration,
-        nameReceiver,
-        isOffMicrophone,
-        callerSignal,
-        stompClientRef,
-    } = useCall();
+export default function VideoCallApp() {
+    
+  const {
+    peerId,
+    remotePeerIdValue,
+    setRemotePeerIdValue,
+    yourName,
+    setYourName,
+    callerName,
+    cameraOn,
+    micOn,
+    remoteCameraOn,
+    remoteMicOn,
+    isInCall,
+    incomingCall,
+    currentUserVideoRef,
+    remoteVideoRef,
+    toggleCamera,
+    toggleMic,
+    call,
+    answerCall,
+    rejectCall,
+    endCall,
+  } = usePeer();
 
-    const [hasCalled, setHasCalled] = useState(false);
-    const [userToCall, setUserToCall] = useState("");
-    const [gradient, setGradient] = useState("radial-gradient(circle, #4B5EAA80, #1A1A3D80)");
-    const btnAnswerRef = useRef(null);
+  // Placeholder avatar
+  const yourAvatar = 'https://via.placeholder.com/100';
 
-    useEffect(() => {
-        if (stream && myScreen.current && !myScreen.current.srcObject) {
-            console.log("Attaching stream to myScreen");
-            myScreen.current.srcObject = stream;
-            myScreen.current.play().catch((err) => console.error("MyScreen play error:", err));
-        }
-        if (callAccepted && receiverScreen.current && receiverScreen.current.srcObject) {
-            console.log("Receiver screen should be playing");
-            receiverScreen.current.play().catch((err) => console.error("Receiver play error:", err));
-        }
-    }, [callAccepted, receiverScreen, stream]);
-
-    useEffect(() => {
-        const handleMessage = (event) => {
-            if (event.origin !== window.location.origin) return;
-            const { chatPartner: receivedId } = event.data;
-
-            if (receivedId && !callAccepted && !callEnded && !receiver && !hasCalled) {
-                console.log("Initiating call to:", receivedId);
-                setIdToCall(receivedId);
-                axios
-                    .get(`${process.env.NEXT_PUBLIC_API_URL}/users/${receivedId}`, {
-                        headers: {
-                            Authorization: `Bearer ${Cookies.get("token")}`,
-                        },
-                    })
-                    .then((response) => {
-                        const user = response.data;
-                        console.log("User info:", user);
-                        setUserToCall(`${user.firstName} ${user.lastName}`);
-                        setName(`${user.firstName} ${user.lastName}`);
-                        if(stompClientRef.current){
-                            callUser(receivedId);
-                        }
-                        setHasCalled(true);
-                    })
-                    .catch((error) => {
-                        console.error("Error fetching user info:", error);
-                    });
-            }
-        };
-
-        window.addEventListener("message", handleMessage);
-        return () => window.removeEventListener("message", handleMessage);
-    }, [callAccepted, callEnded, receiver, hasCalled, callUser, setIdToCall, setName, answerCall, callerSignal]);
-
-
-    useEffect(() => {
-        if (receiver && !callAccepted && btnAnswerRef.current) {
-            const timer = setTimeout(() => {
-                btnAnswerRef.current.click();
-            }, 1000);
-            return () => clearTimeout(timer);
-        }
-    }, [receiver, callAccepted]);
-
-
-
-    const formatDuration = (seconds) => {
-        const minutes = Math.floor(seconds / 60);
-        const secs = seconds % 60;
-        return `${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
-    };
-
-    const hasAudioTrack = stream && stream.getAudioTracks().length > 0;
-    const hasVideoTrack = stream && stream.getVideoTracks().length > 0;
-
-    return (
-        <div className="w-full h-screen relative bg-gray-900 text-white flex flex-col overflow-hidden">
-
-
-            <div className="w-full h-full flex justify-center items-center absolute top-0 left-0">
-                {callAccepted && !callEnded ? (
-                    <div className="w-full h-full relative">
-                        <video
-                            ref={receiverScreen}
-                            autoPlay
-                            playsInline
-                            className="w-full h-full object-cover transform scale-x-[-1]"
-                        />
-                        {!isOffCamera && (
-                            <div
-                                className="w-full h-full absolute top-0 left-0 flex items-center justify-center z-10"
-                                style={{background: gradient}}
-                            >
-                                <div className="flex flex-col items-center gap-2">
-                                    <img
-                                        src={!receiver ? 'https://file.hstatic.net/1000292100/file/img_1907_grande_e05accd5a03247069db4f3169cfb8b11_grande.jpg' : 'https://i.pinimg.com/1200x/d2/f7/7e/d2f77e1984d947d02785f5a966e309dc.jpg'}
-                                        alt="Avatar" className="w-20 h-20 rounded-full"/>
-                                    <h3 className="text-4xl font-semibold">{nameReceiver}</h3>
-                                </div>
-                            </div>
-                        )}
-                        {callAccepted && !isOffMicrophone && (
-                            <div className="absolute top-4 right-4 z-20 animate-mic-off">
-                                <MicOff className="w-8 h-8 text-red-500 bg-gray-800 bg-opacity-70 p-1 rounded-full"/>
-                            </div>
-                        )}
-                        <div className="absolute top-4 left-4 bg-black bg-opacity-50 px-3 py-1 rounded-lg z-50">
-                            <p>{formatDuration(callDuration)}</p>
-                        </div>
-                    </div>
-                ) : receiver && !callAccepted ? (
-                    <div className="text-center bg-gray-800 p-6 rounded-lg shadow-lg">
-                        <h1 className="text-2xl font-bold">{nameReceiver} calling...</h1>
-                    </div>
-                ) : callEnded ? (
-                    <div className="text-center bg-gray-800 p-8 rounded-lg shadow-lg">
-                        <h1 className="text-3xl font-bold mb-4">Call ended</h1>
-                        <p className="text-xl">Call duration: {formatDuration(callDuration)}</p>
-                        <button
-                            onClick={() => window.close()}
-                            className="mt-6 p-2 bg-red-600 hover:bg-red-700 rounded-full transition-colors"
-                        >
-                            <PhoneOff className="w-6 h-6"/>
-                        </button>
-                    </div>
-                ) : (
-                    <div className="text-center flex flex-col items-center gap-4">
-                        <img
-                            src={'https://file.hstatic.net/1000292100/file/img_1907_grande_e05accd5a03247069db4f3169cfb8b11_grande.jpg'}
-                            alt="Avatar" className="w-20 h-20 rounded-full"/>
-                        <h1 className="text-2xl font-bold">Đang gọi {userToCall || "..."}</h1>
-                    </div>
-                )}
-            </div>
-
-
-            { callAccepted && !callEnded &&
-                (<div className="absolute bottom-4 right-4 z-20">
-                    <div
-                        className="relative w-48 h-36 rounded-lg overflow-hidden bg-gradient-to-br from-blue-500 to-purple-600 p-[2px]"
-                        style={{boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)"}}
-                    >
-                        <video
-                            ref={myScreen}
-                            autoPlay
-                            playsInline
-                            muted
-                            className="w-full h-full rounded-md transform scale-x-[-1]"
-                        />
-                        {callAccepted && !toggleCamera && (
-                            <div
-                                className="absolute inset-0 flex items-center justify-center z-10 animate-camera-off"
-                                style={{background: gradient}}
-                            >
-                                <img
-                                    src={
-                                        receiver
-                                            ? "https://file.hstatic.net/1000292100/file/img_1907_grande_e05accd5a03247069db4f3169cfb8b11_grande.jpg"
-                                            : "https://i.pinimg.com/1200x/d2/f7/7e/d2f77e1984d947d02785f5a966e309dc.jpg"
-                                    }
-                                    alt="Avatar"
-                                    className="w-16 h-16 rounded-full"
-                                />
-                            </div>
-                        )}
-                    </div>
-                </div>)
-            }
-
-
-            <div className="w-full flex justify-center items-center absolute bottom-0 p-6 z-30">
-                {!callAccepted && !receiver && (
-                    <div className="hidden items-center gap-4 bg-gray-800 p-4 rounded-xl shadow-lg">
-                        <input
-                            type="text"
-                            placeholder="Tên của bạn"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            className="p-2 rounded-lg bg-gray-700 text-white border-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                        <input
-                            type="text"
-                            placeholder="ID người nhận"
-                            value={idToCall}
-                            onChange={(e) => setIdToCall(e.target.value)}
-                            className="p-2 rounded-lg bg-gray-700 text-white border-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                        <button
-                            onClick={callUser(idToCall)}
-                            className="p-3 bg-blue-600 hover:bg-blue-700 rounded-full transition-colors disabled:bg-gray-500"
-                            disabled={!name || !idToCall}
-                        >
-                            <Phone className="w-6 h-6"/>
-                        </button>
-                    </div>
-                )}
-
-                {receiver && !callAccepted && (
-                    <div className="opacity-0 flex gap-4 items-center bg-gray-800 p-4 rounded-xl shadow-lg">
-                        <p className="text-lg font-medium">{nameReceiver} calling...</p>
-                        <button
-                            onClick={answerCall}
-                             ref={btnAnswerRef}
-                            className="p-3 bg-green-600 hover:bg-green-700 rounded-full transition-colors"
-                        >
-                            <Phone className="w-6 h-6"/>
-                        </button>
-                        <button
-                            onClick={leaveCall}
-                            className="p-3 bg-red-600 hover:bg-red-700 rounded-full transition-colors"
-                        >
-                            <PhoneOff className="w-6 h-6"/>
-                        </button>
-                    </div>
-                )}
-
-                {callAccepted && !callEnded && (
-                    <div className="flex gap-6 bg-gray-800 p-4 rounded-xl shadow-lg">
-                        <button
-                            onClick={toggleAudio}
-                            className={`p-3 rounded-full transition-colors ${
-                                hasAudioTrack
-                                    ? toggleMicrophone
-                                        ? "bg-blue-500 hover:bg-gray-600"
-                                        : "bg-red-500 hover:bg-red-600"
-                                    : "bg-gray-600 cursor-not-allowed"
-                            }`}
-                            disabled={!hasAudioTrack}
-                        >
-                            {hasAudioTrack ? (
-                                toggleMicrophone ? <Mic className="w-6 h-6"/> : <MicOff className="w-6 h-6"/>
-                            ) : (
-                                <MicOff className="w-6 h-6 opacity-50"/>
-                            )}
-                        </button>
-                        <button
-                            onClick={toggleVideo}
-                            className={`p-3 rounded-full transition-colors ${
-                                hasVideoTrack
-                                    ? toggleCamera
-                                        ? "bg-gray-700 hover:bg-gray-600"
-                                        : "bg-red-500 hover:bg-red-600"
-                                    : "bg-gray-600 cursor-not-allowed"
-                            }`}
-                            disabled={!hasVideoTrack}
-                            title={hasVideoTrack ? "Bật/tắt video" : "Không có video"}
-                        >
-                            {hasVideoTrack ? (
-                                toggleCamera ? <Video className="w-6 h-6"/> : <VideoOff className="w-6 h-6"/>
-                            ) : (
-                                <VideoOff className="w-6 h-6 opacity-50"/>
-                            )}
-                        </button>
-                        <button
-                            onClick={leaveCall}
-                            ref={btnRef}
-                            className="p-3 bg-red-600 hover:bg-red-700 rounded-full transition-colors"
-                        >
-                            <PhoneOff className="w-6 h-6"/>
-                        </button>
-                    </div>
-                )}
-            </div>
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 flex items-center justify-center p-4">
+      <div className="bg-gray-800 rounded-3xl shadow-2xl h-[95vh] w-full overflow-hidden border border-gray-700">
+        {/* Header */}
+        <div className="p-6 border-b border-gray-700 flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-gray-100">Video Call</h1>
+          <p className="text-sm text-gray-400">Peer ID: <span className="font-semibold text-gray-200">{peerId || 'Loading...'}</span></p>
         </div>
-    );
-};
 
-export default VideoCallPage;
+        {/* Main Content */}
+        <div className="p-6">
+
+         {
+            incomingCall && <button
+            onClick={answerCall}
+            className="bg-gradient-to-r from-purple-600 to-blue-500 text-white px-6 py-2 rounded-full font-semibold hover:from-purple-700 hover:to-blue-600 transition-all"
+          >
+            Join Call
+          </button>
+         } 
+          {!isInCall && (
+            <div className="flex flex-col items-center gap-4">
+              <div className="flex items-center gap-4">
+                <img
+                  src={yourAvatar}
+                  alt="Your Avatar"
+                  className="w-12 h-12 rounded-full object-cover border-2 border-purple-500"
+                />
+                <input
+                  type="text"
+                  value={yourName}
+                  onChange={(e) => setYourName(e.target.value)}
+                  placeholder="Enter your name"
+                  className="px-4 py-2 rounded-full border border-gray-600 bg-gray-700 text-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                />
+              </div>
+              <div className="flex items-center gap-4 w-full max-w-md">
+                <input
+                  type="text"
+                  value={remotePeerIdValue}
+                  onChange={(e) => setRemotePeerIdValue(e.target.value)}
+                  placeholder="Enter peer ID to call"
+                  className="flex-1 px-4 py-2 rounded-full border border-gray-600 bg-gray-700 text-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                />
+                <button
+                  onClick={() => call(remotePeerIdValue)}
+                  className="bg-gradient-to-r from-purple-600 to-blue-500 text-white px-6 py-2 rounded-full font-semibold hover:from-purple-700 hover:to-blue-600 transition-all"
+                >
+                  Join Call
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Video Feeds */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+            {/* Your Video */}
+            <div className="relative">
+              <div className="flex items-center gap-3 mb-2">
+                <img
+                  src={yourAvatar}
+                  alt="Your Avatar"
+                  className="w-10 h-10 rounded-full object-cover border-2 border-purple-500"
+                />
+                <p className="text-lg font-semibold text-gray-200">{yourName || 'You'}</p>
+              </div>
+              <video
+                ref={currentUserVideoRef}
+                className="w-full h-[90%] bg-black rounded-2xl object-cover"
+                autoPlay
+                muted
+              />
+              <div className="absolute bottom-4 left-4 flex gap-2">
+                <button
+                  onClick={toggleMic}
+                  className={`p-2 rounded-full ${
+                    micOn ? 'bg-gray-700 bg-opacity-70' : 'bg-red-500'
+                  } text-white`}
+                >
+                  {micOn ? (
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" />
+                      <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
+                    </svg>
+                  ) : (
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zM10.8 4.9c.1-.66.6-1.1 1.2-1.1s1.1.44 1.2 1.1v6.2c-.1.66-.6 1.1-1.2 1.1s-1.1-.44-1.2-1.1V4.9zM17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
+                    </svg>
+                  )}
+                </button>
+                <button
+                  onClick={toggleCamera}
+                  className={`p-2 rounded-full ${
+                    cameraOn ? 'bg-gray-700 bg-opacity-70' : 'bg-red-500'
+                  } text-white`}
+                >
+                  {cameraOn ? (
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M18 10.48V6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-4.48l4 3.98v-11.96l-4 3.98zM16 18H4V6h12v12z" />
+                    </svg>
+                  ) : (
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M18 10.48V6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-4.48l4 3.98v-11.96l-4 3.98zM16 18H4V6h12v12zm-2.29-13.71l-1.41 1.41-1.41-1.41-1.41 1.41-1.41-1.41-1.41 1.41L4.71 4.29 3.29 5.71 4.71 7.12l1.41-1.41 1.41 1.41 1.41-1.41 1.41 1.41 1.41-1.41 1.41 1.41 1.41-1.41-1.41-1.41z" />
+                    </svg>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Remote Video */}
+            <div className="relative">
+              <div className="flex items-center gap-3 mb-2">
+                <img
+                  src="https://via.placeholder.com/100"
+                  alt="Remote Avatar"
+                  className="w-10 h-10 rounded-full object-cover border-2 border-blue-500"
+                />
+                <p className="text-lg font-semibold text-gray-200">{callerName || 'Remote User'}</p>
+              </div>
+              <video
+                ref={remoteVideoRef}
+                className="w-full h-[90%] bg-black rounded-2xl object-cover"
+                autoPlay
+              />
+              <div className="absolute bottom-4 left-4 flex gap-2">
+                {!remoteMicOn && (
+                  <div className="bg-red-500 text-white px-2 py-1 rounded-full text-xs">Mic Off</div>
+                )}
+                {!remoteCameraOn && (
+                  <div className="bg-red-500 text-white px-2 py-1 rounded-full text-xs">Camera Off</div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Call Controls */}
+          {isInCall && (
+            <div className="flex justify-center gap-4 mt-6">
+              <button
+                onClick={endCall}
+                className="bg-red-600 text-white px-6 py-2 rounded-full font-semibold hover:bg-red-700 transition-all"
+              >
+                End Call
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Incoming Call Modal */}
+        {incomingCall && !isInCall && (
+          <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+            <div className="bg-gray-800 rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-gray-700">
+              <h2 className="text-xl font-bold text-gray-100 mb-4">Incoming Call</h2>
+              <p className="text-gray-300 mb-6">From: <span className="font-semibold text-gray-100">{callerName || 'Unknown'}</span></p>
+              <div className="flex gap-4 justify-center">
+                <button
+                  onClick={answerCall}
+                  className="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-2 rounded-full font-semibold hover:from-green-600 hover:to-green-700 transition-all"
+                >
+                  Accept
+                </button>
+                <button
+                  onClick={rejectCall}
+                  className="bg-red-600 text-white px-6 py-2 rounded-full font-semibold hover:bg-red-700 transition-all"
+                >
+                  Reject
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
