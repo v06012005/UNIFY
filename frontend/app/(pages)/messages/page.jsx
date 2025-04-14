@@ -34,6 +34,7 @@ const Page = () => {
   const pickerRef = useRef(null);
   const messagesEndRef = useRef(null);
   const { setToggleCamera } = useCall();
+  const [isOpenChat, setIsOpenChat] = useState(false);
 
   const MAX_FILE_SIZE_MB = 50;
   const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
@@ -202,7 +203,12 @@ const Page = () => {
             {chatList?.map((chat, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between bg-gray-800 text-white p-4 rounded-lg w-full max-w-md mt-4"
+                className={`flex items-center justify-between p-4 rounded-lg w-full max-w-md mt-4 cursor-pointer transition duration-200 ease-in-out 
+                ${
+                  chat.userId === chatPartner
+                    ? "bg-gray-800 shadow-md ring-1 ring-white"
+                    : "hover:bg-gray-700"
+                } text-white`}
                 onClick={() => handleChatSelect(chat)}
               >
                 <div className="flex items-center">
@@ -238,7 +244,7 @@ const Page = () => {
                   opChat?.avatar ||
                   "https://file.hstatic.net/1000292100/file/img_1907_grande_e05accd5a03247069db4f3169cfb8b11_grande.jpg"
                 }
-                alt="Avatar"
+                alt="Avatar user"
                 className="rounded-full w-14 h-14"
               />
               <div className="ml-5">
@@ -272,7 +278,11 @@ const Page = () => {
 
           <div className="h-3/4 overflow-y-scroll">
             <h2 className="text-center m-3">23:48, 20/01/2025</h2>
-            <Message messages={chatMessages} messagesEndRef={messagesEndRef} />
+            <Message
+              messages={chatMessages}
+              messagesEndRef={messagesEndRef}
+              avatar={opChat.avatar}
+            />
             {/*<div ref={messagesEndRef}/>*/}
           </div>
 
@@ -329,11 +339,13 @@ const Page = () => {
               </div>
             )}
             <div className="flex items-center mt-3 bg-gray-800 text-white p-3 rounded-2xl w-full justify-center">
-              <img
-                src={avatar}
-                alt="Avatar"
-                className="rounded-full w-10 h-10 "
-              />
+              {opChat?.avatar && (
+                <img
+                  src={opChat.avatar}
+                  alt="Avatar"
+                  className="rounded-full w-10 h-10"
+                />
+              )}
 
               <button
                 onClick={() => document.getElementById("chatFileInput").click()}
