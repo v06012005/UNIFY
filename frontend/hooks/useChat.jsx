@@ -46,6 +46,20 @@ const useChat = (user, chatPartner) => {
     queryKey: ["chatList", user?.id],
     queryFn: fetchListChat,
     enabled: !!user?.id,
+    refetchInterval: 10000,
+    refetchOnWindowFocus: false,
+    keepPreviousData: true,
+    onSuccess: (data) => {
+      if (data.length > 0) {
+        const sortedChatList = data.sort(
+          (a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated)
+        );
+        queryClient.setQueryData(["chatList", user.id], sortedChatList);
+      }
+    },
+    onError: (error) => {
+      console.error("❌ Error fetching chat list:", error);
+    },
   });
 
   const fetchMessages = async () => {
