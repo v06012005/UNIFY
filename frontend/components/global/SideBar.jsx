@@ -20,7 +20,7 @@ const NavButton = React.memo(function NavButton({
       title={title}
       href={href}
       // className={`w-full dark:hover:text-black dark:hover:bg-gray-200 flex h-full items-center text-center transition delay-100 ease-in-out duration-100 hover:bg-[#D9D9D9]`}
-      className={`w-full dark:hover:text-black dark:hover:bg-gray-200 flex h-full items-center text-center transition delay-100 ease-in-out duration-100 hover:bg-[#D9D9D9]`}
+      className={`w-full dark:hover:text-white dark:hover:bg-neutral-700 flex h-full items-center text-center transition delay-100 ease-in-out duration-100 hover:bg-[#D9D9D9]`}
     >
       <i className={`${iconClass} w-full`}></i>
     </Link>
@@ -101,7 +101,7 @@ const SideBar = () => {
                 title={"Home"}
                 href={"/"}
                 onClick={handleReload}
-                className={`w-full dark:hover:text-black dark:hover:bg-gray-200 flex h-full items-center text-center transition delay-100 ease-in-out duration-100 hover:bg-[#D9D9D9]`}
+                className={`w-full dark:hover:text-white dark:hover:bg-neutral-700 flex h-full items-center text-center transition delay-100 ease-in-out duration-100 hover:bg-[#D9D9D9]`}
               >
                 <i className={`fa-solid fa-house w-full`}></i>
               </Link>
@@ -140,7 +140,7 @@ const SideBar = () => {
               <button
                 ref={buttonRef}
                 onClick={toggleNotification}
-                className="w-full dark:hover:text-black dark:hover:bg-gray-200 flex h-full items-center text-center transition delay-100 ease-in-out duration-100 hover:bg-[#D9D9D9]"
+                className="w-full dark:hover:text-white dark:hover:bg-neutral-700 flex h-full items-center text-center transition delay-100 ease-in-out duration-100 hover:bg-[#D9D9D9]"
                 title="Notifications"
               >
                 <i className="fa-solid fa-bell w-full"></i>
@@ -175,7 +175,7 @@ const SideBar = () => {
           </ul>
           <Link
             title="Settings"
-            className="w-20 h-20 dark:hover:text-black dark:hover:bg-gray-200 flex text-3xl items-center text-center transition delay-100 ease-in-out duration-100 hover:bg-[#D9D9D9]"
+            className="w-20 h-20 dark:hover:text-white dark:hover:bg-neutral-700 flex text-3xl items-center text-center transition delay-100 ease-in-out duration-100 hover:bg-[#D9D9D9]"
             href="/settings/edit-profile"
           >
             <i className="fa-solid w-full fa-gear"></i>
