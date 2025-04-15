@@ -26,7 +26,7 @@ const Archives = ({ username }) => {
     }
 
     const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/posts/my?userId=${userData.id}&status=0`,
+      `${process.env.NEXT_PUBLIC_API_URL}/posts/myArchive?userId=${userData.id}&status=0`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
