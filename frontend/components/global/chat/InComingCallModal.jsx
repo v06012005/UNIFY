@@ -31,7 +31,6 @@ const [ callAccepted,
             onClick={() => {
                 setCallAccepted(true);
                 router.push('/video-call')
-                window.open(window.location.href, '_blank');
             }}
             className="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-2 rounded-full font-semibold hover:from-green-600 hover:to-green-700 transition-all"
           >

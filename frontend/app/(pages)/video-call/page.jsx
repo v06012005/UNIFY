@@ -1,9 +1,12 @@
 
 'use client';
 
+import { useApp } from "@/components/provider/AppProvider";
 import { usePeer } from "@/components/provider/PeerProvider";
 
 export default function VideoCallApp() {
+
+  const {user} = useApp();
     
   const {
     peerId,
@@ -26,72 +29,37 @@ export default function VideoCallApp() {
     answerCall,
     rejectCall,
     endCall,
+    avatarRemote,
+    idToCall
   } = usePeer();
 
-  // Placeholder avatar
   const yourAvatar = 'https://via.placeholder.com/100';
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 flex items-center justify-center p-4">
       <div className="bg-gray-800 rounded-3xl shadow-2xl h-[95vh] w-full overflow-hidden border border-gray-700">
-        {/* Header */}
+
         <div className="p-6 border-b border-gray-700 flex items-center justify-between">
           <h1 className="text-2xl font-bold text-gray-100">Video Call</h1>
-          <p className="text-sm text-gray-400">Peer ID: <span className="font-semibold text-gray-200">{peerId || 'Loading...'}</span></p>
+          
         </div>
 
-        {/* Main Content */}
         <div className="p-6">
 
          {
-            incomingCall && <button
-            onClick={answerCall}
+            (incomingCall || idToCall) && <button
+            onClick={idToCall ? call : answerCall}
             className="bg-gradient-to-r from-purple-600 to-blue-500 text-white px-6 py-2 rounded-full font-semibold hover:from-purple-700 hover:to-blue-600 transition-all"
           >
             Join Call
           </button>
          } 
-          {!isInCall && (
-            <div className="flex flex-col items-center gap-4">
-              <div className="flex items-center gap-4">
-                <img
-                  src={yourAvatar}
-                  alt="Your Avatar"
-                  className="w-12 h-12 rounded-full object-cover border-2 border-purple-500"
-                />
-                <input
-                  type="text"
-                  value={yourName}
-                  onChange={(e) => setYourName(e.target.value)}
-                  placeholder="Enter your name"
-                  className="px-4 py-2 rounded-full border border-gray-600 bg-gray-700 text-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                />
-              </div>
-              <div className="flex items-center gap-4 w-full max-w-md">
-                <input
-                  type="text"
-                  value={remotePeerIdValue}
-                  onChange={(e) => setRemotePeerIdValue(e.target.value)}
-                  placeholder="Enter peer ID to call"
-                  className="flex-1 px-4 py-2 rounded-full border border-gray-600 bg-gray-700 text-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                />
-                <button
-                  onClick={() => call(remotePeerIdValue)}
-                  className="bg-gradient-to-r from-purple-600 to-blue-500 text-white px-6 py-2 rounded-full font-semibold hover:from-purple-700 hover:to-blue-600 transition-all"
-                >
-                  Join Call
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Video Feeds */}
+          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-            {/* Your Video */}
             <div className="relative">
               <div className="flex items-center gap-3 mb-2">
                 <img
-                  src={yourAvatar}
+                  src={user.avatar.url}
                   alt="Your Avatar"
                   className="w-10 h-10 rounded-full object-cover border-2 border-purple-500"
                 />
@@ -140,11 +108,11 @@ export default function VideoCallApp() {
               </div>
             </div>
 
-            {/* Remote Video */}
+          
             <div className="relative">
               <div className="flex items-center gap-3 mb-2">
                 <img
-                  src="https://via.placeholder.com/100"
+                  src={avatarRemote || yourAvatar}
                   alt="Remote Avatar"
                   className="w-10 h-10 rounded-full object-cover border-2 border-blue-500"
                 />
@@ -166,7 +134,7 @@ export default function VideoCallApp() {
             </div>
           </div>
 
-          {/* Call Controls */}
+          
           {isInCall && (
             <div className="flex justify-center gap-4 mt-6">
               <button
@@ -178,30 +146,6 @@ export default function VideoCallApp() {
             </div>
           )}
         </div>
-
-        {/* Incoming Call Modal */}
-        {incomingCall && !isInCall && (
-          <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
-            <div className="bg-gray-800 rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-gray-700">
-              <h2 className="text-xl font-bold text-gray-100 mb-4">Incoming Call</h2>
-              <p className="text-gray-300 mb-6">From: <span className="font-semibold text-gray-100">{callerName || 'Unknown'}</span></p>
-              <div className="flex gap-4 justify-center">
-                <button
-                  onClick={answerCall}
-                  className="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-2 rounded-full font-semibold hover:from-green-600 hover:to-green-700 transition-all"
-                >
-                  Accept
-                </button>
-                <button
-                  onClick={rejectCall}
-                  className="bg-red-600 text-white px-6 py-2 rounded-full font-semibold hover:bg-red-700 transition-all"
-                >
-                  Reject
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
