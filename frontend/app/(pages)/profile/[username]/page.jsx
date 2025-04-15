@@ -239,19 +239,25 @@ const Page = () => {
       </div>
 
       {/* Modals */}
-      <FriendModal isOpen={isFriendOpen} onClose={toggleFriend} />
-      <FollowerModal
-        isOpen={isFollowerOpen}
-        onClose={toggleFollower}
-        isFollow={isFollow}
-        toggleFollow={toggleFollow}
-      />
-      <FollowingModal
-        isOpen={isFollowingOpen}
-        onClose={toggleFollowing}
-        isFollow={isFollow}
-        toggleFollow={toggleFollow}
-      />
+      {isFriendOpen && (
+        <FriendModal isOpen={isFriendOpen} onClose={toggleFriend} />
+      )}
+      {isFollowerOpen && (
+        <FollowerModal
+          isOpen={isFollowerOpen}
+          onClose={toggleFollower}
+          isFollow={isFollow}
+          toggleFollow={toggleFollow}
+        />
+      )}
+      {isFollowingOpen && (
+        <FollowingModal
+          isOpen={isFollowingOpen}
+          onClose={toggleFollowing}
+          isFollow={isFollow}
+          toggleFollow={toggleFollow}
+        />
+      )}
     </div>
   );
 };

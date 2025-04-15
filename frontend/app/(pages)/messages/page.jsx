@@ -15,8 +15,9 @@ import { useState, useRef, useEffect } from "react";
 import Picker from "emoji-picker-react";
 import { Smile, Send, Plus } from "lucide-react";
 import useChat from "@/hooks/useChat";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { usePeer } from "@/components/provider/PeerProvider";
+
 
 const Page = () => {
   const { user } = useApp();
@@ -29,13 +30,13 @@ const Page = () => {
     username: "",
   });
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const { chatMessages, sendMessage, chatList } = useChat(user, chatPartner);
   const [newMessage, setNewMessage] = useState("");
   const [showPicker, setShowPicker] = useState(false);
   const pickerRef = useRef(null);
   const messagesEndRef = useRef(null);
-  const [isOpenChat, setIsOpenChat] = useState(false);
 
   const MAX_FILE_SIZE_MB = 50;
   const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
@@ -63,6 +64,23 @@ const Page = () => {
 
   const [files, setFiles] = useState([]);
 
+  useEffect(() => {
+    const userId = searchParams.get("userId");
+    const username = searchParams.get("username");
+    const avatar = searchParams.get("avatar");
+    const fullname = searchParams.get("fullname");
+
+    if (userId && username) {
+      // Cập nhật opChat với thông tin từ query parameters
+      setOpChat({
+        userId,
+        avatar: avatar || "default-avatar-url",
+        fullname: fullname || username,
+        username,
+      });
+      setChatPartner(userId); // Cập nhật chatPartner để load tin nhắn
+    }
+  }, [searchParams]);
 
   const avatar =
     "https://file.hstatic.net/1000292100/file/img_1907_grande_e05accd5a03247069db4f3169cfb8b11_grande.jpg";
