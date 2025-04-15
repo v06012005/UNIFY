@@ -211,7 +211,7 @@ const Page = () => {
                     username: userInfo.username,
                     avatar:
                       userInfo.avatar?.url || "/images/default-avatar.svg",
-                    fullname: userInfo.fullname || userInfo.username,
+                    fullname: userInfo.firstName + " " + userInfo.lastName,
                   },
                 }}
                 className="flex items-center font-bold py-2 px-4 rounded-lg hover:bg-zinc-400 bg-gray-200 dark:bg-neutral-700 dark:hover:bg-gray-600 transition-colors w-full justify-center"
