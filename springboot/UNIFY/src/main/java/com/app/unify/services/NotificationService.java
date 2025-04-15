@@ -18,10 +18,10 @@ import java.util.stream.Collectors;
 
 @Service
 public class NotificationService {
-    private NotificationRepository notificationRepository;
-    private NotificationMapper notificationMapper;
-    private SimpMessagingTemplate simpMessagingTemplate;
-    private UserRepository userRepository;
+    private final NotificationRepository notificationRepository;
+    private final NotificationMapper notificationMapper;
+    private final SimpMessagingTemplate simpMessagingTemplate;
+    private final UserRepository userRepository;
 
     @Autowired
     public NotificationService(NotificationRepository notificationRepository,
@@ -98,18 +98,17 @@ public class NotificationService {
         List<User> users = userRepository.findAllById(List.of(senderId, receiverId));
         Map<String, User> userMap = users.stream()
                 .collect(Collectors.toMap(User::getId, user -> user));
-        NotificationDTO notificationDTO = notificationMapper.toNotificationDTO(savedNotification, userMap);
+        NotificationDTO notificationDTO = notificationMapper
+                .toNotificationDTO(savedNotification, userMap);
         sendNotification(receiverId, notificationDTO);
     }
 
     public List<NotificationDTO> getNotificationsForUser(String receiverId) {
         List<Notification> notifications = notificationRepository.findByReceiverOrderByTimestampDesc(receiverId);
-        List<User> users = userRepository.findAllById(
-                notifications.stream()
-                        .map(Notification::getSender)
-                        .distinct()
-                        .collect(Collectors.toList())
-        );
+        List<User> users = userRepository.findAllById(notifications.stream()
+                .map(Notification::getSender)
+                .distinct()
+                .collect(Collectors.toList()));
 
         Map<String, User> userMap = users.stream()
                 .collect(Collectors.toMap(User::getId, user -> user));

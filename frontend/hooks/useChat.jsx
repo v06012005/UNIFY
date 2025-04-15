@@ -47,7 +47,7 @@ const useChat = (user, chatPartner) => {
     queryKey: ["chatList", user?.id],
     queryFn: fetchListChat,
     enabled: !!user?.id,
-    refetchInterval: 10000,
+    refetchInterval: 1000,
     refetchOnWindowFocus: false,
     keepPreviousData: true,
     onSuccess: (data) => {
