@@ -7,8 +7,8 @@ export default function TableLoading({ tableHeaders = [""] }) {
         <div className="overflow-x-auto">
             <Table>
                 <TableHeader>
-                    {tableHeaders.map(header => (
-                        <TableColumn className="text-md">{header}</TableColumn>
+                    {tableHeaders.map((header, index) => (
+                        <TableColumn key={index} className="text-md">{header}</TableColumn>
                     ))}
                     {/* <TableColumn className="text-md">No.</TableColumn>
                     <TableColumn className="text-md">Username</TableColumn>

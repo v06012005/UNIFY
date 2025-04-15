@@ -2,7 +2,7 @@ package com.app.unify.services;
 
 
 import com.app.unify.entities.Follower;
-import com.app.unify.entities.NotificationType;
+import com.app.unify.types.NotificationType;
 import com.app.unify.entities.User;
 import com.app.unify.mapper.NotificationMapper;
 import com.app.unify.repositories.FollowRepository;

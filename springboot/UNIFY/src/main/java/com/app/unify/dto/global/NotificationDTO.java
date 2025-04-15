@@ -2,6 +2,7 @@ package com.app.unify.dto.global;
 
 import java.time.LocalDateTime;
 
+import com.app.unify.types.NotificationType;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,17 +25,6 @@ public class NotificationDTO {
     LocalDateTime timestamp;
     @Default
     boolean isRead = false;
-
-    public enum NotificationType {
-        POST,
-        FOLLOW,
-        MESSAGE,
-        SYSTEM,
-        LIKE,
-        COMMENT,
-        TAG,
-        SHARE
-    }
 
     @Data
     @Builder

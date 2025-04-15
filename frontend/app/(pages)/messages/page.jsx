@@ -14,22 +14,28 @@ import { useApp } from "@/components/provider/AppProvider";
 import { useState, useRef, useEffect } from "react";
 import Picker from "emoji-picker-react";
 import { Smile, Send, Plus } from "lucide-react";
-import { useCall } from "@/components/provider/CallProvider";
 import useChat from "@/hooks/useChat";
+import { useRouter } from "next/navigation";
+import { usePeer } from "@/components/provider/PeerProvider";
 
 const Page = () => {
   const { user } = useApp();
-  const chatPartner =
-    user.id === "58d8ce36-2c82-4d75-b71b-9d34a3370b16"
-      ? "3fc0aee5-b110-4788-80a8-7c571e244a13"
-      : "58d8ce36-2c82-4d75-b71b-9d34a3370b16";
+  const [chatPartner, setChatPartner] = useState(null);
+  const {idToCall, setIdToCall} = usePeer();
+  const [opChat, setOpChat] = useState({
+    userId: "",
+    avatar: "",
+    fullname: "",
+    username: "",
+  });
+  const router = useRouter();
 
-  const { chatMessages, sendMessage } = useChat(user, chatPartner);
+  const { chatMessages, sendMessage, chatList } = useChat(user, chatPartner);
   const [newMessage, setNewMessage] = useState("");
   const [showPicker, setShowPicker] = useState(false);
   const pickerRef = useRef(null);
   const messagesEndRef = useRef(null);
-  const { setToggleCamera } = useCall();
+  const [isOpenChat, setIsOpenChat] = useState(false);
 
   const MAX_FILE_SIZE_MB = 50;
   const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
@@ -56,9 +62,11 @@ const Page = () => {
   };
 
   const [files, setFiles] = useState([]);
+
+
   const avatar =
     "https://file.hstatic.net/1000292100/file/img_1907_grande_e05accd5a03247069db4f3169cfb8b11_grande.jpg";
-    
+
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
@@ -75,7 +83,7 @@ const Page = () => {
 
   const handleCall = () => {
     const callWindow = window.open(
-      "/video-call",
+      "/test-video",
       "CallWindow",
       `width=1200,height=600,left=${(window.screen.width - 1200) / 2},top=${
         (window.screen.height - 600) / 3
@@ -83,7 +91,7 @@ const Page = () => {
     );
     if (callWindow) {
       callWindow.onload = () => {
-        callWindow.postMessage({ chatPartner }, window.location.origin);
+        call();
       };
     }
   };
@@ -91,7 +99,7 @@ const Page = () => {
   const handleVideoCall = () => {
     setToggleCamera(true);
     const callWindow = window.open(
-      "/video-call",
+      "/test-video",
       "CallWindow",
       `width=1200,height=600,left=${(window.screen.width - 1200) / 2},top=${
         (window.screen.height - 600) / 3
@@ -108,6 +116,7 @@ const Page = () => {
   };
 
   useEffect(() => {
+
     const handleClickOutside = (event) => {
       if (pickerRef.current && !pickerRef.current.contains(event.target)) {
         setShowPicker(false);
@@ -156,6 +165,23 @@ const Page = () => {
     }
   };
 
+  const handleChatSelect = (chat) => {
+    setOpChat({
+      userId: chat?.userId,
+      avatar: chat?.avatar?.url,
+      fullname: chat.fullname,
+      username: chat.username,
+    });
+    setChatPartner(chat.userId);
+  };
+
+  const handleCallVideo = () => {
+    if(opChat.userId){
+      setIdToCall(opChat.userId);
+      router.push('/video-call');
+    }
+  }
+
   return (
     <div className="ml-auto">
       <div className="flex w-full">
@@ -178,38 +204,34 @@ const Page = () => {
           </div>
 
           <div className="flex-1 overflow-y-scroll px-9 py-4 dark:bg-black">
-            {[...Array(1)].map((_, index) => (
+            {chatList?.map((chat, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between bg-gray-800 text-white p-4 rounded-lg w-full max-w-md mt-4"
+                className={`flex items-center justify-between p-4 rounded-lg w-full max-w-md mt-4 cursor-pointer transition duration-200 ease-in-out 
+                ${
+                  chat.userId === chatPartner
+                    ? "bg-gray-800 shadow-md ring-1 ring-white"
+                    : "hover:bg-gray-700"
+                } text-white`}
+                onClick={() => handleChatSelect(chat)}
               >
                 <div className="flex items-center">
                   <img
-                    src={
-                      user.id === "58d8ce36-2c82-4d75-b71b-9d34a3370b16"
-                        ? "https://i.pinimg.com/1200x/d2/f7/7e/d2f77e1984d947d02785f5a966e309dc.jpg"
-                        : "https://file.hstatic.net/1000292100/file/img_1907_grande_e05accd5a03247069db4f3169cfb8b11_grande.jpg"
-                    }
+                    src={chat?.avatar?.url || "default-avatar-url"}
                     alt="Avatar"
                     className="rounded-full w-12 h-12"
                   />
                   <div className="ml-4">
                     <h4 className="text-lg font-medium truncate w-23">
-                      {user.id !== "58d8ce36-2c82-4d75-b71b-9d34a3370b16"
-                        ? "Tấn Vinh"
-                        : "Minh Đang"}
+                      {chat.fullname}
                     </h4>
                     <p className="text-sm text-gray-300 truncate w-60">
-                      {chatMessages &&
-                        chatMessages[chatMessages.length - 1]?.content}
+                      {chat.lastMessage}
                     </p>
                   </div>
                 </div>
                 <span className="text-sm text-gray-400">
-                  {new Date(
-                    chatMessages &&
-                      chatMessages[chatMessages.length - 1]?.timestamp
-                  ).toLocaleTimeString("vi-VN", {
+                  {new Date(chat.lastUpdated).toLocaleTimeString("vi-VN", {
                     hour: "2-digit",
                     minute: "2-digit",
                   })}
@@ -223,24 +245,19 @@ const Page = () => {
             <div className="flex grow">
               <img
                 src={
-                  user.id === "58d8ce36-2c82-4d75-b71b-9d34a3370b16"
-                    ? "https://i.pinimg.com/1200x/d2/f7/7e/d2f77e1984d947d02785f5a966e309dc.jpg"
-                    : "https://file.hstatic.net/1000292100/file/img_1907_grande_e05accd5a03247069db4f3169cfb8b11_grande.jpg"
+                  opChat?.avatar ||
+                  "https://file.hstatic.net/1000292100/file/img_1907_grande_e05accd5a03247069db4f3169cfb8b11_grande.jpg"
                 }
-                alt="Avatar"
+                alt="Avatar user"
                 className="rounded-full w-14 h-14"
               />
               <div className="ml-5">
                 <h4 className="text-lg font-medium truncate w-60">
-                  {user.id !== "58d8ce36-2c82-4d75-b71b-9d34a3370b16"
-                    ? "Tấn Vinh"
-                    : "Minh Đang"}
+                  {opChat?.fullname || "Fullname"}
                 </h4>
                 <p className="text-lg text-gray-500 truncate w-40">
                   {" "}
-                  {user.id !== "58d8ce36-2c82-4d75-b71b-9d34a3370b16"
-                    ? "TanVinh"
-                    : "MinhDang"}
+                  {opChat?.username || "Username"}
                 </p>
               </div>
             </div>
@@ -253,7 +270,7 @@ const Page = () => {
                 <i className="fa-solid fa-phone "></i>
               </button>
               <button
-                onClick={handleVideoCall}
+                onClick={handleCallVideo}
                 title="Video Call"
                 className="mr-2 p-2 rounded-md  dark:hover:bg-gray-700 hover:bg-gray-300  transition ease-in-out duration-200"
               >
@@ -265,7 +282,11 @@ const Page = () => {
 
           <div className="h-3/4 overflow-y-scroll">
             <h2 className="text-center m-3">23:48, 20/01/2025</h2>
-            <Message messages={chatMessages} messagesEndRef={messagesEndRef} />
+            <Message
+              messages={chatMessages}
+              messagesEndRef={messagesEndRef}
+              avatar={opChat.avatar}
+            />
             {/*<div ref={messagesEndRef}/>*/}
           </div>
 
@@ -322,11 +343,13 @@ const Page = () => {
               </div>
             )}
             <div className="flex items-center mt-3 bg-gray-800 text-white p-3 rounded-2xl w-full justify-center">
-              <img
-                src={avatar}
-                alt="Avatar"
-                className="rounded-full w-10 h-10 "
-              />
+              {opChat?.avatar && (
+                <img
+                  src={opChat.avatar}
+                  alt="Avatar"
+                  className="rounded-full w-10 h-10"
+                />
+              )}
 
               <button
                 onClick={() => document.getElementById("chatFileInput").click()}

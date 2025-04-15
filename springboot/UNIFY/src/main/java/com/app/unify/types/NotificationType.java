@@ -1,4 +1,4 @@
-package com.app.unify.entities;
+package com.app.unify.types;
 
 // Enum cho type
 public enum NotificationType {
