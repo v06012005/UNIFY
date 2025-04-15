@@ -124,6 +124,10 @@ public class PostServiceImp implements PostService {
     public List<PostDTO> getMyPosts(String userId, Integer status, Audience audience) {
         return mapper.toPostDTOList(postRepository.findMyPosts(userId, status, audience));
     }
+    @Override
+    public List<PostDTO> getArchiveMyPosts(String userId, Integer status) {
+        return mapper.toPostDTOList(postRepository.findArchiveMyPosts(userId, status));
+    }
 
 	@Override
 	public List<PostDTO> getPostsByHashtag(String hashtag) {

@@ -110,6 +110,11 @@ public class PostController {
         List<PostDTO> posts = postService.getMyPosts(userId, status, audience);
         return ResponseEntity.ok(posts);
     }
+    @GetMapping("/myArchive")
+    public ResponseEntity<List<PostDTO>> getArchiveMyPosts(@RequestParam String userId, @RequestParam Integer status) {
+        List<PostDTO> posts = postService.getArchiveMyPosts(userId, status);
+        return ResponseEntity.ok(posts);
+    }
 
     @GetMapping("/hashtag/{content}")
     public ResponseEntity<List<PostDTO>> getPostsByHashtag(@PathVariable("content") String content) {
