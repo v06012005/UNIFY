@@ -208,7 +208,7 @@ const ChangePassword = () => {
             {
               <div className="flex gap-4">
                 <Button
-                  className="w-full bg-gray-600 hover:bg-gray-500 text-white font-medium py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"
+                  className="w-full bg-gray-600 dark:bg-neutral-700 dark:hover-neutral-600 hover:bg-gray-500 text-white font-medium py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"
                   type="submit"
                   disabled={
                     loading ||

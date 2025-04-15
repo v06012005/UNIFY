@@ -203,46 +203,46 @@ const Page = () => {
     <div className="ml-auto">
       <div className="flex w-full">
         <div className="h-screen basis-1/3 flex flex-col">
-          <div className="dark:bg-black shadow-md px-9 py-4 sticky top-0 z-10">
+          <div className="dark:bg-neutral-900 shadow-md px-4 py-3 sticky top-0 z-10 border-r-1 dark:border-r-neutral-700">
             <div className="flex justify-between items-center mb-4">
-              <h1 className="text-4xl font-bold dark:text-white ">Message</h1>
+              <h1 className="text-3xl font-bold dark:text-white ">Message</h1>
               {/*<img*/}
               {/*  src={avatar}*/}
               {/*  alt="Avatar"*/}
               {/*  className="rounded-full w-12 h-12"*/}
               {/*/>*/}
             </div>
-            <div className="mb-4">
+            <div className="mb-2">
               <Input
                 placeholder={"Search..."}
-                className={`w-[400px] h-12 dark:border-white font-bold`}
+                className={`p-3 w-full h-10 dark:border-neutral-600 placeholder-gray-500 border-gray-300`}
               />
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-scroll px-9 py-4 dark:bg-black">
+          <div className="flex-1 overflow-y-scroll scrollbar-hide px-4 py-1 dark:bg-black border-r-1 dark:border-r-neutral-700">
             {chatList?.map((chat, index) => (
               <div
                 key={index}
-                className={`flex items-center justify-between p-4 rounded-lg w-full max-w-md mt-4 cursor-pointer transition duration-200 ease-in-out 
+                className={`flex items-center justify-between p-3 rounded-lg w-full max-w-md mt-3 cursor-pointer transition duration-200 ease-in-out 
                 ${
                   chat.userId === chatPartner
-                    ? "bg-gray-800 shadow-md ring-1 ring-white"
-                    : "hover:bg-gray-700"
-                } text-white`}
+                    ? "dark:bg-neutral-800 bg-gray-200 shadow-md ring-1 ring-white dark:ring-neutral-600"
+                    : "dark:hover:bg-neutral-700 dark:bg-neutral-900 hover:bg-gray-300"
+                } dark:text-white text-black`}
                 onClick={() => handleChatSelect(chat)}
               >
                 <div className="flex items-center">
                   <img
                     src={chat?.avatar?.url || opChat?.avatar}
                     alt="Avatar"
-                    className="rounded-full w-12 h-12"
+                    className="rounded-full w-12 h-12 border-2 border-gray-500 dark:border-neutral-500"
                   />
                   <div className="ml-4">
-                    <h4 className="text-lg font-medium truncate w-23">
+                    <h4 className="text-sm font-medium truncate w-23">
                       {chat.fullname || opChat?.fullname}
                     </h4>
-                    <p className="text-sm text-gray-300 truncate w-60">
+                    <p className="text-sm dark:text-gray-400 text-neutral-500 truncate w-60">
                       {chat.lastMessage}
                     </p>
                   </div>
@@ -258,7 +258,7 @@ const Page = () => {
           </div>
         </div>
         <div className="ml-5 h-screen basis-2/3 mr-5  ">
-          <div className="flex p-4 w-full">
+          <div className="flex p-3 w-full">
             <div className="flex grow">
               <img
                 src={
@@ -266,13 +266,13 @@ const Page = () => {
                   "https://file.hstatic.net/1000292100/file/img_1907_grande_e05accd5a03247069db4f3169cfb8b11_grande.jpg"
                 }
                 alt="Avatar user"
-                className="rounded-full w-14 h-14"
+                className="rounded-full w-12 h-12 border-2 border-gray-500 dark:border-neutral-700"
               />
               <div className="ml-5">
-                <h4 className="text-lg font-medium truncate w-60">
+                <h4 className="text-sm font-medium truncate w-60">
                   {opChat?.fullname || "Fullname"}
                 </h4>
-                <p className="text-lg text-gray-500 truncate w-40">
+                <p className="text-sm text-gray-500 dark:text-neutral-400 truncate w-40">
                   {" "}
                   {opChat?.username || "Username"}
                 </p>
@@ -282,23 +282,29 @@ const Page = () => {
               <button
                 onClick={handleCall}
                 title="Call"
-                className="mr-2 p-2 rounded-md dark:hover:bg-gray-700 hover:bg-gray-300 transition ease-in-out duration-200"
+                className="mr-2 p-2 rounded-md dark:hover:bg-neutral-700 hover:bg-gray-300  transition ease-in-out duration-200"
               >
-                <i className="fa-solid fa-phone "></i>
+                <i className="fa-solid fa-phone dark:text-gray-400"></i>
               </button>
               <button
                 onClick={handleCallVideo}
                 title="Video Call"
-                className="mr-2 p-2 rounded-md  dark:hover:bg-gray-700 hover:bg-gray-300  transition ease-in-out duration-200"
+                className="mr-2 p-2 rounded-md  dark:hover:bg-neutral-700 hover:bg-gray-300  transition ease-in-out duration-200"
               >
-                <i className="fa-solid fa-video"></i>
+                <i className="fa-solid fa-video dark:text-neutral-400"></i>
+              </button>
+              <button
+                title="Video Call"
+                className="mr-2 p-2 rounded-md  dark:hover:bg-neutral-700 hover:bg-gray-300  transition ease-in-out duration-200"
+              >
+                <i className="fa-solid fa-ellipsis-vertical dark:text-neutral-400"></i>
               </button>
             </div>
           </div>
-          <hr className=" border-1 dark:border-gray-300" />
+          <hr className=" border-1 dark:border-neutral-700" />
 
-          <div className="h-3/4 overflow-y-scroll">
-            <h2 className="text-center m-3">23:48, 20/01/2025</h2>
+          <div className="h-3/4 overflow-y-scroll scrollbar-hide">
+            <h2 className="text-center m-3 dark:text-neutral-400">23:48, 20/01/2025</h2>
             <Message
               messages={chatMessages}
               messagesEndRef={messagesEndRef}
@@ -309,7 +315,7 @@ const Page = () => {
 
           <div className={`relative w-full`}>
             {files.length > 0 && (
-              <div className="mt-3 w-[99.8%] mb-3 absolute translate-y-[-120px] overflow-x-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800 p-2 bg-gray-800 rounded-lg">
+              <div className="mt-3 w-[99.8%] mb-3 absolute translate-y-[-120px] overflow-x-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800 p-2 bg-neutral-800 rounded-lg">
                 <div className="flex gap-1">
                   {files.map((fileObj, index) => (
                     <div
@@ -332,7 +338,7 @@ const Page = () => {
                           className="w-16 h-16 rounded-lg"
                         />
                       ) : fileIcons[fileObj.file.type] ? (
-                        <div className="w-16 h-16 flex items-center justify-center bg-gray-700 rounded-lg">
+                        <div className="w-16 h-16 flex items-center justify-center bg-neutral-700 rounded-lg">
                           {fileIcons[fileObj.file.type]}
                         </div>
                       ) : (
@@ -359,18 +365,18 @@ const Page = () => {
                 </div>
               </div>
             )}
-            <div className="flex items-center mt-3 bg-gray-800 text-white p-3 rounded-2xl w-full justify-center">
+            <div className="flex items-center mt-3 bg-gray-200 dark:bg-neutral-800 dark:text-white text-black p-3 rounded-2xl w-full justify-center">
               {user?.avatar.url && (
                 <img
                   src={user?.avatar.url}
                   alt="Avatar"
-                  className="rounded-full w-10 h-10"
+                  className="rounded-full w-10 h-10 border-2 border-gray-500 dark:border-neutral-700"
                 />
               )}
 
               <button
                 onClick={() => document.getElementById("chatFileInput").click()}
-                className="text-gray-400 hover:text-gray-300 mr-3 ml-3"
+                className="dark:text-gray-400 text-black dark:hover:text-gray-300 hover:text-neutral-600 mr-3 ml-3"
               >
                 <Plus size={28} />
               </button>
@@ -386,7 +392,7 @@ const Page = () => {
               <input
                 type="text"
                 placeholder="Type your message here..."
-                className="bg-gray-700 text-white placeholder-gray-400 flex-grow py-2 px-4 rounded-3xl focus:outline-none"
+                className="dark:bg-neutral-700 bg-gray-300 dark:text-white text-black placeholder-gray-500 flex-grow py-2 px-4 rounded-3xl focus:outline-none"
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 onKeyDown={(e) => {
@@ -399,7 +405,7 @@ const Page = () => {
               <button
                 type="button"
                 onClick={() => setShowPicker(!showPicker)}
-                className="ml-2 text-gray-400 hover:text-gray-300"
+                className="ml-2 dark:text-gray-400 text-black dark:hover:text-gray-300 hover:text-neutral-700"
               >
                 <Smile size={28} />
               </button>

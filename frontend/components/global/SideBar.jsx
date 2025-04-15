@@ -87,7 +87,7 @@ const SideBar = () => {
       isOpen={openSearch}
       searchComponentRef={searchComponentRef}
     >
-      <div className="relative flex flex-row">
+      <div className="relative flex flex-row ">
         <div className="flex flex-col border-r-1 dark:border-neutral-700 h-screen fixed left-0 top-0 z-50">
           <UnifyLogoIcon />
           <NotificationModal

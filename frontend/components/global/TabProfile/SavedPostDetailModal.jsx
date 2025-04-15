@@ -209,8 +209,8 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
   return (
     <>
       <ToastProvider placement={"top-right"} />
-      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50">
-        <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-2xl flex flex-row w-[1300px] h-[720px] overflow-hidden">
+      <div className="fixed inset-0 flex items-center justify-center bg-black/40 dark:bg-neutral-700/40 backdrop-blur-sm z-50 pointer-events-auto">
+      <div className="bg-gray-100 dark:bg-neutral-900 rounded-xl shadow-2xl border-neutral-700 border-1 flex flex-row w-[1300px] h-[690px] overflow-hidden">
           {/* Media */}
           <div className="w-1/2 relative dark:border-neutral-700 border-r">
             {selectedMedia ? (
@@ -288,64 +288,7 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
             )}
           </div>
 
-          {/* Nội dung */}
-          <div className="w-1/2 flex flex-col">
-            <div className="flex items-center justify-between p-4 border-b dark:border-neutral-800">
-              <div className="flex items-center">
-                <div className="w-10 h-10 rounded-full border-2 border-gray-300 dark:border-gray-600">
-                  <Image
-                    src={post.user?.avatar?.url || Avatar}
-                    alt="User Avatar"
-                    width={40} // Add width
-                    height={40} // Add height
-                    className="w-full h-full rounded-full object-cover"
-                  />
-                </div>
-                <span className="font-semibold ml-3 text-gray-900 dark:text-white">
-                  {post.user?.username}
-                </span>
-              </div>
-              <NavButton
-                onClick={() => setOpenList(true)}
-                content="•••"
-                className="text-2xl"
-              />
-              {/* Modal Options */}
-              {openList && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[60]">
-                  <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-xl w-80 transform transition-all duration-200 scale-100 hover:scale-105">
-                    <button
-                      onClick={() => {
-                        openReportModal();
-                        setOpenList(false);
-                      }}
-                      className="w-full py-3 text-red-500 dark:hover:bg-neutral-700 hover:bg-gray-100 rounded-t-lg font-medium"
-                    >
-                      Report
-                    </button>
-                    <button
-                      onClick={() => {
-                        toggleBookmark(post.id);
-                        setOpenList(false);
-                        onClose();
-                      }}
-                      className="w-full py-3 text-gray-800 dark:text-gray-200 dark:hover:bg-neutral-700 hover:bg-gray-100 font-medium"
-                    >
-                      Delete bookmark
-                    </button>
-                    <button className="w-full py-3 text-gray-800 dark:text-gray-200 dark:hover:bg-neutral-700 hover:bg-gray-100 font-medium">
-                      Share
-                    </button>
-                    <button
-                      onClick={() => setOpenList(false)}
-                      className="w-full py-3 text-gray-500 dark:text-gray-400 dark:hover:bg-neutral-700 hover:bg-gray-100 rounded-b-lg font-medium"
-                    >
-                      Close
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
+           
 
             {/* Nội dung */}
             <div className="w-1/2 flex flex-col">
@@ -413,7 +356,7 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
               </div>
 
               <div
-                className="flex-1 px-4 py-3 overflow-y-auto"
+                className="flex-1 px-4 py-3 overflow-y-auto no-scrollbar"
                 ref={commentsContainerRef}
               >
                 {post.captions === null ? (
@@ -475,7 +418,6 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
             </button>
           </div>
         </div>
-      </div>
     </>
   );
 };

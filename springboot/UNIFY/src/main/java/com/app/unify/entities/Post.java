@@ -47,7 +47,7 @@ public class Post {
 
 	// 0 -> hidden
 	// 1 -> visible
-	// 2 -> sensitive/ violent content
+	// 2 -> sensitive/ violent content/ delete
 	@Default
 	Integer status = 1;
 

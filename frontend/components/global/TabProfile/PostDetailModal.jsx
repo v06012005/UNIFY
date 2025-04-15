@@ -173,8 +173,8 @@ const PostDetailModal = ({ post, onClose, onArchive, onDelete }) => {
   if (!post) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50">
-      <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-2xl flex flex-row w-[1300px] h-[720px] overflow-hidden">
+    <div className="fixed inset-0 flex items-center justify-center bg-black/40 dark:bg-neutral-700/40 backdrop-blur-sm z-50 pointer-events-auto">
+      <div className="bg-gray-100 dark:bg-neutral-900 rounded-xl shadow-2xl border-neutral-700 border-1 flex flex-row w-[1300px] h-[690px] overflow-hidden">
         {/* Media */}
         <div className="w-1/2 relative dark:border-neutral-700 border-r">
           {selectedMedia ? (
@@ -330,8 +330,6 @@ const PostDetailModal = ({ post, onClose, onArchive, onDelete }) => {
                     width={1000}
                     height={1000}
                     alt="User Avatar"
-                    width={40}
-                    height={40}
                     className="object-cover w-full h-full"
                   />
                 </div>
