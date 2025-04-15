@@ -281,72 +281,9 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
                           />
                         </div>
                       </div>
-
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Nội dung */}
-        <div className="w-1/2 flex flex-col">
-          <div className="flex items-center justify-between p-4 border-b dark:border-neutral-800">
-            <div className="flex items-center">
-              <div className="w-10 h-10 rounded-full border-2 border-gray-300 dark:border-gray-600">
-                <Image
-                  src={post.user?.avatar?.url || Avatar}
-                  alt="User Avatar"
-                  width={40} // Add width
-                  height={40} // Add height
-                  className="w-full h-full rounded-full object-cover"
-                />
-              </div>
-              <span className="font-semibold ml-3 text-gray-900 dark:text-white">
-                {post.user?.username}
-              </span>
-            </div>
-            <NavButton
-              onClick={() => setOpenList(true)}
-              content="•••"
-              className="text-2xl"
-            />
-            {/* Modal Options */}
-            {openList && (
-              <div
-              
-               className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[60]">
-                <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-xl w-80 transform transition-all duration-200 scale-100 hover:scale-105">
-                  <button
-                    onClick={() => {
-                        openReportModal(); 
-                        setOpenList(false);
-                      }}
-                    className="w-full py-3 text-red-500 dark:hover:bg-neutral-700 hover:bg-gray-100 rounded-t-lg font-medium"
-                  >
-                    Report                 
-                  </button>
-                  <button
-                  onClick={() => {
-                    toggleBookmark(post.id);
-                    setOpenList(false);
-                    onClose();
-                  }}
-                    className="w-full py-3 text-gray-800 dark:text-gray-200 dark:hover:bg-neutral-700 hover:bg-gray-100 font-medium"
-                  >
-                     Delete bookmark
-                  </button>
-                  <button className="w-full py-3 text-gray-800 dark:text-gray-200 dark:hover:bg-neutral-700 hover:bg-gray-100 font-medium">
-                    Share
-                  </button>
-                  <button
-                    onClick={() => setOpenList(false)}
-                    className="w-full py-3 text-gray-500 dark:text-gray-400 dark:hover:bg-neutral-700 hover:bg-gray-100 rounded-b-lg font-medium"
-                  >
-                    Close
-                  </button>
-                </div>
+                    )}
+                  </div>
+                ))}
               </div>
             )}
           </div>
@@ -408,75 +345,135 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
                   </div>
                 </div>
               )}
-              <ReportModal
-                isOpen={isModalOpen}
-                onClose={closeModal}
-                onSubmit={handleReportPost}
-                postId={post.id}
-              />
             </div>
 
-            <div
-              className="flex-1 px-4 py-3 overflow-y-auto"
-              ref={commentsContainerRef}
-            >
-              {post.captions === null ? (
-                ""
-              ) : (
-                <div className="flex items-center gap-3 leading-tight text-gray-800 dark:text-gray-200">
-                  <div className="flex-shrink-0 w-10 h-10 rounded-full overflow-hidden border-2 border-gray-300 dark:border-gray-600">
+            {/* Nội dung */}
+            <div className="w-1/2 flex flex-col">
+              <div className="flex items-center justify-between p-4 border-b dark:border-neutral-800">
+                <div className="flex items-center">
+                  <div className="w-10 h-10 rounded-full border-2 border-gray-300 dark:border-gray-600">
                     <Image
                       src={post.user?.avatar?.url || Avatar}
                       alt="User Avatar"
-                      width={40}
-                      height={40}
-                      className="object-cover w-full h-full"
+                      width={40} // Add width
+                      height={40} // Add height
+                      className="w-full h-full rounded-full object-cover"
                     />
                   </div>
-                  <span className="text-sm font-bold mr-4">
+                  <span className="font-semibold ml-3 text-gray-900 dark:text-white">
                     {post.user?.username}
                   </span>
-                  <div className="ml-3 text-sm">
-                    {transformHashtags(post.captions)}
-                  </div>
                 </div>
-              )}
-
-              <div className="mt-5 space-y-2">
-                {isCommentsLoading ? (
-                  <p>Loading comments...</p>
-                ) : comments.length > 0 ? (
-                  comments.map((comment) => (
-                    <CommentItem
-                      key={comment.id}
-                      comment={comment}
-                      currentUserId={currentUserId}
-                      onReplySubmit={handleNewComment}
-                      onReplyClick={() => handleReplyClick(comment)}
-                    />
-                  ))
-                ) : (
-                  <p>No comments yet.</p>
+                <NavButton
+                  onClick={() => setOpenList(true)}
+                  content="•••"
+                  className="text-2xl"
+                />
+                {/* Modal Options */}
+                {openList && (
+                  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[60]">
+                    <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-xl w-80 transform transition-all duration-200 scale-100 hover:scale-105">
+                      <button
+                        onClick={() => {
+                          openReportModal();
+                          setOpenList(false);
+                        }}
+                        className="w-full py-3 text-red-500 dark:hover:bg-neutral-700 hover:bg-gray-100 rounded-t-lg font-medium"
+                      >
+                        Report
+                      </button>
+                      <button
+                        onClick={() => {
+                          toggleBookmark(post.id);
+                          setOpenList(false);
+                          onClose();
+                        }}
+                        className="w-full py-3 text-gray-800 dark:text-gray-200 dark:hover:bg-neutral-700 hover:bg-gray-100 font-medium"
+                      >
+                        Delete bookmark
+                      </button>
+                      <button className="w-full py-3 text-gray-800 dark:text-gray-200 dark:hover:bg-neutral-700 hover:bg-gray-100 font-medium">
+                        Share
+                      </button>
+                      <button
+                        onClick={() => setOpenList(false)}
+                        className="w-full py-3 text-gray-500 dark:text-gray-400 dark:hover:bg-neutral-700 hover:bg-gray-100 rounded-b-lg font-medium"
+                      >
+                        Close
+                      </button>
+                    </div>
+                  </div>
                 )}
+                <ReportModal
+                  isOpen={isModalOpen}
+                  onClose={closeModal}
+                  onSubmit={handleReportPost}
+                  postId={post.id}
+                />
+              </div>
+
+              <div
+                className="flex-1 px-4 py-3 overflow-y-auto"
+                ref={commentsContainerRef}
+              >
+                {post.captions === null ? (
+                  ""
+                ) : (
+                  <div className="flex items-center gap-3 leading-tight text-gray-800 dark:text-gray-200">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-full overflow-hidden border-2 border-gray-300 dark:border-gray-600">
+                      <Image
+                        src={post.user?.avatar?.url || Avatar}
+                        alt="User Avatar"
+                        width={40}
+                        height={40}
+                        className="object-cover w-full h-full"
+                      />
+                    </div>
+                    <span className="text-sm font-bold mr-4">
+                      {post.user?.username}
+                    </span>
+                    <div className="ml-3 text-sm">
+                      {transformHashtags(post.captions)}
+                    </div>
+                  </div>
+                )}
+
+                <div className="mt-5 space-y-2">
+                  {isCommentsLoading ? (
+                    <p>Loading comments...</p>
+                  ) : comments.length > 0 ? (
+                    comments.map((comment) => (
+                      <CommentItem
+                        key={comment.id}
+                        comment={comment}
+                        currentUserId={currentUserId}
+                        onReplySubmit={handleNewComment}
+                        onReplyClick={() => handleReplyClick(comment)}
+                      />
+                    ))
+                  ) : (
+                    <p>No comments yet.</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="p-4 border-t dark:border-neutral-800">
+                <CommentInput
+                  postId={post.id}
+                  setComments={handleNewComment}
+                  parentComment={replyingTo} //   được reply
+                  onCancelReply={handleCancelReply} //   hủy reply
+                />
               </div>
             </div>
 
-            <div className="p-4 border-t dark:border-neutral-800">
-              <CommentInput
-                postId={post.id}
-                setComments={handleNewComment}
-                parentComment={replyingTo} //   được reply
-                onCancelReply={handleCancelReply} //   hủy reply
-              />
-            </div>
+            <button
+              className="absolute right-4 top-4 text-gray-200 hover:text-white text-3xl font-bold rounded-full w-10 h-10 flex items-center justify-center transition-colors"
+              onClick={handleClose}
+            >
+              ×
+            </button>
           </div>
-
-          <button
-            className="absolute right-4 top-4 text-gray-200 hover:text-white text-3xl font-bold rounded-full w-10 h-10 flex items-center justify-center transition-colors"
-            onClick={handleClose}
-          >
-            ×
-          </button>
         </div>
       </div>
     </>
