@@ -22,6 +22,7 @@ import { addToast, ToastProvider } from "@heroui/toast";
 import { useQuery } from "@tanstack/react-query";
 import { useBookmarks } from "@/components/provider/BookmarkProvider";
 export default function Reels() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCommentOpen, setIsCommentOpen] = useState(false);
   const [toolStates, setToolStates] = useState({});
   const [selectedAvatars, setSelectedAvatars] = useState([]);
@@ -533,16 +534,19 @@ export default function Reels() {
                   />
                 </div>
                 <div className="flex flex-col items-center">
-                  <i
-                    // className={`fa-${
-                    //   toolStates[post.id]?.isSaved ? "solid" : "regular"
-                    // } fa-bookmark hover:opacity-50 focus:opacity-50 transition cursor-pointer`}
-                    // onClick={() => handleSave(post.id)}
-
+                  {/* <i
                     className={`fa-${
                       savedPostsMap[post.id] ? "solid" : "regular"
                     } fa-bookmark
         hover:opacity-50 focus:opacity-50 transition cursor-pointer`}
+                    onClick={() => toggleBookmark(post.id)}
+                  /> */}
+                  <i
+                    className={`fa-${
+                      savedPostsMap[post.id] ? "solid" : "regular"
+                    } fa-bookmark
+  ${savedPostsMap[post.id] ? "text-yellow-400" : "text-white"}
+  hover:opacity-50 focus:opacity-50 transition cursor-pointer`}
                     onClick={() => toggleBookmark(post.id)}
                   />
                 </div>
@@ -578,9 +582,10 @@ export default function Reels() {
               <ReportModal
                 isOpen={modalStates[post.id] || false}
                 onClose={() => closeModal(post.id)}
-                onSubmit={(reason) => handleReportPost(post.id, reason)}
+                onSubmit={(postId, reason) => handleReportPost(postId, reason)}
                 postId={post.id}
               />
+             
             </div>
           ))
         )}

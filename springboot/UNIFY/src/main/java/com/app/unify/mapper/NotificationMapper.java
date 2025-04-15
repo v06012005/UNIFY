@@ -1,23 +1,37 @@
 package com.app.unify.mapper;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-
 import com.app.unify.dto.global.NotificationDTO;
+import com.app.unify.entities.Avatar;
 import com.app.unify.entities.Notification;
+import com.app.unify.entities.User;
+import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "spring", uses = { UserMapper.class })
-public interface NotificationMapper {
+import java.util.Map;
 
-    @Mapping(source = "timestamp", target = "timestamp", dateFormat = "yyyy-MM-dd'T'HH:mm:ss")
-    @Mapping(source = "read", target = "isRead")
-    @Mapping(source = "user", target = "user")
-    @Mapping(source = "sender", target = "sender")
-    NotificationDTO toNotificationDTO(Notification notification);
+@Mapper(componentModel = "spring")
+public abstract class NotificationMapper {
+    public NotificationDTO toNotificationDTO(Notification notification, Map<String, User> userMap) {
+        User sender = userMap.get(notification.getSender());
 
-    @Mapping(source = "timestamp", target = "timestamp", dateFormat = "yyyy-MM-dd'T'HH:mm:ss")
-    @Mapping(source = "user", target = "user")
-    @Mapping(source = "sender", target = "sender")
-    @Mapping(source = "read", target = "isRead")
-    Notification toNotification(NotificationDTO notificationDTO);
+        NotificationDTO.SenderDTO senderDTO = sender != null
+                ? NotificationDTO.SenderDTO.builder()
+                .id(sender.getId())
+                .fullName(sender.getFirstName() + " " + sender.getLastName())
+                .avatar(getAvatarUrl(sender.getLatestAvatar()))
+                .build()
+                : null;
+
+        return NotificationDTO.builder()
+                .id(notification.getId())
+                .sender(senderDTO)
+                .message(notification.getMessage())
+                .type(notification.getType())
+                .timestamp(notification.getTimestamp())
+                .isRead(notification.isRead())
+                .build();
+    }
+
+    private String getAvatarUrl(Avatar avatar) {
+        return avatar != null ? avatar.getUrl() : null;
+    }
 }

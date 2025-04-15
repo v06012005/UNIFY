@@ -7,6 +7,7 @@ import React, { Suspense } from "react";
 import Spinner from "@/components/loading/Spinner";
 import Logo from "@/public/images/unify_1.svg";
 import { Montserrat, Roboto } from "next/font/google";
+import { PeerProvider } from "@/components/provider/PeerProvider";
 
 
 const geistSans = Geist({

@@ -158,6 +158,34 @@ const Page = () => {
       errors.birthDay = errors.birthDay || {};
       errors.birthDay.year = "Invalid year";
     }
+    if (
+      data.birthDay.year &&
+      data.birthDay.month &&
+      data.birthDay.day
+    ) {
+      const today = new Date();
+      const birthDate = new Date(data.birthDay.year, data.birthDay.month - 1, data.birthDay.day);
+      
+      if (birthDate > today) {
+        errors.birthDay = errors.birthDay || {};
+        errors.birthDay.date = "Birth date cannot be in the future";
+      } else {
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        
+        if (
+          monthDiff < 0 ||
+          (monthDiff === 0 && today.getDate() < birthDate.getDate())
+        ) {
+          age--;
+        }
+        
+        if (age < 13) {
+          errors.birthDay = errors.birthDay || {};
+          errors.birthDay.age = "You must be at least 13 years old";
+        }
+      }
+    }
     return errors;
   };
 
@@ -296,6 +324,7 @@ const Page = () => {
           shouldShowTimeoutProgess: true,
           color: "success",
         });
+        setErrors({});   
       } else {
         const errorData = await response.json();
         console.error("Server error:", errorData);
@@ -609,6 +638,11 @@ const Page = () => {
                     })}
                   </select>
                 </div>
+                {errors.birthDay && (
+                  <div className="text-red-500 text-sm mt-1">
+                    {errors.birthDay.age}
+                  </div>
+                )}
               </div>
             </div>
 

@@ -25,7 +25,7 @@ const RootLayout = ({ children }) => {
               )}
               <main className="w-full flex-initial z-10 relative">
                 {children}
-                <CallNotification />
+                {/*<CallNotification />*/}
               </main>
             </div>
           </NextThemesProvider>

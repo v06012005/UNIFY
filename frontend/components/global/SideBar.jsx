@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import avatar from "@/public/images/test1.png";
+import avatar from "@/public/images/unify_icon_2.svg";
 import SearchHorizontalToggle from "@/components/global/SearchHorizontalToggle";
 import NotificationModal from "@/components/global/NotificationModal";
 import UnifyLogoIcon from "./UnifyLogoIcon";
@@ -20,7 +20,7 @@ const NavButton = React.memo(function NavButton({
       title={title}
       href={href}
       // className={`w-full dark:hover:text-black dark:hover:bg-gray-200 flex h-full items-center text-center transition delay-100 ease-in-out duration-100 hover:bg-[#D9D9D9]`}
-      className={`w-full dark:hover:text-black dark:hover:bg-gray-200 flex h-full items-center text-center transition delay-100 ease-in-out duration-100 hover:bg-[#D9D9D9]`}
+      className={`w-full dark:hover:text-white dark:hover:bg-neutral-700 flex h-full items-center text-center transition delay-100 ease-in-out duration-100 hover:bg-[#D9D9D9]`}
     >
       <i className={`${iconClass} w-full`}></i>
     </Link>
@@ -101,7 +101,7 @@ const SideBar = () => {
                 title={"Home"}
                 href={"/"}
                 onClick={handleReload}
-                className={`w-full dark:hover:text-black dark:hover:bg-gray-200 flex h-full items-center text-center transition delay-100 ease-in-out duration-100 hover:bg-[#D9D9D9]`}
+                className={`w-full dark:hover:text-white dark:hover:bg-neutral-700 flex h-full items-center text-center transition delay-100 ease-in-out duration-100 hover:bg-[#D9D9D9]`}
               >
                 <i className={`fa-solid fa-house w-full`}></i>
               </Link>
@@ -140,7 +140,7 @@ const SideBar = () => {
               <button
                 ref={buttonRef}
                 onClick={toggleNotification}
-                className="w-full dark:hover:text-black dark:hover:bg-gray-200 flex h-full items-center text-center transition delay-100 ease-in-out duration-100 hover:bg-[#D9D9D9]"
+                className="w-full dark:hover:text-white dark:hover:bg-neutral-700 flex h-full items-center text-center transition delay-100 ease-in-out duration-100 hover:bg-[#D9D9D9]"
                 title="Notifications"
               >
                 <i className="fa-solid fa-bell w-full"></i>
@@ -155,25 +155,27 @@ const SideBar = () => {
             </li>
             <li className="h-16 flex justify-center items-center">
               {user && (
-                <Link title="Your profile" href={`/profile/${user.username}`} className="">
-                {user?.avatar?.url && (
-  <div className="w-12 h-12 rounded-full border-2 border-gray-300 overflow-hidden">
-    <Image
-      src={user.avatar.url}
-      alt="Avatar"
-      width={48}
-      height={48}
-      className="object-cover w-full h-full"
-    />
-  </div>
-)}
+                <Link
+                  title="Your profile"
+                  href={`/profile/${user.username}`}
+                  className=""
+                >
+                  <div className="w-8 h-8 rounded-full border-2 border-gray-300 overflow-hidden">
+                    <Image
+                      src={user.avatar?.url || avatar}
+                      alt="Avatar"
+                      width={30}
+                      height={30}
+                      className="object-cover w-full h-full"
+                    />
+                  </div>
                 </Link>
               )}
             </li>
           </ul>
           <Link
             title="Settings"
-            className="w-20 h-20 dark:hover:text-black dark:hover:bg-gray-200 flex text-3xl items-center text-center transition delay-100 ease-in-out duration-100 hover:bg-[#D9D9D9]"
+            className="w-20 h-20 dark:hover:text-white dark:hover:bg-neutral-700 flex text-3xl items-center text-center transition delay-100 ease-in-out duration-100 hover:bg-[#D9D9D9]"
             href="/settings/edit-profile"
           >
             <i className="fa-solid w-full fa-gear"></i>
