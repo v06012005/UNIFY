@@ -14,7 +14,6 @@ import CommentItem from "@/components/comments/CommentItem";
 import CommentInput from "@/components/comments/CommentInput";
 import CaptionWithMore from "@/components/global/CaptionWithMore";
 import { useDisclosure } from "@heroui/react";
-import avatar2 from "@/public/images/testAvt.jpg";
 import FollowButton from "@/components/ui/follow-button";
 import LikeButton from "@/components/global/LikeButton";
 import ReportModal from "@/components/global/Report/ReportModal";
@@ -56,7 +55,6 @@ export default function Reels() {
     console.log("Current postId:", postId);
     console.log("Posts from useQuery:", posts);
   }, [postId, posts]);
-
 
   useEffect(() => {
     async function getVideoPosts() {
@@ -122,10 +120,9 @@ export default function Reels() {
     getVideoPosts();
   }, [token, postId]);
 
-
   useEffect(() => {
     if (loading || videoPosts.length === 0) return;
-  
+
     videoRefs.current.forEach((video) => {
       if (video) {
         video.pause();
@@ -137,16 +134,16 @@ export default function Reels() {
 
   useEffect(() => {
     if (loading || videoPosts.length === 0) return;
-  
+
     const observer = new IntersectionObserver(
       (entries) => {
         let newActivePostId = null;
-  
+
         entries.forEach((entry) => {
           const video = entry.target;
           const postId = video.dataset.postId;
           const isManuallyPaused = pausedStates[postId];
-  
+
           if (entry.isIntersecting) {
             if (!isManuallyPaused) {
               video.playbackRate = 1;
@@ -160,26 +157,26 @@ export default function Reels() {
             video.muted = true;
           }
         });
-  
+
         videoRefs.current.forEach((video) => {
           if (video && video.dataset.postId !== newActivePostId) {
             video.pause();
             video.muted = true;
           }
         });
-  
+
         setActivePostId(newActivePostId);
       },
       { threshold: 0.7 }
     );
-  
+
     videoRefs.current.forEach((video, index) => {
       if (video && videoPosts[index]) {
         video.dataset.postId = videoPosts[index].id;
         observer.observe(video);
       }
     });
-  
+
     return () => {
       videoRefs.current.forEach((video) => {
         if (video) observer.unobserve(video);
@@ -187,22 +184,30 @@ export default function Reels() {
     };
   }, [videoPosts, pausedStates, isMutedGlobally, loading]); // Giữ nguyên dependency
 
-  const handlePauseChange = useCallback((postId, isPaused) => {
-    setPausedStates((prev) => ({ ...prev, [postId]: isPaused }));
-    const video = videoRefs.current.find((v) => v?.dataset.postId === postId);
-    if (video) {
-      if (isPaused) {
-        video.pause(); // Dừng video
-      } else {
-        video.muted = isMutedGlobally;
-        video.play().catch((err) => console.error("Play error:", err)); // Phát tiếp từ vị trí hiện tại
-        setActivePostId(postId);
+  const handlePauseChange = useCallback(
+    (postId, isPaused) => {
+      setPausedStates((prev) => ({ ...prev, [postId]: isPaused }));
+      const video = videoRefs.current.find((v) => v?.dataset.postId === postId);
+      if (video) {
+        if (isPaused) {
+          video.pause(); // Dừng video
+        } else {
+          video.muted = isMutedGlobally;
+          video.play().catch((err) => console.error("Play error:", err)); // Phát tiếp từ vị trí hiện tại
+          setActivePostId(postId);
+        }
       }
-    }
-  }, [isMutedGlobally]);
+    },
+    [isMutedGlobally]
+  );
 
   const handleMuteChange = useCallback((isMuted) => {
-    console.log("handleMuteChange called with", isMuted, "from", new Error().stack);
+    console.log(
+      "handleMuteChange called with",
+      isMuted,
+      "from",
+      new Error().stack
+    );
     setIsMutedGlobally(isMuted);
     videoRefs.current.forEach((video) => {
       if (video) video.muted = isMuted;
@@ -269,8 +274,6 @@ export default function Reels() {
       });
     }
   }, [videoPosts, loadComments]);
-
-
 
   const toggleToolState = (postId, key) => {
     setToolStates((prev) => ({
@@ -447,23 +450,46 @@ export default function Reels() {
                 (media, mediaIndex) =>
                   media.mediaType === "VIDEO" && (
                     <PostReels
-                    key={mediaIndex}
-                    src={media.url}
-                    ref={(el) => (videoRefs.current[index] = el)}
-                    loop
-                    muted={isMutedGlobally} // Truyền isMutedGlobally
-                    onPauseChange={(isPaused) => handlePauseChange(post.id, isPaused)}
-                    onMuteChange={handleMuteChange}
-                  />
+                      key={mediaIndex}
+                      src={media.url}
+                      ref={(el) => (videoRefs.current[index] = el)}
+                      loop
+                      muted={isMutedGlobally} // Truyền isMutedGlobally
+                      onPauseChange={(isPaused) =>
+                        handlePauseChange(post.id, isPaused)
+                      }
+                      onMuteChange={handleMuteChange}
+                    />
                   )
               )}
               <div className="absolute bottom-4 left-4 flex flex-col text-white">
                 <div className="flex items-center">
-                  <Image
-                    src={avatar2}
-                    alt="User Avatar"
-                    className="w-10 h-10 bg-gray-600 rounded-full"
-                  />
+                  <div className="w-10 h-10 min-w-10 min-h-10 rounded-full overflow-hidden">
+                    <Image
+                      src={
+                        post?.user?.avatar?.url
+                          ? `${post?.user?.avatar?.url.replace(
+                              "/upload/",
+                              "/upload/w_80,h_80,c_fill,q_auto/"
+                            )}`
+                          : "/images/unify_icon_2.svg"
+                      }
+                      width={40}
+                      height={40}
+                      alt={
+                        post?.user?.avatar?.url
+                          ? "User Avatar"
+                          : "Default Avatar"
+                      }
+                      className={
+                        post?.user?.avatar?.url
+                          ? "bg-gray-600 rounded-full"
+                          : "bg-zinc-700 rounded-full"
+                      }
+                      style={{ objectFit: "cover", objectPosition: "center" }}
+                      quality={100} // Tăng chất lượng ảnh
+                    />
+                  </div>
                   <div className="flex items-center space-x-2 pl-2">
                     <span className="font-medium">{post.user?.username}</span>
                     <span className="text-white text-lg">•</span>
@@ -528,7 +554,7 @@ export default function Reels() {
                   {toolStates[post.id]?.isPopupOpen && (
                     <div
                       id="overmore"
-                      className="w-44 absolute top-[-138px] right-10 mt-2 backdrop-blur-xl p-4 rounded-lg shadow-lg text-white border border-gray-300 z-50"
+                      className="w-48 absolute top-[-138px] right-10 mt-2 backdrop-blur-xl p-4 rounded-lg shadow-lg text-white border border-gray-300 z-50"
                       onClick={(e) => closeMore(e, post.id)}
                     >
                       <ul className="text-sm">
@@ -570,21 +596,21 @@ export default function Reels() {
         {isCommentOpen && currentPostId && (
           <div
             id="overlay"
-            className={`fixed top-0 left-0 w-full h-full z-20 transition-opacity duration-300 ease-in-out ${
+            className={`fixed top-0 left-0 w-full h-full z-20 transition-opacity duration-300 ease-in-out  ${
               isCommentOpen ? "opacity-100" : "opacity-0 pointer-events-none"
             }`}
             onClick={closeComment}
           >
             <div
-              className={`fixed top-0 right-0 h-full w-[450px] transition-transform duration-300 ease-in-out ${
+              className={`fixed top-0 right-0 h-full w-[450px] transition-transform duration-300 ease-in-out  ${
                 isCommentOpen ? "translate-x-0" : "translate-x-full"
               }`}
             >
-              <div className="h-full flex flex-col p-4 border-l border-neutral-700">
+              <div className="h-full flex flex-col p-4 border-l border-neutral-700 ">
                 <div className="flex items-center justify-between dark:text-white mb-4">
                   <h2 className="text-2xl text-center font-bold">Comments</h2>
                 </div>
-                <div className="flex-grow overflow-auto">
+                <div className="flex-grow overflow-auto no-scrollbar">
                   {isCommentsLoading ? (
                     <Spinner />
                   ) : Array.isArray(commentsByPost[currentPostId]) &&

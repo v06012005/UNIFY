@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-const Content = ({ text, maxLength = 100, className = "" }) => {
+const Content = ({ text, maxLength = 100, className = "text-xs" }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleExpanded = () => setIsExpanded(!isExpanded);

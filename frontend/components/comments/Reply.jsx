@@ -5,9 +5,7 @@ import Content from "@/components/comments/Content";
 import { formatDistanceToNow } from "date-fns";
 import defaultAvatar from "public/images/unify_icon_2.svg";
 
-
 const Reply = ({ reply, currentUserId, onReplySubmit, onReplyClick }) => {
-
   return (
     <div className="w-full flex items-center">
       <p className="dark:text-white ml-4 mr-4 text-center">
@@ -19,7 +17,6 @@ const Reply = ({ reply, currentUserId, onReplySubmit, onReplyClick }) => {
       >
         <div className="">
           <div className="flex items-center">
-
             <div className="relative w-11 h-11 rounded-full overflow-hidden border-2 border-gray-300">
               {reply.avatarUrl ? (
                 <Image
@@ -41,19 +38,18 @@ const Reply = ({ reply, currentUserId, onReplySubmit, onReplyClick }) => {
             </div>
             <h4 className="text-base font-bold truncate max-w-full w-fit px-2">
               {reply.username || "Unknown"}
-
             </h4>
             <h4 className="text-xs truncate w-32 dark:text-gray-500">
-              {reply.commentedAt && !isNaN(new Date(reply.commentedAt).getTime())
-                ? formatDistanceToNow(new Date(reply.commentedAt), { addSuffix: true })
-
+              {reply.commentedAt &&
+              !isNaN(new Date(reply.commentedAt).getTime())
+                ? formatDistanceToNow(new Date(reply.commentedAt), {
+                    addSuffix: true,
+                  })
                 : "Vừa xong"}
             </h4>
           </div>
           <div className="indent-12">
-
             <Content text={reply.content} className="" />
-
           </div>
         </div>
 
@@ -65,7 +61,6 @@ const Reply = ({ reply, currentUserId, onReplySubmit, onReplyClick }) => {
             className="bg-transparent dark:text-white"
             onPress={() => onReplyClick(reply)} // Truyền reply cho cấp 2
           >
-
             <i className="fa-solid fa-reply"></i> Reply
           </Button>
           <Button
@@ -78,7 +73,6 @@ const Reply = ({ reply, currentUserId, onReplySubmit, onReplyClick }) => {
         </CardFooter>
 
         <hr className="dark:border-neutral-700" />
-
       </Card>
     </div>
   );
