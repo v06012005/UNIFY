@@ -2,11 +2,17 @@ import React, { useRef, forwardRef, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const PostReels = forwardRef(
-  ({ src, muted, loop, onPauseChange, onMuteChange }, ref) => {
+  ({ src: initialSrc, muted, loop, onPauseChange, onMuteChange }, ref) => {
     const [isPaused, setIsPaused] = useState(false);
     const videoRef = useRef(null);
 
-    // Đồng bộ muted từ prop
+    useEffect(() => {
+      console.log("Received src in PostReels:", initialSrc);
+      if (!initialSrc) {
+        console.error("Invalid or missing src in PostReels");
+      }
+    }, [initialSrc]);
+
     useEffect(() => {
       if (videoRef.current && videoRef.current.muted !== muted) {
         videoRef.current.muted = muted;
@@ -14,9 +20,9 @@ const PostReels = forwardRef(
     }, [muted]);
 
     const toggleMute = () => {
-      const newMuted = !muted; // Dựa vào muted hiện tại từ prop
+      const newMuted = !muted;
       if (videoRef.current) videoRef.current.muted = newMuted;
-      onMuteChange(newMuted); // Báo cho Reels cập nhật toàn cục
+      onMuteChange(newMuted);
     };
 
     const togglePlayPause = () => {
@@ -68,17 +74,22 @@ const PostReels = forwardRef(
           )}
         </AnimatePresence>
         <video
-          key={src}
           ref={(el) => {
             ref(el);
             videoRef.current = el;
           }}
-          src={src}
-          muted={muted} // Dùng trực tiếp prop muted
+          muted={muted}
           loop={loop}
           className="w-full h-full object-cover relative z-0"
+          playsInline
+          onError={(e) => console.error("Video error:", e)}
         >
-          <source src={src} type="video/mp4" />
+          {initialSrc ? (
+            <source src={initialSrc} type="video/mp4" />
+          ) : (
+            <p>No valid video source provided.</p>
+          )}
+          Your browser does not support the video tag.
         </video>
       </div>
     );

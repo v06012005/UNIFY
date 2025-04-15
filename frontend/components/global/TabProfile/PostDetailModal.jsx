@@ -9,9 +9,9 @@ import Avatar from "@/public/images/unify_icon_2.svg";
 import { redirect } from "next/navigation";
 import { fetchPostById } from "@/app/lib/dal";
 import Image from "next/image";
-import { useApp } from "@/components/provider/AppProvider"; 
-import iconVideo from "@/public/vds.svg"; 
-import iconImage from "@/public/imgs.svg"; 
+import { useApp } from "@/components/provider/AppProvider";
+import iconVideo from "@/public/vds.svg";
+import iconImage from "@/public/imgs.svg";
 import OptionsPostModal from "@/components/global/TabProfile/OptionsPostModal";
 import DeletePostModal from "@/components/global/TabProfile/Modal/DeletePostModal";
 import ArchivePostModal from "@/components/global/TabProfile/Modal/ArchivePostModal";
@@ -36,11 +36,11 @@ const PostDetailModal = ({ post, onClose, onArchive, onDelete }) => {
   const [showRestoreModal, setShowRestoreModal] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState(post?.media?.[0] || null);
   const [comments, setComments] = useState([]);
-  const [isCommentsLoading, setIsCommentsLoading] = useState(false); 
-  const [replyingTo, setReplyingTo] = useState(null); 
+  const [isCommentsLoading, setIsCommentsLoading] = useState(false);
+  const [replyingTo, setReplyingTo] = useState(null);
   const token = Cookies.get("token");
-  const commentsContainerRef = useRef(null); 
-  const { user } = useApp(); 
+  const commentsContainerRef = useRef(null);
+  const { user } = useApp();
   const currentUserId = user?.id;
   const isOwner = user?.id === post?.user.id;
 
@@ -274,69 +274,73 @@ const PostDetailModal = ({ post, onClose, onArchive, onDelete }) => {
               content="•••"
               className="text-2xl"
             />
-             {openList && (
-          <OptionsPostModal
-            isOwner={isOwner}
-            onOpenDeleteModal={handleOpenDeleteModal}
-            onOpenArchiveModal={handleOpenArchiveModal}
-            onOpenRestoreModal={handleOpenRestoreModal}
-            onClose={() => setOpenList(false)}
-            postId={post.id}
-            onReport={() => {
-              onReport(post.id);
-              setOpenList(false);
-            }}
-          />
-        )}
+            {openList && (
+              <OptionsPostModal
+                isOwner={isOwner}
+                onOpenDeleteModal={handleOpenDeleteModal}
+                onOpenArchiveModal={handleOpenArchiveModal}
+                onOpenRestoreModal={handleOpenRestoreModal}
+                onClose={() => setOpenList(false)}
+                postId={post.id}
+                onReport={() => {
+                  onReport(post.id);
+                  setOpenList(false);
+                }}
+              />
+            )}
             <DeletePostModal
-        isOpen={showDeleteModal}
-        onClose={() => setShowDeleteModal(false)}
-        onConfirm={() => {
-          onDelete(post.id);
-          setShowDeleteModal(false);
-        }}
-      />
+              isOpen={showDeleteModal}
+              onClose={() => setShowDeleteModal(false)}
+              onConfirm={() => {
+                onDelete(post.id);
+                setShowDeleteModal(false);
+              }}
+            />
 
-      <ArchivePostModal
-        isOpen={showArchiveModal}
-        onClose={() => setShowArchiveModal(false)}
-        onConfirm={() => {
-          onArchive(post.id);
-          setShowArchiveModal(false);
-        }}
-      />
+            <ArchivePostModal
+              isOpen={showArchiveModal}
+              onClose={() => setShowArchiveModal(false)}
+              onConfirm={() => {
+                onArchive(post.id);
+                setShowArchiveModal(false);
+              }}
+            />
 
-      <RestorePostModal
-        isOpen={showRestoreModal}
-        onClose={() => setShowRestoreModal(false)}
-        onConfirm={() => {
-          onArchive(post.id);
-          setShowRestoreModal(false);
-        }}
-      />
+            <RestorePostModal
+              isOpen={showRestoreModal}
+              onClose={() => setShowRestoreModal(false)}
+              onConfirm={() => {
+                onArchive(post.id);
+                setShowRestoreModal(false);
+              }}
+            />
           </div>
 
           <div
-            className="flex-1 px-4 py-3 overflow-y-auto"
+            className="flex-1 px-4 py-3 overflow-y-auto no-scrollbar"
             ref={commentsContainerRef}
           >
             {post.captions === null ? (
               ""
             ) : (
               <div className="flex items-center gap-3 leading-tight text-gray-800 dark:text-gray-200">
-                <div className="w-10 h-10 rounded-full border-2 border-gray-300 dark:border-gray-600">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full overflow-hidden border-2 border-gray-300 dark:border-gray-600">
                   <Image
                     src={post.user?.avatar?.url || Avatar}
                     width={1000}
                     height={1000}
                     alt="User Avatar"
-                    className="w-full h-full rounded-full object-cover"
+                    width={40}
+                    height={40}
+                    className="object-cover w-full h-full"
                   />
                 </div>
                 <span className="text-sm font-bold mr-4">
                   {post.user?.username}
                 </span>
-                {transformHashtags(post.captions)}
+                <div className="ml-3 text-sm">
+                  {transformHashtags(post.captions)}
+                </div>
               </div>
             )}
 

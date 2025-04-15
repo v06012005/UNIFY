@@ -67,15 +67,36 @@ export const postComment = async (userId, postId, content, token, parentId = nul
 
     if (response.ok) {
       const data = await response.json();
-      console.log("Comment posted successfully:", data); // Debug
+      console.log("Comment posted successfully:", data);
       return data;
     } else {
       const errorText = await response.text();
+
+     
+      const knownErrors = [
+        "This post has comments disabled",
+        "The post is not available for commenting",
+      ];
+
+      if (knownErrors.includes(errorText)) {
+        throw new Error(errorText);
+      }
+
+    
       console.error("Server responded with error:", response.status, errorText);
-      throw new Error(`${errorText}`);
+      throw new Error(errorText || "Something went wrong.");
     }
   } catch (error) {
+    const knownErrors = [
+      "This post has comments disabled",
+      "The post is not available for commenting",
+    ];
+
+    if (knownErrors.includes(error.message)) {
+      throw error;
+    }
+
     console.error("Error submitting comment:", error.message);
-    throw error;  
+    throw error;
   }
 };

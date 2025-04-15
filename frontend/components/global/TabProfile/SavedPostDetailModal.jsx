@@ -32,8 +32,9 @@ const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
 const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
   const [openList, setOpenList] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const { createPostReport, createUserReport, createCommentReport } = useReports();
-  const { bookmarks = [], toggleBookmark  } = useBookmarks();
+  const { createPostReport, createUserReport, createCommentReport } =
+    useReports();
+  const { bookmarks = [], toggleBookmark } = useBookmarks();
   const [selectedMedia, setSelectedMedia] = useState(post?.media?.[0] || null);
   const [comments, setComments] = useState([]);
   const [isCommentsLoading, setIsCommentsLoading] = useState(false); // Thêm trạng thái loading
@@ -197,7 +198,6 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
     setReplyingTo(null);
   };
 
-
   const handleClose = () => {
     setOpenList(false);
     setShowDeleteModal(false);
@@ -208,78 +208,80 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
 
   return (
     <>
-     <ToastProvider placement={"top-right"} />
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50">
-      <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-2xl flex flex-row w-[1300px] h-[720px] overflow-hidden">
-        {/* Media */}
-        <div className="w-1/2 relative dark:border-neutral-700 border-r">
-          {selectedMedia ? (
-            selectedMedia.mediaType === "VIDEO" ? (
-              <div className="w-full h-full flex items-center justify-center bg-black">
-                <video
-                  src={selectedMedia.url}
-                  controls
-                  className="max-w-full max-h-full object-contain"
-                />
-              </div>
+      <ToastProvider placement={"top-right"} />
+      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50">
+        <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-2xl flex flex-row w-[1300px] h-[720px] overflow-hidden">
+          {/* Media */}
+          <div className="w-1/2 relative dark:border-neutral-700 border-r">
+            {selectedMedia ? (
+              selectedMedia.mediaType === "VIDEO" ? (
+                <div className="w-full h-full flex items-center justify-center bg-black">
+                  <video
+                    src={selectedMedia.url}
+                    controls
+                    className="max-w-full max-h-full object-contain"
+                  />
+                </div>
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-black">
+                  <img
+                    src={selectedMedia.url}
+                    className="max-w-full max-h-full object-contain "
+                    alt="Post Media"
+                  />
+                </div>
+              )
             ) : (
-              <div className="w-full h-full flex items-center justify-center bg-black">
-                <img
-                  src={selectedMedia.url}
-                  className="max-w-full max-h-full object-contain "
-                  alt="Post Media"
-                />
+              <div className="w-full h-full flex items-center justify-center bg-black text-white">
+                <p>No images/videos available</p>
               </div>
-            )
-          ) : (
-            <div className="w-full h-full flex items-center justify-center bg-black text-white">
-              <p>No images/videos available</p>
-            </div>
-          )}
+            )}
 
-          {post.media.length > 1 && (
-            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-[90%] bg-black bg-opacity-60 p-2 rounded-lg overflow-x-auto flex gap-2 scrollbar-hide">
-              {post.media.map((item, index) => (
-                <div
-                  key={index}
-                  className={`w-16 h-16 cursor-pointer border-2 rounded-md flex items-center justify-center bg-black ${
-                    selectedMedia?.url === item.url
-                      ? "border-blue-500"
-                      : "border-gray-500"
-                  } hover:border-blue-400 transition-colors`}
-                  onClick={() => setSelectedMedia(item)}
-                >
-                  {item.mediaType === "VIDEO" ? (
-                    <div className="relative w-full h-full flex items-center justify-center">
-                      <video
-                        src={item.url}
-                        className="max-w-full max-h-full object-contain rounded"
-                        muted
-                      />
-                      <div className="absolute top-1 left-1">
-                        <Image
-                          src={iconVideo}
-                          width={16}
-                          height={16}
-                          alt="Video"
+            {post.media.length > 1 && (
+              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-[90%] bg-black bg-opacity-60 p-2 rounded-lg overflow-x-auto flex gap-2 scrollbar-hide">
+                {post.media.map((item, index) => (
+                  <div
+                    key={index}
+                    className={`w-16 h-16 cursor-pointer border-2 rounded-md flex items-center justify-center bg-black ${
+                      selectedMedia?.url === item.url
+                        ? "border-blue-500"
+                        : "border-gray-500"
+                    } hover:border-blue-400 transition-colors`}
+                    onClick={() => setSelectedMedia(item)}
+                  >
+                    {item.mediaType === "VIDEO" ? (
+                      <div className="relative w-full h-full flex items-center justify-center">
+                        <video
+                          src={item.url}
+                          className="max-w-full max-h-full object-contain rounded"
+                          muted
                         />
+                        <div className="absolute top-1 left-1">
+                          <Image
+                            src={iconVideo}
+                            width={16}
+                            height={16}
+                            alt="Video"
+                          />
+                        </div>
                       </div>
-                    </div>
-                  ) : (
-                    <div className="relative w-full h-full flex items-center justify-center">
-                      <img
-                        src={item.url}
-                        className="max-w-full max-h-full object-contain rounded"
-                        alt="Thumbnail"
-                      />
-                      <div className="absolute top-1 left-1">
-                        <Image
-                          src={iconImage}
-                          width={16}
-                          height={16}
-                          alt="Image"
+                    ) : (
+                      <div className="relative w-full h-full flex items-center justify-center">
+                        <img
+                          src={item.url}
+                          className="max-w-full max-h-full object-contain rounded"
+                          alt="Thumbnail"
                         />
+                        <div className="absolute top-1 left-1">
+                          <Image
+                            src={iconImage}
+                            width={16}
+                            height={16}
+                            alt="Image"
+                          />
+                        </div>
                       </div>
+
                     </div>
                   )}
                 </div>
@@ -347,22 +349,12 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
                 </div>
               </div>
             )}
-          <ReportModal
-                      isOpen={isModalOpen}
-                      onClose={closeModal}
-                      onSubmit={handleReportPost}
-                      postId={post.id}
-                    />
           </div>
 
-          <div
-            className="flex-1 px-4 py-3 overflow-y-auto"
-            ref={commentsContainerRef}
-          >
-            {post.captions === null ? (
-              ""
-            ) : (
-              <div className="flex items-center gap-3 leading-tight text-gray-800 dark:text-gray-200">
+          {/* Nội dung */}
+          <div className="w-1/2 flex flex-col">
+            <div className="flex items-center justify-between p-4 border-b dark:border-neutral-800">
+              <div className="flex items-center">
                 <div className="w-10 h-10 rounded-full border-2 border-gray-300 dark:border-gray-600">
                   <Image
                     src={post.user?.avatar?.url || Avatar}
@@ -372,50 +364,121 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
                     className="w-full h-full rounded-full object-cover"
                   />
                 </div>
-                <span className="text-sm font-bold mr-4">
+                <span className="font-semibold ml-3 text-gray-900 dark:text-white">
                   {post.user?.username}
                 </span>
-                {transformHashtags(post.captions)}
               </div>
-            )}
-
-            <div className="mt-5 space-y-2">
-              {isCommentsLoading ? (
-                <p>Loading comments...</p>
-              ) : comments.length > 0 ? (
-                comments.map((comment) => (
-                  <CommentItem
-                    key={comment.id}
-                    comment={comment}
-                    currentUserId={currentUserId}
-                    onReplySubmit={handleNewComment}
-                    onReplyClick={() => handleReplyClick(comment)}
-                  />
-                ))
-              ) : (
-                <p>No comments yet.</p>
+              <NavButton
+                onClick={() => setOpenList(true)}
+                content="•••"
+                className="text-2xl"
+              />
+              {/* Modal Options */}
+              {openList && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[60]">
+                  <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-xl w-80 transform transition-all duration-200 scale-100 hover:scale-105">
+                    <button
+                      onClick={() => {
+                        openReportModal();
+                        setOpenList(false);
+                      }}
+                      className="w-full py-3 text-red-500 dark:hover:bg-neutral-700 hover:bg-gray-100 rounded-t-lg font-medium"
+                    >
+                      Report
+                    </button>
+                    <button
+                      onClick={() => {
+                        toggleBookmark(post.id);
+                        setOpenList(false);
+                        onClose();
+                      }}
+                      className="w-full py-3 text-gray-800 dark:text-gray-200 dark:hover:bg-neutral-700 hover:bg-gray-100 font-medium"
+                    >
+                      Delete bookmark
+                    </button>
+                    <button className="w-full py-3 text-gray-800 dark:text-gray-200 dark:hover:bg-neutral-700 hover:bg-gray-100 font-medium">
+                      Share
+                    </button>
+                    <button
+                      onClick={() => setOpenList(false)}
+                      className="w-full py-3 text-gray-500 dark:text-gray-400 dark:hover:bg-neutral-700 hover:bg-gray-100 rounded-b-lg font-medium"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
               )}
+              <ReportModal
+                isOpen={isModalOpen}
+                onClose={closeModal}
+                onSubmit={handleReportPost}
+                postId={post.id}
+              />
+            </div>
+
+            <div
+              className="flex-1 px-4 py-3 overflow-y-auto"
+              ref={commentsContainerRef}
+            >
+              {post.captions === null ? (
+                ""
+              ) : (
+                <div className="flex items-center gap-3 leading-tight text-gray-800 dark:text-gray-200">
+                  <div className="flex-shrink-0 w-10 h-10 rounded-full overflow-hidden border-2 border-gray-300 dark:border-gray-600">
+                    <Image
+                      src={post.user?.avatar?.url || Avatar}
+                      alt="User Avatar"
+                      width={40}
+                      height={40}
+                      className="object-cover w-full h-full"
+                    />
+                  </div>
+                  <span className="text-sm font-bold mr-4">
+                    {post.user?.username}
+                  </span>
+                  <div className="ml-3 text-sm">
+                    {transformHashtags(post.captions)}
+                  </div>
+                </div>
+              )}
+
+              <div className="mt-5 space-y-2">
+                {isCommentsLoading ? (
+                  <p>Loading comments...</p>
+                ) : comments.length > 0 ? (
+                  comments.map((comment) => (
+                    <CommentItem
+                      key={comment.id}
+                      comment={comment}
+                      currentUserId={currentUserId}
+                      onReplySubmit={handleNewComment}
+                      onReplyClick={() => handleReplyClick(comment)}
+                    />
+                  ))
+                ) : (
+                  <p>No comments yet.</p>
+                )}
+              </div>
+            </div>
+
+            <div className="p-4 border-t dark:border-neutral-800">
+              <CommentInput
+                postId={post.id}
+                setComments={handleNewComment}
+                parentComment={replyingTo} //   được reply
+                onCancelReply={handleCancelReply} //   hủy reply
+              />
             </div>
           </div>
 
-          <div className="p-4 border-t dark:border-neutral-800">
-            <CommentInput
-              postId={post.id}
-              setComments={handleNewComment}
-              parentComment={replyingTo} //   được reply
-              onCancelReply={handleCancelReply} //   hủy reply
-            />
-          </div>
+          <button
+            className="absolute right-4 top-4 text-gray-200 hover:text-white text-3xl font-bold rounded-full w-10 h-10 flex items-center justify-center transition-colors"
+            onClick={handleClose}
+          >
+            ×
+          </button>
         </div>
-
-        <button
-          className="absolute right-4 top-4 text-gray-200 hover:text-white text-3xl font-bold rounded-full w-10 h-10 flex items-center justify-center transition-colors"
-          onClick={handleClose}
-        >
-          ×
-        </button>
       </div>
-    </div>
     </>
   );
 };

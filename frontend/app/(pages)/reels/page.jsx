@@ -73,7 +73,7 @@ export default function ReelsDefault() {
           </div>
         ))
       ) : (
-        <p>Loading reels...</p>
+        <p></p>
       )}
     </div>
   );

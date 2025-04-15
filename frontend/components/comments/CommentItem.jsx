@@ -62,8 +62,11 @@ const CommentItem = ({
             {comment.username || "Unknown"}
           </h4>
           <h4 className="text-xs truncate w-32 dark:text-gray-500">
-            {comment.commentedAt && !isNaN(new Date(comment.commentedAt).getTime())
-              ? formatDistanceToNow(new Date(comment.commentedAt), { addSuffix: true })
+            {comment.commentedAt &&
+            !isNaN(new Date(comment.commentedAt).getTime())
+              ? formatDistanceToNow(new Date(comment.commentedAt), {
+                  addSuffix: true,
+                })
               : "Vừa xong"}
           </h4>
         </div>
@@ -71,7 +74,7 @@ const CommentItem = ({
         <div className="indent-14 mb-5">
           <Content
             text={comment.content}
-            className="leading-snug text-base dark:text-gray-200 w-fit max-w-full"
+            className="leading-snug text-sm dark:text-gray-200 w-fit max-w-full"
           />
         </div>
       </div>
