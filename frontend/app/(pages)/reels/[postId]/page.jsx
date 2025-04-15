@@ -23,6 +23,7 @@ import { addToast, ToastProvider } from "@heroui/toast";
 import { useQuery } from "@tanstack/react-query";
 import { useBookmarks } from "@/components/provider/BookmarkProvider";
 export default function Reels() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCommentOpen, setIsCommentOpen] = useState(false);
   const [toolStates, setToolStates] = useState({});
   const [selectedAvatars, setSelectedAvatars] = useState([]);
@@ -561,9 +562,10 @@ export default function Reels() {
               <ReportModal
                 isOpen={modalStates[post.id] || false}
                 onClose={() => closeModal(post.id)}
-                onSubmit={(reason) => handleReportPost(post.id, reason)}
+                onSubmit={(postId, reason) => handleReportPost(postId, reason)}
                 postId={post.id}
               />
+             
             </div>
           ))
         )}

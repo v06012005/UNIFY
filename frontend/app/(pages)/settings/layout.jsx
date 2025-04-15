@@ -11,9 +11,9 @@ const NavButton = ({ iconClass, href = "", content = "" }) => {
   return (
     <Link
       className={clsx(
-        "flex h-full items-center text-center py-2 px-4 rounded-lg dark:hover:bg-neutral-400 dark:bg-black hover:bg-neutral-200  transition-colors w-full",
+        "flex h-full items-center text-center py-2 px-4 rounded-lg dark:hover:bg-neutral-700 dark:bg-black hover:bg-neutral-200  transition-colors w-full",
         {
-          "!bg-neutral-600 text-white hover:text-gray-300 dark:hover:text-white":
+          "!bg-neutral-800 text-white hover:text-gray-300 dark:hover:text-white":
             pathname === href,
         }
       )}

@@ -10,6 +10,7 @@ import { SuggestedUsersProvider } from "./SuggestedUsersProvider";
 import { ReportProvider } from "./ReportProvider";
 import { BookmarkProvider } from "./BookmarkProvider";
 import InComingCall from "@/components/global/chat/InComingCallModal";
+import { PeerProvider } from "./PeerProvider";
 const RootProviders = ({ children }) => {
   const queryClient = getQueryClient();
 
@@ -21,9 +22,8 @@ const RootProviders = ({ children }) => {
             <BookmarkProvider>
               <ModalProvider>
                 <SuggestedUsersProvider>
-                  <FollowProvider>{children}</FollowProvider>
+                  <FollowProvider><PeerProvider>{children}<InComingCall/></PeerProvider></FollowProvider>
                 </SuggestedUsersProvider>
-                <InComingCall/>
               </ModalProvider>
             </BookmarkProvider>
           </ReportProvider>
