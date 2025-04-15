@@ -14,26 +14,27 @@ import { useApp } from "@/components/provider/AppProvider";
 import { useState, useRef, useEffect } from "react";
 import Picker from "emoji-picker-react";
 import { Smile, Send, Plus } from "lucide-react";
-import {useCall} from "@/hooks/useCall"
 import useChat from "@/hooks/useChat";
-import {useCallStore} from "@/store/useCallStore";
-import { getUser } from "@/app/lib/dal";
+import { useRouter } from "next/navigation";
+import { usePeer } from "@/components/provider/PeerProvider";
 
 const Page = () => {
   const { user } = useApp();
   const [chatPartner, setChatPartner] = useState(null);
+  const {idToCall, setIdToCall} = usePeer();
   const [opChat, setOpChat] = useState({
+    userId: "",
     avatar: "",
     fullname: "",
     username: "",
   });
+  const router = useRouter();
 
   const { chatMessages, sendMessage, chatList } = useChat(user, chatPartner);
   const [newMessage, setNewMessage] = useState("");
   const [showPicker, setShowPicker] = useState(false);
   const pickerRef = useRef(null);
   const messagesEndRef = useRef(null);
-  const { setToggleCamera } = useCall();
   const [isOpenChat, setIsOpenChat] = useState(false);
 
   const MAX_FILE_SIZE_MB = 50;
@@ -115,12 +116,7 @@ const Page = () => {
   };
 
   useEffect(() => {
-    async function fetchUser() {
-      const user = await getUser();
-      setMe(user.id);
-    }
-    fetchUser();
-    setIdToCall('58d8ce36-2c82-4d75-b71b-9d34a3370b16');
+
     const handleClickOutside = (event) => {
       if (pickerRef.current && !pickerRef.current.contains(event.target)) {
         setShowPicker(false);
@@ -171,12 +167,20 @@ const Page = () => {
 
   const handleChatSelect = (chat) => {
     setOpChat({
+      userId: chat?.userId,
       avatar: chat?.avatar?.url,
       fullname: chat.fullname,
       username: chat.username,
     });
     setChatPartner(chat.userId);
   };
+
+  const handleCallVideo = () => {
+    if(opChat.userId){
+      setIdToCall(opChat.userId);
+      router.push('/video-call');
+    }
+  }
 
   return (
     <div className="ml-auto">
@@ -266,7 +270,7 @@ const Page = () => {
                 <i className="fa-solid fa-phone "></i>
               </button>
               <button
-                onClick={handleVideoCall}
+                onClick={handleCallVideo}
                 title="Video Call"
                 className="mr-2 p-2 rounded-md  dark:hover:bg-gray-700 hover:bg-gray-300  transition ease-in-out duration-200"
               >
