@@ -5,6 +5,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import com.app.unify.types.Audience;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
@@ -80,12 +81,12 @@ public class Post {
 
 
 	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-    @JsonManagedReference
+	@JsonIgnore
     private Set<SavedPost> savedPosts;
 
 
 	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@JsonManagedReference
+	@JsonIgnore
 	Set<LikedPost> likedPosts;
 
 	@OneToMany(mappedBy = "post", fetch = FetchType.LAZY)

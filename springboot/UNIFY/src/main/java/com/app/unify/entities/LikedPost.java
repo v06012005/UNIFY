@@ -33,7 +33,6 @@ public class LikedPost {
 
 	@ManyToOne
 	@JoinColumn(name = "post_id", referencedColumnName = "id", nullable = false)
-	@JsonBackReference
 	Post post;
 
 	@ManyToOne
