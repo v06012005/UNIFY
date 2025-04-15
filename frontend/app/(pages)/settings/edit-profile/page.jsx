@@ -370,9 +370,9 @@ const Page = () => {
     <>
       <ToastProvider placement={"top-right"} />
       <div className="w-full">
-        <div className="h-screen overflow-y-auto">
+        <div className="h-screen">
           <form onSubmit={handleSubmit}>
-            <div className="flex m-5 bg-gray-200 dark:bg-neutral-800 rounded-xl items-center pr-5">
+            <div className="flex m-5 my-2 bg-gray-200 dark:bg-neutral-800 rounded-xl items-center pr-5">
               <div className="flex-shrink-0 p-2">
                 <div className="w-[100px] h-[100px] rounded-full border-2 border-gray-300 overflow-hidden">
                   <Image

@@ -72,7 +72,7 @@ const NotificationModal = ({ isNotificationOpen, modalRef, userId }) => {
   }
 
   return (
-    <div className="fixed left-20 bg-black border-l-1 dark:border-neutral-700 bg-opacity-50 flex justify-start">
+    <div className="fixed left-20 bg-black border-l-1 dark:border-neutral-700 bg-opacity-50 flex justify-start z-50">
       <div
         ref={modalRef}
         className={`bg-white dark:bg-black text-black dark:text-white shadow-lg max-w-md h-screen overflow-hidden ${
@@ -82,7 +82,7 @@ const NotificationModal = ({ isNotificationOpen, modalRef, userId }) => {
           width: modalWidth,
         }}
       >
-        <h1 className="font-bold text-2xl mb-4 px-5 pt-5">Notifications</h1>
+        <h1 className="font-bold text-2xl my-4 px-5 pt-5">Notifications</h1>
 
         <div className="overflow-y-auto space-y-1 max-h-full h-[94%] pb-5 px-5">
           {sortedNotifications.length > 0 ? (
