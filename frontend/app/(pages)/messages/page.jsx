@@ -115,12 +115,6 @@ const Page = () => {
   };
 
   useEffect(() => {
-    async function fetchUser() {
-      const user = await getUser();
-      setMe(user.id);
-    }
-    fetchUser();
-    setIdToCall('58d8ce36-2c82-4d75-b71b-9d34a3370b16');
     const handleClickOutside = (event) => {
       if (pickerRef.current && !pickerRef.current.contains(event.target)) {
         setShowPicker(false);
