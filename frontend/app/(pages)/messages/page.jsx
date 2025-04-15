@@ -116,7 +116,6 @@ const Page = () => {
   };
 
   useEffect(() => {
-
     const handleClickOutside = (event) => {
       if (pickerRef.current && !pickerRef.current.contains(event.target)) {
         setShowPicker(false);
