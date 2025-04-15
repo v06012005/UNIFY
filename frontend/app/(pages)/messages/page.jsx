@@ -74,8 +74,8 @@ const Page = () => {
       // Cập nhật opChat với thông tin từ query parameters
       setOpChat({
         userId,
-        avatar: avatar || "default-avatar-url",
-        fullname: fullname || username,
+        avatar: avatar || "Avatar",
+        fullname: fullname || "Fullname",
         username,
       });
       setChatPartner(userId); // Cập nhật chatPartner để load tin nhắn
@@ -234,13 +234,13 @@ const Page = () => {
               >
                 <div className="flex items-center">
                   <img
-                    src={chat?.avatar?.url || "default-avatar-url"}
+                    src={chat?.avatar?.url || opChat?.avatar}
                     alt="Avatar"
                     className="rounded-full w-12 h-12"
                   />
                   <div className="ml-4">
                     <h4 className="text-lg font-medium truncate w-23">
-                      {chat.fullname}
+                      {chat.fullname || opChat?.fullname}
                     </h4>
                     <p className="text-sm text-gray-300 truncate w-60">
                       {chat.lastMessage}
@@ -360,9 +360,9 @@ const Page = () => {
               </div>
             )}
             <div className="flex items-center mt-3 bg-gray-800 text-white p-3 rounded-2xl w-full justify-center">
-              {opChat?.avatar && (
+              {user?.avatar.url && (
                 <img
-                  src={opChat.avatar}
+                  src={user?.avatar.url}
                   alt="Avatar"
                   className="rounded-full w-10 h-10"
                 />
