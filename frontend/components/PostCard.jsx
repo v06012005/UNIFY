@@ -87,6 +87,7 @@ export default function PostCard({ post, onClick, style, postId }) {
               width={24}
               height={24}
               alt={isVideo ? "Video" : "Image"}
+              loading="lazy"
             />
           </div>
         </div>
