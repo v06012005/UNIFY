@@ -114,33 +114,6 @@ export const saveMedia = async (postId, newMedia) => {
   }
 
   try {
-    const existingResponse = await fetch(
-      `http://localhost:8080/media/${postId}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    if (!existingResponse.ok) {
-      console.log("Failed to fetch existing media");
-      return null;
-    }
-
-    const existingMedia = await existingResponse.json();
-    const existingUrls = new Set(existingMedia.map((media) => media.url));
-
-    const mediaToSave = newMedia.filter(
-      (media) => !existingUrls.has(media.url)
-    );
-
-    if (mediaToSave.length === 0) {
-      console.log("No new media to save");
-      return existingMedia;
-    }
 
     const response = await fetch("http://localhost:8080/media", {
       method: "POST",
@@ -148,7 +121,7 @@ export const saveMedia = async (postId, newMedia) => {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(mediaToSave),
+      body: JSON.stringify(newMedia),
     });
 
     if (!response.ok) {

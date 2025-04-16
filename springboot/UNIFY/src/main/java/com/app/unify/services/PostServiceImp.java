@@ -4,16 +4,20 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
+import com.app.unify.dto.global.MediaDTO;
 import com.app.unify.dto.global.PostDTO;
 import com.app.unify.entities.Hashtag;
+import com.app.unify.entities.Media;
 import com.app.unify.entities.Post;
 import com.app.unify.exceptions.PostNotFoundException;
+import com.app.unify.mapper.MediaMapper;
 import com.app.unify.mapper.PostMapper;
 import com.app.unify.repositories.HashtagDetailRepository;
 import com.app.unify.repositories.HashtagRepository;
@@ -32,6 +36,9 @@ public class PostServiceImp implements PostService {
 
     @Autowired
     private PostMapper mapper;
+    
+    @Autowired
+    private MediaMapper mediaMapper;
 
     @Autowired
     private HashtagRepository hashtagRepository;
@@ -71,6 +78,17 @@ public class PostServiceImp implements PostService {
         post.setIsCommentVisible(postDTO.getIsCommentVisible());
         post.setIsLikeVisible(postDTO.getIsLikeVisible());
         post.setPostedAt(postDTO.getPostedAt());
+        
+        Set<Media> currentMedia = post.getMedia();
+        Set<MediaDTO> updatedMediaDTOs = mediaMapper.toSetOfMediaDTO(postDTO.getMedia());
+
+        // Extract URLs from updated DTOs
+        Set<String> updatedUrls = updatedMediaDTOs.stream()
+                .map(MediaDTO::getUrl)
+                .collect(Collectors.toSet());
+
+        // Identify and remove media that should no longer be associated
+        currentMedia.removeIf(media -> !updatedUrls.contains(media.getUrl()));
 
         Post updatedPost = postRepository.save(post);
 

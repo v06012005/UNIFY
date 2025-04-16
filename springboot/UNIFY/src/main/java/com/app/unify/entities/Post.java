@@ -75,8 +75,7 @@ public class Post {
 	@OneToMany(mappedBy = "post")
 	Set<PostComment> comments;
 
-	@OneToMany(mappedBy = "post")
-	@JsonManagedReference
+	@OneToMany(mappedBy = "post", orphanRemoval = true)
 	Set<Media> media;
 
 
