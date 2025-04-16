@@ -95,12 +95,12 @@ export default function CommentButton({ children, className = "", postId }) {
 
   return (
     <>
-      <Button
-        onPress={handleOpen}
+      <button
+        onClick={handleOpen}
         className={`bg-transparent dark:text-white ${className}`}
       >
         {children}
-      </Button>
+      </button>
       <Modal
         isDismissable={true}
         scrollBehavior={"inside"}

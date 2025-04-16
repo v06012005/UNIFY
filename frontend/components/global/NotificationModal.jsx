@@ -19,7 +19,7 @@ const NotificationModal = ({ isNotificationOpen, modalRef, userId }) => {
 
   useEffect(() => {
     if (isNotificationOpen) {
-      setModalWidth(448); // Open modal width
+      setModalWidth(471); // Open modal width
     } else {
       setModalWidth(0); // Close modal width
     }
@@ -75,7 +75,7 @@ const NotificationModal = ({ isNotificationOpen, modalRef, userId }) => {
     <div className="fixed left-20 bg-black border-l-1 dark:border-neutral-700 bg-opacity-50 flex justify-start z-50">
       <div
         ref={modalRef}
-        className={`bg-white dark:bg-black text-black dark:text-white shadow-lg max-w-md h-screen overflow-hidden ${
+        className={`bg-white dark:bg-black text-black dark:text-white shadow-lg max-w-lg   h-screen overflow-hidden border-r-1 ${
           isNotificationOpen ? "animate-fadeScale" : "animate-fadeOut"
         } transition-all ease-in-out duration-300  dark:border-neutral-700`}
         style={{
