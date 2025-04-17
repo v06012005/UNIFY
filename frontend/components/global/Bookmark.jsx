@@ -8,8 +8,8 @@ export default function BookmarkButton({ postId, className }) {
       <i
         className={`fa-${
           savedPostsMap[postId] ? "solid" : "regular"
-        } fa-bookmark text-black dark:text-white ${
-          savedPostsMap[postId] ? "text-yellow-400" : ""
+        } fa-bookmark ${
+          savedPostsMap[postId] ? "text-yellow-400" : "dark:text-white text-gray-400"
         } hover:opacity-50 focus:opacity-50 transition cursor-pointer`}
         onClick={() => toggleBookmark(postId)}
       />
