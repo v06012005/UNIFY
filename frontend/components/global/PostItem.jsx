@@ -9,6 +9,7 @@ import usePostLikeStatus from "@/hooks/usePostLikeStatus";
 import { useApp } from "../provider/AppProvider";
 import { Avatar } from "@heroui/react";
 import Link from "next/link";
+import Bookmark from "@/components/global/Bookmark";
 
 const User = ({
   href = "",
@@ -18,8 +19,9 @@ const User = ({
   avatar = "",
 }) => (
   <Link href={href}>
-    <div className="flex mb-4 ml-10">
-      <Avatar className="" src={avatar} />
+    <div className="flex mb-2 ml-10">
+      <Avatar className="" size="lg" src={avatar} />
+
       <div className="ml-5">
         <p className="my-auto text-lg font-bold">@{username}</p>
         <p className="my-auto">
@@ -76,20 +78,25 @@ const PostItem = ({ post, comments }) => {
       <div className="ml-10">
       <Caption text={post.captions} />
       <div className="flex flex-col text-xl">
-        <div className="flex gap-2">
-          <LikeButton
-            className="!text-xl hover:opacity-50"
-            userId={user.id}
-            postId={post.id}
-            isLiked={isLiked}
-            setIsLiked={setIsLiked}
-            setLikeCount={setLikeCount}
-          />
+        <div className="flex justify-between items-center">
+          <div className="flex gap-3">
+            <LikeButton
+              className="!text-xl hover:opacity-50"
+              userId={user.id}
+              postId={post.id}
+              isLiked={isLiked}
+              setIsLiked={setIsLiked}
+              setLikeCount={setLikeCount}
+            />
 
-          <CommentButton className="!text-xl" postId={post.id}>
-            <i className="fa-regular fa-comment"></i>
-          </CommentButton>
-          <ShareButton />
+            <CommentButton className="!text-xl" postId={post.id}>
+              <i className="fa-regular fa-comment"></i>
+            </CommentButton>
+            <ShareButton />
+          </div>
+          <div>
+            <Bookmark postId={post.id} className="!text-xl hover:opacity-90" />
+          </div>
         </div>
 
         <div>

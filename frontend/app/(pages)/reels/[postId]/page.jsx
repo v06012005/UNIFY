@@ -20,7 +20,8 @@ import ReportModal from "@/components/global/Report/ReportModal";
 import { useReports } from "@/components/provider/ReportProvider";
 import { addToast, ToastProvider } from "@heroui/toast";
 import { useQuery } from "@tanstack/react-query";
-import { useBookmarks } from "@/components/provider/BookmarkProvider";
+import BookmarkButton from "@/components/global/Bookmark";
+
 export default function Reels() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCommentOpen, setIsCommentOpen] = useState(false);
@@ -46,7 +47,6 @@ export default function Reels() {
   const currentUserId = user?.id;
   const [replyingTo, setReplyingTo] = useState(null);
   const { createPostReport } = useReports();
-  const { savedPostsMap, toggleBookmark } = useBookmarks();
   const { data: posts, isLoading } = useQuery({
     queryKey: ["posts"],
     queryFn: fetchPosts,
@@ -534,21 +534,7 @@ export default function Reels() {
                   />
                 </div>
                 <div className="flex flex-col items-center">
-                  {/* <i
-                    className={`fa-${
-                      savedPostsMap[post.id] ? "solid" : "regular"
-                    } fa-bookmark
-        hover:opacity-50 focus:opacity-50 transition cursor-pointer`}
-                    onClick={() => toggleBookmark(post.id)}
-                  /> */}
-                  <i
-                    className={`fa-${
-                      savedPostsMap[post.id] ? "solid" : "regular"
-                    } fa-bookmark
-  ${savedPostsMap[post.id] ? "text-yellow-400" : "text-white"}
-  hover:opacity-50 focus:opacity-50 transition cursor-pointer`}
-                    onClick={() => toggleBookmark(post.id)}
-                  />
+                  <BookmarkButton postId={post.id} />
                 </div>
                 <div className="flex flex-col items-center relative">
                   <i
@@ -585,7 +571,6 @@ export default function Reels() {
                 onSubmit={(postId, reason) => handleReportPost(postId, reason)}
                 postId={post.id}
               />
-             
             </div>
           ))
         )}
