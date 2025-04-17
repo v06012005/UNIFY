@@ -136,7 +136,7 @@ export const saveMedia = async (postId, newMedia) => {
   }
 };
 
-export const fetchPosts = async () => {
+export const fetchPosts = async (page) => {
   const token = (await cookies()).get("token")?.value;
 
   if (!token) {
@@ -146,7 +146,7 @@ export const fetchPosts = async () => {
   // const user = await getUser();
 
   try {
-    const response = await fetch("http://localhost:8080/posts", {
+    const response = await fetch(`http://localhost:8080/posts/personalized?page=${page}&size=10`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,

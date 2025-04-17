@@ -60,20 +60,7 @@ const Caption = ({ text, maxLength = 100 }) => {
   );
 };
 
-const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
-  return (
-    <Link
-      className="flex h-full items-center text-center text-neutral-700 dark:text-neutral-500 hover:text-black dark:hover:text-white transition-colors"
-      href={href}
-      onClick={onClick}
-    >
-      <i className={`${iconClass}`}></i>
-      <span className="ml-1 text-2xl">{content}</span>
-    </Link>
-  );
-};
-
-const PostItem = ({ post, comments }) => {
+const PostItem = ({ post }) => {
   const { user } = useApp();
   const { isLiked, setIsLiked, likeCount, setLikeCount } = usePostLikeStatus(
     user.id,
@@ -222,7 +209,22 @@ const PostItem = ({ post, comments }) => {
           </div>
         </div>
       </div>
+<<<<<<< HEAD
     </>
+=======
+      <div className="mt-2 flex flex-wrap">
+        <Hashtag content="#myhashtag" />
+      </div>
+      <div className="mt-2">
+        <CommentButton
+          postId={post.id}
+          className="text-black hover:text-gray-500 text-md animate-none transition-none dark:text-zinc-400 dark:hover:text-white"
+        >
+          View all comments
+        </CommentButton>
+      </div>
+    </div>
+>>>>>>> 6216b7a (intial update on home page)
   );
 };
 

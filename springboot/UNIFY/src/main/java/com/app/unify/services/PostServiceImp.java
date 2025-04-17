@@ -9,19 +9,25 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.app.unify.dto.global.MediaDTO;
+import com.app.unify.dto.global.PersonalizedPostDTO;
 import com.app.unify.dto.global.PostDTO;
+import com.app.unify.entities.Friendship;
 import com.app.unify.entities.Hashtag;
 import com.app.unify.entities.Media;
 import com.app.unify.entities.Post;
+import com.app.unify.entities.User;
 import com.app.unify.exceptions.PostNotFoundException;
 import com.app.unify.mapper.MediaMapper;
 import com.app.unify.mapper.PostMapper;
 import com.app.unify.repositories.HashtagDetailRepository;
 import com.app.unify.repositories.HashtagRepository;
 import com.app.unify.repositories.PostRepository;
+import com.app.unify.repositories.UserRepository;
 import com.app.unify.types.Audience;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -33,6 +39,9 @@ public class PostServiceImp implements PostService {
 
     @Autowired
     private PostRepository postRepository;
+    
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private PostMapper mapper;
@@ -187,4 +196,14 @@ public class PostServiceImp implements PostService {
 
 
     
+	@Override
+	public Page<PostDTO> getPersonalizedFeed(Pageable pageable) {
+//		User user = userRepository.findById(userId).orElseThrow();
+//      Set<Friendship> friends = user.getFriendshipsReceived();
+//      Set<String> interests = user.getInterests(); // assume it's a Set<String>
+
+      Page<PersonalizedPostDTO> posts = postRepository.findPersonalizedPosts(pageable);
+      return posts.map(dto -> mapper.toPostDTO(dto.getPost()));
+	}
+
 }

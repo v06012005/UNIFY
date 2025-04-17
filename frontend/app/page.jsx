@@ -40,7 +40,7 @@ const SearchBar = () => {
 
 
 // const User = ({ href = "" }) => {
- 
+
 //   return (
 //     <Link href={href}>
 //       <div className="flex mb-2">
@@ -59,18 +59,20 @@ export default async function Home() {
   return (
     <RootLayout>
       <div className="flex">
-        <div className="basis-3/4 py-8 h-screen overflow-y-scroll no-scrollbar">
-          <div className="w-4/4 flex flex-col mx-3">
-            <Post />
+        <div className="basis-3/4 h-screen">
+          <div id="newsfeed" className="h-full py-8 overflow-y-scroll no-scrollbar">
+            <div className="w-3/4 flex flex-col mx-auto">
+              <Post />
+            </div>
           </div>
         </div>
         <div className="basis-1/4 border-l-1 dark:border-neutral-700 py-8 h-screen sticky top-0">
           <div className="w-3/4 flex flex-col mx-auto">
-            {session?.isAuth && <User/>}
+            {session?.isAuth && <User />}
             <hr className="my-4 dark:border-neutral-700  " />
             <div>
               <p className="font-bold text-lg mb-4">Group suggestions</p>
-              <Group/>
+              <Group />
             </div>
             <hr className="my-4 dark:border-neutral-700" />
             <div>
@@ -82,6 +84,6 @@ export default async function Home() {
           </div>
         </div>
       </div>
-    </RootLayout>
+    </RootLayout >
   );
 }

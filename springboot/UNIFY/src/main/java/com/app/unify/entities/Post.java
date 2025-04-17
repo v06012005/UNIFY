@@ -56,7 +56,7 @@ public class Post {
 	@Default
 	Audience audience = Audience.PUBLIC;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", nullable = false)
 	User user;
 
@@ -72,19 +72,19 @@ public class Post {
 	@Default
 	Boolean isLikeVisible = false;
 
-	@OneToMany(mappedBy = "post")
+	@OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
 	Set<PostComment> comments;
 
 	@OneToMany(mappedBy = "post", orphanRemoval = true)
 	Set<Media> media;
 
 
-	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JsonIgnore
     private Set<SavedPost> savedPosts;
 
 
-	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JsonIgnore
 	Set<LikedPost> likedPosts;
 
