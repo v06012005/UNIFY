@@ -189,7 +189,7 @@ const PostCard = React.memo(({ post, onClick }) => {
       className="aspect-square relative group cursor-pointer"
       onClick={() => onClick(post)}
     >
-      <div className="absolute top-0 left-0 right-0 bg-black/50 p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+      <div className="absolute top-0 left-0 right-0 text-white bg-black/50 p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
         <p className="text-sm">
           {post.postedAt
             ? (() => {
