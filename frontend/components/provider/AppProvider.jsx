@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useState, useEffect, useContext } from "react";
-import { redirect, useRouter, useParams } from "next/navigation";
+import { redirect, useRouter, usePathname } from "next/navigation"; // Thêm usePathname
 import axios from "axios";
 import Cookies from "js-cookie";
 
@@ -39,7 +39,7 @@ export const AppProvider = ({ children }) => {
   });
   const [isAdmin, setIsAdmin] = useState(false);
   const router = useRouter();
-  const params = useParams();
+  const pathname = usePathname(); // Lấy đường dẫn hiện tại
 
   const loginUser = async (email, password) => {
     try {
@@ -60,10 +60,11 @@ export const AppProvider = ({ children }) => {
 
       const userInfo = await getInfoUser();
       if (userInfo) {
-        setIsAdmin(userInfo.roles[0].id === 1);
-        if (isAdmin) {
-          router.push("/statistics/users");
+        if (userInfo.roles[0].id === 1) {
+          setIsAdmin(true);
+          router.push("/manage/users/list");
         } else {
+          setIsAdmin(false);
           router.push("/");
         }
       }
@@ -127,7 +128,6 @@ export const AppProvider = ({ children }) => {
     try {
       const token = Cookies.get("token");
       if (!token) {
-        // console.error("Missing token! User not authenticated.");
         return null;
       }
 
@@ -141,7 +141,7 @@ export const AppProvider = ({ children }) => {
 
         setUser({ ...data, birthDay: parsedBirthDay });
 
-        if (router.pathname === "/profile" && data.username) {
+        if (pathname === "/profile" && data.username) {
           router.replace(`/user/${data.username}`);
         }
 
@@ -205,8 +205,41 @@ export const AppProvider = ({ children }) => {
   const [userFromAPI, setUserFromAPI] = useState(null);
 
   useEffect(() => {
-    getInfoUser().catch((error) => console.log(error));
-    if (userFromAPI?.username && userFromAPI === null) {
+    const checkUserAndRedirect = async () => {
+      const token = Cookies.get("token");
+      if (!token) {
+        if (pathname !== "/login") {
+          router.push("/login");
+        }
+        return;
+      }
+
+      const userInfo = await getInfoUser();
+      if (userInfo) {
+        if (userInfo.roles[0].id === 1) {
+          setIsAdmin(true);
+          // Chỉ chuyển hướng nếu không ở trang admin
+          if (!pathname.startsWith("/manage")) {
+            router.push("/manage/users/list");
+          }
+        } else {
+          setIsAdmin(false);
+          // Nếu không phải admin và đang ở trang admin, chuyển về trang chính
+          if (pathname.startsWith("/manage")) {
+            router.push("/");
+          }
+        }
+      } else {
+        // Nếu không lấy được thông tin người dùng, xóa token và chuyển đến login
+        Cookies.remove("token", { path: "/" });
+        router.push("/login");
+      }
+    };
+
+    checkUserAndRedirect().catch((error) => console.log(error));
+
+    // Xử lý userFromAPI nếu cần
+    if (userFromAPI?.username) {
       getUserInfoByUsername(userFromAPI.username)
         .then((data) => {
           if (data) {
@@ -215,27 +248,25 @@ export const AppProvider = ({ children }) => {
         })
         .catch((error) => console.log(error));
     }
-  }, []);
+  }, [pathname, router]); // Thêm pathname và router vào dependencies
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      {
-        <UserContext.Provider
-          value={{
-            user,
-            setUser,
-            userFromAPI,
-            setUserFromAPI,
-            loginUser,
-            refreshToken,
-            logoutUser,
-            getInfoUser,
-            getUserInfoByUsername,
-          }}
-        >
-          {children}
-        </UserContext.Provider>
-      }
+      <UserContext.Provider
+        value={{
+          user,
+          setUser,
+          userFromAPI,
+          setUserFromAPI,
+          loginUser,
+          refreshToken,
+          logoutUser,
+          getInfoUser,
+          getUserInfoByUsername,
+        }}
+      >
+        {children}
+      </UserContext.Provider>
     </HydrationBoundary>
   );
 };
@@ -243,7 +274,7 @@ export const AppProvider = ({ children }) => {
 export const useApp = () => {
   const context = useContext(UserContext);
   if (!context) {
-    throw new Error("useAuth must be used within an AppProvider");
+    throw new Error("useApp must be used within an AppProvider");
   }
   return context;
 };
