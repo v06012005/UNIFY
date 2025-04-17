@@ -18,20 +18,23 @@ const UserReels = ({ username }) => {
   const { user, getUserInfoByUsername } = useApp();
   const commentsContainerRef = useRef(null);
   const token = Cookies.get("token");
-  
-  const loadComments = useCallback(async (postId) => {
-    if (!token || !postId) return;
-    setIsCommentsLoading(true);
-    try {
-      const data = await fetchComments(postId, token);
-      setComments(data);
-    } catch (error) {
-      console.error(`Failed to fetch comments for post ${postId}:`, error);
-      setComments([]);
-    } finally {
-      setIsCommentsLoading(false);
-    }
-  }, [token]);
+
+  const loadComments = useCallback(
+    async (postId) => {
+      if (!token || !postId) return;
+      setIsCommentsLoading(true);
+      try {
+        const data = await fetchComments(postId, token);
+        setComments(data);
+      } catch (error) {
+        console.error(`Failed to fetch comments for post ${postId}:`, error);
+        setComments([]);
+      } finally {
+        setIsCommentsLoading(false);
+      }
+    },
+    [token]
+  );
 
   useEffect(() => {
     if (selectedPost?.id) {
@@ -102,17 +105,45 @@ const UserReels = ({ username }) => {
             labelColor="primary"
           />
         </div>
-      ) : postUsers.some(post => post.media.some(media => media.mediaType === "VIDEO")) ? (
+      ) : postUsers.some((post) =>
+          post.media.some((media) => media.mediaType === "VIDEO")
+        ) ? (
         <div className="grid grid-cols-3 gap-1">
-          {postUsers.filter(post => post.media.some(media => media.mediaType === "VIDEO"))
-            .map(post => (
+          {postUsers
+            .filter((post) =>
+              post.media.some((media) => media.mediaType === "VIDEO")
+            )
+            .map((post) => (
               <div
                 key={post.id}
                 className="aspect-square relative group cursor-pointer"
                 onClick={() => handlePostClick(post)}
               >
+                <div className="absolute top-0 left-0 right-0 text-white bg-black/50 p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                  <p className="text-sm">
+                    {post.postedAt
+                      ? (() => {
+                          const date = new Date(post.postedAt);
+                          const mm = String(date.getMonth() + 1).padStart(
+                            2,
+                            "0"
+                          );
+                          const dd = String(date.getDate()).padStart(2, "0");
+                          const yyyy = date.getFullYear();
+                          return `${mm}-${dd}-${yyyy}`;
+                        })()
+                      : ""}
+                  </p>
+                </div>
                 <div className="w-full h-full overflow-hidden">
-                  <video src={post.media.find(media => media.mediaType === "VIDEO").url} className="w-full h-full object-cover" muted />
+                  <video
+                    src={
+                      post.media.find((media) => media.mediaType === "VIDEO")
+                        .url
+                    }
+                    className="w-full h-full object-cover"
+                    muted
+                  />
                 </div>
               </div>
             ))}
@@ -120,11 +151,20 @@ const UserReels = ({ username }) => {
       ) : (
         <div className="text-center text-gray-500 mt-4">
           <p>No posts available.</p>
-          <button onClick={() => getPostUsers(username)} className="text-blue-500">Try again</button>
+          <button
+            onClick={() => getPostUsers(username)}
+            className="text-blue-500"
+          >
+            Try again
+          </button>
         </div>
       )}
       {selectedPost && (
-        <PostDetailModal post={selectedPost} onClose={() => setSelectedPost(null)} onDelete={handleDeletePost} />
+        <PostDetailModal
+          post={selectedPost}
+          onClose={() => setSelectedPost(null)}
+          onDelete={handleDeletePost}
+        />
       )}
     </div>
   );

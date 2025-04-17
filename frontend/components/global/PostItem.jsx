@@ -18,8 +18,8 @@ const User = ({
   avatar = "",
 }) => (
   <Link href={href}>
-    <div className="flex mb-4">
-      <Avatar className="" size="lg" src={avatar} />
+    <div className="flex mb-4 ml-10">
+      <Avatar className="" src={avatar} />
       <div className="ml-5">
         <p className="my-auto text-lg font-bold">@{username}</p>
         <p className="my-auto">
@@ -73,6 +73,7 @@ const PostItem = ({ post, comments }) => {
         lastname={post.user?.lastName}
       />
       <Slider srcs={post.media} />
+      <div className="ml-10">
       <Caption text={post.captions} />
       <div className="flex flex-col text-xl">
         <div className="flex gap-2">
@@ -105,6 +106,7 @@ const PostItem = ({ post, comments }) => {
         >
           View all {comments?.length} comments
         </CommentButton>
+      </div>
       </div>
     </div>
   );

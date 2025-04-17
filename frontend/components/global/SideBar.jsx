@@ -88,7 +88,7 @@ const SideBar = () => {
       searchComponentRef={searchComponentRef}
     >
       <div className="relative flex flex-row ">
-        <div className="flex flex-col border-r-1 dark:border-neutral-700 h-screen fixed left-0 top-0 z-50">
+        <div className="flex flex-col border-r-1 dark:border-neutral-700 border-neutral-400 h-screen fixed left-0 top-0 z-50">
           <UnifyLogoIcon />
           <NotificationModal
             isNotificationOpen={isNotificationOpen}
@@ -160,7 +160,7 @@ const SideBar = () => {
                   href={`/profile/${user.username}`}
                   className=""
                 >
-                  <div className="w-8 h-8 rounded-full border-2 border-gray-300 overflow-hidden">
+                  <div className="w-8 h-8 rounded-full border-2 dark:border-gray-300 overflow-hidden">
                     <Image
                       src={user.avatar?.url || avatar}
                       alt="Avatar"

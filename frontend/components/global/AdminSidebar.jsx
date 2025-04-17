@@ -30,8 +30,8 @@ const AdminSidebar = () => {
   const { account } = useApp();
   const [admin, setAdmin] = useState();
   const [loading, setLoading] = useState(true);
-  const { user } = useApp();
-
+  const { user, logoutUser } = useApp();
+  const defaultAvatar = "/images/unify_icon_2.svg";
   useEffect(() => {
     const fetchAdminAccount = async () => {
       try {
@@ -50,24 +50,24 @@ const AdminSidebar = () => {
 
   return (
     <div className="relative flex flex-row ">
-      <div className="flex flex-col border h-screen fixed bg-gray-200 left-0 top-0 z-50 p-3">
+      <div className="flex flex-col border border-gray-500 dark:border-neutral-500 h-screen fixed bg-gray-200 dark:bg-neutral-800 left-0 top-0 z-50 p-3">
         <UnifyLogo className="w-52 mx-auto" />
         <Divider className="mt-5 mb-2" />
         <div className="flex w-full justify-between">
           <User
             avatarProps={{
-              src: `${user?.avatar?.url}`,
+              src: `${user?.avatar?.url || defaultAvatar}`,
             }}
             description={`Admin`}
-            name={`${user.firstName} ${user.lastName}`} className="my-3 justify-start"
+            name={`${user?.firstName || ""} ${user?.lastName || ""}`} className="my-3 justify-start"
           />
           <div>
             {/* <Avatar src={account?.avatar?.url} /> */}
           </div>
-          <Link href={""} className="my-auto text-xl text-zinc-500 hover:text-red-500"><i className="fa-solid fa-right-from-bracket"></i></Link>
+          <Link href={""} className="my-auto text-xl text-zinc-500 hover:text-red-500"  onClick={logoutUser}><i className="fa-solid fa-right-from-bracket"></i></Link>
         </div>
         <Divider className="mt-2" />
-        <div className="flex flex-col grow w-60 overflow-y-auto">
+        <div className="flex flex-col grow w-60 overflow-y-auto no-scrollbar">
           <Accordion variant="light" className="w-full">
             <AccordionItem className="font-bold" key="1" aria-label="Users" title="USERS" startContent={<i className="fa-solid fa-users"></i>}>
               <div className="pl-5 font-light">
