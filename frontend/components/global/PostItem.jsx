@@ -58,6 +58,19 @@ const Caption = ({ text, maxLength = 100 }) => {
   );
 };
 
+const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
+  return (
+    <Link
+      className="flex h-full items-center text-center text-gray-500 hover:text-black dark:hover:text-white transition-colors"
+      href={href}
+      onClick={onClick}
+    >
+      <i className={`${iconClass}`}></i>
+      <span className="ml-1">{content}</span>
+    </Link>
+  );
+};
+
 const PostItem = ({ post, comments }) => {
   const { user } = useApp();
   const { isLiked, setIsLiked, likeCount, setLikeCount } = usePostLikeStatus(
@@ -67,53 +80,63 @@ const PostItem = ({ post, comments }) => {
 
   return (
     <div key={post.id} className="w-3/4 mb-8 mx-auto pb-8">
-      <User
-        avatar={post?.user?.avatar?.url}
-        href={`/othersProfile/${post?.user?.username}`}
-        username={post.user?.username}
-        firstname={post.user?.firstName}
-        lastname={post.user?.lastName}
-      />
+      <div className="flex justify-between items-center">
+        <User
+          avatar={post?.user?.avatar?.url}
+          href={`/othersProfile/${post?.user?.username}`}
+          username={post.user?.username}
+          firstname={post.user?.firstName}
+          lastname={post.user?.lastName}
+        />
+        <NavButton
+          onClick={() => setOpenList(true)}
+          content="•••"
+          className="text-2xl"
+        />
+      </div>
       <Slider srcs={post.media} />
       <div className="ml-10">
-      <Caption text={post.captions} />
-      <div className="flex flex-col text-xl">
-        <div className="flex justify-between items-center">
-          <div className="flex gap-3">
-            <LikeButton
-              className="!text-xl hover:opacity-50"
-              userId={user.id}
-              postId={post.id}
-              isLiked={isLiked}
-              setIsLiked={setIsLiked}
-              setLikeCount={setLikeCount}
-            />
+        <Caption text={post.captions} />
+        <div className="flex flex-col text-xl">
+          <div className="flex justify-between items-center">
+            <div className="flex gap-3">
+              <LikeButton
+                className="!text-xl hover:opacity-50"
+                userId={user.id}
+                postId={post.id}
+                isLiked={isLiked}
+                setIsLiked={setIsLiked}
+                setLikeCount={setLikeCount}
+              />
 
-            <CommentButton className="!text-xl" postId={post.id}>
-              <i className="fa-regular fa-comment"></i>
-            </CommentButton>
-            <ShareButton />
+              <CommentButton className="!text-xl" postId={post.id}>
+                <i className="fa-regular fa-comment"></i>
+              </CommentButton>
+              <ShareButton />
+            </div>
+            <div>
+              <Bookmark
+                postId={post.id}
+                className="!text-xl hover:opacity-90"
+              />
+            </div>
           </div>
+
           <div>
-            <Bookmark postId={post.id} className="!text-xl hover:opacity-90" />
+            <span className="text-base text-zinc-400">{likeCount} likes</span>
           </div>
         </div>
-
-        <div>
-          <span className="text-base text-zinc-400">{likeCount} likes</span>
+        <div className="mt-2 flex flex-wrap">
+          <Hashtag content="#myhashtag" />
         </div>
-      </div>
-      <div className="mt-2 flex flex-wrap">
-        <Hashtag content="#myhashtag" />
-      </div>
-      <div className="mt-2">
-        <CommentButton
-          postId={post.id}
-          className="text-black hover:text-gray-500 text-md animate-none transition-none dark:text-zinc-400 dark:hover:text-white"
-        >
-          View all {comments?.length} comments
-        </CommentButton>
-      </div>
+        <div className="mt-2">
+          <CommentButton
+            postId={post.id}
+            className="text-black hover:text-gray-500 text-md animate-none transition-none dark:text-zinc-400 dark:hover:text-white"
+          >
+            View all {comments?.length} comments
+          </CommentButton>
+        </div>
       </div>
     </div>
   );
