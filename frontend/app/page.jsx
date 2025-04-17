@@ -38,23 +38,7 @@ const SearchBar = () => {
 //   return session;
 // }
 
-const User = ({ href = "" }) => {
-  return (
-    <Link href={href}>
-      <div className="flex mb-2">
-        <Image
-          src={avatar}
-          alt="Avatar"
-          className="rounded-full border-1 dark:border-neutral-700 border-gray-300 w-12 h-12"
-        />
-        <div className="ml-5">
-          <p className="my-auto text-sm font-bold">@username</p>
-          <p className="my-auto">Johnny Dang</p>
-        </div>
-      </div>
-    </Link>
-  );
-};
+
 // const User = ({ href = "" }) => {
  
 //   return (
