@@ -64,26 +64,6 @@ export default async function Home() {
         <div className="basis-1/4 border-l-1 dark:border-neutral-700 py-8 h-screen sticky top-0">
           <div className="w-3/4 flex flex-col mx-auto">
             {session?.isAuth && <User href="/profile" />}
-            <div className="flex justify-center">
-              {/* <Link
-                className="border hover:bg-red-500 transition ease-in-out duration-100 hover:text-white rounded w-20 text-center py-2 mx-2"
-                href={"/manage/users/list"}
-              >
-                Admin
-              </Link>
-              <Link
-                className="border hover:bg-blue-500 transition ease-in-out duration-100 hover:text-white rounded w-20 text-center py-2 mx-2"
-                href={"/login"}
-              >
-                Login
-              </Link>
-              <Link
-                className="border hover:bg-blue-600 rounded bg-blue-500 text-white w-20 text-center py-2 mx-2"
-                href={"/register"}
-              >
-                Register
-              </Link> */}
-            </div>
             <hr className="my-4 dark:border-neutral-700  " />
             <div>
               <p className="font-bold text-xl mb-4">Your Friends</p>
