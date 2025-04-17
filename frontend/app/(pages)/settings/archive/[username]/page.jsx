@@ -9,24 +9,29 @@ import { Spinner } from "@heroui/react";
 import { addToast, ToastProvider } from "@heroui/toast";
 import { useQuery } from "@tanstack/react-query";
 
-const Archives = ({ username }) => {
+const Archives = () => {
   const [selectedPost, setSelectedPost] = useState(null);
   const { getUserInfoByUsername } = useApp();
   const token = Cookies.get("token");
   const params = useParams();
+  const username = params?.username; 
 
   const fetchPosts = useCallback(async () => {
     if (!token) {
       throw new Error("Please log in to view posts.");
     }
 
-    const userData = await getUserInfoByUsername(params.username);
+    if (!username) {
+      throw new Error("Username not provided.");
+    }
+
+    const userData = await getUserInfoByUsername(username);
     if (!userData?.id) {
       throw new Error("User not found.");
     }
 
     const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/posts/my?userId=${userData.id}&status=0`,
+      `${process.env.NEXT_PUBLIC_API_URL}/posts/myArchive?userId=${userData.id}&status=0`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -35,12 +40,14 @@ const Archives = ({ username }) => {
       }
     );
     return response.data || [];
-  }, [token, params.username, getUserInfoByUsername]);
+  }, [token, username, getUserInfoByUsername]);
 
   const { data: postUsers = [], isLoading: loading, refetch } = useQuery({
-    queryKey: ["userPosts", username],
+    queryKey: ["archivedPosts", username],
     queryFn: fetchPosts,
     enabled: !!username?.trim(),
+    // refetchOnWindowFocus: true,
+    refetchInterval: 3000,
     onError: (error) => {
       addToast({
         title: "Error",
@@ -51,6 +58,7 @@ const Archives = ({ username }) => {
       });
     },
   });
+
   const handleDeletePost = useCallback(
     async (postId) => {
       if (!token) return;
@@ -107,7 +115,7 @@ const Archives = ({ username }) => {
           shouldShowTimeoutProgess: true,
           color: "success",
         });
-        setSelectedPost(null); 
+        setSelectedPost(null);
       } catch (error) {
         addToast({
           title: "Error",
@@ -139,15 +147,13 @@ const Archives = ({ username }) => {
     <>
       <ToastProvider placement="top-right" />
       <div className="w-full">
-        <h1 className="text-3xl font-bold mb-10">Archive</h1>
-        <hr className="mb-10 border-neutral-500" />
         <div className="max-w-4xl mx-auto">
           {loading ? (
             <div className="flex justify-center items-center h-screen">
               <Spinner color="primary" label="Loading posts..." labelColor="primary" />
             </div>
           ) : memoizedPostUsers.length > 0 ? (
-            <div className="grid grid-cols-3 gap-1">
+            <div className="grid grid-cols-4 gap-2">
               {memoizedPostUsers.map((post) => (
                 <PostCard key={post.id} post={post} onClick={handlePostClick} />
               ))}
@@ -183,6 +189,19 @@ const PostCard = React.memo(({ post, onClick }) => {
       className="aspect-square relative group cursor-pointer"
       onClick={() => onClick(post)}
     >
+      <div className="absolute top-0 left-0 right-0 text-white bg-black/50 p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+        <p className="text-sm">
+          {post.postedAt
+            ? (() => {
+                const date = new Date(post.postedAt);
+                const mm = String(date.getMonth() + 1).padStart(2, "0");
+                const dd = String(date.getDate()).padStart(2, "0");
+                const yyyy = date.getFullYear();
+                return `${mm}-${dd}-${yyyy}`;
+              })()
+            : ""}
+        </p>
+      </div>
       {post.media.length === 0 ? (
         <div className="w-full h-full bg-black flex items-center justify-center">
           <p className="text-white text-sm">View article</p>

@@ -19,8 +19,13 @@ import ReportModal from "@/components/global/Report/ReportModal";
 import { useReports } from "@/components/provider/ReportProvider";
 import { addToast, ToastProvider } from "@heroui/toast";
 import { useQuery } from "@tanstack/react-query";
-import { useBookmarks } from "@/components/provider/BookmarkProvider";
+
+
 import Skeleton from "@/components/global/SkeletonLoad";
+
+import BookmarkButton from "@/components/global/Bookmark";
+
+
 export default function Reels() {
   const [postStates, setPostStates] = useState({});
   const [videoPosts, setVideoPosts] = useState([]);
@@ -41,7 +46,8 @@ export default function Reels() {
   const videoRefs = useRef([]);
   const containerRef = useRef(null);
   const { createPostReport } = useReports();
-  const { savedPostsMap, toggleBookmark } = useBookmarks();
+
+
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   const { data: posts, isLoading } = useQuery({
@@ -479,14 +485,9 @@ export default function Reels() {
                   />
                 </div>
                 <div className="flex flex-col items-center">
-                  <i
-                    className={`fa-${
-                      savedPostsMap[post.id] ? "solid" : "regular"
-                    } fa-bookmark
-                    ${savedPostsMap[post.id] ? "text-yellow-400" : "text-white"}
-                    hover:opacity-50 focus:opacity-50 transition cursor-pointer`}
-                    onClick={() => toggleBookmark(post.id)}
-                  />
+
+                  <BookmarkButton postId={post.id} />
+
                 </div>
                 <div className="flex flex-col items-center relative">
                   <i

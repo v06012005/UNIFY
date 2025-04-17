@@ -131,7 +131,7 @@ const UserManagementPage = () => {
           <p className="text-gray-500">Manage all reports about users who violated UNIFY's policies.</p>
         </div>
         <div className="flex items-center w-1/2">
-          <Input label="" className="w-full"
+          <Input label="" className="w-full "
             labelPlacement="inside"
             placeholder="Enter email"
             startContent={
@@ -143,12 +143,12 @@ const UserManagementPage = () => {
         </div>
       </div>
 
-      <div className="overflow-auto h-[calc(73vh-0.7px)]">
+      <div className="overflow-auto h-[calc(73vh-0.7px)] no-scrollbar">
         {loading ? (
           // <p className="text-center text-gray-500">Loading users...</p>
           <TableLoading tableHeaders={["No.", "Username", "Email", "Report Approval Count", "Actions"]} />
         ) : (
-          <Table className="rounded-lg" isStriped aria-label="">
+          <Table className="rounded-lg " isStriped aria-label="">
             <TableHeader>
               <TableColumn className="text-md">No.</TableColumn>
               <TableColumn className="text-md">Username</TableColumn>

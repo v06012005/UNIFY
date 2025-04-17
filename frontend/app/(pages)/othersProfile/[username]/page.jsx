@@ -45,7 +45,7 @@ const Page = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const openReportModal = () => {
     setIsModalOpen(true);
-    setOpenList(false)
+    setOpenList(false);
   };
 
   const closeModal = () => {
@@ -76,7 +76,6 @@ const Page = () => {
   }, [userInfo, countFollowers, countFollowing]);
 
   const handleReportUser = useCallback(
-
     async (data, reason) => {
       const report = await createUserReport(data, reason);
 
@@ -127,28 +126,22 @@ const Page = () => {
         <div className="flex px-4 sm:px-6">
           {/* Avatar */}
 
-
           <div className="w-36 h-36 sm:w-48 sm:h-48 flex-shrink-0">
-
             <div className="relative w-full h-full rounded-full overflow-hidden border-2 border-gray-300">
               {userInfo?.avatar?.url ? (
                 <Image
                   src={userInfo.avatar.url}
                   alt="Avatar"
-
                   width={154}
                   height={154}
-
                   className="object-cover w-full h-full"
                 />
               ) : (
                 <Image
                   src="/images/unify_icon_2.svg"
                   alt="Default Avatar"
-
                   width={154}
                   height={154}
-
                   className="object-cover w-full h-full"
                 />
               )}
@@ -156,7 +149,6 @@ const Page = () => {
           </div>
 
           {/* Profile Info */}
-
 
           <div className="ml-12 flex-1">
             <div className="flex items-center justify-between">
@@ -168,7 +160,6 @@ const Page = () => {
                 iconClass="fa-solid fa-ellipsis"
               />
             </div>
-
 
             {/* Stats */}
             <div className="flex space-x-6 mt-4">
@@ -212,10 +203,22 @@ const Page = () => {
                 contentFollow="Follow"
                 contentFollowing="Unfollow"
               />
-              <button className="flex items-center font-bold py-2 px-4 rounded-lg hover:bg-zinc-400 bg-gray-200 dark:bg-neutral-700 dark:hover:bg-gray-600 transition-colors w-full justify-center">
+              <Link
+                href={{
+                  pathname: `/messages`,
+                  query: {
+                    userId: userInfo.id,
+                    username: userInfo.username,
+                    avatar:
+                      userInfo.avatar?.url || "/images/default-avatar.svg",
+                    fullname: userInfo.firstName + " " + userInfo.lastName,
+                  },
+                }}
+                className="flex items-center font-bold py-2 px-4 rounded-lg hover:bg-zinc-400 bg-gray-200 dark:bg-neutral-700 dark:hover:bg-gray-600 transition-colors w-full justify-center"
+              >
                 <i className="fa-brands fa-facebook-messenger mr-2"></i>
                 <span>Message</span>
-              </button>
+              </Link>
             </div>
           </div>
         </div>
@@ -260,10 +263,8 @@ const Page = () => {
             <div className="bg-white dark:bg-neutral-900 rounded-xl w-72 shadow-2xl border border-gray-200 dark:border-neutral-800">
               <button
                 className="w-full py-3.5 text-red-500 dark:text-red-400 font-semibold text-sm hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200 rounded-t-xl"
-
                 // onClick={() => handleReportUser(userInfo.id)}
                 onClick={openReportModal}
-
               >
                 Report
               </button>
@@ -278,15 +279,13 @@ const Page = () => {
               </button>
             </div>
           </div>
-
-          
         )}
-          <ReportUserModal
-                      isOpen={isModalOpen}
-                      onClose={closeModal}
-                      onSubmit={handleReportUser}
-                      userId={userInfo.id}
-                    />
+        <ReportUserModal
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          onSubmit={handleReportUser}
+          userId={userInfo.id}
+        />
       </div>
     </>
   );

@@ -47,8 +47,8 @@ const useChat = (user, chatPartner) => {
     queryKey: ["chatList", user?.id],
     queryFn: fetchListChat,
     enabled: !!user?.id,
-    refetchInterval: 10000,
-    refetchOnWindowFocus: false,
+    // refetchInterval: 1000,
+    // refetchOnWindowFocus: false,
     keepPreviousData: true,
     onSuccess: (data) => {
       if (data.length > 0) {
@@ -82,6 +82,19 @@ const useChat = (user, chatPartner) => {
     queryKey: ["messages", user?.id, chatPartner],
     queryFn: fetchMessages,
     enabled: !!user?.id && !!chatPartner,
+    // refetchInterval: 1000,
+    // refetchOnWindowFocus: false,
+    onSuccess: (data) => {
+      if (data.length > 0) {
+        const sortedMessages = data.sort(
+          (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+        );
+        setChatMessages(sortedMessages);
+      }
+    },
+    onError: (error) => {
+      console.error("❌ Error fetching messages:", error);
+    },
     keepPreviousData: true,
   });
 

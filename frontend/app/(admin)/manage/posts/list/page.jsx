@@ -92,7 +92,7 @@ const PostManagementPage = () => {
         </div>
       </div>
 
-      <div className="overflow-auto h-[calc(73vh-0.7px)]">
+      <div className="overflow-auto h-[calc(73vh-0.7px)] no-scrollbar">
         {loading ? (
           // <p className="text-center text-gray-500">Loading users...</p>
           <TableLoading tableHeaders={["No.", "Reported At", "Post ID", "Reason", "Actions"]} />

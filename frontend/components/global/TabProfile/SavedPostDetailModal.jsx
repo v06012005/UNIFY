@@ -209,8 +209,8 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
   return (
     <>
       <ToastProvider placement={"top-right"} />
-      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50">
-        <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-2xl flex flex-row w-[1300px] h-[720px] overflow-hidden">
+      <div className="fixed inset-0 flex items-center justify-center bg-black/40 dark:bg-neutral-700/40 backdrop-blur-sm z-50 pointer-events-auto">
+      <div className="bg-gray-100 dark:bg-neutral-900 rounded-xl shadow-2xl border-neutral-700 border-1 flex flex-row w-[1300px] h-[690px] overflow-hidden">
           {/* Media */}
           <div className="w-1/2 relative dark:border-neutral-700 border-r">
             {selectedMedia ? (
@@ -287,6 +287,7 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
               </div>
             )}
           </div>
+
             {/* Nội dung */}
             <div className="w-1/2 flex flex-col">
               <div className="flex items-center justify-between p-4 border-b dark:border-neutral-800">
@@ -353,7 +354,7 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
               </div>
 
               <div
-                className="flex-1 px-4 py-3 overflow-y-auto"
+                className="flex-1 px-4 py-3 overflow-y-auto no-scrollbar"
                 ref={commentsContainerRef}
               >
                 {post.captions === null ? (
@@ -415,7 +416,6 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
             </button>
          
         </div>
-      </div>
     </>
   );
 };

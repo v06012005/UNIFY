@@ -20,12 +20,12 @@ import java.time.LocalDateTime;
 public class Notification {
     @Id
     String id;
-    String sender;      // ID hoặc username của người gửi
-    String receiver;    // ID của người nhận
+    String sender;
+    String receiver;
     @Enumerated(EnumType.STRING)
-    NotificationType type;  // Dùng Enum thay vì String
+    NotificationType type;
     LocalDateTime timestamp;
     @Builder.Default
-    boolean isRead = false;  // Trạng thái đã đọc
-    String message;          // Nội dung thông báo (nếu cần)
+    boolean isRead = false;
+    String message;
 }

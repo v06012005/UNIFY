@@ -84,11 +84,6 @@ public class PostServiceImp implements PostService {
                 .collect(Collectors.toList());
     }
 
-//    @Override
-//    @CacheEvict(value = "posts", key = "#id")
-//    public void deletePostById(String id) {
-//        postRepository.deleteById(id);
-//    }
     @Override
     @CacheEvict(value = "posts", key = "#id")
     public void deletePostById(String id) {
@@ -126,6 +121,10 @@ public class PostServiceImp implements PostService {
     public List<PostDTO> getMyPosts(String userId, Integer status, Audience audience) {
         return mapper.toPostDTOList(postRepository.findMyPosts(userId, status, audience));
     }
+    @Override
+    public List<PostDTO> getArchiveMyPosts(String userId, Integer status) {
+        return mapper.toPostDTOList(postRepository.findArchiveMyPosts(userId, status));
+    }
 
 	@Override
 	public List<PostDTO> getPostsByHashtag(String hashtag) {
@@ -142,7 +141,17 @@ public class PostServiceImp implements PostService {
         List<Post> posts = postRepository.findPostsWithInteractionCounts()
             .stream()
             .map(result -> (Post) result[0])
-            .collect(Collectors.toList());
+            .toList();
+        return posts.stream().map(mapper::toPostDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<PostDTO> getRecommendedPostsForExplore(String userId) {
+        // Logic recommendation: Lấy posts từ user follow, lượt like, hashtag, v.v.
+        List<Post> posts = postRepository.findPostsWithInteractionCountsAndNotFollow(userId)
+            .stream()
+            .map(result -> (Post) result[0])
+            .toList();
         return posts.stream().map(mapper::toPostDTO).collect(Collectors.toList());
     }
 

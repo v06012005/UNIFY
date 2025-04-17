@@ -18,7 +18,11 @@ public interface PostService {
 
 	List<PostDTO> getPostsTrending();
 
-	void deletePostById(String id);
+
+    void deletePostById(String id);
+
+    void archivePostById(String id);
+
 
 	void archivePostById(String id);
 
@@ -35,5 +39,12 @@ public interface PostService {
 	List<PostDTO> getPostsWithCommentCount();
 
 
+    List<PostDTO> getArchiveMyPosts(String userId, Integer status);
+
+    List<PostDTO> getPostsByHashtag(String hashtag);
+
+    List<PostDTO> getRecommendedPosts(String userId);
+
+    List<PostDTO> getRecommendedPostsForExplore(String userId);
 
 }

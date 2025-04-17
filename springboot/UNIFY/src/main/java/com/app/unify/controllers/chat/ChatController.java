@@ -44,7 +44,6 @@ public class ChatController {
 
     @GetMapping("/chat-list/{userId}")
     public ResponseEntity<?> getChatList(@PathVariable String userId) {
-        System.out.println("testLog: " + messageService.getChatList(userId));
         return ResponseEntity.ok(messageService.getChatList(userId));
     }
 

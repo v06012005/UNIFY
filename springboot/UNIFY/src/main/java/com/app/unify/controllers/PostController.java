@@ -1,26 +1,5 @@
 package com.app.unify.controllers;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.app.unify.dto.global.PostDTO;
 import com.app.unify.repositories.UserRepository;
 import com.app.unify.services.LikedPostService;
@@ -28,8 +7,18 @@ import com.app.unify.services.MediaService;
 import com.app.unify.services.PostCommentService;
 import com.app.unify.services.PostService;
 import com.app.unify.types.Audience;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -74,18 +63,17 @@ public class PostController {
             postService.deletePostById(id);
             return ResponseEntity.ok("Post deleted successfully!");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error deleting post: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting post: " + e.getMessage());
         }
     }
+
     @PutMapping("/{id}/archive")
     public ResponseEntity<String> archivePost(@PathVariable("id") String id) {
         try {
             postService.archivePostById(id);
             return ResponseEntity.ok("Successfully moved to archive!");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error archiving  post: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error archiving  post: " + e.getMessage());
         }
     }
 
@@ -113,6 +101,12 @@ public class PostController {
         return ResponseEntity.ok(posts);
     }
 
+    @GetMapping("/myArchive")
+    public ResponseEntity<List<PostDTO>> getArchiveMyPosts(@RequestParam String userId, @RequestParam Integer status) {
+        List<PostDTO> posts = postService.getArchiveMyPosts(userId, status);
+        return ResponseEntity.ok(posts);
+    }
+
     @GetMapping("/hashtag/{content}")
     public ResponseEntity<List<PostDTO>> getPostsByHashtag(@PathVariable("content") String content) {
         return ResponseEntity.ok(postService.getPostsByHashtag("#" + content));
@@ -120,29 +114,22 @@ public class PostController {
     }
 
     @GetMapping("/explorer")
-    public ResponseEntity<List<PostDTO>> getRecommendedPosts() {
+    public ResponseEntity<List<PostDTO>> getRecommendedPostsForExplore() {
         String userId = getCurrentUserId();
-        List<PostDTO> posts = postService.getRecommendedPosts(userId);
+        List<PostDTO> posts = postService.getRecommendedPostsForExplore(userId);
         return ResponseEntity.ok(posts);
-
-
     }
     
    
 
     private String getCurrentUserId() {
-
         var authentication = SecurityContextHolder.getContext().getAuthentication();
-
         if (authentication == null || authentication.getPrincipal() == null) {
             throw new RuntimeException("User not authenticated (401)");
         }
-
         Object principal = authentication.getPrincipal();
-
         if (principal instanceof UserDetails userDetails) {
-            String userId = userRepository.findByEmail(userDetails.getUsername())
-                    .orElseThrow(() -> new RuntimeException("User not found")).getId();
+            String userId = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(() -> new RuntimeException("User not found")).getId();
             return userId;
         }
 

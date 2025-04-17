@@ -5,7 +5,7 @@ import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import PostCard from "@/components/PostCard";
 import Cookies from "js-cookie";
-import Spinner from "@/components/loading/Spinner";
+import { Skeleton } from "@heroui/react";
 import PostDetailModal from "@/components/global/TabProfile/PostDetailModal";
 
 export default function ExplorePage() {
@@ -55,18 +55,24 @@ export default function ExplorePage() {
     setSelectedPost(null); // Clear the selected post
   }, []);
 
-  // Show loading spinner while data is being fetched
-  if (isLoading)
+  if (isLoading) {
     return (
-      <div className="flex flex-col justify-center items-center max-h-[87vh] h-screen">
-        <Spinner
-          color="primary"
-          label="Loading posts..."
-          labelColor="primary"
-        />
-        <span>Loading</span>
+      <div className="w-full h-auto flex flex-wrap mt-8 justify-center">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1">
+          {Array(8)
+            .fill()
+            .map((_, index) => (
+              <div
+                key={index}
+                className="w-full max-w-[300px] h-[300px] rounded-lg overflow-hidden"
+              >
+                <Skeleton className="w-[300px] h-[300px] dark:opacity-10" />
+              </div>
+            ))}
+        </div>
       </div>
     );
+  }
 
   // Show error message if fetching fails
   if (error) return <div>Error: {error.message}</div>;
@@ -74,12 +80,12 @@ export default function ExplorePage() {
   // Render posts and the modal for the selected post
   return (
     <div className="w-full h-auto flex flex-wrap mt-8 mb-5 justify-center">
-      <div className="grid grid-cols-4 gap-1">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1">
         {posts.map((post) => (
           <div key={post.id} style={{ width: "300px", height: "300px" }}>
             <PostCard
               post={post}
-              onClick={() => handlePostClick(post)} // Open modal on click
+              onClick={() => handlePostClick(post)}
               style={{ width: "100%", height: "100%" }}
               postId={post.id}
             />

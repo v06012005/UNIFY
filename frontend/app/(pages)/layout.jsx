@@ -23,7 +23,7 @@ const RootLayout = ({ children }) => {
                   </div>
                 </aside>
               )}
-              <main className="w-full flex-initial z-10 relative">
+              <main className="w-full flex-initial relative">
                 {children}
                 {/*<CallNotification />*/}
               </main>

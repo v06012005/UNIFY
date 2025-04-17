@@ -21,12 +21,12 @@ const ShareButton = () => {
 
   return (
     <>
-      <Button
-        onPress={onOpen}
+      <button
+        onClick={onOpen}
         className="bg-transparent dark:text-white text-xl"
       >
         <i className="fa-regular fa-paper-plane"></i>
-      </Button>
+      </button>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="2xl">
         <ModalContent>
           {(onClose) => (

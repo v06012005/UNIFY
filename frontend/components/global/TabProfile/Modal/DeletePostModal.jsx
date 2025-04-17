@@ -9,10 +9,10 @@ const DeletePostModal = ({ isOpen, onClose, onConfirm }) => {
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             Confirm Delete
           </h3>
-          <p className="text-gray-600 dark:text-gray-300 mb-6">
+          <p className="text-gray-600 dark:text-gray-300 mb-6 text-sm">
             Are you sure you want to delete this post? This action is irreversible.
           </p>
-          <div className="flex justify-end gap-4">
+          <div className="flex justify-end gap-4 text-sm">
             <button
               onClick={onClose}
               className="bg-gray-200 dark:bg-neutral-700 hover:bg-gray-300 dark:hover:bg-neutral-600 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-lg transition-colors"

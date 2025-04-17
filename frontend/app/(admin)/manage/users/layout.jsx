@@ -1,5 +1,4 @@
 import React from "react";
-import UserSidebar from "./components/UserSidebar";
 
 const layout = ({ children }) => {
   return (
