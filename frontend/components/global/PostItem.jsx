@@ -9,10 +9,8 @@ import usePostLikeStatus from "@/hooks/usePostLikeStatus";
 import { useApp } from "../provider/AppProvider";
 import { Avatar } from "@heroui/react";
 import Link from "next/link";
-import Bookmark from "@/components/global/Bookmark";
-import ReportModal from "@/components/global/Report/ReportModal";
-import { useReports } from "@/components/provider/ReportProvider";
-import { addToast, ToastProvider } from "@heroui/toast";
+import { hash } from "crypto";
+
 const User = ({
   href = "",
   username = "",
@@ -73,95 +71,45 @@ const PostItem = ({ post }) => {
     setIsModalOpen(true);
   };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
+  const hashtags = post.captions.split(/(\#[a-zA-Z0-9_]+)/g).filter(part => part.startsWith("#"));
+
+  const transformHashtags = (text) => {
+    return text.split(/(\#[a-zA-Z0-9_]+)/g).map((part, index) => {
+      if (part.startsWith("#")) {
+        return (
+          <Link
+            key={index}
+            href={`/explore/${part.substring(1)}`}
+            className="text-blue-500 hover:underline"
+          >
+            {part}
+          </Link>
+        );
+      }
+      return part;
+    });
   };
 
-  const handleReportPost = useCallback(
-    async (postId, reason) => {
-      const report = await createPostReport(postId, reason);
-      if (report?.error) {
-        const errorMessage = report.error;
-        console.warn("Failed to report post:", errorMessage);
-        if (errorMessage === "You have reported this content before.") {
-          addToast({
-            title: "Fail to report post",
-            description: "You have reported this content before.",
-            timeout: 3000,
-            shouldShowTimeoutProgess: true,
-            color: "warning",
-          });
-          setIsModalOpen(false);
-        } else {
-          addToast({
-            title: "Encountered an error",
-            description: "Error: " + errorMessage,
-            timeout: 3000,
-            shouldShowTimeoutProgess: true,
-            color: "danger",
-          });
-          setIsModalOpen(false);
-        }
-        return;
-      }
-
-      console.log("Post reported successfully:", report);
-      addToast({
-        title: "Success",
-        description: "Report post successful.",
-        timeout: 3000,
-        shouldShowTimeoutProgess: true,
-        color: "success",
-      });
-      setIsModalOpen(false);
-    },
-    [createPostReport]
-  );
   return (
-    <>
-      <ToastProvider placement={"top-right"} />
-      <div key={post.id} className="w-3/4 mb-8 mx-auto pb-8">
-        <div className="flex mx-20 justify-between items-center">
-          <User
-            avatar={post?.user?.avatar?.url}
-            href={`/othersProfile/${post?.user?.username}`}
-            username={post.user?.username}
-            firstname={post.user?.firstName}
-            lastname={post.user?.lastName}
-          />
-          <NavButton onClick={() => setOpenList(true)} content="•••" />
-          {openList && (
-            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[60]">
-              <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-xl w-80 transform transition-all duration-200 scale-100 hover:scale-105">
-                <button
-                  onClick={() => {
-                    openReportModal();
-                    setOpenList(false);
-                  }}
-                  className="w-full py-3 text-red-500 dark:hover:bg-neutral-700 hover:bg-gray-100 rounded-t-lg font-medium"
-                >
-                  Report
-                </button>
-                <button className="w-full py-3 text-gray-800 dark:text-gray-200 dark:hover:bg-neutral-700 hover:bg-gray-100 font-medium">
-                  Not interested
-                </button>
-                <button className="w-full py-3 text-gray-800 dark:text-gray-200 dark:hover:bg-neutral-700 hover:bg-gray-100 font-medium">
-                  Share
-                </button>
-                <button
-                  onClick={() => setOpenList(false)}
-                  className="w-full py-3 text-gray-500 dark:text-gray-400 dark:hover:bg-neutral-700 hover:bg-gray-100 rounded-b-lg font-medium"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          )}
-          <ReportModal
-            isOpen={isModalOpen}
-            onClose={closeModal}
-            onSubmit={handleReportPost}
+    <div key={post.id} className="w-3/4 mb-8 mx-auto pb-8">
+      <User
+        avatar={post?.user?.avatar?.url}
+        href={`/othersProfile/${post?.user?.username}`}
+        username={post.user?.username}
+        firstname={post.user?.firstName}
+        lastname={post.user?.lastName}
+      />
+      <Slider srcs={post.media} />
+      <Caption text={transformHashtags(post.captions)} />
+      <div className="flex flex-col text-xl">
+        <div className="flex gap-2">
+          <LikeButton
+            className="!text-xl hover:opacity-50"
+            userId={user.id}
             postId={post.id}
+            isLiked={isLiked}
+            setIsLiked={setIsLiked}
+            setLikeCount={setLikeCount}
           />
         </div>
         <Slider srcs={post.media} />
@@ -209,11 +157,12 @@ const PostItem = ({ post }) => {
           </div>
         </div>
       </div>
-<<<<<<< HEAD
-    </>
-=======
       <div className="mt-2 flex flex-wrap">
-        <Hashtag content="#myhashtag" />
+        {hashtags.map((hashtag, index) => {
+          return (
+            <Hashtag key={index} content={hashtag} to={`/explore/${hashtag}`} />
+          )
+        })}
       </div>
       <div className="mt-2">
         <CommentButton
@@ -224,7 +173,6 @@ const PostItem = ({ post }) => {
         </CommentButton>
       </div>
     </div>
->>>>>>> 6216b7a (intial update on home page)
   );
 };
 

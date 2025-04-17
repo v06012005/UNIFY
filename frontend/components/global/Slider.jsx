@@ -35,7 +35,7 @@ const Slider = ({ srcs = [] }) => {
                 setError(true);
                 setLoading(false);
             }
-        }, 10000);
+        }, 5000);
 
         return () => clearTimeout(timeout);
     }, [srcs, currentIndex]);
@@ -51,7 +51,7 @@ const Slider = ({ srcs = [] }) => {
                     />
                 </div>
             )}
-            {error && (
+            {srcs[currentIndex] == null && (
                 <div className="absolute text-red-500 inset-0 flex justify-center rounded-lg items-center bg-gray-200 dark:bg-gray-800">
                     <i className="fa-solid fa-triangle-exclamation"></i>
                     <p>This image/ video is no longer available!</p>
@@ -80,20 +80,25 @@ const Slider = ({ srcs = [] }) => {
                     <PostVideo src={srcs[currentIndex].url} />
                 </>
             )}
-            <div
-                onClick={next}
-                className="hidden group-hover:flex absolute top-1/2 right-[-10px] -translate-x-0 -translate-y-1/2 bg-gray-400 w-7 h-7 rounded-full cursor-pointer"
-            >
-                <i className="fa-solid fa-angle-right m-auto"></i>
-            </div>
-            <div
-                onClick={prev}
-                className="hidden group-hover:flex absolute top-1/2 left-[-10px] -translate-x-0 -translate-y-1/2 bg-gray-400 w-7 h-7 rounded-full cursor-pointer"
-            >
-                <i className="fa-solid fa-angle-left m-auto"></i>
-            </div>
+            {srcs.length >= 2 &&
+                <div
+                    onClick={next}
+                    className="hidden group-hover:flex absolute top-1/2 right-[-10px] -translate-x-0 -translate-y-1/2 bg-gray-400 w-7 h-7 rounded-full cursor-pointer"
+                >
+                    <i className="fa-solid fa-angle-right m-auto"></i>
+                </div>
+            }
+            {srcs.length >= 2 &&
+                <div
+                    onClick={prev}
+                    className="hidden group-hover:flex absolute top-1/2 left-[-10px] -translate-x-0 -translate-y-1/2 bg-gray-400 w-7 h-7 rounded-full cursor-pointer"
+                >
+                    <i className="fa-solid fa-angle-left m-auto"></i>
+                </div>
+            }
+
             <div className="flex justify-center">
-                {srcs.map((src, index) => (
+                {srcs.map((_, index) => (
                     <div
                         key={index}
                         onClick={() => goTo(index)}

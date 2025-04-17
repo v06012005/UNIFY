@@ -51,7 +51,7 @@ const PostVideo = ({ src }) => {
         muted={isMuted}
         loop
         playsInline
-        className="w-full h-full object-cover relative z-0"
+        className="w-full h-full object-cover rounded-lg relative z-0"
       >
         <source src={src} type="video/mp4" />
       </video>
