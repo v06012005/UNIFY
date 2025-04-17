@@ -14,28 +14,29 @@ import lombok.experimental.FieldDefaults;
 @Data
 public class PostDTO {
 
-	String id;
+    String id;
 
-	String captions;
+    String captions;
 
-	// 0 -> hidden
-	// 1 -> visible
-	// 2 -> sensitive/ violent content
+    // 0 -> hidden
+    // 1 -> visible
+    // 2 -> sensitive/violent content
+    Integer status = 1;
 
-	Integer status = 1;
+    Audience audience;
 
-	Audience audience;
+    UserDTO user;
 
-	UserDTO user;
+    LocalDateTime postedAt;
 
-	LocalDateTime postedAt;
+    Boolean isCommentVisible;
 
-	Boolean isCommentVisible;
+    Boolean isLikeVisible = false;
 
-	Boolean isLikeVisible = false;
+    Set<Media> media;
 
-	Set<Media> media;
-
-	Set<HashtagDetailDTO> hashtags;
+    Set<HashtagDetailDTO> hashtags;
+    
+    private Long commentCount;
 
 }

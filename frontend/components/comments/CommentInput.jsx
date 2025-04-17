@@ -192,7 +192,11 @@ const CommentInput = ({
         </>
       )}
       {error && (
-        <div className="absolute top-[-30px] text-red-500 text-sm">{error}</div>
+      <div className="absolute top-[-50px]  text-red-600 text-sm px-4 py-2 rounded-xl bg-[rgba(255,255,255,0.25)] backdrop-blur-md shadow-md border border-red-300/40">
+      {error}
+    </div>
+    
+      
       )}
     </div>
   );

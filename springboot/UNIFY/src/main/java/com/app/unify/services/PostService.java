@@ -8,25 +8,32 @@ import com.app.unify.types.Audience;
 
 public interface PostService {
 
-    PostDTO createPost(PostDTO postDTO);
+	PostDTO createPost(PostDTO postDTO);
 
-    List<PostDTO> getAll();
+	List<PostDTO> getAll();
 
-    PostDTO getById(String id);
+	PostDTO getById(String id);
 
-    PostDTO updatePost(PostDTO postDTO);
+	PostDTO updatePost(PostDTO postDTO);
 
-    List<PostDTO> getPostsTrending();
+	List<PostDTO> getPostsTrending();
 
-    void deletePostById(String id);
-    void archivePostById(String id);
+	void deletePostById(String id);
 
-    List<PostDTO> getPostsByDate(LocalDateTime start, LocalDateTime end);
-    // List<PostDTO> getMyPosts(String username);
+	void archivePostById(String id);
 
-    List<PostDTO> getMyPosts(String userId, Integer status, Audience audience);
+	List<PostDTO> getPostsByDate(LocalDateTime start, LocalDateTime end);
+	// List<PostDTO> getMyPosts(String username);
 
-    List<PostDTO> getPostsByHashtag(String hashtag);
+	List<PostDTO> getMyPosts(String userId, Integer status, Audience audience);
 
-    List<PostDTO> getRecommendedPosts(String userId);
+	List<PostDTO> getPostsByHashtag(String hashtag);
+
+	List<PostDTO> getRecommendedPosts(String userId);
+
+	//CountCmt
+	List<PostDTO> getPostsWithCommentCount();
+
+
+
 }

@@ -31,4 +31,9 @@ public interface PostCommentRepository extends JpaRepository<PostComment, String
     // Query để lấy replies của một parent
     @Query("SELECT DISTINCT pc FROM PostComment pc LEFT JOIN FETCH pc.replies r LEFT JOIN FETCH pc.parent WHERE pc.parent = :parent")
     List<PostComment> findByParentWithReplies(@Param("parent") PostComment parent);
+    
+    
+    // Count cmt all reply 
+    @Query("SELECT COUNT(pc) FROM PostComment pc WHERE pc.post.id = :postId")
+    long countByPostId(String postId);
 }
