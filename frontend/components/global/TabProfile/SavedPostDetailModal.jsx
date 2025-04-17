@@ -32,8 +32,7 @@ const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
 const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
   const [openList, setOpenList] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const { createPostReport, createUserReport, createCommentReport } =
-    useReports();
+  const { createPostReport } = useReports();
   const { bookmarks = [], toggleBookmark } = useBookmarks();
   const [selectedMedia, setSelectedMedia] = useState(post?.media?.[0] || null);
   const [comments, setComments] = useState([]);

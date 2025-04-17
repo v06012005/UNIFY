@@ -8,7 +8,8 @@ import FullUnifyLogo from "@/components/global/FullUnifyLogo";
 import { fetchPosts, verifySession } from "./lib/dal";
 import { getQueryClient } from "@/app/lib/get-query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import { useApp } from "@/components/provider/AppProvider";
+import User from "@/components/global/UserClient";
+import Group from "@/components/global/GroupSuggestions";
 
 const SearchBar = () => {
   return (
@@ -54,6 +55,20 @@ const User = ({ href = "" }) => {
     </Link>
   );
 };
+// const User = ({ href = "" }) => {
+ 
+//   return (
+//     <Link href={href}>
+//       <div className="flex mb-2">
+//         <Image src={avatar} alt="Avatar" className="rounded-full border-1 dark:border-neutral-700 border-gray-300 w-12 h-12" />
+//         <div className="ml-5">
+//           <p className="my-auto text-sm font-bold">@username</p>
+//           <p className="my-auto">Johnny Dang</p>
+//         </div>
+//       </div>
+//     </Link>
+//   );
+// };
 
 export default async function Home() {
   const session = await verifySession();
@@ -67,15 +82,11 @@ export default async function Home() {
         </div>
         <div className="basis-1/4 border-l-1 dark:border-neutral-700 py-8 h-screen sticky top-0">
           <div className="w-3/4 flex flex-col mx-auto">
-            {session?.isAuth && <User href="/profile" />}
-            <hr className="my-4 dark:border-neutral-700" />
+            {session?.isAuth && <User/>}
+            <hr className="my-4 dark:border-neutral-700  " />
             <div>
               <p className="font-bold text-lg mb-4">Group suggestions</p>
-              <User href="/profile" />
-              <User href="/" />
-              <User href="/" />
-              <User href="/" />
-              <User href="/" />
+              <Group/>
             </div>
             <hr className="my-4 dark:border-neutral-700" />
             <div>
