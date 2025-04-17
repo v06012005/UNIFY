@@ -19,6 +19,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Builder.Default;
 import lombok.experimental.FieldDefaults;
 
 @Entity
@@ -37,8 +38,8 @@ public class SavedPost {
     String id;
 
     @Column(name = "saved_at", nullable = false)
-    LocalDateTime savedAt;
-
+    @Default
+    LocalDateTime savedAt = LocalDateTime.now();
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonBackReference
 
