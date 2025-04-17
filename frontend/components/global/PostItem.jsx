@@ -10,7 +10,6 @@ import { useApp } from "../provider/AppProvider";
 import { Avatar } from "@heroui/react";
 import Link from "next/link";
 import Bookmark from "@/components/global/Bookmark";
-import PostOptionsButton from "./PostOptionButton";
 
 const User = ({
   href = "",
