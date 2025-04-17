@@ -288,8 +288,6 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
             )}
           </div>
 
-           
-
             {/* Nội dung */}
             <div className="w-1/2 flex flex-col">
               <div className="flex items-center justify-between p-4 border-b dark:border-neutral-800">
@@ -416,7 +414,7 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
             >
               ×
             </button>
-          </div>
+         
         </div>
     </>
   );

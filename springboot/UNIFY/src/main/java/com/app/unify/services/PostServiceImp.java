@@ -53,6 +53,8 @@ public class PostServiceImp implements PostService {
         return postRepository.findAll().stream().map(mapper::toPostDTO).collect(Collectors.toList());
     }
 
+
+        
     @Override
     public PostDTO getById(String id) {
         Post post = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("Post not found!"));
@@ -152,4 +154,19 @@ public class PostServiceImp implements PostService {
             .toList();
         return posts.stream().map(mapper::toPostDTO).collect(Collectors.toList());
     }
+
+    @Override
+    public List<PostDTO> getPostsWithCommentCount() {
+        List<Object[]> results = postRepository.findPostsWithCommentCount();
+        return results.stream().map(result -> {
+            Post post = (Post) result[0];
+            Long commentCount = (Long) result[1];
+            PostDTO postDTO = mapper.toPostDTO(post);
+            postDTO.setCommentCount(commentCount); // Giả định PostDTO có setter
+            return postDTO;
+        }).collect(Collectors.toList());
+    }
+
+
+    
 }

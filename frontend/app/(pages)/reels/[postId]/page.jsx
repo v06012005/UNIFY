@@ -5,11 +5,10 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import ShareReels from "@/components/global/ShareReels";
 import PostReels from "@/components/global/PostReels";
+import { fetchComments } from "app/api/service/commentService";
 import { fetchPosts } from "@/app/lib/dal";
-import { Spinner } from "@heroui/react";
 import Cookies from "js-cookie";
 import { useApp } from "@/components/provider/AppProvider";
-import { fetchComments } from "app/api/service/commentService";
 import CommentItem from "@/components/comments/CommentItem";
 import CommentInput from "@/components/comments/CommentInput";
 import CaptionWithMore from "@/components/global/CaptionWithMore";
@@ -20,106 +19,93 @@ import ReportModal from "@/components/global/Report/ReportModal";
 import { useReports } from "@/components/provider/ReportProvider";
 import { addToast, ToastProvider } from "@heroui/toast";
 import { useQuery } from "@tanstack/react-query";
+
+
+import Skeleton from "@/components/global/SkeletonLoad";
+
 import BookmarkButton from "@/components/global/Bookmark";
 
+
 export default function Reels() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isCommentOpen, setIsCommentOpen] = useState(false);
-  const [toolStates, setToolStates] = useState({});
-  const [selectedAvatars, setSelectedAvatars] = useState([]);
+  const [postStates, setPostStates] = useState({});
   const [videoPosts, setVideoPosts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [commentsByPost, setCommentsByPost] = useState({});
+  const [commentsLoading, setCommentsLoading] = useState(false);
+  const [isCommentOpen, setIsCommentOpen] = useState(false);
   const [currentPostId, setCurrentPostId] = useState(null);
-  const [pausedStates, setPausedStates] = useState({});
   const [isMutedGlobally, setIsMutedGlobally] = useState(true);
   const [activePostId, setActivePostId] = useState(null);
-  const [isCommentsLoading, setIsCommentsLoading] = useState(false);
-  const [modalStates, setModalStates] = useState({});
+  const [selectedAvatars, setSelectedAvatars] = useState([]);
+  const [replyingTo, setReplyingTo] = useState(null);
   const { user } = useApp();
   const token = Cookies.get("token");
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const containerRef = useRef(null);
-  const videoRefs = useRef([]);
   const router = useRouter();
   const params = useParams();
   const postId = params?.postId;
   const currentUserId = user?.id;
-  const [replyingTo, setReplyingTo] = useState(null);
+  const videoRefs = useRef([]);
+  const containerRef = useRef(null);
   const { createPostReport } = useReports();
+
+
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
   const { data: posts, isLoading } = useQuery({
     queryKey: ["posts"],
     queryFn: fetchPosts,
   });
 
-  useEffect(() => {
-    console.log("Current postId:", postId);
-    console.log("Posts from useQuery:", posts);
-  }, [postId, posts]);
+  const initializePostState = (posts) =>
+    posts.reduce(
+      (acc, post) => ({
+        ...acc,
+        [post.id]: {
+          isLiked: false,
+          isSaved: false,
+          isPopupOpen: false,
+          isFollow: false,
+          isPaused: false,
+          isModalOpen: false,
+          comments: [],
+        },
+      }),
+      {}
+    );
+
+  const updatePostState = (postId, updates) =>
+    setPostStates((prev) => ({
+      ...prev,
+      [postId]: { ...prev[postId], ...updates },
+    }));
 
   useEffect(() => {
-    async function getVideoPosts() {
-      try {
-        const homePosts = await fetchPosts();
-        const filteredPosts = homePosts.filter((post) =>
-          post.media.some((media) => media.mediaType === "VIDEO")
-        );
+    if (isLoading || !posts) return;
 
-        let sortedPosts = [...filteredPosts];
-        if (postId) {
-          const targetIndex = sortedPosts.findIndex((p) => p.id === postId);
-          if (targetIndex !== -1) {
-            const [targetPost] = sortedPosts.splice(targetIndex, 1);
-            sortedPosts.unshift(targetPost);
-            console.log("Moved video to top:", postId);
-            setActivePostId(postId);
-          }
-        }
+    const videoPosts = posts.filter((post) =>
+      post.media.some((media) => media.mediaType === "VIDEO")
+    );
 
-        setVideoPosts(sortedPosts);
-        setPausedStates(
-          sortedPosts.reduce((acc, post) => ({ ...acc, [post.id]: false }), {})
-        );
-
-        setToolStates(
-          sortedPosts.reduce(
-            (acc, post) => ({
-              ...acc,
-              [post.id]: {
-                isLiked: false,
-                isSaved: false,
-                isPopupOpen: false,
-                isFollow: false,
-              },
-            }),
-            {}
-          )
-        );
-
-        if (token) {
-          await Promise.all(
-            sortedPosts.map(async (post) => {
-              const data = await fetchComments(post.id, token);
-              setCommentsByPost((prev) => ({
-                ...prev,
-                [post.id]: data,
-              }));
-            })
-          );
-        }
-
-        if (sortedPosts.length > 0 && !postId) {
-          window.history.pushState({}, "", `/reels/${sortedPosts[0].id}`);
-          setActivePostId(sortedPosts[0].id);
-        }
-      } catch (error) {
-        console.error("Failed to fetch video posts:", error);
-      } finally {
-        setLoading(false);
-      }
+    if (videoPosts.length === 0) {
+      setVideoPosts([]);
+      setLoading(false);
+      return;
     }
-    getVideoPosts();
-  }, [token, postId]);
+
+    let sortedPosts = videoPosts;
+    if (postId) {
+      sortedPosts.sort((a, b) =>
+        a.id === postId ? -1 : b.id === postId ? 1 : 0
+      );
+      setActivePostId(postId);
+    } else if (videoPosts.length > 0) {
+      router.replace(`/reels/${videoPosts[0].id}`);
+      setActivePostId(videoPosts[0].id);
+    }
+
+    setVideoPosts(sortedPosts);
+    setPostStates(initializePostState(sortedPosts));
+    setLoading(false);
+  }, [posts, isLoading, postId, router]);
 
   useEffect(() => {
     if (loading || videoPosts.length === 0) return;
@@ -128,7 +114,7 @@ export default function Reels() {
       if (video) {
         video.pause();
         video.muted = true;
-        video.currentTime = 0; // Reset chỉ khi danh sách video thay đổi
+        video.currentTime = 0;
       }
     });
   }, [videoPosts, loading]);
@@ -138,35 +124,22 @@ export default function Reels() {
 
     const observer = new IntersectionObserver(
       (entries) => {
-        let newActivePostId = null;
-
         entries.forEach((entry) => {
           const video = entry.target;
           const postId = video.dataset.postId;
-          const isManuallyPaused = pausedStates[postId];
+          const isManuallyPaused = postStates[postId]?.isPaused;
 
-          if (entry.isIntersecting) {
-            if (!isManuallyPaused) {
-              video.playbackRate = 1;
-              video.muted = isMutedGlobally;
-              video.play().catch((err) => console.error("Play error:", err));
-              newActivePostId = postId;
-              window.history.pushState({}, "", `/reels/${postId}`);
-            }
+          if (entry.isIntersecting && !isManuallyPaused) {
+            video.playbackRate = 1;
+            video.muted = isMutedGlobally;
+            video.play().catch((err) => console.error("Play error:", err));
+            setActivePostId(postId);
+            window.history.pushState({}, "", `/reels/${postId}`);
           } else {
             video.pause();
             video.muted = true;
           }
         });
-
-        videoRefs.current.forEach((video) => {
-          if (video && video.dataset.postId !== newActivePostId) {
-            video.pause();
-            video.muted = true;
-          }
-        });
-
-        setActivePostId(newActivePostId);
       },
       { threshold: 0.7 }
     );
@@ -183,41 +156,10 @@ export default function Reels() {
         if (video) observer.unobserve(video);
       });
     };
-  }, [videoPosts, pausedStates, isMutedGlobally, loading]); // Giữ nguyên dependency
-
-  const handlePauseChange = useCallback(
-    (postId, isPaused) => {
-      setPausedStates((prev) => ({ ...prev, [postId]: isPaused }));
-      const video = videoRefs.current.find((v) => v?.dataset.postId === postId);
-      if (video) {
-        if (isPaused) {
-          video.pause(); // Dừng video
-        } else {
-          video.muted = isMutedGlobally;
-          video.play().catch((err) => console.error("Play error:", err)); // Phát tiếp từ vị trí hiện tại
-          setActivePostId(postId);
-        }
-      }
-    },
-    [isMutedGlobally]
-  );
-
-  const handleMuteChange = useCallback((isMuted) => {
-    console.log(
-      "handleMuteChange called with",
-      isMuted,
-      "from",
-      new Error().stack
-    );
-    setIsMutedGlobally(isMuted);
-    videoRefs.current.forEach((video) => {
-      if (video) video.muted = isMuted;
-    });
-  }, []);
-  // Xử lý pause/play
+  }, [videoPosts, postStates, isMutedGlobally, loading]);
 
   useEffect(() => {
-    const handlePopState = () => {
+    const handlePopStateAndScroll = () => {
       const currentPostId = window.location.pathname.split("/").pop();
       const targetPostIndex = videoPosts.findIndex(
         (post) => post.id === currentPostId
@@ -230,99 +172,89 @@ export default function Reels() {
       }
     };
 
-    window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState);
-  }, [videoPosts]);
-
-  useEffect(() => {
-    if (postId && videoPosts.length > 0) {
-      const targetPostIndex = videoPosts.findIndex(
-        (post) => post.id === postId
-      );
-      if (targetPostIndex !== -1 && videoRefs.current[targetPostIndex]) {
-        videoRefs.current[targetPostIndex].scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      }
-    }
+    if (postId && videoPosts.length > 0) handlePopStateAndScroll();
+    window.addEventListener("popstate", handlePopStateAndScroll);
+    return () =>
+      window.removeEventListener("popstate", handlePopStateAndScroll);
   }, [postId, videoPosts]);
 
   const loadComments = useCallback(
     async (postId) => {
       if (!token || !postId) return;
-      setIsCommentsLoading(true);
+      setCommentsLoading(true);
       try {
         const data = await fetchComments(postId, token);
-        setCommentsByPost((prev) => ({
-          ...prev,
-          [postId]: data,
-        }));
+        updatePostState(postId, { comments: data });
       } catch (error) {
         console.error(`Failed to fetch comments for post ${postId}:`, error);
-        setCommentsByPost((prev) => ({ ...prev, [postId]: [] }));
+        updatePostState(postId, { comments: [] });
       } finally {
-        setIsCommentsLoading(false);
+        setCommentsLoading(false);
       }
     },
     [token]
   );
 
-  useEffect(() => {
-    if (videoPosts.length > 0) {
-      videoPosts.forEach((post) => {
-        loadComments(post.id);
-      });
-    }
-  }, [videoPosts, loadComments]);
-
-  const toggleToolState = (postId, key) => {
-    setToolStates((prev) => ({
-      ...prev,
-      [postId]: {
-        ...prev[postId],
-        [key]: !prev[postId][key],
-      },
-    }));
+  const toggleComment = async (postId) => {
+    setCurrentPostId(postId);
+    setIsCommentOpen((prev) => !prev);
+    if (!postStates[postId]?.comments?.length) await loadComments(postId);
   };
 
-  const handleLike = (postId) => toggleToolState(postId, "isLiked");
-  const handleSave = (postId) => toggleToolState(postId, "isSaved");
-  const togglePopup = (postId) => toggleToolState(postId, "isPopupOpen");
-  const folloWing = (postId) => toggleToolState(postId, "isFollow");
+  const handlePauseChange = useCallback(
+    (postId, isPaused) => {
+      updatePostState(postId, { isPaused });
+      const video = videoRefs.current.find((v) => v?.dataset.postId === postId);
+      if (video) {
+        if (isPaused) {
+          video.pause();
+        } else {
+          video.muted = isMutedGlobally;
+          video.play().catch((err) => console.error("Play error:", err));
+          setActivePostId(postId);
+        }
+      }
+    },
+    [isMutedGlobally]
+  );
+
+  const handleMuteChange = useCallback((isMuted) => {
+    setIsMutedGlobally(isMuted);
+    videoRefs.current.forEach((video) => {
+      if (video) video.muted = isMuted;
+    });
+  }, []);
+
+  const togglePopup = (postId) => {
+    updatePostState(postId, { isPopupOpen: !postStates[postId]?.isPopupOpen });
+  };
 
   const closeMore = (e, postId) => {
     if (e.target.id === "overmore") {
-      setToolStates((prev) => ({
-        ...prev,
-        [postId]: { ...prev[postId], isPopupOpen: false },
-      }));
+      updatePostState(postId, { isPopupOpen: false });
     }
   };
 
   const openReportModal = (postId) => {
-    setModalStates((prev) => ({ ...prev, [postId]: true }));
+    updatePostState(postId, { isModalOpen: true });
   };
 
   const closeModal = (postId) => {
-    setModalStates((prev) => ({ ...prev, [postId]: false }));
+    updatePostState(postId, { isModalOpen: false });
   };
 
   const handleReportPost = useCallback(
     async (postId, reason) => {
       const report = await createPostReport(postId, reason);
       if (report?.error) {
-        const errorMessage = report.error;
-        console.warn("Failed to report post:", errorMessage);
         addToast({
           title: "Fail to report post",
-          description: errorMessage,
+          description: report.error,
           timeout: 3000,
           shouldShowTimeoutProgess: true,
           color: "warning",
         });
       } else {
-        console.log("Post reported successfully:", report);
         addToast({
           title: "Success",
           description: "Report post successful.",
@@ -331,27 +263,13 @@ export default function Reels() {
           color: "success",
         });
       }
-      setModalStates((prev) => ({ ...prev, [postId]: false }));
+      updatePostState(postId, { isModalOpen: false });
     },
     [createPostReport]
   );
 
-  const toggleComment = (postId) => {
-    setCurrentPostId(postId);
-    setIsCommentOpen((prev) => !prev);
-  };
-
-  const closeComment = (e) => {
-    if (e.target.id === "overlay") {
-      setIsCommentOpen(false);
-      setCurrentPostId(null);
-      setIsCommentsLoading(false);
-    }
-  };
-
   const handleShare = () => {
     if (selectedAvatars.length > 0) {
-      console.log("Sharing to:", selectedAvatars);
       onOpenChange(false);
     }
   };
@@ -362,9 +280,7 @@ export default function Reels() {
   };
 
   const handleReplyClick = (target) => {
-    setReplyingTo(target); // Lưu comment hoặc reply
-    console.log("Replying to:", target);
-    console.log("Username:", target.username || "Unknown");
+    setReplyingTo(target);
   };
 
   const handleCancelReply = () => {
@@ -373,12 +289,13 @@ export default function Reels() {
 
   const updateComments = useCallback(
     (postId, newComment) => {
-      setCommentsByPost((prev) => {
-        const currentComments = Array.isArray(prev[postId]) ? prev[postId] : [];
+      setPostStates((prev) => {
+        const currentComments = Array.isArray(prev[postId]?.comments)
+          ? prev[postId].comments
+          : [];
 
-        // Hàm duyệt đệ quy để cập nhật replies
-        const updateRepliesRecursively = (comments) => {
-          return comments.map((comment) => {
+        const updateRepliesRecursively = (comments) =>
+          comments.map((comment) => {
             if (comment.id === newComment.parentId) {
               return {
                 ...comment,
@@ -388,7 +305,7 @@ export default function Reels() {
                 ],
               };
             }
-            if (comment.replies && comment.replies.length > 0) {
+            if (comment.replies?.length) {
               return {
                 ...comment,
                 replies: updateRepliesRecursively(comment.replies),
@@ -396,34 +313,69 @@ export default function Reels() {
             }
             return comment;
           });
-        };
 
-        if (newComment.parentId) {
-          // Cập nhật replies đệ quy nếu là reply của comment khác
-          const updatedComments = updateRepliesRecursively(currentComments);
-          return {
-            ...prev,
-            [postId]: updatedComments,
-          };
-        }
-        // Thêm comment cấp 1 nếu không có parentId
-        const updatedComments = [
-          { ...newComment, username: user?.username || "Unknown" },
-          ...currentComments,
-        ];
+        const updatedComments = newComment.parentId
+          ? updateRepliesRecursively(currentComments)
+          : [
+              { ...newComment, username: user?.username || "Unknown" },
+              ...currentComments,
+            ];
+
         return {
           ...prev,
-          [postId]: updatedComments,
+          [postId]: { ...prev[postId], comments: updatedComments },
         };
       });
     },
     [user]
   );
 
+  const VideoPostSkeleton = () => (
+    <div className="relative w-[450px] h-[680px] mx-auto rounded-b-xl overflow-hidden m-5 snap-start flex-shrink-0">
+      <Skeleton className="w-full h-full" rounded />
+      <div className="absolute bottom-4 left-4 flex flex-col text-white">
+        <div className="flex items-center">
+          <Skeleton variant="circle" width={40} height={40} />
+          <div className="flex items-center space-x-2 pl-2">
+            <Skeleton width={80} height={16} rounded />
+            <Skeleton width={60} height={24} rounded />
+          </div>
+        </div>
+        <div className="mt-2 w-[350px]">
+          <Skeleton width="75%" height={16} rounded />
+          <Skeleton width="50%" height={16} rounded />
+        </div>
+      </div>
+
+      <div className="absolute top-2/3 right-4 transform -translate-y-1/2 flex flex-col items-center space-y-7">
+        <Skeleton variant="circle" width={24} height={24} />
+        <Skeleton variant="circle" width={24} height={24} />
+        <Skeleton variant="circle" width={24} height={24} />
+        <Skeleton variant="circle" width={24} height={24} />
+        <Skeleton variant="circle" width={24} height={24} />
+      </div>
+    </div>
+  );
+
+  const CommentSkeleton = () => (
+    <div className=" items-start">
+      <div className="flex space-x-2 mb-14">
+        <Skeleton variant="circle" width={32} height={32} />
+        <div className="flex-1">
+          <Skeleton width={96} height={12} rounded />
+          <Skeleton width="75%" height={12} rounded className="mt-1" />
+          <Skeleton width="50%" height={12} rounded className="mt-1" />
+        </div>
+      </div>
+    </div>
+  );
+
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <Spinner color="primary" label="Loading..." labelColor="primary" />
+      <div className="h-screen w-full overflow-y-scroll snap-y snap-mandatory scrollbar-hide">
+        {[...Array(1)].map((_, index) => (
+          <VideoPostSkeleton key={index} />
+        ))}
       </div>
     );
   }
@@ -443,7 +395,7 @@ export default function Reels() {
           videoPosts.map((post, index) => (
             <div
               key={post.id}
-              className={`relative w-[450px] h-[700px] mx-auto rounded-b-xl overflow-hidden m-5 snap-start flex-shrink-0 ${
+              className={`relative w-[450px] h-[710px] mx-auto rounded-b-xl overflow-hidden m-5 snap-start flex-shrink-0 ${
                 isCommentOpen ? "translate-x-[-150px]" : "translate-x-0"
               } transition-transform duration-400 ease-in-out`}
             >
@@ -455,7 +407,7 @@ export default function Reels() {
                       src={media.url}
                       ref={(el) => (videoRefs.current[index] = el)}
                       loop
-                      muted={isMutedGlobally} // Truyền isMutedGlobally
+                      muted={isMutedGlobally}
                       onPauseChange={(isPaused) =>
                         handlePauseChange(post.id, isPaused)
                       }
@@ -488,13 +440,12 @@ export default function Reels() {
                           : "bg-zinc-700 rounded-full"
                       }
                       style={{ objectFit: "cover", objectPosition: "center" }}
-                      quality={100} // Tăng chất lượng ảnh
+                      quality={100}
                     />
                   </div>
                   <div className="flex items-center space-x-2 pl-2">
                     <span className="font-medium">{post.user?.username}</span>
                     <span className="text-white text-lg">•</span>
-
                     {user?.id !== post.user.id && (
                       <FollowButton
                         contentFollow="Follow"
@@ -523,9 +474,9 @@ export default function Reels() {
                     className="fa-regular fa-comment hover:opacity-50 focus:opacity-50 transition cursor-pointer"
                     onClick={() => toggleComment(post.id)}
                   />
-                  <span className="text-sm">
-                    {commentsByPost[post.id]?.length || 0}
-                  </span>
+                
+                  <span className="text-sm">{post.commentCount || 0}</span>
+                 
                 </div>
                 <div className="flex flex-col items-center">
                   <i
@@ -534,14 +485,16 @@ export default function Reels() {
                   />
                 </div>
                 <div className="flex flex-col items-center">
+
                   <BookmarkButton postId={post.id} />
+
                 </div>
                 <div className="flex flex-col items-center relative">
                   <i
                     className="fa-solid fa-ellipsis hover:opacity-50 focus:opacity-50 transition cursor-pointer"
                     onClick={() => togglePopup(post.id)}
                   />
-                  {toolStates[post.id]?.isPopupOpen && (
+                  {postStates[post.id]?.isPopupOpen && (
                     <div
                       id="overmore"
                       className="w-48 absolute top-[-138px] right-10 mt-2 backdrop-blur-xl p-4 rounded-lg shadow-lg text-white border border-gray-300 z-50"
@@ -566,7 +519,7 @@ export default function Reels() {
                 </div>
               </div>
               <ReportModal
-                isOpen={modalStates[post.id] || false}
+                isOpen={postStates[post.id]?.isModalOpen || false}
                 onClose={() => closeModal(post.id)}
                 onSubmit={(postId, reason) => handleReportPost(postId, reason)}
                 postId={post.id}
@@ -586,26 +539,32 @@ export default function Reels() {
         {isCommentOpen && currentPostId && (
           <div
             id="overlay"
-            className={`fixed top-0 left-0 w-full h-full z-20 transition-opacity duration-300 ease-in-out  ${
+            className={`fixed top-0 left-0 w-full h-full z-20 transition-opacity duration-300 ease-in-out ${
               isCommentOpen ? "opacity-100" : "opacity-0 pointer-events-none"
             }`}
-            onClick={closeComment}
+            onClick={(e) => {
+              if (e.target.id === "overlay") {
+                setIsCommentOpen(false);
+                setCurrentPostId(null);
+              }
+            }}
           >
             <div
-              className={`fixed top-0 right-0 h-full w-[450px] transition-transform duration-300 ease-in-out  ${
+              className={`fixed top-0 right-0 h-full w-[450px] transition-transform duration-300 ease-in-out ${
                 isCommentOpen ? "translate-x-0" : "translate-x-full"
               }`}
             >
-              <div className="h-full flex flex-col p-4 border-l border-neutral-700 ">
+              <div className="h-full flex flex-col p-4 border-l border-neutral-700">
                 <div className="flex items-center justify-between dark:text-white mb-4">
                   <h2 className="text-2xl text-center font-bold">Comments</h2>
                 </div>
                 <div className="flex-grow overflow-auto no-scrollbar">
-                  {isCommentsLoading ? (
-                    <Spinner />
-                  ) : Array.isArray(commentsByPost[currentPostId]) &&
-                    commentsByPost[currentPostId].length > 0 ? (
-                    commentsByPost[currentPostId].map((comment) => (
+                  {commentsLoading ? (
+                    [...Array(6)].map((_, index) => (
+                      <CommentSkeleton key={index} />
+                    ))
+                  ) : postStates[currentPostId]?.comments?.length > 0 ? (
+                    postStates[currentPostId].comments.map((comment) => (
                       <CommentItem
                         key={comment.id}
                         comment={comment}
@@ -615,8 +574,8 @@ export default function Reels() {
                       />
                     ))
                   ) : (
-                    <p className="text-red-500 font-bold">
-                      No comments available for this post
+                    <p className="text-zinc-500 font-bold text-xl">
+                      No comments yet
                     </p>
                   )}
                 </div>

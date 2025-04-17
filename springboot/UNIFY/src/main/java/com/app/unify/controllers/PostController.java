@@ -36,10 +36,12 @@ public class PostController {
     private final UserRepository userRepository;
 
     @GetMapping
-    public List<PostDTO> getAllPosts() {
-        return postService.getPostsTrending();
+    public ResponseEntity<List<PostDTO>> getAllPosts() {
+        return ResponseEntity.ok(postService.getPostsWithCommentCount()); // Sửa để trả commentCount
     }
-
+    
+    
+    
     @PostMapping
     public PostDTO createPost(@RequestBody PostDTO postDTO) {
         return postService.createPost(postDTO);
@@ -117,6 +119,8 @@ public class PostController {
         List<PostDTO> posts = postService.getRecommendedPostsForExplore(userId);
         return ResponseEntity.ok(posts);
     }
+    
+   
 
     private String getCurrentUserId() {
         var authentication = SecurityContextHolder.getContext().getAuthentication();

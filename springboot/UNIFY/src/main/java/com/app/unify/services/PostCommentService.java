@@ -34,26 +34,26 @@ public class PostCommentService {
      */
     public PostComment saveComment(String userId, String postId, String content, String parentId) {
         if (content == null || content.trim().isEmpty()) {
-            throw new IllegalArgumentException("Nội dung bình luận không được để trống");
+            throw new IllegalArgumentException("Comment content must not be empty");
         }
 
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy người dùng"));
+            .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         Post post = postRepository.findById(postId)
-            .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy bài viết"));
+            .orElseThrow(() -> new IllegalArgumentException("Post not found"));
 
         if (post.getIsCommentVisible()) {
             throw new IllegalArgumentException("This post has comments disabled");
         }
         if (post.getStatus() == 0) {
-            throw new IllegalArgumentException("Bài viết không khả dụng để bình luận");
+            throw new IllegalArgumentException("This post is not available for commenting");
         }
 
         PostComment parent = null;
         if (parentId != null && !parentId.isEmpty()) {
             parent = postCommentRepository.findById(parentId)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy bình luận cha"));
+                .orElseThrow(() -> new IllegalArgumentException("No comments found"));
         }
 
         PostComment newComment = PostComment.builder()
@@ -71,7 +71,7 @@ public class PostCommentService {
 
     public List<CommentDTO> getCommentsByPostId(String postId) {
         Post post = postRepository.findById(postId)
-            .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy bài viết"));
+            .orElseThrow(() -> new IllegalArgumentException("Post not found"));
         if (post.getIsCommentVisible()) {
             return List.of();
         }
