@@ -100,7 +100,7 @@ const PostDetail = () => {
                       "bg-warning-200": report?.status === 3,
                       "bg-zinc-300": report?.status === 4
                     })}>
-                      {report?.status === 0 ? "Pending" : report?.status === 1 ? "Approved" : report?.status === 2 ? "Rejected" : report?.status === 3 ? "Resolved" : "Cancled"}
+                      {report?.status === 0 ? "Pending" : report?.status === 1 ? "Approved" : report?.status === 2 ? "Rejected" : report?.status === 3 ? "Resolved" : "Canceled"}
                     </span>
                   </p>
                 </li>

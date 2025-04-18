@@ -17,7 +17,7 @@ import next from "next";
 
 
 const Post = () => {
-  const { ref, inView } = useInView({ threshold: 0.1});
+  const { ref, inView } = useInView({ threshold: 0.1 });
 
   const {
     data,
@@ -27,7 +27,7 @@ const Post = () => {
     status,
   } = useInfiniteQuery({
     queryKey: ["posts"],
-    queryFn:({pageParam = 0}) => fetchPosts(pageParam),
+    queryFn: ({ pageParam = 0 }) => fetchPosts(pageParam),
     getNextPageParam: (lastPage) => lastPage.nextPage ?? undefined,
     keepPreviousData: true,
   });

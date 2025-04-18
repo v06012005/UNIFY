@@ -56,6 +56,11 @@ public class ReportController {
 	public List<ReportDTO> findAllReportedPosts() {
 		return reportRepository.findByEntityType(EntityType.POST).stream().map(mapper::toReportDTO).collect(Collectors.toList());
 	}
+	
+	@GetMapping("/filter/{status}")
+	public List<ReportDTO> findFilteredReportedPosts(@PathVariable Integer status) {
+		return reportRepository.findByStatusAndEntityType(status, EntityType.POST).stream().map(mapper::toReportDTO).collect(Collectors.toList());
+	}
 
 	@GetMapping("/{id}")
 	public ReportDTO getReport(@PathVariable String id) {

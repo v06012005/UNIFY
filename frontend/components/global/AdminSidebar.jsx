@@ -27,7 +27,6 @@ const NavButton = React.memo(function NavButton({
 });
 
 const AdminSidebar = () => {
-  const { account } = useApp();
   const [admin, setAdmin] = useState();
   const [loading, setLoading] = useState(true);
   const { user, logoutUser } = useApp();
@@ -64,7 +63,7 @@ const AdminSidebar = () => {
           <div>
             {/* <Avatar src={account?.avatar?.url} /> */}
           </div>
-          <Link href={""} className="my-auto text-xl text-zinc-500 hover:text-red-500"  onClick={logoutUser}><i className="fa-solid fa-right-from-bracket"></i></Link>
+          <Link href={""} className="my-auto text-xl text-zinc-500 hover:text-red-500" onClick={logoutUser}><i className="fa-solid fa-right-from-bracket"></i></Link>
         </div>
         <Divider className="mt-2" />
         <div className="flex flex-col grow w-60 overflow-y-auto no-scrollbar">
