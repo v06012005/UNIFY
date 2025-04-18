@@ -1,5 +1,6 @@
-import Cookies from "js-cookie";
+// components/LikeButton.js
 import { useRef, useState } from "react";
+import { likePost, unlikePost } from "@/app/services/likeService";
 
 const LikeButton = ({
   userId,
@@ -15,42 +16,25 @@ const LikeButton = ({
   const handleClick = async () => {
     const now = Date.now();
     if (now - lastClickRef.current < 1000) {
-      console.warn("Click quá nhanh, vui lòng chờ một chút");
+      console.warn("Click quá nhanh, vui lòng chờ...");
       return;
     }
     lastClickRef.current = now;
 
-    const token = Cookies.get("token");
-    if (!token) {
-      console.error("Chưa đăng nhập");
-      return;
-    }
-
     setLoading(true);
     try {
-      const method = isLiked ? "DELETE" : "POST";
-      const url = isLiked
-        ? `${process.env.NEXT_PUBLIC_API_URL}/liked-posts/delete/${userId}/${postId}`
-        : `${process.env.NEXT_PUBLIC_API_URL}/liked-posts`;
-
-      const response = await fetch(url, {
-        method,
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ userId, postId }),
-      });
+      const response = isLiked
+        ? await unlikePost(userId, postId)
+        : await likePost(userId, postId);
 
       if (response.ok) {
         setIsLiked((prev) => !prev);
         setLikeCount((prev) => (isLiked ? prev - 1 : prev + 1));
       } else {
-        const result = await response.text();
-        console.error("Lỗi API like/unlike: ", result);
+        console.error("Like/unlike failed:", await response.text());
       }
-    } catch (error) {
-      console.error("Lỗi khi like/unlike: ", error);
+    } catch (err) {
+      console.error("Error toggling like:", err);
     } finally {
       setLoading(false);
     }
@@ -65,8 +49,8 @@ const LikeButton = ({
       <i
         className={`${
           isLiked ? "fa-solid text-red-500" : "fa-regular"
-        } fa-heart transition ease-in-out duration-300`}
-      ></i>
+        } fa-heart transition duration-300`}
+      />
     </button>
   );
 };

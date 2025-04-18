@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
-import PostCard from "@/components/PostCard";
+import PostCard from "@/components/global/PostCard";
 import Cookies from "js-cookie";
 import { Skeleton } from "@heroui/react";
 import PostDetailModal from "@/components/global/TabProfile/PostDetailModal";
@@ -82,7 +82,10 @@ export default function ExplorePage() {
     <div className="w-full h-auto flex flex-wrap mt-8 mb-5 justify-center">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1">
         {posts.map((post) => (
-          <div key={post.id} className="w-[300px] h-[300px] rounded-lg overflow-hidden">
+          <div
+            key={post.id}
+            className="w-[300px] h-[300px] rounded-lg overflow-hidden"
+          >
             <PostCard
               post={post}
               onClick={() => handlePostClick(post)}
