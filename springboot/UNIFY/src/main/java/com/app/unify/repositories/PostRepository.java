@@ -9,20 +9,34 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import com.app.unify.dto.global.PersonalizedPostDTO;
+import com.app.unify.dto.global.PostDTO;
+import com.app.unify.entities.Post;
+import com.app.unify.entities.User;
+import com.app.unify.types.Audience;
+
 
 public interface PostRepository extends JpaRepository<Post, String> {
     // Query hiện có của bro
-    @Query("SELECT p, (COUNT(DISTINCT lp.id) + COUNT(DISTINCT pc.id)) as interactionCount " +
-           "FROM Post p LEFT JOIN p.likedPosts lp LEFT JOIN p.comments pc GROUP BY p " +
-           "ORDER BY interactionCount DESC")
-    List<Object[]> findPostsWithInteractionCounts();
+    // @Query("SELECT p, (COUNT(DISTINCT lp.id) + COUNT(DISTINCT pc.id)) as interactionCount " +
+    //        "FROM Post p LEFT JOIN p.likedPosts lp LEFT JOIN p.comments pc GROUP BY p " +
+    //        "ORDER BY interactionCount DESC")
+    // List<Object[]> findPostsWithInteractionCounts();
 
-	@Query("SELECT p, (COUNT(DISTINCT lp.id) + COUNT(DISTINCT pc.id)) as interactionCount "
-			+ "FROM Post p "
-			+ "LEFT JOIN p.likedPosts lp " + "LEFT JOIN p.comments pc "
-			+ "GROUP BY p "
-			+ "ORDER BY interactionCount DESC")
-	List<Object[]> findPostsWithInteractionCounts();
+	 @Query("SELECT p, (COUNT(DISTINCT lp.id) + COUNT(DISTINCT pc.id)) as interactionCount "
+	 		+ "FROM Post p "
+	 		+ "LEFT JOIN p.likedPosts lp " + "LEFT JOIN p.comments pc "
+	 		+ "GROUP BY p "
+	 		+ "ORDER BY interactionCount DESC")
+	 List<Object[]> findPostsWithInteractionCounts();
 
 	@Query("SELECT p, (COUNT(DISTINCT lp.id) + COUNT(DISTINCT pc.id)) as interactionCount "
 			+ "FROM Post p "
@@ -50,7 +64,16 @@ public interface PostRepository extends JpaRepository<Post, String> {
     List<Post> findPostsByUserId(@Param("userId") String userId);
 
     @Override
-    Optional<Post> findById(String id);
+	Optional<Post> findById(String id);
+    
+    @Query("SELECT new com.app.unify.dto.global.PersonalizedPostDTO("
+    		+ "p,"
+    		+ "COUNT(DISTINCT lp.id) + COUNT(DISTINCT pc.id)"
+    		+ ")" + "FROM Post p "
+			+ "LEFT JOIN p.likedPosts lp " + "LEFT JOIN p.comments pc " + "GROUP BY p "
+			+ "ORDER BY COUNT(DISTINCT lp.id) + COUNT(DISTINCT pc.id) DESC")
+    Page<PersonalizedPostDTO> findPersonalizedPosts(Pageable pageable);
+
 
     // Thêm query mới
     @Query("SELECT p, (SELECT COUNT(pc) FROM PostComment pc WHERE pc.post.id = p.id) AS commentCount " +

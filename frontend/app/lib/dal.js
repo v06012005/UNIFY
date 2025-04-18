@@ -114,33 +114,6 @@ export const saveMedia = async (postId, newMedia) => {
   }
 
   try {
-    const existingResponse = await fetch(
-      `http://localhost:8080/media/${postId}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    if (!existingResponse.ok) {
-      console.log("Failed to fetch existing media");
-      return null;
-    }
-
-    const existingMedia = await existingResponse.json();
-    const existingUrls = new Set(existingMedia.map((media) => media.url));
-
-    const mediaToSave = newMedia.filter(
-      (media) => !existingUrls.has(media.url)
-    );
-
-    if (mediaToSave.length === 0) {
-      console.log("No new media to save");
-      return existingMedia;
-    }
 
     const response = await fetch("http://localhost:8080/media", {
       method: "POST",
@@ -148,7 +121,7 @@ export const saveMedia = async (postId, newMedia) => {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(mediaToSave),
+      body: JSON.stringify(newMedia),
     });
 
     if (!response.ok) {
@@ -163,7 +136,7 @@ export const saveMedia = async (postId, newMedia) => {
   }
 };
 
-export const fetchPosts = async () => {
+export const fetchPosts = async (page) => {
   const token = (await cookies()).get("token")?.value;
 
   if (!token) {
@@ -173,7 +146,7 @@ export const fetchPosts = async () => {
   // const user = await getUser();
 
   try {
-    const response = await fetch("http://localhost:8080/posts", {
+    const response = await fetch(`http://localhost:8080/posts/personalized?page=${page}&size=10`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -381,6 +354,35 @@ export const fetchPostsByHashtag = async (content) => {
     return data;
   } catch (error) {
     console.log("Failed to fetch posts: " + error);
+    return null;
+  }
+};
+
+export const fetchSuggestedUsers = async (userId) => {
+  const token = (await cookies()).get("token")?.value;
+
+  if (!token) {
+    redirect("/login");
+  }
+
+  try {
+    const response = await fetch("http://localhost:8080/users/suggestions?currentUserId=" + userId, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      console.log("Failed to fetch users");
+      return null;
+    }
+
+    const users = await response.json();
+    return users;
+  } catch (error) {
+    console.log("Failed to fetch users: " + error);
     return null;
   }
 };

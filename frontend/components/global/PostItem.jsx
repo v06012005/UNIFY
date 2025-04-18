@@ -4,15 +4,15 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import LikeButton from "./LikeButton";
 import CommentButton from "./CommentButton";
 import ShareButton from "./ShareButton";
+import Bookmark from "@/components/global/Bookmark";
 import Slider from "./Slider";
 import usePostLikeStatus from "@/hooks/usePostLikeStatus";
 import { useApp } from "../provider/AppProvider";
-import { Avatar } from "@heroui/react";
+import { Avatar, ToastProvider } from "@heroui/react";
 import Link from "next/link";
-import Bookmark from "@/components/global/Bookmark";
-import ReportModal from "@/components/global/Report/ReportModal";
-import { useReports } from "@/components/provider/ReportProvider";
-import { addToast, ToastProvider } from "@heroui/toast";
+import ReportModal from "./Report/ReportModal";
+import { useReports } from "../provider/ReportProvider";
+
 const User = ({
   href = "",
   username = "",
@@ -60,20 +60,7 @@ const Caption = ({ text, maxLength = 100 }) => {
   );
 };
 
-const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
-  return (
-    <Link
-      className="flex h-full items-center text-center text-neutral-700 dark:text-neutral-500 hover:text-black dark:hover:text-white transition-colors"
-      href={href}
-      onClick={onClick}
-    >
-      <i className={`${iconClass}`}></i>
-      <span className="ml-1 text-2xl">{content}</span>
-    </Link>
-  );
-};
-
-const PostItem = ({ post, comments }) => {
+const PostItem = ({ post }) => {
   const { user } = useApp();
   const { isLiked, setIsLiked, likeCount, setLikeCount } = usePostLikeStatus(
     user.id,
@@ -130,94 +117,112 @@ const PostItem = ({ post, comments }) => {
     },
     [createPostReport]
   );
+
+  const hashtags = post.captions.split(/(\#[a-zA-Z0-9_]+)/g).filter(part => part.startsWith("#"));
+
+  const transformHashtags = (text) => {
+    return text.split(/(\#[a-zA-Z0-9_]+)/g).map((part, index) => {
+      if (part.startsWith("#")) {
+        return (
+          <Link
+            key={index}
+            href={`/explore/${part.substring(1)}`}
+            className="text-blue-500 hover:underline"
+          >
+            {part}
+          </Link>
+        );
+      }
+      return part;
+    });
+  };
+
   return (
     <>
       <ToastProvider placement={"top-right"} />
       <div key={post.id} className="w-3/4 mb-8 mx-auto pb-8">
-        <div className="flex mx-20 justify-between items-center">
-          <User
-            avatar={post?.user?.avatar?.url}
-            href={`/othersProfile/${post?.user?.username}`}
-            username={post.user?.username}
-            firstname={post.user?.firstName}
-            lastname={post.user?.lastName}
-          />
-          <NavButton onClick={() => setOpenList(true)} content="•••" />
-          {openList && (
-            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[60]">
-              <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-xl w-80 transform transition-all duration-200 scale-100 hover:scale-105">
-                <button
-                  onClick={() => {
-                    openReportModal();
-                    setOpenList(false);
-                  }}
-                  className="w-full py-3 text-red-500 dark:hover:bg-neutral-700 hover:bg-gray-100 rounded-t-lg font-medium"
-                >
-                  Report
-                </button>
-                <button className="w-full py-3 text-gray-800 dark:text-gray-200 dark:hover:bg-neutral-700 hover:bg-gray-100 font-medium">
-                  Not interested
-                </button>
-                <button className="w-full py-3 text-gray-800 dark:text-gray-200 dark:hover:bg-neutral-700 hover:bg-gray-100 font-medium">
-                  Share
-                </button>
-                <button
-                  onClick={() => setOpenList(false)}
-                  className="w-full py-3 text-gray-500 dark:text-gray-400 dark:hover:bg-neutral-700 hover:bg-gray-100 rounded-b-lg font-medium"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          )}
-          <ReportModal
-            isOpen={isModalOpen}
-            onClose={closeModal}
-            onSubmit={handleReportPost}
-            postId={post.id}
-          />
-        </div>
-        <Slider srcs={post.media} />
-        <div className="mx-20 mt-5">
-          <Caption text={post.captions} />
-          <div className="flex flex-col text-xl">
-            <div className="flex justify-between items-center">
-              <div className="flex gap-3">
-                <LikeButton
-                  className="!text-xl hover:opacity-50"
-                  userId={user.id}
-                  postId={post.id}
-                  isLiked={isLiked}
-                  setIsLiked={setIsLiked}
-                  setLikeCount={setLikeCount}
-                />
-
-                <CommentButton className="!text-xl" postId={post.id}>
-                  <i className="fa-regular fa-comment"></i>
-                </CommentButton>
-                <ShareButton />
-              </div>
-              <div>
-                <Bookmark
-                  postId={post.id}
-                  className="!text-xl hover:opacity-90"
-                />
-              </div>
-            </div>
-
-            <div>
-              <span className="text-base text-zinc-400">{likeCount} likes</span>
+        <User
+          avatar={post?.user?.avatar?.url}
+          href={`/othersProfile/${post?.user?.username}`}
+          username={post.user?.username}
+          firstname={post.user?.firstName}
+          lastname={post.user?.lastName}
+        />
+        {openList && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[60]">
+            <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-xl w-80 transform transition-all duration-200 scale-100 hover:scale-105">
+              <button
+                onClick={() => {
+                  openReportModal();
+                  setOpenList(false);
+                }}
+                className="w-full py-3 text-red-500 dark:hover:bg-neutral-700 hover:bg-gray-100 rounded-t-lg font-medium"
+              >
+                Report
+              </button>
+              <button className="w-full py-3 text-gray-800 dark:text-gray-200 dark:hover:bg-neutral-700 hover:bg-gray-100 font-medium">
+                Not interested
+              </button>
+              <button className="w-full py-3 text-gray-800 dark:text-gray-200 dark:hover:bg-neutral-700 hover:bg-gray-100 font-medium">
+                Share
+              </button>
+              <button
+                onClick={() => setOpenList(false)}
+                className="w-full py-3 text-gray-500 dark:text-gray-400 dark:hover:bg-neutral-700 hover:bg-gray-100 rounded-b-lg font-medium"
+              >
+                Close
+              </button>
             </div>
           </div>
+        )}
+        <ReportModal
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          onSubmit={handleReportPost}
+          postId={post.id}
+        />
+        <Slider srcs={post.media} />
+        <div className="w-3/4 mx-auto px-2">
+          <Caption text={transformHashtags(post.captions)} />
+          <div className="flex justify-between text-xl">
+            <div className="flex gap-3">
+              <LikeButton
+                className="!text-xl hover:opacity-50"
+                userId={user.id}
+                postId={post.id}
+                isLiked={isLiked}
+                setIsLiked={setIsLiked}
+                setLikeCount={setLikeCount}
+              />
+              <CommentButton className="!text-xl" postId={post.id}>
+                <i className="fa-regular fa-comment"></i>
+              </CommentButton>
+              <ShareButton />
+            </div>
+            <div>
+              <Bookmark
+                postId={post.id}
+                className="!text-xl hover:opacity-90"
+              />
+            </div>
+
+          </div>
+          <div>
+            <span className="text-base text-zinc-400">{likeCount} likes</span>
+          </div>
           <div className="mt-2 flex flex-wrap">
-            <Hashtag content="#myhashtag" />
+            {hashtags.map((hashtag, index) => {
+              return (
+                <Hashtag key={index} content={hashtag} to={`/explore/${hashtag}`} />
+              )
+            })}
           </div>
           <div className="mt-2">
             <CommentButton
               postId={post.id}
               className="text-black hover:text-gray-500 text-md animate-none transition-none dark:text-zinc-400 dark:hover:text-white"
             >
-              View all {comments?.length} comments
+              View all comments
             </CommentButton>
           </div>
         </div>

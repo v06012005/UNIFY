@@ -2,6 +2,7 @@ package com.app.unify.entities;
 
 import com.app.unify.types.MediaType;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -35,7 +36,7 @@ public class Media {
 
 	@ManyToOne
 	@JoinColumn(name = "post_id")
-	@JsonBackReference
+	@JsonIgnore
 	Post post;
 
 	@Column(nullable = false)

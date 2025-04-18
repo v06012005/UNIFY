@@ -3,6 +3,9 @@ package com.app.unify.services;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.app.unify.dto.global.PostDTO;
 import com.app.unify.types.Audience;
 
@@ -23,9 +26,6 @@ public interface PostService {
 
     void archivePostById(String id);
 
-
-	void archivePostById(String id);
-
 	List<PostDTO> getPostsByDate(LocalDateTime start, LocalDateTime end);
 	// List<PostDTO> getMyPosts(String username);
 
@@ -40,11 +40,6 @@ public interface PostService {
 
 
     List<PostDTO> getArchiveMyPosts(String userId, Integer status);
-
-    List<PostDTO> getPostsByHashtag(String hashtag);
-
-    List<PostDTO> getRecommendedPosts(String userId);
-
     List<PostDTO> getRecommendedPostsForExplore(String userId);
-
+    Page<PostDTO> getPersonalizedFeed(Pageable pageable);
 }

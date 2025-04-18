@@ -38,6 +38,7 @@ const Page = () => {
   const [loading, setLoading] = useState(true);
   const [post, setPost] = useState(null);
   const { postId } = useParams();
+  const [existingFiles, setExistingFiles] = useState([]);
 
   const [user, setUser] = useState(null);
 
@@ -56,10 +57,19 @@ const Page = () => {
       setIsCommentVisible(fetchedPost?.isCommentVisible)
       setIsLikeVisible(fetchedPost?.isLikeVisible)
       setLoading(false);
+      const eFiles = fetchedPost?.media.map(m => ({
+        url: m.url,
+        file_type: m.fileType,
+        size: m.size,
+        media_type: m.mediaType
+      }))
+      setExistingFiles([...eFiles]);
     }
 
     fetchUser();
     fetchPost();
+
+
 
   }, []);
 
@@ -128,12 +138,6 @@ const Page = () => {
   }, [previews]);
 
   const handleUpload = async () => {
-    const existingFiles = post?.media.map(m => ({
-      url: m.url,
-      file_type: m.fileType,
-      size: m.size,
-      media_type: m.mediaType
-    }));
 
     if (files.length === 0 && existingFiles.length === 0) {
       addToast({
@@ -148,7 +152,6 @@ const Page = () => {
 
     const formData = new FormData();
     files.forEach((file) => formData.append("files", file));
-    formData.append("existingFiles", JSON.stringify(existingFiles));
 
     const res = await fetch("/api/upload", {
       method: "POST",
@@ -173,7 +176,7 @@ const Page = () => {
     try {
       setLoading(true);
 
-      if (files.length === 0) {
+      if (files.length === 0 && existingFiles.length === 0) {
         addToast({
           title: "No files uploaded",
           description: "Please upload at least one media file (image/ video).",
@@ -227,58 +230,31 @@ const Page = () => {
       }
 
       const fetchedFiles = await handleUpload();
+      let savedMedia = [];
+      if (fetchedFiles.length !== 0) {
+        const newMedia = fetchedFiles?.files?.map(file => ({
+          post: post,
+          url: file.url,
+          fileType: file.file_type,
+          size: file.size,
+          mediaType: file.media_type.toUpperCase(),
+        }));
 
-      if (!fetchedFiles || fetchedFiles.length === 0) {
-        addToast({
-          title: "No files uploaded",
-          description: "Please upload at least one media file (image/ video).",
-          timeout: 3000,
-          shouldShowTimeoutProgess: true,
-          color: "danger",
-        });
-        return;
+        savedMedia = await saveMedia(post.id, newMedia);
       }
 
-      const newMedia = fetchedFiles?.files?.map(file => ({
-        post: post,
-        url: file.url,
-        fileType: file.file_type,
-        size: file.size,
-        mediaType: file.media_type.toUpperCase(),
-      }));
-
-      const savedMedia = await saveMedia(post.id, newMedia);
-
-      if (savedMedia) {
-        addToast({
-          title: "Success",
-          description: "Your post is updated successfully. Other users can now interact with your post.",
-          timeout: 3000,
-          shouldShowTimeoutProgess: true,
-          color: "success",
-        });
-      } else {
-        addToast({
-          title: "Fail to save media",
-          description: "The server ran into a problem and could not save your images/ videos successfully. Please contact the admin for further information.",
-          timeout: 3000,
-          shouldShowTimeoutProgess: true,
-          color: "danger",
-        });
-      }
-
-
+      const finalMedia = [...savedMedia, ...existingFiles];
+      console.log(finalMedia)
       const newPost = {
         ...post,
         captions: caption,
         audience: audience,
         isCommentVisible: isCommentVisible,
-        isLikeVisible: isLikeVisible
+        isLikeVisible: isLikeVisible,
+        media: finalMedia
       };
 
       const updatedPost = await updatePost(newPost);
-      console.log(newPost)
-      console.log(updatedPost)
       if (!updatedPost) {
         addToast({
           title: "Fail to save post",
@@ -289,6 +265,14 @@ const Page = () => {
           color: "danger",
         });
         return;
+      } else {
+        addToast({
+          title: "Success",
+          description: "Your post is updated successfully. Other users can now interact with your post.",
+          timeout: 3000,
+          shouldShowTimeoutProgess: true,
+          color: "success",
+        });
       }
     } catch (error) {
       addToast({
@@ -308,7 +292,12 @@ const Page = () => {
       prevPreviews.filter((item) => item.url !== value.url)
     );
     setFiles((prevFiles) => prevFiles.filter((item) => item.url !== value.url));
+    setExistingFiles((prevFiles) => prevFiles.filter((item) => item.url !== value.url));
   };
+
+  useEffect(() => {
+    console.log("Updated existingFiles:", existingFiles);
+  }, [existingFiles]);
 
   return (
     <>

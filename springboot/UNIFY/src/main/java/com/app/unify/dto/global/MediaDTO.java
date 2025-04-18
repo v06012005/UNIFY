@@ -13,7 +13,7 @@ public class MediaDTO {
 
 	private String id;
 
-	private Post post;
+	private PostDTO post;
 
 	private String url;
 

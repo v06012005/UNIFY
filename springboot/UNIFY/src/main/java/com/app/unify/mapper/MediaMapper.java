@@ -1,5 +1,7 @@
 package com.app.unify.mapper;
 
+import java.util.Set;
+
 import org.mapstruct.Mapper;
 
 import com.app.unify.dto.global.MediaDTO;
@@ -11,4 +13,6 @@ public interface MediaMapper {
     Media toMedia(MediaDTO mediaDTO);
 
     MediaDTO toMediaDTO(Media media);
+    
+    Set<MediaDTO> toSetOfMediaDTO(Set<Media> media);
 }

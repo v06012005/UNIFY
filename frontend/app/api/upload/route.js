@@ -5,10 +5,9 @@ export async function POST(req) {
     try {
         const formData = await req.formData();
         const newFiles = formData.getAll("files");
-        const existingFiles = JSON.parse(formData.get("existingFiles") || "[]");
 
         if (!newFiles || newFiles.length === 0) {
-            return NextResponse.json({ files: existingFiles });
+            return NextResponse.json({ files: [] });
         }
 
         const uploadPromises = newFiles.map(async (file) => {
@@ -37,7 +36,7 @@ export async function POST(req) {
         });
 
         const uploadedFiles = await Promise.all(uploadPromises);
-        const allFiles = [...existingFiles, ...uploadedFiles];
+        const allFiles = [...uploadedFiles];
 
         return NextResponse.json({ files: allFiles });
     } catch (error) {
