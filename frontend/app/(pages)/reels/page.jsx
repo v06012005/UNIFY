@@ -8,12 +8,13 @@ export default function ReelsDefault() {
   const router = useRouter();
   const pathname = usePathname();
   const [posts, setPosts] = useState([]);
+  const [page, setPage] = useState(0);
 
   useEffect(() => {
     async function initializeReels() {
       try {
-        const homePosts = await fetchPosts();
-        const videoPosts = homePosts.filter((post) =>
+        const homePosts = await fetchPosts(page);
+        const videoPosts = homePosts.posts.filter((post) =>
           post.media.some((media) => media.mediaType === "VIDEO")
         );
 
@@ -39,7 +40,7 @@ export default function ReelsDefault() {
     }
 
     initializeReels();
-  }, [router, pathname]);
+  }, [router, pathname, page]);
 
 
   return (

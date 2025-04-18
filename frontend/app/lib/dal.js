@@ -136,7 +136,7 @@ export const saveMedia = async (postId, newMedia) => {
   }
 };
 
-export const fetchPosts = async ( pageParam  ) => {
+export const fetchPosts = async (pageParam) => {
   const token = (await cookies()).get("token")?.value;
 
   if (!token) {
@@ -165,7 +165,7 @@ export const fetchPosts = async ( pageParam  ) => {
     const data = await response.json();
 
     return {
-      posts: data.posts, 
+      posts: data.posts,
       nextPage: data.hasNextPage ? pageParam + 1 : null
     };
   } catch (error) {
@@ -389,6 +389,33 @@ export const fetchSuggestedUsers = async (userId) => {
 
     const users = await response.json();
     return users;
+  } catch (error) {
+    console.log("Failed to fetch users: " + error);
+    return null;
+  }
+};
+
+export const fetchFilteredReportedPosts = async (key = 0) => {
+  const token = (await cookies()).get("token")?.value;
+
+  if (!token) {
+    redirect("/login");
+  }
+
+  try {
+    const response = await fetch("http://localhost:8080/reports/filter/" + key, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) {
+      console.log("Failed to fetch posts, please check again");
+      return null;
+    }
+    const data = await response.json();
+    return data;
   } catch (error) {
     console.log("Failed to fetch users: " + error);
     return null;
