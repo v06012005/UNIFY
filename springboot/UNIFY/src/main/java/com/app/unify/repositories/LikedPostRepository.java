@@ -12,12 +12,13 @@ import jakarta.transaction.Transactional;
 
 @Repository
 public interface LikedPostRepository extends JpaRepository<LikedPost, String> {
-	LikedPost findByUserIdAndPostId(String userId, String postId);
+	@Query("SELECT l FROM LikedPost l WHERE l.user.id = :userId AND l.post.id = :postId")
+	LikedPost findByUserIdAndPostId(@Param("userId") String userId, @Param("postId") String postId);
 
 	@Modifying
 	@Transactional
-	@Query("DELETE FROM LikedPost l WHERE l.post.id = :postId AND l.user.id = :userId")
-	void deleteByUserIdAndPostId(@Param("userId") String userId, @Param("postId") String postId);
+	@Query("DELETE FROM LikedPost l WHERE l.user.id = :userId AND l.post.id = :postId")
+	int deleteByUserIdAndPostId(@Param("userId") String userId, @Param("postId") String postId);
 
 	boolean existsByUserIdAndPostId(String userId, String postId);
 

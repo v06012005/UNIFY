@@ -12,6 +12,7 @@ import { useApp } from "@/components/provider/AppProvider";
 import People from "@/components/global/TabProfile/People";
 import { useFollow } from "@/components/provider/FollowProvider";
 import { useQuery } from "@tanstack/react-query";
+import { set } from "date-fns";
 
 const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   return (
@@ -35,10 +36,12 @@ const Page = () => {
   const [taggedPosts, setTaggedPosts] = useState([]);
   const params = useParams();
   const router = useRouter();
+  const [isClient, setIsClient] = useState(false);
   const { user } = useApp();
   const { countFollowers, countFollowing } = useFollow();
 
-  const handleClickView = () => router.push(`/settings/archive/${params.username}`);
+  const handleClickView = () =>
+    router.push(`/settings/archive/${params.username}`);
   const handleClickEdit = () => router.push("/settings/edit-profile");
 
   const [isFollowerOpen, setIsFollowerOpen] = useState(false);
@@ -62,6 +65,12 @@ const Page = () => {
     queryFn: () => countFollowing(user.id),
     enabled: !!user?.id,
   });
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) return null;
 
   return (
     <div className="max-w-4xl mx-auto py-6">

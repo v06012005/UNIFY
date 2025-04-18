@@ -39,7 +39,7 @@ const SuggestedUsers = () => {
   if (isLoading) {
     return (
       <>
-        {Array.from({ length: 10 }).map((_, index) => (
+        {Array.from({ length: 6 }).map((_, index) => (
           <div className="flex mb-4 opacity-10" key={index}>
             <Skeleton className="w-14 h-14 rounded-full">User</Skeleton>
             <div className="flex flex-col ml-2">

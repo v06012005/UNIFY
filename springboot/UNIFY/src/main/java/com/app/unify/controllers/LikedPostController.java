@@ -51,9 +51,10 @@ public class LikedPostController {
         return ResponseEntity.ok("You liked this post !");
     }
 
-    @DeleteMapping("/delete/{userId}/{postId}")
-    public ResponseEntity<?> remove(@RequestBody LikedPostRequest request) {
-        likedPostService.deleteLikedPost(request);
-        return ResponseEntity.ok("You cancel like this post !");
+    @DeleteMapping("/{userId}/{postId}")
+    public ResponseEntity<?> remove(@PathVariable String userId, @PathVariable String postId) {
+        System.out.println("Removing like for user: " + userId + " and post: " + postId);
+        likedPostService.deleteLikedPost(new LikedPostRequest(userId, postId));
+        return ResponseEntity.ok("You canceled liking this post!");
     }
 }

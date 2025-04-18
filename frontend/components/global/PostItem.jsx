@@ -212,8 +212,8 @@ const PostItem = ({ post }) => {
             <div className="flex gap-4">
               <LikeButton
                 className="!text-xl hover:opacity-50"
-                userId={user.id}
-                postId={post.id}
+                userId={user?.id}
+                postId={post?.id}
                 isLiked={isLiked}
                 setIsLiked={setIsLiked}
                 setLikeCount={setLikeCount}
