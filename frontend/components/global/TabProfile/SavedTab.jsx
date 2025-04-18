@@ -7,6 +7,7 @@ import SavedPostDetailModal from "./SavedPostDetailModal";
 import { Spinner } from "@heroui/react";
 import { addToast, ToastProvider } from "@heroui/toast";
 import { useModal } from "@/components/provider/ModalProvider";
+
 const SavedItems = ({ username }) => {
   const [selectedPost, setSelectedPost] = useState(null);
   const { getUserInfoByUsername } = useApp();

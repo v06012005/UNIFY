@@ -220,7 +220,7 @@ const Page = () => {
                 ${
                   chat.userId === chatPartner
                     ? "dark:bg-neutral-800 bg-gray-200 shadow-md ring-1 ring-white dark:ring-neutral-600"
-                    : "dark:hover:bg-neutral-700 dark:bg-neutral-900 hover:bg-gray-300"
+                    : "dark:hover:bg-neutral-700 hover:bg-gray-300"
                 } dark:text-white text-black`}
                 onClick={() => handleChatSelect(chat)}
               >

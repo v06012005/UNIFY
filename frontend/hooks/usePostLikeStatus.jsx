@@ -1,58 +1,40 @@
-import { useEffect, useState } from "react";
-import Cookies from "js-cookie";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { getLikeStatus, getLikeCount } from "@/app/services/likeService";
 
 const usePostLikeStatus = (userId, postId) => {
-  const [isLiked, setIsLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(0);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    const token = Cookies.get("token");
-    if (!token) return;
+  // Fetch like status
+  const { data: isLiked = false, isLoading: isLoadingLikeStatus } = useQuery({
+    queryKey: ["likeStatus", userId, postId],
+    queryFn: () => getLikeStatus(userId, postId),
+    enabled: !!userId && !!postId, // Only fetch if userId and postId are provided
+  });
 
-    const fetchStatus = async () => {
-      try {
-        // Get like status
-        const likedRes = await fetch(
-          `http://localhost:8080/liked-posts/is-liked/${userId}/${postId}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
+  // Fetch like count
+  const { data: likeCount = 0, isLoading: isLoadingLikeCount } = useQuery({
+    queryKey: ["likeCount", postId],
+    queryFn: () => getLikeCount(postId),
+    enabled: !!postId, // Only fetch if postId is provided
+  });
 
-        if (likedRes.ok) {
-          const likedStatus = await likedRes.json();
-          setIsLiked(likedStatus);
-        }
+  // Optimistic updates for like status
+  const setIsLiked = (newIsLiked) => {
+    queryClient.setQueryData(["likeStatus", userId, postId], newIsLiked);
+  };
 
-        // Get like count
-        const countRes = await fetch(
-          `http://localhost:8080/liked-posts/countLiked/${postId}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
+  // Optimistic updates for like count
+  const setLikeCount = (newLikeCount) => {
+    queryClient.setQueryData(["likeCount", postId], newLikeCount);
+  };
 
-        if (countRes.ok) {
-          const count = await countRes.json();
-          setLikeCount(count);
-        }
-      } catch (error) {
-        console.error("Lỗi khi fetch trạng thái hoặc số like: ", error);
-      }
-    };
-
-    fetchStatus();
-  }, [userId, postId]);
-
-  return { isLiked, setIsLiked, likeCount, setLikeCount };
+  return {
+    isLiked,
+    setIsLiked,
+    likeCount,
+    setLikeCount,
+    loading: isLoadingLikeStatus || isLoadingLikeCount,
+  };
 };
 
 export default usePostLikeStatus;

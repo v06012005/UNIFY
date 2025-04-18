@@ -82,8 +82,6 @@ const useChat = (user, chatPartner) => {
     queryKey: ["messages", user?.id, chatPartner],
     queryFn: fetchMessages,
     enabled: !!user?.id && !!chatPartner,
-    // refetchInterval: 1000,
-    // refetchOnWindowFocus: false,
     onSuccess: (data) => {
       if (data.length > 0) {
         const sortedMessages = data.sort(
