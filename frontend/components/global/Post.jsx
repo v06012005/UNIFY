@@ -3,73 +3,42 @@
 import React, { useEffect, useRef, useState } from "react";
 import { fetchPosts } from "@/app/lib/dal";
 import { Spinner } from "@heroui/react";
-import { useQuery } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useInfiniteQuery,
+  useQuery,
+} from "@tanstack/react-query";
 import PostItem from "./PostItem";
 import { useApp } from "../provider/AppProvider";
 import { useInView } from "react-intersection-observer";
 import { delay } from "framer-motion";
 import PostLoading from "../loading/PostLoading";
+import next from "next";
 
-const PAGE_SIZE = 10;
 
 const Post = () => {
-  const [page, setPage] = useState(0);
-  const [posts, setPosts] = useState([]);
-  const [hasMore, setHasMore] = useState(true);
-  const [isLoading, setIsLoading] = useState(true);
-  const loader = useRef(null);
-  const { ref, inView } = useInView();
-  // const { data: posts, isLoading } = useQuery({
-  //   queryKey: ["posts"],
-  //   queryFn: fetchPosts,
-  // });
+  const { ref, inView } = useInView({ threshold: 0.1});
+
+  const {
+    data,
+    fetchNextPage,
+    isFetchingNextPage,
+    hasNextPage,
+    status,
+  } = useInfiniteQuery({
+    queryKey: ["posts"],
+    queryFn:({pageParam = 0}) => fetchPosts(pageParam),
+    getNextPageParam: (lastPage) => lastPage.nextPage ?? undefined,
+    keepPreviousData: true,
+  });
 
   useEffect(() => {
-    const fetchNewPosts = async () => {
-      const data = await fetchPosts(page);
-      console.log(data.posts)
-      setPosts((prev) => [...prev, ...data.posts]);
-      setIsLoading(false);
-      if (data.posts.length < PAGE_SIZE) setHasMore(false);
-    };
-
-    if (hasMore) fetchNewPosts();
-  }, [page]);
-
-  const loadMorePosts = async () => {
-    setPage((prev) => prev + 1);
-  }
-
-  useEffect(() => {
-    // const observer = new IntersectionObserver(
-    //   (entries) => {
-    //     if (entries[0].isIntersecting && hasMore) {
-    //       setPage((prev) => prev + 1);
-    //       console.log("end of page")
-    //     }
-    //   },
-    //   {
-    //     root: document.getElementById("newsfeed"),
-    //     rootMargin: "0px",
-    //     threshold: 0.5,
-    //   }
-    // );
-
-    if (inView) {
-      loadMorePosts();
+    if (inView && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
     }
+  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-    // if (loader.current) observer.observe(loader.current);
-    // return () => {
-    //   if (loader.current) observer.unobserve(loader.current);
-    // };
-  }, [inView]);
-
-  const handleClick = () => {
-    setPage((prev) => prev + 1);
-  }
-
-  if (isLoading) {
+  if (status === "pending") {
     return (
       <div className="flex justify-center items-center py-8 h-screen">
         <PostLoading />
@@ -79,19 +48,26 @@ const Post = () => {
 
   return (
     <>
-      {posts.map((post) => (
-        <PostItem
-          key={post.id}
-          post={post}
-        />
+      {data?.pages.map((page, i) => (
+        <div key={i}>
+          {page.posts.map((post) => (
+            <PostItem key={post.id} post={post} />
+          ))}
+        </div>
       ))}
 
-      <div ref={ref} className="h-10">
-        <PostLoading />
+
+      <div
+        ref={ref}
+        className="min-h-[50px] flex justify-center items-center"
+      >
+        {isFetchingNextPage ? <PostLoading /> : <span>No more</span>}
       </div>
-      {!hasMore && <p className="text-center text-gray-500">No more posts</p>}
+
+
     </>
   );
 };
 
 export default Post;
+

@@ -3,7 +3,7 @@ import React from 'react'
 
 const PostLoading = () => {
     return (
-        <div className="w-3/4 mx-auto mt-8">
+        <div className="w-3/4 mx-auto mt-8 opacity-10">
             <div className='flex'>
                 <Skeleton className='w-14 h-14 rounded-full'>User</Skeleton>
                 <div className='flex flex-col ml-2'>

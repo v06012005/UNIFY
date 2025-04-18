@@ -136,36 +136,44 @@ export const saveMedia = async (postId, newMedia) => {
   }
 };
 
-export const fetchPosts = async (page) => {
+export const fetchPosts = async ( pageParam  ) => {
   const token = (await cookies()).get("token")?.value;
 
   if (!token) {
     redirect("/login");
   }
 
-  // const user = await getUser();
+  const pageSize = 7;
 
   try {
-    const response = await fetch(`http://localhost:8080/posts/personalized?page=${page}&size=10`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await fetch(
+      `http://localhost:8080/posts/personalized?page=${pageParam}&size=${pageSize}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     if (!response.ok) {
       console.log("Failed to fetch posts");
-      return null;
+      return { posts: [], nextPage: null };
     }
 
-    const myPosts = await response.json();
-    return myPosts;
+    const data = await response.json();
+
+    return {
+      posts: data.posts, 
+      nextPage: data.hasNextPage ? pageParam + 1 : null
+    };
   } catch (error) {
     console.log("Failed to fetch posts: " + error);
-    return null;
+    return { posts: [], nextPage: null };
   }
 };
+
 
 export const fetchPostList = async () => {
   const token = (await cookies()).get("token")?.value;

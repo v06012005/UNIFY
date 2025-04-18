@@ -24,6 +24,9 @@ const LoginPage = () => {
   });
 
   const [errors, setErrors] = useState({});
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {setIsClient(true)}, []);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -67,6 +70,10 @@ const LoginPage = () => {
       callbackUrl: "http://localhost:3000/user-profile",
     }).then((r) => console.log(r));
   };
+
+  if(!isClient) return null;
+
+  
 
   return (
     <div className={`w-full h-screen grid place-content-center`}>
