@@ -167,7 +167,7 @@ public class UserService {
             return Collections.emptyList();
         }
 
-        return userRepository.findUsersNotFriendsOrFollowing(userDTO.getId()).stream().map(userMapper::toUserDTO).collect(Collectors.toList()).subList(0, 6);
+        return userRepository.findUsersNotFriendsOrFollowing(userDTO.getId()).stream().map(userMapper::toUserDTO).collect(Collectors.toList()).subList(0, 10);
     }
 
     public List<UserDTO> findUsersFollowingMe(String currentUserId) {

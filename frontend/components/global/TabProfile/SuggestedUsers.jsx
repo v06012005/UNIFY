@@ -14,11 +14,11 @@ const User = ({
     avatar = "",
 }) => (
     <Link href={href}>
-        <div className="flex mb-4">
-            <Avatar className="" size="lg" src={avatar} />
+        <div className="flex items-center mb-4">
+            <Avatar className="border border-gray-300 dark:border-neutral-700" size="lg" src={avatar} />
             <div className="ml-5">
-                <p className="my-auto text-lg font-bold">@{username}</p>
-                <p className="my-auto">
+                <p className="my-auto text-sm font-bold">@{username}</p>
+                <p className="my-auto text-sm">
                     {firstname} {lastname}
                 </p>
             </div>
@@ -44,7 +44,7 @@ const SuggestedUsers = () =>  {
     if (isLoading) {
         return (
             <>
-                {Array.from({ length: 6 }).map((_, index) => (
+                {Array.from({ length: 10 }).map((_, index) => (
                     <div className='flex mb-4 opacity-10' key={index}>
                         <Skeleton className='w-14 h-14 rounded-full'>User</Skeleton>
                         <div className='flex flex-col ml-2'>

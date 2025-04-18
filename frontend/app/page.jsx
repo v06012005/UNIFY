@@ -23,7 +23,9 @@ export default async function Home() {
           <div className="w-3/4 flex flex-col mx-auto">
             <div>
               <p className="font-bold text-xl mb-8">People you may know</p>
+              <div className="max-h-[460px] overflow-y-auto no-scrollbar pr-1">
               <SuggestedUsers />
+              </div>
             </div>
             <hr className="my-4 dark:border-neutral-700" />
             <div>

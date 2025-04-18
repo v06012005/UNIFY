@@ -8,11 +8,10 @@ import Bookmark from "@/components/global/Bookmark";
 import Slider from "./Slider";
 import usePostLikeStatus from "@/hooks/usePostLikeStatus";
 import { useApp } from "../provider/AppProvider";
-import { Avatar, ToastProvider } from "@heroui/react";
+import { Avatar, ToastProvider, addToast } from "@heroui/react";
 import Link from "next/link";
 import ReportModal from "./Report/ReportModal";
 import { useReports } from "../provider/ReportProvider";
-
 const User = ({
   href = "",
   username = "",
@@ -22,7 +21,7 @@ const User = ({
 }) => (
   <Link href={href}>
     <div className="flex mb-2">
-      <Avatar className=" w-12 h-12 " src={avatar} />
+      <Avatar className=" w-12 h-12 border border-gray-300 dark:border-neutral-700 " src={avatar} />
 
       <div className="ml-5">
         <p className="my-auto text-sm font-bold">@{username}</p>
@@ -156,7 +155,7 @@ const PostItem = ({ post }) => {
     <>
       <ToastProvider placement={"top-right"} />
       <div key={post.id} className="w-3/4 mb-8 mx-auto pb-8">
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center mx-10">
           <User
             avatar={post?.user?.avatar?.url}
             href={`/othersProfile/${post?.user?.username}`}
@@ -204,7 +203,7 @@ const PostItem = ({ post }) => {
           postId={post.id}
         />
         <Slider srcs={post.media} />
-        <div className="w-3/4 mx-auto px-2">
+        <div className="w-4/4 mx-10 px-2">
           <Caption text={transformHashtags(post.captions)} />
           <div className="flex justify-between text-xl">
             <div className="flex gap-3">

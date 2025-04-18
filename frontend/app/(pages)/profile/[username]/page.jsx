@@ -153,7 +153,7 @@ const Page = () => {
               className="flex items-center font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 bg-gray-100 dark:bg-neutral-700 dark:hover:bg-zinc-800 transition-colors w-full justify-center"
               onClick={handleClickView}
             >
-              <i className="fa-regular fa-bookmark mr-2"></i>
+              <i className="fa-solid fa-box-archive mr-2"></i>
               <span>View Archive</span>
             </button>
           </div>
