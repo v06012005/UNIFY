@@ -7,7 +7,7 @@ import Picker from "emoji-picker-react";
 import { postComment } from "app/api/service/commentService";
 import Cookies from "js-cookie";
 import { useApp } from "@/components/provider/AppProvider";
-import defaultAvatar from "public/images/unify_icon_2.svg";  
+import defaultAvatar from "public/images/unify_icon_2.svg";
 
 const CommentInput = ({
   postId,
@@ -92,7 +92,6 @@ const CommentInput = ({
 
   return (
     <div className="flex items-center text-white rounded-2xl w-full justify-center relative">
-
       {/* Hiển thị avatar của người dùng hiện tại */}
       <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-gray-300 mr-2">
         {user?.avatar?.url ? (
@@ -192,11 +191,9 @@ const CommentInput = ({
         </>
       )}
       {error && (
-      <div className="absolute top-[-50px]  text-red-600 text-sm px-4 py-2 rounded-xl bg-[rgba(255,255,255,0.25)] backdrop-blur-md shadow-md border border-red-300/40">
-      {error}
-    </div>
-    
-      
+        <div className="absolute top-[-50px]  text-red-600 text-sm px-4 py-2 rounded-xl bg-[rgba(255,255,255,0.25)] backdrop-blur-md shadow-md border border-red-300/40">
+          {error}
+        </div>
       )}
     </div>
   );

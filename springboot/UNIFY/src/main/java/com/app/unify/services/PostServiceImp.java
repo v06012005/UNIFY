@@ -174,12 +174,14 @@ public class PostServiceImp implements PostService {
 
     @Override
     public List<PostDTO> getRecommendedPostsForExplore(String userId) {
-        // Logic recommendation: Lấy posts từ user follow, lượt like, hashtag, v.v.
-        List<Post> posts = postRepository.findPostsWithInteractionCountsAndNotFollow(userId)
-            .stream()
-            .map(result -> (Post) result[0])
-            .toList();
-        return posts.stream().map(mapper::toPostDTO).collect(Collectors.toList());
+        List<Object[]> results = postRepository.findPostsWithInteractionCountsAndNotFollow(userId);
+        return results.stream().map(result -> {
+            Post post = (Post) result[0];
+            Long commentCount = (Long) result[1];
+            PostDTO postDTO = mapper.toPostDTO(post);
+            postDTO.setCommentCount(commentCount);
+            return postDTO;
+        }).collect(Collectors.toList());
     }
 
     @Override
@@ -196,14 +198,14 @@ public class PostServiceImp implements PostService {
 
 
     
-	@Override
-	public Page<PostDTO> getPersonalizedFeed(Pageable pageable) {
-//		User user = userRepository.findById(userId).orElseThrow();
-//      Set<Friendship> friends = user.getFriendshipsReceived();
-//      Set<String> interests = user.getInterests(); // assume it's a Set<String>
-
-      Page<PersonalizedPostDTO> posts = postRepository.findPersonalizedPosts(pageable);
-      return posts.map(dto -> mapper.toPostDTO(dto.getPost()));
-	}
+    @Override
+    public Page<PostDTO> getPersonalizedFeed(Pageable pageable) {
+        Page<PersonalizedPostDTO> posts = postRepository.findPersonalizedPosts(pageable);
+        return posts.map(dto -> {
+            PostDTO postDTO = mapper.toPostDTO(dto.getPost());
+            postDTO.setCommentCount(dto.getCommentCount());
+            return postDTO;
+        });
+    }
 
 }

@@ -15,22 +15,16 @@ import { delay } from "framer-motion";
 import PostLoading from "../loading/PostLoading";
 import next from "next";
 
-
 const Post = () => {
   const { ref, inView } = useInView({ threshold: 0.1 });
 
-  const {
-    data,
-    fetchNextPage,
-    isFetchingNextPage,
-    hasNextPage,
-    status,
-  } = useInfiniteQuery({
-    queryKey: ["posts"],
-    queryFn: ({ pageParam = 0 }) => fetchPosts(pageParam),
-    getNextPageParam: (lastPage) => lastPage.nextPage ?? undefined,
-    keepPreviousData: true,
-  });
+  const { data, fetchNextPage, isFetchingNextPage, hasNextPage, status } =
+    useInfiniteQuery({
+      queryKey: ["posts"],
+      queryFn: ({ pageParam = 0 }) => fetchPosts(pageParam),
+      getNextPageParam: (lastPage) => lastPage.nextPage ?? undefined,
+      keepPreviousData: true,
+    });
 
   useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) {
@@ -56,18 +50,11 @@ const Post = () => {
         </div>
       ))}
 
-
-      <div
-        ref={ref}
-        className="min-h-[50px] flex justify-center items-center"
-      >
+      <div ref={ref} className="min-h-[50px] flex justify-center items-center">
         {isFetchingNextPage ? <PostLoading /> : <span>No more</span>}
       </div>
-
-
     </>
   );
 };
 
 export default Post;
-

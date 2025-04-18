@@ -41,7 +41,7 @@ const Slider = ({ srcs = [] }) => {
     }, [srcs, currentIndex]);
 
     return (
-        <div className="max-w-[450px] w-full h-[550px] my-auto bg-cover relative mx-auto group">
+        <div className="max-w-[450px] w-full h-[550px] my-auto bg-cover relative mx-auto group ">
             {loading && (
                 <div className="absolute inset-0 flex justify-center rounded-lg items-center">
                     <Spinner

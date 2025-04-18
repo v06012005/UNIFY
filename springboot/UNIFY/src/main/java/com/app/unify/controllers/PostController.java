@@ -69,7 +69,7 @@ public class PostController {
     @GetMapping("/personalized")
     public ResponseEntity<PostFeedResponse> getPersonalizedFeed(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "7") int size
     ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("postedAt").descending());
         Page<PostDTO> postPage = postService.getPersonalizedFeed(pageable);

@@ -9,7 +9,9 @@ import iconImage from "@/public/imgs.svg";
 import usePostLikeStatus from "@/hooks/usePostLikeStatus";
 
 export default function PostCard({ post, onClick, style, postId }) {
+
   const { likeCount } = usePostLikeStatus(null, postId);
+
 
   const hasMedia = post?.media && post.media.length > 0;
   const media = hasMedia ? post.media[0] : null;
@@ -61,7 +63,9 @@ export default function PostCard({ post, onClick, style, postId }) {
         </div>
         <div className="flex items-center text-white">
           <Image src={iconComment} width={20} height={20} alt="Comment" />
-          <p className="font-bold text-lg ml-1">0</p>
+
+          <p className="font-bold text-lg ml-1">{post.commentCount || 0}</p>
+
         </div>
       </div>
     </div>

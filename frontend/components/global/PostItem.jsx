@@ -21,7 +21,10 @@ const User = ({
 }) => (
   <Link href={href}>
     <div className="flex mb-2">
-      <Avatar className=" w-12 h-12 border border-gray-300 dark:border-neutral-700 " src={avatar} />
+      <Avatar
+        className=" w-12 h-12 border border-gray-300 dark:border-neutral-700 "
+        src={avatar}
+      />
 
       <div className="ml-5">
         <p className="my-auto text-sm font-bold">@{username}</p>
@@ -64,9 +67,9 @@ const Caption = ({ text, maxLength = 100 }) => {
         : `${text.slice(0, maxLength)}...`}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="text-gray-500 font-semibold ml-2"
+        className="text-neutral-500 font-normal ml-2"
       >
-        {isExpanded ? "Less" : "More"}
+        {isExpanded ? "less" : "more"}
       </button>
     </div>
   );
@@ -206,7 +209,7 @@ const PostItem = ({ post }) => {
         <div className="w-4/4 mx-10 px-2">
           <Caption text={transformHashtags(post.captions)} />
           <div className="flex justify-between text-xl">
-            <div className="flex gap-3">
+            <div className="flex gap-4">
               <LikeButton
                 className="!text-xl hover:opacity-50"
                 userId={user?.id}
@@ -228,7 +231,7 @@ const PostItem = ({ post }) => {
             </div>
           </div>
           <div>
-            <span className="text-base text-zinc-400">{likeCount} likes</span>
+            <span className="text-base font-normal text-neutral-700 dark:text-zinc-200">{likeCount} likes</span>
           </div>
           <div className="mt-2 flex flex-wrap">
             {hashtags.map((hashtag, index) => {
@@ -246,9 +249,10 @@ const PostItem = ({ post }) => {
               postId={post.id}
               className="text-black hover:text-gray-500 text-md animate-none transition-none dark:text-zinc-400 dark:hover:text-white"
             >
-              View all comments
+              View all {post.commentCount || 0} comments
             </CommentButton>
           </div>
+        
         </div>
       </div>
     </>
