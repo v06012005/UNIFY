@@ -24,7 +24,9 @@ import { useQuery } from "@tanstack/react-query";
 import Skeleton from "@/components/global/SkeletonLoad";
 
 import BookmarkButton from "@/components/global/Bookmark";
+import { useInView } from "react-intersection-observer";
 
+const PAGE_SIZE = 5;
 
 export default function Reels() {
   const [postStates, setPostStates] = useState({});
@@ -46,14 +48,70 @@ export default function Reels() {
   const videoRefs = useRef([]);
   const containerRef = useRef(null);
   const { createPostReport } = useReports();
+  const [page, setPage] = useState(0);
+  const [posts, setPosts] = useState([]);
+  const [hasMore, setHasMore] = useState(true);
+  // const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingInitial, setIsLoadingInitial] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
+  const { ref: loadMoreRef, inView } = useInView({
+    threshold: 0.3,
+    triggerOnce: false,
+  });
+  const [count, setCount] = useState(0);
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-  const { data: posts, isLoading } = useQuery({
-    queryKey: ["posts"],
-    queryFn: fetchPosts,
-  });
+  // const { data: posts, isLoading } = useQuery({
+  //   queryKey: ["posts"],
+  //   queryFn: fetchPosts,
+  // });
+
+  useEffect(() => {
+    const fetchNewPosts = async () => {
+      if (page === 0) {
+        setIsLoadingInitial(true);
+        // setIsLoading(true); 
+      } else {
+        setIsLoadingMore(true);
+      }
+
+      const data = await fetchPosts(page, PAGE_SIZE);
+
+      setPosts((prev) => {
+        const existingIds = new Set(prev.map((p) => p.id));
+        const newPosts = data.posts.filter((p) => !existingIds.has(p.id));
+        return [...prev, ...newPosts];
+      });
+
+      if (data.posts.length < PAGE_SIZE) setHasMore(false);
+
+      if (page === 0) {
+        setIsLoadingInitial(false);
+        // setIsLoading(false); // ✅
+      } else {
+        setIsLoadingMore(false);
+      }
+    };
+
+    if (hasMore) fetchNewPosts();
+  }, [page]);
+
+
+
+  const isFetchingRef = useRef(false);
+
+  useEffect(() => {
+    if (inView && !isFetchingRef.current && hasMore) {
+      isFetchingRef.current = true;
+      setPage((prev) => prev + 1);
+    }
+  }, [inView, hasMore]);
+
+  useEffect(() => {
+    isFetchingRef.current = false;
+  }, [page]);
 
   const initializePostState = (posts) =>
     posts.reduce(
@@ -79,36 +137,44 @@ export default function Reels() {
     }));
 
   useEffect(() => {
-    if (isLoading || !posts) return;
+    if (!posts) return;
 
-    const videoPosts = posts.filter((post) =>
-      post.media.some((media) => media.mediaType === "VIDEO")
-    );
+    const newVideoPosts = posts
+      .filter((post) =>
+        post.media.some((media) => media.mediaType === "VIDEO")
+      )
+      .filter((post) => !videoPosts.some((p) => p.id === post.id)); // deduplication
 
-    if (videoPosts.length === 0) {
-      setVideoPosts([]);
-      setLoading(false);
-      return;
+    if (newVideoPosts.length > 0) {
+      setVideoPosts((prev) => [...prev, ...newVideoPosts]);
+      setPostStates((prev) => ({
+        ...prev,
+        ...initializePostState(newVideoPosts),
+      }));
     }
+  }, [posts]);
 
-    let sortedPosts = videoPosts;
-    if (postId) {
-      sortedPosts.sort((a, b) =>
-        a.id === postId ? -1 : b.id === postId ? 1 : 0
-      );
-      setActivePostId(postId);
-    } else if (videoPosts.length > 0) {
-      router.replace(`/reels/${videoPosts[0].id}`);
-      setActivePostId(videoPosts[0].id);
-    }
 
-    setVideoPosts(sortedPosts);
-    setPostStates(initializePostState(sortedPosts));
-    setLoading(false);
-  }, [posts, isLoading, postId, router]);
+  const hasSetInitialRoute = useRef(false);
 
   useEffect(() => {
-    if (loading || videoPosts.length === 0) return;
+    if (hasSetInitialRoute.current || !videoPosts.length) return;
+
+    if (!postId) {
+      setActivePostId(videoPosts[0].id);
+      router.replace(`/reels/${videoPosts[0].id}`);
+    } else {
+      setActivePostId(postId);
+    }
+
+    hasSetInitialRoute.current = true;
+  }, [videoPosts, postId]);
+
+
+
+
+  useEffect(() => {
+    if (videoPosts.length === 0) return;
 
     videoRefs.current.forEach((video) => {
       if (video) {
@@ -117,10 +183,10 @@ export default function Reels() {
         video.currentTime = 0;
       }
     });
-  }, [videoPosts, loading]);
+  }, [videoPosts]);
 
   useEffect(() => {
-    if (loading || videoPosts.length === 0) return;
+    if (videoPosts.length === 0) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -317,9 +383,9 @@ export default function Reels() {
         const updatedComments = newComment.parentId
           ? updateRepliesRecursively(currentComments)
           : [
-              { ...newComment, username: user?.username || "Unknown" },
-              ...currentComments,
-            ];
+            { ...newComment, username: user?.username || "Unknown" },
+            ...currentComments,
+          ];
 
         return {
           ...prev,
@@ -370,7 +436,7 @@ export default function Reels() {
     </div>
   );
 
-  if (loading) {
+  if (isLoadingInitial) {
     return (
       <div className="h-screen w-full overflow-y-scroll snap-y snap-mandatory scrollbar-hide">
         {[...Array(1)].map((_, index) => (
@@ -379,6 +445,8 @@ export default function Reels() {
       </div>
     );
   }
+
+  const lastPostId = videoPosts[videoPosts.length - 1]?.id;
 
   return (
     <>
@@ -395,9 +463,8 @@ export default function Reels() {
           videoPosts.map((post, index) => (
             <div
               key={post.id}
-              className={`relative w-[450px] h-[710px] mx-auto rounded-b-xl overflow-hidden m-5 snap-start flex-shrink-0 ${
-                isCommentOpen ? "translate-x-[-150px]" : "translate-x-0"
-              } transition-transform duration-400 ease-in-out`}
+              className={`relative w-[450px] h-[710px] mx-auto rounded-b-xl overflow-hidden m-5 snap-start flex-shrink-0 ${isCommentOpen ? "translate-x-[-150px]" : "translate-x-0"
+                } transition-transform duration-400 ease-in-out`}
             >
               {post.media.map(
                 (media, mediaIndex) =>
@@ -405,7 +472,10 @@ export default function Reels() {
                     <PostReels
                       key={mediaIndex}
                       src={media.url}
-                      ref={(el) => (videoRefs.current[index] = el)}
+                      ref={(el) => {
+                        videoRefs.current[index] = el;
+                        if (post.id === lastPostId && el) loadMoreRef(el);
+                      }}
                       loop
                       muted={isMutedGlobally}
                       onPauseChange={(isPaused) =>
@@ -422,9 +492,9 @@ export default function Reels() {
                       src={
                         post?.user?.avatar?.url
                           ? `${post?.user?.avatar?.url.replace(
-                              "/upload/",
-                              "/upload/w_80,h_80,c_fill,q_auto/"
-                            )}`
+                            "/upload/",
+                            "/upload/w_80,h_80,c_fill,q_auto/"
+                          )}`
                           : "/images/unify_icon_2.svg"
                       }
                       width={40}
@@ -474,9 +544,9 @@ export default function Reels() {
                     className="fa-regular fa-comment hover:opacity-50 focus:opacity-50 transition cursor-pointer"
                     onClick={() => toggleComment(post.id)}
                   />
-                
+
                   <span className="text-sm">{post.commentCount || 0}</span>
-                 
+
                 </div>
                 <div className="flex flex-col items-center">
                   <i
@@ -527,6 +597,9 @@ export default function Reels() {
             </div>
           ))
         )}
+        {/* {isLoadingMore && (
+          <div className="text-white text-center py-4">Loading more...</div>
+        )} */}
 
         <ShareReels
           isOpen={isOpen}
@@ -539,9 +612,8 @@ export default function Reels() {
         {isCommentOpen && currentPostId && (
           <div
             id="overlay"
-            className={`fixed top-0 left-0 w-full h-full z-20 transition-opacity duration-300 ease-in-out ${
-              isCommentOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-            }`}
+            className={`fixed top-0 left-0 w-full h-full z-20 transition-opacity duration-300 ease-in-out ${isCommentOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+              }`}
             onClick={(e) => {
               if (e.target.id === "overlay") {
                 setIsCommentOpen(false);
@@ -550,9 +622,8 @@ export default function Reels() {
             }}
           >
             <div
-              className={`fixed top-0 right-0 h-full w-[450px] transition-transform duration-300 ease-in-out ${
-                isCommentOpen ? "translate-x-0" : "translate-x-full"
-              }`}
+              className={`fixed top-0 right-0 h-full w-[450px] transition-transform duration-300 ease-in-out ${isCommentOpen ? "translate-x-0" : "translate-x-full"
+                }`}
             >
               <div className="h-full flex flex-col p-4 border-l border-neutral-700">
                 <div className="flex items-center justify-between dark:text-white mb-4">

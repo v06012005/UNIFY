@@ -14,9 +14,11 @@ import { signIn } from "next-auth/react";
 import { useApp } from "@/components/provider/AppProvider";
 
 import { router } from "next/client";
+import { Spinner } from "@heroui/react";
 
 const LoginPage = () => {
   const { loginUser } = useApp();
+  const [isLoading, setIsLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     email: "",
@@ -36,7 +38,6 @@ const LoginPage = () => {
 
   const handleLogin = async () => {
     const newErrors = {};
-
     // Kiểm tra lỗi từ frontend trước
     if (!formData.email.trim()) {
       newErrors.email = "Email is required";
@@ -148,7 +149,7 @@ const LoginPage = () => {
           </div>
 
           <Button className="text-2xl mt-3 p-5" onClick={handleLogin}>
-            Login
+            {isLoading ? <Spinner className="" color="white" /> : "Login"}
           </Button>
         </div>
       </div>

@@ -3,10 +3,20 @@ import React, { useState, useEffect, useCallback, Suspense } from "react";
 import Image from "next/image";
 import Cookies from "js-cookie";
 import Error from "next/error";
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Input } from "@heroui/react";
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Input, Select, SelectItem } from "@heroui/react";
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from "@heroui/react";
 import TableLoading from "@/components/loading/TableLoading";
 import { useRouter } from "next/navigation";
+import clsx from "clsx";
+import { fetchFilteredReportedPosts } from "@/app/lib/dal";
+
+export const STATUSES = [
+  { key: "pending", value: "Pending" },
+  { key: "approved", value: "Approved" },
+  { key: "rejected", value: "Rejected" },
+  { key: "resolved", value: "Resolved" },
+  { key: "canceled", value: "Canceled" }
+];
 
 const PostManagementPage = () => {
   const [loading, setLoading] = useState(true);
@@ -16,6 +26,7 @@ const PostManagementPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
   const router = useRouter();
+  const [filterKey, setFilterKey] = useState("0");
 
   const handleClick = (key, postId) => {
     switch (key) {
@@ -31,21 +42,7 @@ const PostManagementPage = () => {
     const fetchPosts = async () => {
       setLoading(true);
       try {
-        const token = Cookies.get("token");
-        const response = await fetch("http://localhost:8080/reports/allPosts", {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-        if (!response.ok) {
-          throw new Error("Không có quyền truy cập hoặc lỗi hệ thống");
-        }
-        const data = await response.json();
-        if (data.length === 0) {
-          console.warn("API không trả về người dùng nào.");
-        }
+        const data = await fetchFilteredReportedPosts(filterKey);
         setPosts(data);
         setFilteredPosts(data);
       } catch (error) {
@@ -55,7 +52,7 @@ const PostManagementPage = () => {
       }
     };
     fetchPosts();
-  }, []);
+  }, [filterKey]);
 
   useEffect(() => {
     setFilteredPosts(
@@ -91,18 +88,35 @@ const PostManagementPage = () => {
           /> */}
         </div>
       </div>
-
+      <div className="flex">
+        <Select
+          className="max-w-xs mb-2 w-2/3 ml-auto pr-5"
+          label="Filter by status"
+          placeholder="Select a status" onSelectionChange={(val) => {
+            const selected = Array.from(val)[0];
+            setFilterKey(selected);
+          }}
+          isRequired defaultSelectedKeys={[filterKey]}
+        >
+          <SelectItem key={"0"} startContent={<i className="fa-solid fa-hourglass-half"></i>} className="text-primary-500">Pending</SelectItem>
+          <SelectItem key={"1"} startContent={<i className="fa-solid fa-thumbs-up"></i>} className="text-success-500">Approved</SelectItem>
+          <SelectItem key={"2"} startContent={<i className="fa-solid fa-ban"></i>} className="text-red-500">Rejected</SelectItem>
+          <SelectItem key={"3"} startContent={<i className="fa-brands fa-resolving"></i>} className="text-warning-500">Resolved</SelectItem>
+          <SelectItem key={"4"} startContent={<i className="fa-solid fa-rectangle-xmark"></i>} className="text-zinc-500">Canceled</SelectItem>
+        </Select>
+        {/* <Button className="mr-7 h-14 w-14 border text-xl"><i className="fa-solid fa-filter"></i></Button> */}
+      </div>
       <div className="overflow-auto h-[calc(73vh-0.7px)] no-scrollbar">
         {loading ? (
           // <p className="text-center text-gray-500">Loading users...</p>
-          <TableLoading tableHeaders={["No.", "Reported At", "Post ID", "Reason", "Actions"]} />
+          <TableLoading tableHeaders={["No.", "Reported At", "Reason", "Status", "Actions"]} />
         ) : (
-          <Table className="rounded-lg" isStriped aria-label="">
-            <TableHeader>
+          <Table className="rounded-lg h-[95%]" isStriped aria-label="">
+            <TableHeader className="mb-0">
               <TableColumn>No.</TableColumn>
               <TableColumn>Reported At</TableColumn>
-              <TableColumn>Post ID</TableColumn>
               <TableColumn>Reason</TableColumn>
+              <TableColumn>Status</TableColumn>
               <TableColumn>Actions</TableColumn>
             </TableHeader>
             <TableBody>
@@ -117,8 +131,14 @@ const PostManagementPage = () => {
                     minute: '2-digit',
                   })}
                   </TableCell>
-                  <TableCell>{post.reportedId}</TableCell>
                   <TableCell>{post.reason}</TableCell>
+                  <TableCell className={clsx("my-0.5 font-bold", {
+                    "text-primary-500": post?.status === 0,
+                    "text-success-500": post?.status === 1,
+                    "text-red-500": post?.status === 2,
+                    "text-warning-500": post?.status === 3,
+                    "text-zinc-500": post?.status === 4
+                  })}> {post?.status === 0 ? "Pending" : post?.status === 1 ? "Approved" : post?.status === 2 ? "Rejected" : post?.status === 3 ? "Resolved" : "Canceled"}</TableCell>
                   <TableCell>
                     <Dropdown>
                       <DropdownTrigger>
