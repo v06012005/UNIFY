@@ -229,11 +229,12 @@ export const AppProvider = ({ children }) => {
             router.push("/");
           }
         }
-      } else {
-        // Nếu không lấy được thông tin người dùng, xóa token và chuyển đến login
-        Cookies.remove("token", { path: "/" });
-        router.push("/login");
       }
+      //  else {
+      //   // Nếu không lấy được thông tin người dùng, xóa token và chuyển đến login
+      //   Cookies.remove("token", { path: "/" });
+      //   router.push("/login");
+      // }
     };
 
     checkUserAndRedirect().catch((error) => console.log(error));

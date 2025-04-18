@@ -49,8 +49,8 @@ export const FollowNotification = React.memo(
                 </small>
               </p>
               <FollowButton
-                userId={user.id}
-                followingId={sender.id}
+                userId={user?.id}
+                followingId={sender?.id}
                 classFollow="bg-red-500 text-white rounded-md px-2 py-1 text-sm w-[30%] h-[100%] self-center"
                 classFollowing="bg-transparent text-black dark:text-zinc-200 border border-gray-400 dark:border-neutral-600 rounded-md px-2 py-1 text-sm bg-transparent w-[30%] h-[100%] self-center"
                 contentFollow="Follow"

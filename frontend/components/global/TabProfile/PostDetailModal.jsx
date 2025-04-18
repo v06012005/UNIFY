@@ -176,21 +176,21 @@ const PostDetailModal = ({ post, onClose, onArchive, onDelete }) => {
     <div className="fixed inset-0 flex items-center justify-center bg-black/10 dark:bg-neutral-700/40 backdrop-blur-sm z-50 pointer-events-auto">
       <div className="bg-gray-100 dark:bg-neutral-900 rounded-xl shadow-2xl border-neutral-200 dark:border-neutral-700 border-1 flex flex-row w-[1300px] h-[690px] overflow-hidden">
         {/* Media */}
-        <div className="w-1/2 relative dark:border-neutral-700 border-r">
+        <div className="w-full relative dark:border-neutral-700 border-r">
           {selectedMedia ? (
             selectedMedia.mediaType === "VIDEO" ? (
               <div className="w-full h-full flex items-center justify-center bg-gray-200 dark:bg-black">
                 <video
                   src={selectedMedia.url}
                   controls
-                  className="max-w-full max-h-full object-contain"
+                  className="max-w-full max-h-full object-none"
                 />
               </div>
             ) : (
-              <div className="w-full h-full px-2 flex items-center justify-center bg-gray-200 dark:bg-black">
+              <div className="flex items-center justify-center bg-black h-full">
                 <img
                   src={selectedMedia.url}
-                  className="max-w-full max-h-full object-contain rounded"
+                  className="w-[95%] h-full object-contain rounded"
                   alt="Post Media"
                 />
               </div>
@@ -202,7 +202,7 @@ const PostDetailModal = ({ post, onClose, onArchive, onDelete }) => {
           )}
 
           {post.media.length > 1 && (
-            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-[90%] bg-black bg-opacity-60 p-2 rounded-lg overflow-x-auto flex gap-2 scrollbar-hide">
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-full bg-black bg-opacity-60 p-2 rounded-lg overflow-x-auto flex gap-2 scrollbar-hide">
               {post.media.map((item, index) => (
                 <div
                   key={index}
@@ -253,7 +253,7 @@ const PostDetailModal = ({ post, onClose, onArchive, onDelete }) => {
         </div>
 
         {/* Nội dung */}
-        <div className="w-1/2 flex flex-col">
+        <div className="w-auto w-full flex flex-col">
           <div className="flex items-center justify-between p-4 border-b dark:border-neutral-800">
             <div className="flex items-center">
               <div className="w-10 h-10 rounded-full border-2 border-gray-300 dark:border-gray-600">
@@ -317,7 +317,7 @@ const PostDetailModal = ({ post, onClose, onArchive, onDelete }) => {
           </div>
 
           <div
-            className="flex-1 px-4 py-3 overflow-y-auto no-scrollbar"
+            className="flex-auto px-4 py-3 overflow-y-auto no-scrollbar"
             ref={commentsContainerRef}
           >
             {post.captions === null ? (
