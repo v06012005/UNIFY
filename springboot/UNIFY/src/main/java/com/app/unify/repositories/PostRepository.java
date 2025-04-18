@@ -31,12 +31,12 @@ public interface PostRepository extends JpaRepository<Post, String> {
     //        "ORDER BY interactionCount DESC")
     // List<Object[]> findPostsWithInteractionCounts();
 
-	// @Query("SELECT p, (COUNT(DISTINCT lp.id) + COUNT(DISTINCT pc.id)) as interactionCount "
-	// 		+ "FROM Post p "
-	// 		+ "LEFT JOIN p.likedPosts lp " + "LEFT JOIN p.comments pc "
-	// 		+ "GROUP BY p "
-	// 		+ "ORDER BY interactionCount DESC")
-	// List<Object[]> findPostsWithInteractionCounts();
+	 @Query("SELECT p, (COUNT(DISTINCT lp.id) + COUNT(DISTINCT pc.id)) as interactionCount "
+	 		+ "FROM Post p "
+	 		+ "LEFT JOIN p.likedPosts lp " + "LEFT JOIN p.comments pc "
+	 		+ "GROUP BY p "
+	 		+ "ORDER BY interactionCount DESC")
+	 List<Object[]> findPostsWithInteractionCounts();
 
 	@Query("SELECT p, (COUNT(DISTINCT lp.id) + COUNT(DISTINCT pc.id)) as interactionCount "
 			+ "FROM Post p "

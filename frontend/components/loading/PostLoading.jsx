@@ -18,11 +18,11 @@ const PostLoading = () => {
             <Skeleton className='mx-auto my-2 w-[450px] rounded-lg'>
                 <div className='h-[550px]'>Images/ Videos</div>
             </Skeleton>
-            <Skeleton className='mt-1 rounded-md'>
+            <Skeleton className='mt-1 w-[450px] mx-auto rounded-md'>
                 <div>Captions</div>
             </Skeleton>
 
-            <Skeleton className='mt-1 rounded-md'>
+            <Skeleton className='mt-1 w-[450px] mx-auto rounded-md'>
                 <div className="flex flex-col text-xl">
                     <div className="flex gap-2">
                         Three buttons
@@ -34,10 +34,10 @@ const PostLoading = () => {
                 </div>
             </Skeleton>
 
-            <Skeleton className="mt-1 flex flex-wrap rounded-md">
+            <Skeleton className="mt-1 w-[450px] mx-auto flex flex-wrap rounded-md">
                 <div>Hashtag</div>
             </Skeleton>
-            <Skeleton className="mt-1  rounded-md">
+            <Skeleton className="mt-1 w-[450px] mx-auto rounded-md">
                 <div
                     className="text-black hover:text-gray-500 text-md animate-none transition-none dark:text-zinc-400 dark:hover:text-white"
                 >
