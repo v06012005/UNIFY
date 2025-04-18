@@ -357,3 +357,32 @@ export const fetchPostsByHashtag = async (content) => {
     return null;
   }
 };
+
+export const fetchSuggestedUsers = async (userId) => {
+  const token = (await cookies()).get("token")?.value;
+
+  if (!token) {
+    redirect("/login");
+  }
+
+  try {
+    const response = await fetch("http://localhost:8080/users/suggestions?currentUserId=" + userId, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      console.log("Failed to fetch users");
+      return null;
+    }
+
+    const users = await response.json();
+    return users;
+  } catch (error) {
+    console.log("Failed to fetch users: " + error);
+    return null;
+  }
+};
