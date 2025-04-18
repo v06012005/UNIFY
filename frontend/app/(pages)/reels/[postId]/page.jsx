@@ -139,37 +139,42 @@ export default function Reels() {
   useEffect(() => {
     if (!posts) return;
 
-    const videoPosts = posts.filter((post) =>
-      post.media.some((media) => media.mediaType === "VIDEO")
-    );
+    const newVideoPosts = posts
+      .filter((post) =>
+        post.media.some((media) => media.mediaType === "VIDEO")
+      )
+      .filter((post) => !videoPosts.some((p) => p.id === post.id)); // deduplication
 
-    if (videoPosts.length === 0) {
-      setVideoPosts([]);
-      setLoading(false);
-      return;
+    if (newVideoPosts.length > 0) {
+      setVideoPosts((prev) => [...prev, ...newVideoPosts]);
+      setPostStates((prev) => ({
+        ...prev,
+        ...initializePostState(newVideoPosts),
+      }));
     }
+  }, [posts]);
 
-    let sortedPosts = [...videoPosts];
 
-    // Only set active on first load
-    if (postId && videoPosts.length > 0 && !activePostId) {
-      sortedPosts.sort((a, b) =>
-        a.id === postId ? -1 : b.id === postId ? 1 : 0
-      );
-      setActivePostId(postId);
-    } else if (!postId && !activePostId && videoPosts.length > 0) {
-      router.replace(`/reels/${videoPosts[0].id}`);
+  const hasSetInitialRoute = useRef(false);
+
+  useEffect(() => {
+    if (hasSetInitialRoute.current || !videoPosts.length) return;
+
+    if (!postId) {
       setActivePostId(videoPosts[0].id);
+      router.replace(`/reels/${videoPosts[0].id}`);
+    } else {
+      setActivePostId(postId);
     }
 
-    setVideoPosts(sortedPosts);
-    setPostStates((prev) => ({ ...prev, ...initializePostState(sortedPosts) }));
-    setLoading(false);
-  }, [posts, postId, router]);
+    hasSetInitialRoute.current = true;
+  }, [videoPosts, postId]);
+
+
 
 
   useEffect(() => {
-    if (loading || videoPosts.length === 0) return;
+    if (videoPosts.length === 0) return;
 
     videoRefs.current.forEach((video) => {
       if (video) {
@@ -178,7 +183,7 @@ export default function Reels() {
         video.currentTime = 0;
       }
     });
-  }, [videoPosts, loading]);
+  }, [videoPosts]);
 
   useEffect(() => {
     if (videoPosts.length === 0) return;
