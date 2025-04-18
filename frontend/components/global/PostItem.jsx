@@ -34,6 +34,19 @@ const User = ({
   </Link>
 );
 
+const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
+  return (
+    <Link
+      className="flex h-full items-center text-center text-gray-500 hover:text-black dark:hover:text-white transition-colors"
+      href={href}
+      onClick={onClick}
+    >
+      <i className={`${iconClass}`}></i>
+      <span className="ml-1">{content}</span>
+    </Link>
+  );
+};
+
 const Hashtag = ({ content = "", to = "" }) => (
   <Link
     href={to}
@@ -118,7 +131,9 @@ const PostItem = ({ post }) => {
     [createPostReport]
   );
 
-  const hashtags = post.captions.split(/(\#[a-zA-Z0-9_]+)/g).filter(part => part.startsWith("#"));
+  const hashtags = post.captions
+    .split(/(\#[a-zA-Z0-9_]+)/g)
+    .filter((part) => part.startsWith("#"));
 
   const transformHashtags = (text) => {
     return text.split(/(\#[a-zA-Z0-9_]+)/g).map((part, index) => {
@@ -141,13 +156,20 @@ const PostItem = ({ post }) => {
     <>
       <ToastProvider placement={"top-right"} />
       <div key={post.id} className="w-3/4 mb-8 mx-auto pb-8">
-        <User
-          avatar={post?.user?.avatar?.url}
-          href={`/othersProfile/${post?.user?.username}`}
-          username={post.user?.username}
-          firstname={post.user?.firstName}
-          lastname={post.user?.lastName}
-        />
+        <div className="flex justify-between items-center">
+          <User
+            avatar={post?.user?.avatar?.url}
+            href={`/othersProfile/${post?.user?.username}`}
+            username={post.user?.username}
+            firstname={post.user?.firstName}
+            lastname={post.user?.lastName}
+          />
+          <NavButton
+            onClick={() => setOpenList(true)}
+            content="•••"
+            className="text-2xl"
+          />
+        </div>
         {openList && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[60]">
             <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-xl w-80 transform transition-all duration-200 scale-100 hover:scale-105">
@@ -205,7 +227,6 @@ const PostItem = ({ post }) => {
                 className="!text-xl hover:opacity-90"
               />
             </div>
-
           </div>
           <div>
             <span className="text-base text-zinc-400">{likeCount} likes</span>
@@ -213,8 +234,12 @@ const PostItem = ({ post }) => {
           <div className="mt-2 flex flex-wrap">
             {hashtags.map((hashtag, index) => {
               return (
-                <Hashtag key={index} content={hashtag} to={`/explore/${hashtag}`} />
-              )
+                <Hashtag
+                  key={index}
+                  content={hashtag}
+                  to={`/explore/${hashtag}`}
+                />
+              );
             })}
           </div>
           <div className="mt-2">
