@@ -8,7 +8,7 @@ import Bookmark from "@/components/global/Bookmark";
 import Slider from "./Slider";
 import usePostLikeStatus from "@/hooks/usePostLikeStatus";
 import { useApp } from "../provider/AppProvider";
-import { Avatar, ToastProvider, addToast } from "@heroui/react";
+import { addToast, Avatar, ToastProvider } from "@heroui/react";
 import Link from "next/link";
 import ReportModal from "./Report/ReportModal";
 import { useReports } from "../provider/ReportProvider";
