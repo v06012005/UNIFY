@@ -26,7 +26,6 @@ const NotificationModal = ({ isNotificationOpen, modalRef, userId }) => {
   }, [isNotificationOpen]);
 
   useEffect(() => {
-    console.log("Notifications updated in NotificationModal:", notifications);
   }, [notifications]);
 
   const sortedNotifications = useMemo(() => {
@@ -42,7 +41,6 @@ const NotificationModal = ({ isNotificationOpen, modalRef, userId }) => {
       return null;
     }
   
-    console.log("Notification object:", notification);
   
     switch (notification.type.toLowerCase()) {
       case "follow":

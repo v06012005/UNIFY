@@ -242,8 +242,8 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
                   <div
                     key={index}
                     className={`w-16 h-16 cursor-pointer border-2 rounded-md flex items-center justify-center bg-black ${selectedMedia?.url === item.url
-                        ? "border-blue-500"
-                        : "border-gray-500"
+                      ? "border-blue-500"
+                      : "border-gray-500"
                       } hover:border-blue-400 transition-colors`}
                     onClick={() => setSelectedMedia(item)}
                   >
@@ -412,7 +412,6 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
           >
             ×
           </button>
-
         </div>
       </div>
     </>
