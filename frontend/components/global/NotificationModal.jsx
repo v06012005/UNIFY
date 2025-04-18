@@ -80,15 +80,15 @@ const NotificationModal = ({ isNotificationOpen, modalRef, userId }) => {
           width: modalWidth,
         }}
       >
-        <h1 className="font-bold text-2xl my-4 px-5 pt-5">Notifications</h1>
+        <h1 className="font-bold text-2xl my-4 px-5">Notifications</h1>
 
-        <div className="overflow-y-auto space-y-1 max-h-full h-[94%] pb-5 px-5">
+        <div className="overflow-y-auto no-scrollbar space-y-1 max-h-full h-[94%] pb-5 px-5">
           {sortedNotifications.length > 0 ? (
             sortedNotifications.map((notification, index) => (
               <React.Fragment key={notification.id}>
                 {renderNotification(notification)}
                 {index < sortedNotifications.length - 1 && (
-                  <hr className="border-t border-gray-300 dark:border-gray-600" />
+                  <hr className=" my-5 border-white dark:border-black" />
                 )}
               </React.Fragment>
             ))

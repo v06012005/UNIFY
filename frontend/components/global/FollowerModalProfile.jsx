@@ -50,7 +50,7 @@ const FollowerModal = ({ isOpen, onClose }) => {
         <input
           type="text"
           placeholder="Search ..."
-          className="w-full border rounded-full px-4 py-1  dark:bg-black dark:border-gray-600"
+          className="w-full border rounded-full px-4 py-1  dark:bg-neutral-800 dark:border-gray-600"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
@@ -63,13 +63,13 @@ const FollowerModal = ({ isOpen, onClose }) => {
             filteredUsers.slice(0, 11).map((userData) => (
               <li
                 key={userData.username}
-                className="flex items-center justify-between py-2 border-b border-gray-500 "
+                className="flex items-center justify-between py-2 border-b border-gray-300 dark:border-neutral-700"
               >
                 <div
                   onClick={() => handleClick(userData.username)}
                   className="flex items-center cursor-pointer"
                 >
-                  <div className="relative w-[50px] h-[50px] overflow-hidden rounded-full border-2 border-gray-300">
+                  <div className="relative w-[50px] h-[50px] overflow-hidden rounded-full border-2 border-gray-300 dark:border-neutral-700">
                     {userData?.avatar?.url ? (
                       <Image
                         src={userData.avatar.url}
@@ -94,7 +94,7 @@ const FollowerModal = ({ isOpen, onClose }) => {
                   userId={user.id}
                   followingId={userData.id}
                   classFollow="bg-red-500 font-bold py-1 px-4 rounded-lg text-white text-md"
-                  classFollowing="bg-zinc-700 hover:bg-zinc-600 font-bold py-1 px-4 rounded-lg text-white text-md"
+                  classFollowing="dark:bg-zinc-700 bg-gray-300 dark:hover:bg-zinc-600 hover:bg-gray-400 font-bold py-1 px-4 rounded-lg dark:text-white text-black text-md"
                   contentFollow="Follow"
                   contentFollowing="Unfollow"
                 />

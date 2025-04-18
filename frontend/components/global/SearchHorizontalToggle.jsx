@@ -28,7 +28,7 @@ const SearchHorizontalToggle = ({ children, isOpen, searchComponentRef }) => {
         <div>{children}</div>
         <div
           ref={searchComponentRef}
-          className={`absolute dark:bg-black border-l-1 border-neutral-700 rounded-r-lg z-50 overflow-hidden ${
+          className={`absolute dark:bg-black border-l-1 border-neutral-300 dark:border-neutral-700 rounded-r-lg z-50 overflow-hidden ${
             isOpen && "animate-fadeScale shadow-right-left"
           } ${
             !isOpen && "animate-fadeOut"
@@ -40,7 +40,7 @@ const SearchHorizontalToggle = ({ children, isOpen, searchComponentRef }) => {
             <div className={`relative`}>
               <Input
                 type={`search`}
-                className={`mt-3 py-5 relative border-black text-black dark:text-white placeholder-black pl-10 dark:border-neutral-500`}
+                className={`mt-3 py-5 relative border-gray-300 text-black dark:text-white placeholder-black pl-10 dark:border-neutral-500`}
                 placeholder={"Search"}
               />
               <Search
@@ -49,7 +49,7 @@ const SearchHorizontalToggle = ({ children, isOpen, searchComponentRef }) => {
               />
             </div>
           </div>
-          <hr className="border-t-1 border-neutral-500" />
+          <hr className="border-t-1 dark:border-neutral-500 border-gray-300" />
           <div className={`mb-3 mt-8 mx-5 grid gap-7`}>
             {userSearchHistories.map((userSearch) => (
               <UserHistorySearch
