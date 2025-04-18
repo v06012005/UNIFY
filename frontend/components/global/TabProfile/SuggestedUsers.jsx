@@ -2,6 +2,7 @@
 
 import { fetchSuggestedUsers, getUser } from '@/app/lib/dal'
 import { Avatar, Skeleton } from '@heroui/react'
+import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react'
 
@@ -25,26 +26,26 @@ const User = ({
     </Link>
 );
 
-const SuggestedUsers = () => {
-    const [users, setUsers] = useState([]);
-    const [loading, setIsLoading] = useState(true);
+const SuggestedUsers = () =>  {
 
-    useEffect(() => {
-        async function fetchUsers() {
+
+    const {isLoading, data: users} = useQuery({
+        queryKey: ['suggestedUsers'],
+        queryFn: async () => {
             const user = await getUser();
-            const fetchedUsers = await fetchSuggestedUsers(user.id);
-            setUsers(fetchedUsers);
-            setIsLoading(false);
-        }
+            const data = await fetchSuggestedUsers(user.id);
+            return data;
+        },
+  
+    })
 
-        fetchUsers();
-    }, [])
 
-    if (loading) {
+
+    if (isLoading) {
         return (
             <>
                 {Array.from({ length: 6 }).map((_, index) => (
-                    <div className='flex mb-4' key={index}>
+                    <div className='flex mb-4 opacity-10' key={index}>
                         <Skeleton className='w-14 h-14 rounded-full'>User</Skeleton>
                         <div className='flex flex-col ml-2'>
                             <Skeleton className='h-6 rounded-md w-32'>

@@ -35,7 +35,7 @@ const SideBar = () => {
   const searchComponentRef = useRef(null);
   const toggleRef = useRef(null);
   const [openSearch, setOpenSearch] = useState(false);
-  const router = useRouter();
+  const [isClient, setIsClient] = useState(false);
 
   const toggleSearch = () => {
     setOpenSearch((prevState) => !prevState);
@@ -75,12 +75,15 @@ const SideBar = () => {
   };
 
   useEffect(() => {
+    setIsClient(true);
     document.addEventListener("mousedown", handleClickOutside);
     document.addEventListener("mousedown", handleClickOutsideSearch);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  if(!isClient) return null;
 
   return (
     <SearchHorizontalToggle

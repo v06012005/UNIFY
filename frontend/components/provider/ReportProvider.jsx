@@ -22,7 +22,6 @@ const useFetchReports = () => {
         return;
       }
 
-      console.log(`Fetching reports with status: ${statuses}`);
       const response = await fetch(`http://localhost:8080/reports/status?statuses=${statuses}`, {
         method: "GET",
         headers: {
@@ -38,7 +37,6 @@ const useFetchReports = () => {
       }
 
       const data = await response.json();
-      console.log(`Fetched ${data.length} reports`);
       setState(data);
     } catch (error) {
       console.warn("Lỗi khi tải danh sách báo cáo:", error.message || error);
