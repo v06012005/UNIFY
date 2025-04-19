@@ -3,7 +3,7 @@ import React from 'react'
 
 const PostLoading = () => {
     return (
-        <div className="w-3/4 mx-auto mt-8 opacity-10">
+        <div className="w-3/4 mx-auto mt-2 opacity-10">
             <div className='flex'>
                 <Skeleton className='w-14 h-14 rounded-full'>User</Skeleton>
                 <div className='flex flex-col ml-2'>
@@ -16,7 +16,7 @@ const PostLoading = () => {
                 </div>
             </div>
             <Skeleton className='mx-auto my-2 w-[450px] rounded-lg'>
-                <div className='h-[550px]'>Images/ Videos</div>
+                <div className='h-[400px]'>Images/ Videos</div>
             </Skeleton>
             <Skeleton className='mt-1 w-[450px] mx-auto rounded-md'>
                 <div>Captions</div>
