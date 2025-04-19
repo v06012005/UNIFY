@@ -301,7 +301,7 @@ const Page = () => {
               </div>
               <hr className=" border-1 dark:border-neutral-700" />
 
-              <div className="h-3/4 overflow-y-scroll scrollbar-hide">
+              <div className="h-[78.5%] overflow-y-scroll scrollbar-hide">
                 <h2 className="text-center m-3 dark:text-neutral-400">23:48, 20/01/2025</h2>
                 <Message
                   messages={chatMessages}
@@ -363,6 +363,7 @@ const Page = () => {
                     </div>
                   </div>
                 )}
+                
                 <div className="flex items-center mt-3 bg-gray-200 dark:bg-neutral-800 dark:text-white text-black p-3 rounded-2xl w-full justify-center">
                   {user?.avatar.url && (
                     <img

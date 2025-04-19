@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useCallback } from "react";
 import LikeButton from "./LikeButton";
 import CommentButton from "./CommentButton";
 import ShareButton from "./ShareButton";

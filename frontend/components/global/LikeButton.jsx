@@ -29,7 +29,7 @@ const LikeButton = ({
 
       if (response.ok) {
         setIsLiked((prev) => !prev);
-        setLikeCount((prev) => (isLiked ? prev - 1 : prev + 1));
+        setLikeCount((prev) => (isLiked ? Math.max(prev - 1, 0) : prev + 1));
       } else {
         console.error("Like/unlike failed:", await response.text());
       }
