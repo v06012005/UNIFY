@@ -8,9 +8,12 @@ import {
 import PostItem from "./PostItem";
 import { useInView } from "react-intersection-observer";
 import PostLoading from "../loading/PostLoading";
+import { useDebounce } from "@/hooks/use-debounce";
+
+
 
 const Post = () => {
-  const { ref, inView } = useInView({ threshold: 0.1 });
+  const { ref, inView } = useInView({ threshold: 0.3 });
 
   const { data, fetchNextPage, isFetchingNextPage, hasNextPage, status } =
     useInfiniteQuery({
@@ -20,6 +23,9 @@ const Post = () => {
       keepPreviousData: true,
     });
 
+    
+const showLoading = useDebounce(isFetchingNextPage, 50);
+
   useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
@@ -28,11 +34,13 @@ const Post = () => {
 
   if (status === "pending") {
     return (
-      <div className="flex justify-center items-center py-8 h-screen">
+      <div className="flex justify-center items-center">
         <PostLoading />
       </div>
     );
   }
+
+
 
   return (
     <>
@@ -44,8 +52,8 @@ const Post = () => {
         </div>
       ))}
 
-      <div ref={ref} className="min-h-[50px] flex justify-center items-center">
-        {isFetchingNextPage ? <PostLoading /> : <span>No more</span>}
+      <div ref={ref} className="-mt-5 flex justify-center items-center">
+        {showLoading || hasNextPage ? <PostLoading /> : <span>No more</span>}
       </div>
     </>
   );
