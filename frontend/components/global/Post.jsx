@@ -2,18 +2,12 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { fetchPosts } from "@/app/lib/dal";
-import { Spinner } from "@heroui/react";
 import {
-  keepPreviousData,
   useInfiniteQuery,
-  useQuery,
 } from "@tanstack/react-query";
 import PostItem from "./PostItem";
-import { useApp } from "../provider/AppProvider";
 import { useInView } from "react-intersection-observer";
-import { delay } from "framer-motion";
 import PostLoading from "../loading/PostLoading";
-import next from "next";
 
 const Post = () => {
   const { ref, inView } = useInView({ threshold: 0.1 });

@@ -65,11 +65,10 @@ public interface PostRepository extends JpaRepository<Post, String> {
             + "LEFT JOIN p.likedPosts lp "
             + "LEFT JOIN p.comments pc "
             + "WHERE p.status = 1 "
-            + "GROUP BY p "
-            + "ORDER BY COUNT(DISTINCT lp.id) + COUNT(DISTINCT pc.id) DESC")
-       Page<PersonalizedPostDTO> findPersonalizedPosts(Pageable pageable);
+            + "GROUP BY p")
+    Page<PersonalizedPostDTO> findPersonalizedPosts(Pageable pageable);
 
-       @Query("SELECT p, COUNT(pc) "
+    @Query("SELECT p, COUNT(pc) "
             + "FROM Post p LEFT JOIN p.comments pc "
             + "WHERE p.status = 1 "
             + "GROUP BY p")
