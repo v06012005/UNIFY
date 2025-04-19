@@ -62,6 +62,13 @@ const Page = () => {
   };
 
   const [files, setFiles] = useState([]);
+  const [searchQuery, setSearchQuery] = useState(""); // State for search input
+
+  const filteredChatList = chatList?.filter(
+    (chat) =>
+      chat.fullname.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      chat.username.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   useEffect(() => {
     const userId = searchParams.get("userId");
@@ -207,13 +214,15 @@ const Page = () => {
               <Input
                 placeholder={"Search..."}
                 className={`p-3 w-full h-10 dark:border-neutral-600 placeholder-gray-500 border-gray-300`}
+                value={searchQuery} // Bind input to searchQuery state
+                onChange={(e) => setSearchQuery(e.target.value)} // Update searchQuery on input change
               />
             </div>
           </div>
 
           {/* Chat List */}
           <div className="flex-1 overflow-y-scroll scrollbar-hide px-4 py-1 dark:bg-black border-r-1 dark:border-r-neutral-700">
-            {chatList?.map((chat, index) => (
+            {filteredChatList?.map((chat, index) => (
               <div
                 key={index}
                 className={`flex items-center justify-between p-3 rounded-lg w-full max-w-md mt-3 cursor-pointer transition duration-200 ease-in-out 
