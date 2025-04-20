@@ -4,6 +4,7 @@ import java.util.Set;
 
 import com.app.unify.entities.Media;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;

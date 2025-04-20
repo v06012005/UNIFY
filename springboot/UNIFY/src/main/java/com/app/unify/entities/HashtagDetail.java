@@ -16,6 +16,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.io.Serializable;
+
 @Entity
 @Table(name = "hashtag_details")
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -23,7 +25,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class HashtagDetail {
+public class HashtagDetail implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	String id;

@@ -1,5 +1,6 @@
 package com.app.unify.entities;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Set;
@@ -37,7 +38,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 
-public class Post {
+public class Post implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)

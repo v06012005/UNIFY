@@ -1,5 +1,6 @@
 package com.app.unify.entities;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import jakarta.persistence.Entity;
@@ -22,7 +23,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Hashtag {
+public class Hashtag implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	String id;
