@@ -9,7 +9,7 @@ import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { Select, SelectItem, Textarea } from "@heroui/react";
 import PostSwitch from "@/components/global/PostSwitch";
 import { useEffect, useRef, useState } from "react";
-import { fetchPostById, getUser, insertHashtagDetails, insertHashtags, saveMedia, savePost, updatePost } from "@/app/lib/dal";
+import { fetchPostById, getUser, insertHashtagDetails, insertHashtags, saveMedia, savePost, updatePost } from "@/lib/dal";
 import { cn } from "@/lib/utils";
 import { addToast, ToastProvider } from "@heroui/toast";
 import { redirect, useParams } from "next/navigation";

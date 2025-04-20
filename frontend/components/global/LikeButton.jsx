@@ -1,6 +1,6 @@
 // components/LikeButton.js
 import { useRef, useState } from "react";
-import { likePost, unlikePost } from "@/app/services/likeService";
+import { likePost, unlikePost } from "@/lib/api/services/likeService";
 
 const LikeButton = ({
   userId,

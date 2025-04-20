@@ -4,7 +4,7 @@
 import { createContext, useContext, useRef, useState, useEffect } from 'react';
 import Peer from 'peerjs';
 import { usePathname } from 'next/navigation';
-import { fetchUserId, getUser } from '@/app/lib/dal';
+import { fetchUserId, getUser } from '@/lib/dal';
 import { useApp } from './AppProvider';
 
 const PeerContext = createContext();

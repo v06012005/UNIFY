@@ -1,6 +1,6 @@
 "use client";
 
-import { fetchSuggestedUsers, getUser } from "@/app/lib/dal";
+import { fetchSuggestedUsers, getUser } from "@/lib/dal";
 import { Avatar, Skeleton } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";

@@ -8,7 +8,7 @@ import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from "@
 import TableLoading from "@/components/loading/TableLoading";
 import { useRouter } from "next/navigation";
 import clsx from "clsx";
-import { fetchFilteredReportedPosts } from "@/app/lib/dal";
+import { fetchFilteredReportedPosts } from "@/lib/dal";
 
 export const STATUSES = [
   { key: "pending", value: "Pending" },

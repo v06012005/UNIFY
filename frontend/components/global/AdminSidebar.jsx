@@ -6,7 +6,7 @@ import UnifyLogo from "./FullUnifyLogo";
 import ModeSwitch from "./ModeSwitch";
 import { Accordion, AccordionItem, Avatar, Divider, User } from "@heroui/react";
 import { useState } from "react";
-import { getUser } from "@/app/lib/dal";
+import { getUser } from "@/lib/dal";
 import { useApp } from "../provider/AppProvider";
 
 const NavButton = React.memo(function NavButton({

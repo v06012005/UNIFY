@@ -227,6 +227,7 @@ const PostItem = ({ post }) => {
               <Bookmark
                 postId={post.id}
                 className="!text-xl hover:opacity-90"
+                classNameIcon={"text-black dark:text-white"}
               />
             </div>
           </div>

@@ -11,7 +11,6 @@ import Cookies from "js-cookie";
 
 const SuggestedUsersContext = createContext();
 
-// Tạo instance Axios với cấu hình mặc định
 const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   headers: {
@@ -28,8 +27,6 @@ export const SuggestedUsersProvider = ({ children }) => {
   const [userId, setUserId] = useState("");
   const [error, setError] = useState(null);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
-
-  // Hàm chung để gọi API với endpoint và setter
 
   const fetchUserInfo = useCallback(async () => {
     try {
