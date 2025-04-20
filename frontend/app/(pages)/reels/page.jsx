@@ -2,7 +2,7 @@
 
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { fetchPosts } from "@/app/lib/dal";
+import { fetchPosts } from "@/lib/dal";
 
 export default function ReelsDefault() {
   const router = useRouter();

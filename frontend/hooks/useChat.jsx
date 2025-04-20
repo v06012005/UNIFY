@@ -47,9 +47,8 @@ const useChat = (user, chatPartner) => {
     queryKey: ["chatList", user?.id],
     queryFn: fetchListChat,
     enabled: !!user?.id,
-    // refetchInterval: 1000,
-    // refetchOnWindowFocus: false,
     keepPreviousData: true,
+
     onSuccess: (data) => {
       if (data.length > 0) {
         const sortedChatList = data.sort(
@@ -103,37 +102,58 @@ const useChat = (user, chatPartner) => {
   }, [data, isLoading]);
 
   const updateChatListCache = (newMessage) => {
-    const otherUserId =
-      newMessage.sender === user.id ? newMessage.receiver : newMessage.sender;
+  const otherUserId =
+    newMessage.sender === user.id ? newMessage.receiver : newMessage.sender;
+  const otherUsername =
+    newMessage.sender === user.id
+      ? newMessage.receiverUsername
+      : newMessage.senderUsername;
 
-    queryClient.setQueryData(["chatList", user.id], (oldList = []) => {
-      const updated = oldList.map((chat) =>
-        chat.userId === otherUserId
-          ? {
-              ...chat,
-              lastMessage: newMessage.content || "Đã gửi file",
-              lastUpdated: newMessage.timestamp,
-            }
-          : chat
-      );
+  const oldList = queryClient.getQueryData(["chatList", user.id]) || [];
 
-      const exists = updated.some((chat) => chat.userId === otherUserId);
-      if (!exists) {
+  let updated = oldList.map((chat) =>
+    chat.userId === otherUserId
+      ? {
+          ...chat,
+          lastMessage: newMessage.content || "Đã gửi file",
+          lastUpdated: newMessage.timestamp,
+        }
+      : chat
+  );
+
+  const exists = updated.some((chat) => chat.userId === otherUserId);
+
+  if (!exists && otherUsername) {
+    getUserInfoByUsername(otherUsername)
+      .then((userInfo) => {
+        if (!userInfo) return;
+
         updated.push({
-          userId: otherUserId,
-          fullname: "",
-          username: "",
-          avatar: "",
+          userId: userInfo.id,
+          fullname: userInfo.fullName || "",
+          username: userInfo.username || "",
+          avatar: userInfo.avatar || "",
           lastMessage: newMessage.content || "Đã gửi file",
           lastUpdated: newMessage.timestamp,
         });
-      }
 
-      return updated.sort(
+        queryClient.setQueryData(
+          ["chatList", user.id],
+          updated.sort(
+            (a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated)
+          )
+        );
+      })
+      .catch((err) => console.error("❌ Error in updateChatListCache:", err));
+  } else {
+    queryClient.setQueryData(
+      ["chatList", user.id],
+      updated.sort(
         (a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated)
-      );
-    });
-  };
+      )
+    );
+  }
+};
 
   useEffect(() => {
     if (!user?.id) return;
@@ -147,36 +167,7 @@ const useChat = (user, chatPartner) => {
       reconnectDelay: 5000,
       onConnect: () => {
         console.log("✅ WebSocket connected");
-        client.subscribe(`/user/${user.id}/queue/messages`, (message) => {
-          const newMessage = JSON.parse(message.body);
-
-          queryClient.setQueryData(
-            [
-              "messages",
-              user.id,
-              newMessage.sender === user.id
-                ? newMessage.receiver
-                : newMessage.sender,
-            ],
-            (old = []) =>
-              [...old, newMessage].sort(
-                (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
-              )
-          );
-
-          updateChatListCache(newMessage);
-
-          if (
-            newMessage.sender === chatPartner ||
-            newMessage.receiver === chatPartner
-          ) {
-            setChatMessages((prev) =>
-              [...prev, newMessage].sort(
-                (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
-              )
-            );
-          }
-        });
+        client.subscribe(`/user/${user.id}/queue/messages`, handleIncomingMessage);
       },
       onStompError: (frame) => {
         console.error("❌ STOMP Error:", frame);
@@ -250,11 +241,6 @@ const useChat = (user, chatPartner) => {
       setTimeout(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
       }, 100);
-
-      // Thực hiện refetch chatList sau 10 giây
-      setTimeout(() => {
-        queryClient.refetchQueries(["chatList", user.id]);
-      }, 10000); // Sau 10 giây
     }
   };
 

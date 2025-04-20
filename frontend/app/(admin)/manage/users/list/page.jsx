@@ -10,7 +10,7 @@ import Error from "next/error";
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Input } from "@heroui/react";
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from "@heroui/react";
 import TableLoading from "@/components/loading/TableLoading";
-import { getUser } from "@/app/lib/dal";
+import { getUser } from "@/lib/dal";
 
 
 

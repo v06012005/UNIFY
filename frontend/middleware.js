@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getUser, verifySession } from "./app/lib/dal";
+import { getUser, verifySession } from "./lib/dal";
 
 // 1. Specify protected and public routes
 const protectedRoutes = ["/statistics", "/manage"];

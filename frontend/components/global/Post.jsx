@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { fetchPosts } from "@/app/lib/dal";
+import { fetchPosts } from "@/lib/dal";
 import {
   useInfiniteQuery,
 } from "@tanstack/react-query";

@@ -4,7 +4,7 @@ import Image from "next/image";
 import avatar from "@/public/images/testreel.jpg";
 import avatar2 from "@/public/images/testAvt.jpg";
 import Link from "next/link";
-import { fetchPostById } from "@/app/lib/dal";
+import { fetchPostById } from "@/lib/dal";
 import { useParams } from "next/navigation";
 import {
   Modal,

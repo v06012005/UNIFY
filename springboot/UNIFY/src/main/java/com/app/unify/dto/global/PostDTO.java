@@ -40,5 +40,4 @@ public class PostDTO {
     Set<HashtagDetailDTO> hashtags;
     
     private Long commentCount;
-
 }

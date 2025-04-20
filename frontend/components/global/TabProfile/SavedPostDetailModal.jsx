@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { fetchComments } from "app/api/service/commentService";
+import { fetchComments } from "@/lib/api/services/commentService";
 import CommentItem from "@/components/comments/CommentItem";
 import CommentInput from "@/components/comments/CommentInput";
 import Cookies from "js-cookie";
@@ -11,7 +11,7 @@ import ReportModal from "@/components/global/Report/ReportModal";
 import { useReports } from "@/components/provider/ReportProvider";
 import { useApp } from "@/components/provider/AppProvider";
 import { addToast, ToastProvider } from "@heroui/toast";
-import { fetchPostById } from "@/app/lib/dal";
+import { fetchPostById } from "@/lib/dal";
 import Skeleton from "@/components/global/SkeletonLoad"; // Thêm Skeleton
 import Avatar from "@/public/images/unify_icon_2.svg";
 import iconVideo from "@/public/vds.svg";
@@ -244,18 +244,18 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
           <div className="w-1/2 relative dark:border-neutral-700 border-r">
             {selectedMedia ? (
               selectedMedia.mediaType === "VIDEO" ? (
-                <div className="w-full h-full flex items-center justify-center bg-black">
+                <div className="w-full h-full flex items-center justify-center bg-gray-200">
                   <video
                     src={selectedMedia.url}
                     controls
-                    className="max-w-full max-h-full object-contain"
+                    className="w-full h-full object-contain"
                   />
                 </div>
               ) : (
-                <div className="w-full h-full flex items-center justify-center bg-black">
+                <div className="w-full h-full flex items-center justify-center bg-gray-200">
                   <img
                     src={selectedMedia.url}
-                    className="max-w-full max-h-full object-contain"
+                    className="w-full h-full object-contain"
                     alt="Post Media"
                   />
                 </div>

@@ -58,12 +58,20 @@ const Page = () => {
     queryKey: ["followerCount", user?.id],
     queryFn: () => countFollowers(user.id),
     enabled: !!user?.id,
+    refetchInterval: 10000,
+    refetchIntervalInBackground: true,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
   });
 
   const { data: followingCount = 0 } = useQuery({
     queryKey: ["followingCount", user?.id],
     queryFn: () => countFollowing(user.id),
     enabled: !!user?.id,
+    refetchInterval: 10000,
+    refetchIntervalInBackground: true,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
   });
 
   useEffect(() => {
