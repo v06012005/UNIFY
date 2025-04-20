@@ -11,6 +11,7 @@ import com.app.unify.repositories.projections.ChatPreviewProjection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Collation;
@@ -66,7 +67,12 @@ public class MessageService {
                 .collect(Collectors.toList());
     }
 
-    @CacheEvict(value = {"messages", "chatLists"}, key = "#message.sender + '-' + #message.receiver")
+    @Caching(evict = {
+            @CacheEvict(value = "messages", key = "#message.sender + '-' + #message.receiver"),
+            @CacheEvict(value = "messages", key = "#message.receiver + '-' + #message.sender"),
+            @CacheEvict(value = "chatLists", key = "#message.sender"),
+            @CacheEvict(value = "chatLists", key = "#message.receiver")
+    })
     public Message saveMessage(Message message) {
         return messageRepository.save(message);
     }
