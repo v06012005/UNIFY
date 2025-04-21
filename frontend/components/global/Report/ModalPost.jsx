@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 import CommentItem from "@/components/comments/CommentItem";
-import { fetchComments } from "@/lib/api/services/commentService";
+import { fetchComments } from "@/app/lib/api/services/commentService";
 const ModalPost = ({ report, isOpen, onClose }) => {
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [comments, setComments] = useState([]);

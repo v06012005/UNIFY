@@ -5,8 +5,8 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import ShareReels from "@/components/global/ShareReels";
 import PostReels from "@/components/global/PostReels";
-import { fetchComments } from "@/lib/api/services/commentService";
-import { fetchPosts } from "@/lib/dal";
+import { fetchComments } from "@/app/lib/api/services/commentService";
+import { fetchPosts } from "@/app/lib/dal";
 import Cookies from "js-cookie";
 import { useApp } from "@/components/provider/AppProvider";
 import CommentItem from "@/components/comments/CommentItem";
@@ -20,11 +20,11 @@ import { useReports } from "@/components/provider/ReportProvider";
 import { addToast, ToastProvider } from "@heroui/toast";
 import { useQuery } from "@tanstack/react-query";
 
-
 import Skeleton from "@/components/global/SkeletonLoad";
 
 import BookmarkButton from "@/components/global/Bookmark";
 import { useInView } from "react-intersection-observer";
+import usePostLikeStatus from "@/hooks/usePostLikeStatus";
 
 const PAGE_SIZE = 5;
 
@@ -59,7 +59,6 @@ export default function Reels() {
     threshold: 0.3,
     triggerOnce: false,
   });
-  const [count, setCount] = useState(0);
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -72,7 +71,7 @@ export default function Reels() {
     const fetchNewPosts = async () => {
       if (page === 0) {
         setIsLoadingInitial(true);
-        // setIsLoading(true); 
+        // setIsLoading(true);
       } else {
         setIsLoadingMore(true);
       }
@@ -97,8 +96,6 @@ export default function Reels() {
 
     if (hasMore) fetchNewPosts();
   }, [page]);
-
-
 
   const isFetchingRef = useRef(false);
 
@@ -140,9 +137,7 @@ export default function Reels() {
     if (!posts) return;
 
     const newVideoPosts = posts
-      .filter((post) =>
-        post.media.some((media) => media.mediaType === "VIDEO")
-      )
+      .filter((post) => post.media.some((media) => media.mediaType === "VIDEO"))
       .filter((post) => !videoPosts.some((p) => p.id === post.id)); // deduplication
 
     if (newVideoPosts.length > 0) {
@@ -153,7 +148,6 @@ export default function Reels() {
       }));
     }
   }, [posts]);
-
 
   const hasSetInitialRoute = useRef(false);
 
@@ -169,9 +163,6 @@ export default function Reels() {
 
     hasSetInitialRoute.current = true;
   }, [videoPosts, postId]);
-
-
-
 
   useEffect(() => {
     if (videoPosts.length === 0) return;
@@ -383,9 +374,9 @@ export default function Reels() {
         const updatedComments = newComment.parentId
           ? updateRepliesRecursively(currentComments)
           : [
-            { ...newComment, username: user?.username || "Unknown" },
-            ...currentComments,
-          ];
+              { ...newComment, username: user?.username || "Unknown" },
+              ...currentComments,
+            ];
 
         return {
           ...prev,
@@ -447,6 +438,7 @@ export default function Reels() {
   }
 
   const lastPostId = videoPosts[videoPosts.length - 1]?.id;
+  
 
   return (
     <>
@@ -463,8 +455,9 @@ export default function Reels() {
           videoPosts.map((post, index) => (
             <div
               key={post.id}
-              className={`relative w-[450px] h-[710px] mx-auto rounded-b-xl overflow-hidden m-5 snap-start flex-shrink-0 ${isCommentOpen ? "translate-x-[-150px]" : "translate-x-0"
-                } transition-transform duration-400 ease-in-out`}
+              className={`relative w-[450px] h-[710px] mx-auto rounded-b-xl overflow-hidden m-5 snap-start flex-shrink-0 ${
+                isCommentOpen ? "translate-x-[-150px]" : "translate-x-0"
+              } transition-transform duration-400 ease-in-out`}
             >
               {post.media.map(
                 (media, mediaIndex) =>
@@ -492,9 +485,9 @@ export default function Reels() {
                       src={
                         post?.user?.avatar?.url
                           ? `${post?.user?.avatar?.url.replace(
-                            "/upload/",
-                            "/upload/w_80,h_80,c_fill,q_auto/"
-                          )}`
+                              "/upload/",
+                              "/upload/w_80,h_80,c_fill,q_auto/"
+                            )}`
                           : "/images/unify_icon_2.svg"
                       }
                       width={40}
@@ -536,7 +529,7 @@ export default function Reels() {
                 <LikeButton
                   userId={user?.id}
                   postId={post.id}
-                  className="flex flex-col items-center"
+                  className="m-0"
                   classText="text-sm"
                 />
                 <div className="flex flex-col items-center">
@@ -546,7 +539,6 @@ export default function Reels() {
                   />
 
                   <span className="text-sm">{post.commentCount || 0}</span>
-
                 </div>
                 <div className="flex flex-col items-center">
                   <i
@@ -555,9 +547,7 @@ export default function Reels() {
                   />
                 </div>
                 <div className="flex flex-col items-center">
-
-                  <BookmarkButton postId={post.id}/>
-
+                  <BookmarkButton postId={post.id} />
                 </div>
                 <div className="flex flex-col items-center relative">
                   <i
@@ -597,9 +587,6 @@ export default function Reels() {
             </div>
           ))
         )}
-        {/* {isLoadingMore && (
-          <div className="text-white text-center py-4">Loading more...</div>
-        )} */}
 
         <ShareReels
           isOpen={isOpen}
@@ -612,8 +599,9 @@ export default function Reels() {
         {isCommentOpen && currentPostId && (
           <div
             id="overlay"
-            className={`fixed top-0 left-0 w-full h-full z-20 transition-opacity duration-300 ease-in-out ${isCommentOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-              }`}
+            className={`fixed top-0 left-0 w-full h-full z-20 transition-opacity duration-300 ease-in-out ${
+              isCommentOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+            }`}
             onClick={(e) => {
               if (e.target.id === "overlay") {
                 setIsCommentOpen(false);
@@ -622,8 +610,9 @@ export default function Reels() {
             }}
           >
             <div
-              className={`fixed top-0 right-0 h-full w-[450px] transition-transform duration-300 ease-in-out ${isCommentOpen ? "translate-x-0" : "translate-x-full"
-                }`}
+              className={`fixed top-0 right-0 h-full w-[450px] transition-transform duration-300 ease-in-out ${
+                isCommentOpen ? "translate-x-0" : "translate-x-full"
+              }`}
             >
               <div className="h-full flex flex-col p-4 border-l border-neutral-700">
                 <div className="flex items-center justify-between dark:text-white mb-4">

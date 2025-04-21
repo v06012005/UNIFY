@@ -15,24 +15,24 @@ import {
   insertHashtags,
   saveMedia,
   savePost,
-} from "@/lib/dal";
-import { cn } from "@/lib/utils";
+} from "@/app/lib/dal";
+import { cn } from "@/app/lib/utils";
 import { addToast, ToastProvider } from "@heroui/toast";
 
 const User = ({ user }) => {
   return (
     <div className="flex w-full items-center">
-     {user?.avatar?.url && (
-  <div className="w-14 h-14 rounded-full border-2 border-gray-300 overflow-hidden">
-    <Image
-      src={user.avatar.url}
-      alt="Avatar"
-      width={48}
-      height={48}
-      className="object-cover w-full h-full"
-    />
-  </div>
-)}
+      {user?.avatar?.url && (
+        <div className="w-14 h-14 rounded-full border-2 border-gray-300 overflow-hidden">
+          <Image
+            src={user.avatar.url}
+            alt="Avatar"
+            width={48}
+            height={48}
+            className="object-cover w-full h-full"
+          />
+        </div>
+      )}
       <div className="ml-5">
         <p className="text-lg font-bold">{user?.username}</p>
         <p>{user?.firstName + " " + user?.lastName}</p>
@@ -135,7 +135,7 @@ const Page = () => {
     const formData = new FormData();
     files.forEach((file) => formData.append("files", file));
 
-    const res = await fetch("/api/upload", {
+    const res = await fetch("/lib/api/upload", {
       method: "POST",
       body: formData,
     });

@@ -1,4 +1,3 @@
-// hooks/useSuggestedUsers.js
 import { useQuery } from "@tanstack/react-query";
 import {
   getMyInfo,
@@ -6,39 +5,45 @@ import {
   getFollowerUsers,
   getFollowingUsers,
   getFriendUsers,
-} from "@/lib/api/user";
+} from "@/app/lib/api/user";
 
 export const useUserInfo = () =>
   useQuery({
     queryKey: ["userInfo"],
-    queryFn: fetchUserInfo,
+    queryFn: getUserInfo,
     staleTime: 1000 * 60 * 5,
   });
 
 export const useSuggestedUsers = (userId) =>
   useQuery({
     queryKey: ["suggestedUsers", userId],
-    queryFn: () => fetchSuggestedUsers(userId),
+    queryFn: () => getSuggestedUsers(userId),
     enabled: !!userId,
+    refetchInterval: 10000,
+    refetchIntervalInBackground: true,
   });
 
 export const useFollowerUsers = (userId) =>
   useQuery({
     queryKey: ["followerUsers", userId],
-    queryFn: () => fetchFollowerUsers(userId),
+    queryFn: () => getFollowerUsers(userId),
     enabled: !!userId,
+    refetchInterval: 10000,
+    refetchIntervalInBackground: true,
   });
 
 export const useFollowingUsers = (userId) =>
   useQuery({
     queryKey: ["followingUsers", userId],
-    queryFn: () => fetchFollowingUsers(userId),
+    queryFn: () => getFollowingUsers(userId),
     enabled: !!userId,
+    refetchInterval: 10000,
+    refetchIntervalInBackground: true,
   });
 
 export const useFriendUsers = (userId) =>
   useQuery({
     queryKey: ["friendUsers", userId],
-    queryFn: () => fetchFriendUsers(userId),
+    queryFn: () => getFriendUsers(userId),
     enabled: !!userId,
   });

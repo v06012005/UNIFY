@@ -47,10 +47,13 @@ public class Report implements Serializable {
 
 	@Column(name = "reported_at", nullable = false)
 	LocalDateTime reportedAt;
+
 	@Column(name = "entity_type", nullable = false)
 	@Enumerated(EnumType.STRING)
     EntityType entityType;
+
 	Integer status;
+
 	@Column(name = "reason", nullable = false)
 	String reason;
 }

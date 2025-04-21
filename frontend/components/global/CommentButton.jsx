@@ -6,12 +6,11 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-  Button,
   useDisclosure,
 } from "@heroui/react";
 import Cookies from "js-cookie";
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { fetchComments } from "@/lib/api/services/commentService";
+import { fetchComments } from "@/app/lib/api/services/commentService";
 import CommentItem from "@/components/comments/CommentItem";
 import CommentInput from "@/components/comments/CommentInput";
 import { useApp } from "@/components/provider/AppProvider";

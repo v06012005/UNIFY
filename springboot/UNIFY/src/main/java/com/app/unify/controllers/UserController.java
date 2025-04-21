@@ -2,6 +2,7 @@ package com.app.unify.controllers;
 
 import com.app.unify.dto.global.ShareAbleUserDTO;
 import com.app.unify.dto.global.UserDTO;
+import com.app.unify.dto.request.UserReportCountDTO;
 import com.app.unify.exceptions.UserNotFoundException;
 import com.app.unify.services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +22,8 @@ public class UserController {
     private UserService userService;
 
     @GetMapping
-    public List<UserDTO> getUsers() {
-        return userService.findAll();
+    public List<UserReportCountDTO> getUsers() {
+        return userService.findAllUserReportCount();
     }
 
     @GetMapping("/my-info")

@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getLikeStatus, getLikeCount } from "@/lib/api/services/likeService";
+import { getLikeStatus, getLikeCount } from "@/app/lib/api/services/likeService";
 
 const usePostLikeStatus = (userId, postId) => {
   const queryClient = useQueryClient();

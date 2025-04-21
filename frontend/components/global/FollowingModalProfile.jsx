@@ -70,25 +70,21 @@ const FollowingModal = ({ isOpen, onClose }) => {
                   className="flex items-center cursor-pointer"
                 >
                   <div className="relative w-[50px] h-[50px] overflow-hidden rounded-full border-2 border-gray-300 dark:border-neutral-700">
-                    {userData?.avatar?.url ? (
-                      <Image
-                        src={userData.avatar.url}
-                        alt="Avatar"
-                        width={50}
-                        height={50}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <Image
-                        src="/images/unify_icon_2.svg"
-                        alt="Default Avatar"
-                        width={200}
-                        height={200}
-                        className="w-full h-full object-cover"
-                      />
-                    )}
+                    <Image
+                      src={userData.avatar?.url || "/images/unify_icon_2.svg"}
+                      alt="Avatar"
+                      layout="fill"
+                      objectFit="cover"
+                    />
                   </div>
-                  <span className="font-medium ml-3">{userData.username}</span>
+                  <div className="ml-4">
+                    <p className="font-semibold text-sm text-neutral-800 dark:text-white">
+                      {userData.username}
+                    </p>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                      {userData.fullName || userData.email}
+                    </p>
+                  </div>
                 </div>
                 <FollowButton
                   userId={user.id}
