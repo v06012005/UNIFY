@@ -201,6 +201,41 @@ export const fetchPosts = async (pageParam) => {
   }
 };
 
+
+
+export const fetchReels = async (pageParam, pageSize) => {
+  const token = (await cookies()).get("token")?.value;
+  if (!token) {
+    redirect("/login");
+  }
+  try {
+    const response = await fetch(
+      `http://localhost:8080/posts/reels?page=${pageParam}&size=${pageSize}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (!response.ok) {
+      console.log("Failed to fetch reels");
+      return { posts: [], nextPage: null };
+    }
+    const data = await response.json();
+    console.log("Reels response:", data);
+    return {
+      posts: data.posts,
+      nextPage: data.hasNextPage ? pageParam + 1 : null
+    };
+  } catch (error) {
+    console.log("Failed to fetch reels: " + error);
+    return { posts: [], nextPage: null };
+  }
+};
+
+
 export const fetchPostList = async () => {
   const token = (await cookies()).get("token")?.value;
 

@@ -5,8 +5,10 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import ShareReels from "@/components/global/ShareReels";
 import PostReels from "@/components/global/PostReels";
-import { fetchComments } from "@/app/lib/api/services/commentService";
-import { fetchPosts } from "@/app/lib/dal";
+
+import { fetchComments } from "app/api/service/commentService";
+import { fetchReels } from "@/app/lib/dal";
+
 import Cookies from "js-cookie";
 import { useApp } from "@/components/provider/AppProvider";
 import CommentItem from "@/components/comments/CommentItem";
@@ -18,20 +20,19 @@ import LikeButton from "@/components/global/LikeButton";
 import ReportModal from "@/components/global/Report/ReportModal";
 import { useReports } from "@/components/provider/ReportProvider";
 import { addToast, ToastProvider } from "@heroui/toast";
-import { useQuery } from "@tanstack/react-query";
+
 
 import Skeleton from "@/components/global/SkeletonLoad";
-
+import VideoPostSkeleton from "@/components/global/VideoPostSkeleton";
 import BookmarkButton from "@/components/global/Bookmark";
 import { useInView } from "react-intersection-observer";
 import usePostLikeStatus from "@/hooks/usePostLikeStatus";
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 13;
 
 export default function Reels() {
   const [postStates, setPostStates] = useState({});
   const [videoPosts, setVideoPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [commentsLoading, setCommentsLoading] = useState(false);
   const [isCommentOpen, setIsCommentOpen] = useState(false);
   const [currentPostId, setCurrentPostId] = useState(null);
@@ -49,66 +50,74 @@ export default function Reels() {
   const containerRef = useRef(null);
   const { createPostReport } = useReports();
   const [page, setPage] = useState(0);
-  const [posts, setPosts] = useState([]);
   const [hasMore, setHasMore] = useState(true);
-  // const [isLoading, setIsLoading] = useState(true);
-  const [isLoadingInitial, setIsLoadingInitial] = useState(false);
+  const [isLoadingInitial, setIsLoadingInitial] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const isFetchingRef = useRef(false);
 
   const { ref: loadMoreRef, inView } = useInView({
-    threshold: 0.3,
+    threshold: 0.05, 
     triggerOnce: false,
   });
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-  // const { data: posts, isLoading } = useQuery({
-  //   queryKey: ["posts"],
-  //   queryFn: fetchPosts,
-  // });
 
-  useEffect(() => {
-    const fetchNewPosts = async () => {
-      if (page === 0) {
-        setIsLoadingInitial(true);
-        // setIsLoading(true);
-      } else {
-        setIsLoadingMore(true);
-      }
+  const fetchNewReels = useCallback(async () => {
+    if (isFetchingRef.current || !hasMore) return;
+    isFetchingRef.current = true;
 
-      const data = await fetchPosts(page, PAGE_SIZE);
 
-      setPosts((prev) => {
+    if (page === 0) {
+      setIsLoadingInitial(true);
+    } else {
+      setIsLoadingMore(true);
+    }
+
+    try {
+      const data = await fetchReels(page, PAGE_SIZE);
+      console.log("Reels response:", {
+        page,
+        postCount: data.posts.length,
+        hasNextPage: data.hasNextPage,
+        totalPosts: videoPosts.length + data.posts.length,
+        postIds: data.posts.map(p => p.id),
+      });
+      setVideoPosts((prev) => {
         const existingIds = new Set(prev.map((p) => p.id));
         const newPosts = data.posts.filter((p) => !existingIds.has(p.id));
+        console.log("New posts added:", newPosts.length, newPosts.map(p => p.id));
         return [...prev, ...newPosts];
       });
-
-      if (data.posts.length < PAGE_SIZE) setHasMore(false);
-
+      setHasMore(data.hasNextPage);
+      setPostStates((prev) => ({
+        ...prev,
+        ...initializePostState(data.posts),
+      }));
+    } catch (error) {
+      console.error("Error fetching reels:", error);
+    } finally {
+      isFetchingRef.current = false;
       if (page === 0) {
         setIsLoadingInitial(false);
-        // setIsLoading(false); // ✅
       } else {
         setIsLoadingMore(false);
       }
-    };
 
-    if (hasMore) fetchNewPosts();
-  }, [page]);
-
-  const isFetchingRef = useRef(false);
+    }
+  }, [page, hasMore, videoPosts.length]);
 
   useEffect(() => {
-    if (inView && !isFetchingRef.current && hasMore) {
-      isFetchingRef.current = true;
+    fetchNewReels();
+  }, [fetchNewReels]);
+
+
+  useEffect(() => {
+    if (inView && hasMore && !isFetchingRef.current) {
+      console.log("Triggering load more, page:", page + 1);
       setPage((prev) => prev + 1);
     }
-  }, [inView, hasMore]);
-
-  useEffect(() => {
-    isFetchingRef.current = false;
-  }, [page]);
+  }, [inView, hasMore, page]);
 
   const initializePostState = (posts) =>
     posts.reduce(
@@ -133,21 +142,7 @@ export default function Reels() {
       [postId]: { ...prev[postId], ...updates },
     }));
 
-  useEffect(() => {
-    if (!posts) return;
 
-    const newVideoPosts = posts
-      .filter((post) => post.media.some((media) => media.mediaType === "VIDEO"))
-      .filter((post) => !videoPosts.some((p) => p.id === post.id)); // deduplication
-
-    if (newVideoPosts.length > 0) {
-      setVideoPosts((prev) => [...prev, ...newVideoPosts]);
-      setPostStates((prev) => ({
-        ...prev,
-        ...initializePostState(newVideoPosts),
-      }));
-    }
-  }, [posts]);
 
   const hasSetInitialRoute = useRef(false);
 
@@ -162,7 +157,8 @@ export default function Reels() {
     }
 
     hasSetInitialRoute.current = true;
-  }, [videoPosts, postId]);
+
+  }, [videoPosts, postId, router]);
 
   useEffect(() => {
     if (videoPosts.length === 0) return;
@@ -213,7 +209,7 @@ export default function Reels() {
         if (video) observer.unobserve(video);
       });
     };
-  }, [videoPosts, postStates, isMutedGlobally, loading]);
+  }, [videoPosts, postStates, isMutedGlobally]);
 
   useEffect(() => {
     const handlePopStateAndScroll = () => {
@@ -387,35 +383,8 @@ export default function Reels() {
     [user]
   );
 
-  const VideoPostSkeleton = () => (
-    <div className="relative w-[450px] h-[680px] mx-auto rounded-b-xl overflow-hidden m-5 snap-start flex-shrink-0">
-      <Skeleton className="w-full h-full" rounded />
-      <div className="absolute bottom-4 left-4 flex flex-col text-white">
-        <div className="flex items-center">
-          <Skeleton variant="circle" width={40} height={40} />
-          <div className="flex items-center space-x-2 pl-2">
-            <Skeleton width={80} height={16} rounded />
-            <Skeleton width={60} height={24} rounded />
-          </div>
-        </div>
-        <div className="mt-2 w-[350px]">
-          <Skeleton width="75%" height={16} rounded />
-          <Skeleton width="50%" height={16} rounded />
-        </div>
-      </div>
-
-      <div className="absolute top-2/3 right-4 transform -translate-y-1/2 flex flex-col items-center space-y-7">
-        <Skeleton variant="circle" width={24} height={24} />
-        <Skeleton variant="circle" width={24} height={24} />
-        <Skeleton variant="circle" width={24} height={24} />
-        <Skeleton variant="circle" width={24} height={24} />
-        <Skeleton variant="circle" width={24} height={24} />
-      </div>
-    </div>
-  );
-
   const CommentSkeleton = () => (
-    <div className=" items-start">
+    <div className="items-start">
       <div className="flex space-x-2 mb-14">
         <Skeleton variant="circle" width={32} height={32} />
         <div className="flex-1">
@@ -449,7 +418,7 @@ export default function Reels() {
       >
         {videoPosts.length === 0 ? (
           <div className="flex justify-center items-center h-screen">
-            <p>No video posts available.</p>
+            <p>No videos available</p>
           </div>
         ) : (
           videoPosts.map((post, index) => (
@@ -537,7 +506,6 @@ export default function Reels() {
                     className="fa-regular fa-comment hover:opacity-50 focus:opacity-50 transition cursor-pointer"
                     onClick={() => toggleComment(post.id)}
                   />
-
                   <span className="text-sm">{post.commentCount || 0}</span>
                 </div>
                 <div className="flex flex-col items-center">
@@ -588,6 +556,10 @@ export default function Reels() {
           ))
         )}
 
+        {isLoadingMore && (
+          <div className="text-white text-center py-4">Loading more...</div>
+        )}
+
         <ShareReels
           isOpen={isOpen}
           onOpenChange={onOpenChange}
@@ -595,7 +567,6 @@ export default function Reels() {
           setSelectedAvatars={setSelectedAvatars}
           handleShare={handleShare}
         />
-
         {isCommentOpen && currentPostId && (
           <div
             id="overlay"

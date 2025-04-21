@@ -80,5 +80,14 @@ public interface PostRepository extends JpaRepository<Post, String> {
             + "FROM Post p LEFT JOIN p.comments pc "
             + "WHERE p.id = :postId AND p.status = 1 "
             + "GROUP BY p")
-    Object[] findPostWithCommentCountById(@Param("postId") String postId);
+
+       Object[] findPostWithCommentCountById(@Param("postId") String postId);
+       @Query("SELECT p, COUNT(c) as commentCount " +
+               "FROM Post p " +
+               "JOIN p.media m " +
+               "LEFT JOIN p.comments c " +
+               "WHERE m.mediaType = 'VIDEO' AND p.status = 1 " +
+               "GROUP BY p")
+        Page<Object[]> findReelsPostsWithCommentCount(Pageable pageable);
+
 }

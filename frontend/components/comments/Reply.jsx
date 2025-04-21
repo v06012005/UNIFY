@@ -54,8 +54,7 @@ const Reply = ({ reply, currentUserId, onReplySubmit, onReplyClick }) => {
         </div>
 
         <CardFooter className="flex flex-row justify-end py-1">
-          <LikeButton className="!text-sm space-x-1" />
-
+          {/* <LikeButton className="!text-sm space-x-1" /> */}
           <Button
             size="sm"
             className="bg-transparent dark:text-white"

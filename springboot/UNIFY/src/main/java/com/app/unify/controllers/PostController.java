@@ -74,6 +74,24 @@ public class PostController {
         Pageable pageable = PageRequest.of(page, size, Sort.by("postedAt").descending());
         return ResponseEntity.ok(postService.getPersonalizedFeed(pageable));
     }
+    
+    
+    
+    @GetMapping("/reels")
+    public ResponseEntity<PostFeedResponse> getReelsPosts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "7") int size
+    ) {
+        Page<PostDTO> postPage = postService.getReelsPosts(page, size);
+
+        PostFeedResponse response = new PostFeedResponse();
+        response.setPosts(postPage.getContent());
+        response.setHasNextPage(postPage.hasNext());
+        response.setCurrentPage(page);
+
+        return ResponseEntity.ok(response);
+    }
+    
 
     @PostMapping
     public PostDTO createPost(@RequestBody PostDTO postDTO) {
