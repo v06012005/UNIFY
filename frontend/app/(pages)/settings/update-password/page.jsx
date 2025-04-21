@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Form, Input, Button } from "@heroui/react";
-import { axiosResult } from "@/lib/api/cookie";
+import { axiosResult } from "@/app/lib/api/cookie";
 import { addToast, ToastProvider } from "@heroui/toast";
 const ChangePassword = () => {
   const [currentPassword, setCurrentPassword] = React.useState("");

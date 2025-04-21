@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { fetchComments } from "@/lib/api/services/commentService";
+import { fetchComments } from "@/app/lib/api/services/commentService";
 import CommentItem from "@/components/comments/CommentItem";
 import CommentInput from "@/components/comments/CommentInput";
 import Cookies from "js-cookie";
@@ -11,7 +11,7 @@ import ReportModal from "@/components/global/Report/ReportModal";
 import { useReports } from "@/components/provider/ReportProvider";
 import { useApp } from "@/components/provider/AppProvider";
 import { addToast, ToastProvider } from "@heroui/toast";
-import { fetchPostById } from "@/lib/dal";
+import { fetchPostById } from "@/app/lib/dal";
 import Skeleton from "@/components/global/SkeletonLoad"; // Thêm Skeleton
 import Avatar from "@/public/images/unify_icon_2.svg";
 import iconVideo from "@/public/vds.svg";
