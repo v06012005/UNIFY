@@ -3,6 +3,7 @@ package com.app.unify.services;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.app.unify.dto.global.PostFeedResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -43,7 +44,9 @@ public interface PostService {
 
 	List<PostDTO> getRecommendedPostsForExplore(String userId);
 
+
     Page<PostDTO> getPersonalizedFeed(Pageable pageable);
     
     Page<PostDTO> getReelsPosts(int page, int size);
+
 }

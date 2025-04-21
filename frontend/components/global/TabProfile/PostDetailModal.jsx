@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { fetchComments } from "app/api/service/commentService";
+import { fetchComments } from "@/app/lib/api/services/commentService";
 import CommentItem from "@/components/comments/CommentItem";
 import CommentInput from "@/components/comments/CommentInput";
 import Cookies from "js-cookie";
@@ -213,10 +213,10 @@ const PostDetailModal = ({ post, onClose, onArchive, onDelete }) => {
                 />
               </div>
             ) : (
-              <div className="flex items-center justify-center bg-black h-full">
+              <div className="flex items-center justify-center bg-bgray-200 h-full">
                 <img
                   src={selectedMedia.url}
-                  className="w-[95%] h-full object-contain rounded"
+                  className="w-full h-full object-contain rounded"
                   alt="Post Media"
                 />
               </div>

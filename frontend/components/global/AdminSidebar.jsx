@@ -101,7 +101,7 @@ const AdminSidebar = () => {
                 </ul>
               </div>
             </AccordionItem>
-            <AccordionItem key="3" aria-label="" className="font-bold" title="GROUPS" startContent={<i className="fa-solid fa-users-rays"></i>}>
+            {/* <AccordionItem key="3" aria-label="" className="font-bold" title="GROUPS" startContent={<i className="fa-solid fa-users-rays"></i>}>
               <div className="pl-5 font-light">
                 <ul>
                   <li>
@@ -113,8 +113,8 @@ const AdminSidebar = () => {
                   </li>
                 </ul>
               </div>
-            </AccordionItem>
-            <AccordionItem key="4" aria-label="" className="font-bold" title="STATISTICS" startContent={<i className="fa-solid fa-square-poll-vertical"></i>}>
+            </AccordionItem> */}
+            {/* <AccordionItem key="4" aria-label="" className="font-bold" title="STATISTICS" startContent={<i className="fa-solid fa-square-poll-vertical"></i>}>
               <div className="pl-5 font-light">
                 <ul>
                   <li>
@@ -146,7 +146,7 @@ const AdminSidebar = () => {
                   </li>
                 </ul>
               </div>
-            </AccordionItem>
+            </AccordionItem> */}
           </Accordion>
         </div>
       </div>

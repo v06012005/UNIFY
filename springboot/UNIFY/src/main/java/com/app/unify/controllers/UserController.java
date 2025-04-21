@@ -1,24 +1,16 @@
 package com.app.unify.controllers;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
+import com.app.unify.dto.global.ShareAbleUserDTO;
 import com.app.unify.dto.global.UserDTO;
+import com.app.unify.dto.request.UserReportCountDTO;
 import com.app.unify.exceptions.UserNotFoundException;
 import com.app.unify.services.UserService;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -30,8 +22,8 @@ public class UserController {
     private UserService userService;
 
     @GetMapping
-    public List<UserDTO> getUsers() {
-        return userService.findAll();
+    public List<UserReportCountDTO> getUsers() {
+        return userService.findAllUserReportCount();
     }
 
     @GetMapping("/my-info")
@@ -71,6 +63,12 @@ public class UserController {
     public ResponseEntity<List<UserDTO>> getFriends(@RequestParam String currentUserId) {
         List<UserDTO> friends = userService.getFriends(currentUserId);
         return ResponseEntity.ok(friends);
+    }
+
+    @GetMapping("/mutual")
+    public ResponseEntity<List<ShareAbleUserDTO>> getMutualFollowers(@RequestParam String userId) {
+        List<ShareAbleUserDTO> users = userService.getMutualFollowers(userId);
+        return ResponseEntity.ok(users);
     }
 
     @PostMapping

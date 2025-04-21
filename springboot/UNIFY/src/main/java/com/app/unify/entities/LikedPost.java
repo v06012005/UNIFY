@@ -1,5 +1,6 @@
 package com.app.unify.entities;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -25,7 +26,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class LikedPost {
+public class LikedPost implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)

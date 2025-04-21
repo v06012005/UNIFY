@@ -1,17 +1,18 @@
-// components/LikeButton.js
 import { useRef, useState } from "react";
-import { likePost, unlikePost } from "@/app/services/likeService";
+import { likePost, unlikePost } from "@/app/lib/api/services/likeService";
+import usePostLikeStatus from "@/hooks/usePostLikeStatus";
 
 const LikeButton = ({
   userId,
   postId,
-  isLiked,
-  setIsLiked,
-  setLikeCount,
   className = "",
+  classText = "",
 }) => {
   const [loading, setLoading] = useState(false);
   const lastClickRef = useRef(0);
+
+  // Sử dụng hook usePostLikeStatus để quản lý trạng thái like và likeCount
+  const { isLiked, setIsLiked, likeCount, setLikeCount } = usePostLikeStatus(userId, postId);
 
   const handleClick = async () => {
     const now = Date.now();
@@ -28,8 +29,8 @@ const LikeButton = ({
         : await likePost(userId, postId);
 
       if (response.ok) {
-        setIsLiked((prev) => !prev);
-        setLikeCount((prev) => (isLiked ? Math.max(prev - 1, 0) : prev + 1));
+        setIsLiked(!isLiked); // Cập nhật trạng thái like
+        setLikeCount(isLiked ? Math.max(likeCount - 1, 0) : likeCount + 1); // Cập nhật likeCount
       } else {
         console.error("Like/unlike failed:", await response.text());
       }
@@ -41,17 +42,20 @@ const LikeButton = ({
   };
 
   return (
-    <button
-      onClick={handleClick}
-      className={`bg-transparent dark:text-white ${className}`}
-      disabled={loading}
-    >
-      <i
-        className={`${
-          isLiked ? "fa-solid text-red-500" : "fa-regular"
-        } fa-heart transition duration-300`}
-      />
-    </button>
+    <div className="flex flex-col items-center">
+      <button
+        onClick={handleClick}
+        className={`bg-transparent dark:text-white ${className}`}
+        disabled={loading}
+      >
+        <i
+          className={`${
+            isLiked ? "fa-solid text-red-500" : "fa-regular"
+          } fa-heart transition duration-300`}
+        />
+      </button>
+      <p className={`text-md ${classText}`}>{likeCount}</p>
+    </div>
   );
 };
 

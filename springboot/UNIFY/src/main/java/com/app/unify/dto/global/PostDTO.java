@@ -1,5 +1,6 @@
 package com.app.unify.dto.global;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -7,14 +8,12 @@ import com.app.unify.entities.Media;
 import com.app.unify.types.Audience;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
-public class PostDTO {
+public class PostDTO implements Serializable {
 
     String id;
 
@@ -40,5 +39,4 @@ public class PostDTO {
     Set<HashtagDetailDTO> hashtags;
     
     private Long commentCount;
-
 }

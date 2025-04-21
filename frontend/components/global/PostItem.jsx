@@ -214,9 +214,10 @@ const PostItem = ({ post }) => {
                 className="!text-xl hover:opacity-50"
                 userId={user?.id}
                 postId={post?.id}
-                isLiked={isLiked}
-                setIsLiked={setIsLiked}
+                // isLiked={isLiked}
+                // setIsLiked={setIsLiked}
                 setLikeCount={setLikeCount}
+                classText="hidden"
               />
               <CommentButton className="!text-xl" postId={post.id}>
                 <i className="fa-regular fa-comment"></i>
@@ -227,6 +228,7 @@ const PostItem = ({ post }) => {
               <Bookmark
                 postId={post.id}
                 className="!text-xl hover:opacity-90"
+                classNameIcon={"text-black dark:text-white"}
               />
             </div>
           </div>

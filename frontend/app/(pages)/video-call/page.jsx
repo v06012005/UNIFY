@@ -1,13 +1,16 @@
-
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useApp } from "@/components/provider/AppProvider";
 import { usePeer } from "@/components/provider/PeerProvider";
+import { Mic, MicOff, Video, VideoOff, MonitorUp, PhoneOff } from 'lucide-react';
+import Logo from "@/public/images/unify_darkmode_full.svg"
+import { fetchUserId } from '@/app/lib/dal';
 
 export default function VideoCallApp() {
+  const { user } = useApp();
 
-  const {user} = useApp();
-    
+  const [onMounted, setOnMounted] = useState(false);
   const {
     peerId,
     remotePeerIdValue,
@@ -30,32 +33,42 @@ export default function VideoCallApp() {
     rejectCall,
     endCall,
     avatarRemote,
-    idToCall
+    idToCall,
+    userToCall
   } = usePeer();
 
   const yourAvatar = 'https://via.placeholder.com/100';
+  const [isScreenSharing, setIsScreenSharing] = useState(false);
+
+
+  async function fetchUser() {
+    const user = await fetchUserId(idToCall);
+    return user;
+  }
+
+
+  const toggleScreenShare = () => setIsScreenSharing(!isScreenSharing);
+
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 flex items-center justify-center p-4">
-      <div className="bg-gray-800 rounded-3xl shadow-2xl h-[95vh] w-full overflow-hidden border border-gray-700">
-
-        <div className="p-6 border-b border-gray-700 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-100">Video Call</h1>
-          
+      <div className="bg-gray-800 w-full bg-opacity-90 rounded-3xl shadow-2xl h-[95vh] overflow-hidden border border-gray-700">
+        <div className="p-6 border-b w-full border-gray-700 flex items-center justify-between">
+          <img alt='logo' src={Logo.src} width={100}/>
         </div>
 
         <div className="p-6">
+          {((incomingCall && !isInCall) || (idToCall && !isInCall)) && (
+            <button
+              onClick={idToCall ? call : answerCall}
+              className="bg-gradient-to-r from-purple-600 to-blue-500 text-white px-6 py-2 rounded-full font-semibold hover:from-purple-700 hover:to-blue-600 transition-all"
+            >
+              Join Call
+            </button>
+          )}
 
-         {
-            (incomingCall || idToCall) && <button
-            onClick={idToCall ? call : answerCall}
-            className="bg-gradient-to-r from-purple-600 to-blue-500 text-white px-6 py-2 rounded-full font-semibold hover:from-purple-700 hover:to-blue-600 transition-all"
-          >
-            Join Call
-          </button>
-         } 
-          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+            {/* Local Video */}
             <div className="relative">
               <div className="flex items-center gap-3 mb-2">
                 <img
@@ -65,83 +78,118 @@ export default function VideoCallApp() {
                 />
                 <p className="text-lg font-semibold text-gray-200">{yourName || 'You'}</p>
               </div>
-              <video
-                ref={currentUserVideoRef}
-                className="w-full h-[90%] bg-black rounded-2xl object-cover"
-                autoPlay
-                muted
-              />
-              <div className="absolute bottom-4 left-4 flex gap-2">
+              <div className="w-full relative h-[410px] bg-gradient-to-br from-gray-700 to-gray-900 rounded-2xl overflow-hidden">
+                <video
+                  ref={currentUserVideoRef}
+                  className={`w-full h-full object-cover scale-x-[-1] ${!cameraOn && 'invisible'} z-10`} 
+                  autoPlay
+                  muted
+                />
+                {!cameraOn && (
+                  <img
+                    src={user.avatar.url}
+                    alt="Your Avatar"
+                    className="w-32 absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 h-32 rounded-full object-cover border-2 border-gray-500 z-50"
+                  />
+                )}
+              </div>
+              <div className="absolute bottom-4 left-4 flex gap-4">
                 <button
                   onClick={toggleMic}
-                  className={`p-2 rounded-full ${
-                    micOn ? 'bg-gray-700 bg-opacity-70' : 'bg-red-500'
-                  } text-white`}
+                  className={`p-4 rounded-full ${
+                    micOn ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gray-700 hover:bg-gray-600'
+                  } transition-colors duration-200`}
+                  title={micOn ? 'Turn off microphone' : 'Turn on microphone'}
                 >
                   {micOn ? (
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" />
-                      <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
-                    </svg>
+                    <Mic className="w-5 h-5 text-white" />
                   ) : (
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zM10.8 4.9c.1-.66.6-1.1 1.2-1.1s1.1.44 1.2 1.1v6.2c-.1.66-.6 1.1-1.2 1.1s-1.1-.44-1.2-1.1V4.9zM17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
-                    </svg>
+                    <MicOff className="w-5 h-5 text-white" />
                   )}
                 </button>
                 <button
                   onClick={toggleCamera}
-                  className={`p-2 rounded-full ${
-                    cameraOn ? 'bg-gray-700 bg-opacity-70' : 'bg-red-500'
-                  } text-white`}
+                  className={`p-4 rounded-full ${
+                    cameraOn ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gray-700 hover:bg-gray-600'
+                  } transition-colors duration-200`}
+                  title={cameraOn ? 'Turn off camera' : 'Turn on camera'}
                 >
                   {cameraOn ? (
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M18 10.48V6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-4.48l4 3.98v-11.96l-4 3.98zM16 18H4V6h12v12z" />
-                    </svg>
+                    <Video className="w-5 h-5 text-white" />
                   ) : (
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M18 10.48V6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-4.48l4 3.98v-11.96l-4 3.98zM16 18H4V6h12v12zm-2.29-13.71l-1.41 1.41-1.41-1.41-1.41 1.41-1.41-1.41-1.41 1.41L4.71 4.29 3.29 5.71 4.71 7.12l1.41-1.41 1.41 1.41 1.41-1.41 1.41 1.41 1.41-1.41 1.41 1.41 1.41-1.41-1.41-1.41z" />
-                    </svg>
+                    <VideoOff className="w-5 h-5 text-white" />
                   )}
+                </button>
+                <button
+                  onClick={toggleScreenShare}
+                  className={`p-4 rounded-full ${
+                    isScreenSharing ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gray-700 hover:bg-gray-600'
+                  } transition-colors duration-200`}
+                  title={isScreenSharing ? 'Stop screen sharing' : 'Start screen sharing'}
+                >
+                  <MonitorUp className="w-5 h-5 text-white" />
                 </button>
               </div>
             </div>
 
-          
+            {/* Remote Video */}
             <div className="relative">
               <div className="flex items-center gap-3 mb-2">
                 <img
-                  src={avatarRemote || yourAvatar}
+                  src={userToCall ?  userToCall.avatar.url : avatarRemote}
                   alt="Remote Avatar"
                   className="w-10 h-10 rounded-full object-cover border-2 border-blue-500"
                 />
-                <p className="text-lg font-semibold text-gray-200">{callerName || 'Remote User'}</p>
+                <p className="text-lg font-semibold text-gray-200">{userToCall ? `${userToCall.firstName} ${userToCall.lastName}` : callerName}</p>
               </div>
-              <video
-                ref={remoteVideoRef}
-                className="w-full h-[90%] bg-black rounded-2xl object-cover"
-                autoPlay
-              />
+              <div className="w-full relative h-[410px] bg-gradient-to-br from-gray-700 to-gray-900 rounded-2xl overflow-hidden">
+                <video
+                  ref={remoteVideoRef}
+                  className={`w-full h-full object-cover scale-x-[-1] ${!remoteCameraOn && 'invisible'} z-10`}
+                  autoPlay
+                />
+                {
+                  !isInCall && (
+                    <p className='absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2'>Connecting...</p>
+                  )
+                }
+                {!remoteCameraOn && (
+                  <img
+                    src={avatarRemote || yourAvatar}
+                    alt="Remote Avatar"
+                    className="w-32 h-32 absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 rounded-full object-cover border-2 border-gray-500 z-50"
+                  />
+                )}
+              </div>
               <div className="absolute bottom-4 left-4 flex gap-2">
                 {!remoteMicOn && (
-                  <div className="bg-red-500 text-white px-2 py-1 rounded-full text-xs">Mic Off</div>
+                  <div
+                    className="bg-red-500 text-white p-2 rounded-full flex items-center justify-center"
+                    title="Microphone Off"
+                  >
+                    <MicOff className="w-5 h-5" />
+                  </div>
                 )}
                 {!remoteCameraOn && (
-                  <div className="bg-red-500 text-white px-2 py-1 rounded-full text-xs">Camera Off</div>
+                  <div
+                    className="bg-red-500 text-white p-2 rounded-full flex items-center justify-center"
+                    title="Camera Off"
+                  >
+                    <VideoOff className="w-5 h-5" />
+                  </div>
                 )}
               </div>
             </div>
           </div>
 
-          
           {isInCall && (
             <div className="flex justify-center gap-4 mt-6">
               <button
                 onClick={endCall}
-                className="bg-red-600 text-white px-6 py-2 rounded-full font-semibold hover:bg-red-700 transition-all"
+                className="p-4 rounded-full bg-red-500 hover:bg-red-600 transition-colors duration-200"
+                title="End call"
               >
-                End Call
+                <PhoneOff className="w-5 h-5 text-white" />
               </button>
             </div>
           )}

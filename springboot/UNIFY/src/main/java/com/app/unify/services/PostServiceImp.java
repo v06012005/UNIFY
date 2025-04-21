@@ -7,8 +7,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.app.unify.dto.global.PostFeedResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -57,7 +59,7 @@ public class PostServiceImp implements PostService {
     private HashtagDetailRepository hashtagDetailRepository;
 
 
-
+    @CacheEvict(value = "personalizedFeedCache", allEntries = true)
     @Override
     public PostDTO createPost(PostDTO postDTO) {
         Post post = mapper.toPost(postDTO);
@@ -78,6 +80,7 @@ public class PostServiceImp implements PostService {
         return mapper.toPostDTO(post);
     }
 
+    @CacheEvict(value = "personalizedFeedCache", allEntries = true)
     @Override
     public PostDTO updatePost(PostDTO postDTO) {
     	Post post = postRepository.findById(postDTO.getId())
@@ -198,15 +201,22 @@ public class PostServiceImp implements PostService {
     }
 
 
-    
+
+    @Cacheable(value = "personalizedFeedCache", key = "#pageable.pageNumber + '-' + #pageable.pageSize")
     @Override
-    public Page<PostDTO> getPersonalizedFeed(Pageable pageable) {
+    public PostFeedResponse getPersonalizedFeed(Pageable pageable) {
         Page<PersonalizedPostDTO> posts = postRepository.findPersonalizedPosts(pageable);
-        return posts.map(dto -> {
+        Page<PostDTO> postDTOS =  posts.map(dto -> {
             PostDTO postDTO = mapper.toPostDTO(dto.getPost());
             postDTO.setCommentCount(dto.getCommentCount());
             return postDTO;
         });
+       return PostFeedResponse.builder()
+               .posts(postDTOS.getContent())
+               .hasNextPage(postDTOS.hasNext())
+               .currentPage(postDTOS.getNumber())
+               .build();
+
     }
     
     @Override

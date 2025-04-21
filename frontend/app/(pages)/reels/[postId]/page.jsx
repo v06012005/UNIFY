@@ -5,8 +5,10 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import ShareReels from "@/components/global/ShareReels";
 import PostReels from "@/components/global/PostReels";
+
 import { fetchComments } from "app/api/service/commentService";
 import { fetchReels } from "@/app/lib/dal";
+
 import Cookies from "js-cookie";
 import { useApp } from "@/components/provider/AppProvider";
 import CommentItem from "@/components/comments/CommentItem";
@@ -18,10 +20,13 @@ import LikeButton from "@/components/global/LikeButton";
 import ReportModal from "@/components/global/Report/ReportModal";
 import { useReports } from "@/components/provider/ReportProvider";
 import { addToast, ToastProvider } from "@heroui/toast";
+
+
 import Skeleton from "@/components/global/SkeletonLoad";
 import VideoPostSkeleton from "@/components/global/VideoPostSkeleton";
 import BookmarkButton from "@/components/global/Bookmark";
 import { useInView } from "react-intersection-observer";
+import usePostLikeStatus from "@/hooks/usePostLikeStatus";
 
 const PAGE_SIZE = 13;
 
@@ -57,9 +62,11 @@ export default function Reels() {
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
+
   const fetchNewReels = useCallback(async () => {
     if (isFetchingRef.current || !hasMore) return;
     isFetchingRef.current = true;
+
 
     if (page === 0) {
       setIsLoadingInitial(true);
@@ -96,12 +103,14 @@ export default function Reels() {
       } else {
         setIsLoadingMore(false);
       }
+
     }
   }, [page, hasMore, videoPosts.length]);
 
   useEffect(() => {
     fetchNewReels();
   }, [fetchNewReels]);
+
 
   useEffect(() => {
     if (inView && hasMore && !isFetchingRef.current) {
@@ -133,6 +142,8 @@ export default function Reels() {
       [postId]: { ...prev[postId], ...updates },
     }));
 
+
+
   const hasSetInitialRoute = useRef(false);
 
   useEffect(() => {
@@ -146,6 +157,7 @@ export default function Reels() {
     }
 
     hasSetInitialRoute.current = true;
+
   }, [videoPosts, postId, router]);
 
   useEffect(() => {
@@ -395,6 +407,7 @@ export default function Reels() {
   }
 
   const lastPostId = videoPosts[videoPosts.length - 1]?.id;
+  
 
   return (
     <>
@@ -485,7 +498,7 @@ export default function Reels() {
                 <LikeButton
                   userId={user?.id}
                   postId={post.id}
-                  className="flex flex-col items-center"
+                  className="m-0"
                   classText="text-sm"
                 />
                 <div className="flex flex-col items-center">
@@ -542,9 +555,11 @@ export default function Reels() {
             </div>
           ))
         )}
+
         {isLoadingMore && (
           <div className="text-white text-center py-4">Loading more...</div>
         )}
+
         <ShareReels
           isOpen={isOpen}
           onOpenChange={onOpenChange}

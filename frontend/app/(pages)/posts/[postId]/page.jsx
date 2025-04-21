@@ -10,7 +10,7 @@ import { Select, SelectItem, Textarea } from "@heroui/react";
 import PostSwitch from "@/components/global/PostSwitch";
 import { useEffect, useRef, useState } from "react";
 import { fetchPostById, getUser, insertHashtagDetails, insertHashtags, saveMedia, savePost, updatePost } from "@/app/lib/dal";
-import { cn } from "@/lib/utils";
+import { cn } from "@/app/lib/utils";
 import { addToast, ToastProvider } from "@heroui/toast";
 import { redirect, useParams } from "next/navigation";
 
@@ -153,7 +153,7 @@ const Page = () => {
     const formData = new FormData();
     files.forEach((file) => formData.append("files", file));
 
-    const res = await fetch("/api/upload", {
+    const res = await fetch("/lib/api/upload", {
       method: "POST",
       body: formData,
     });

@@ -21,6 +21,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.io.Serializable;
+
 @Entity
 @Table(name = "Media")
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -28,7 +30,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Media {
+public class Media implements Serializable  {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)

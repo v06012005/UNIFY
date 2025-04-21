@@ -1,5 +1,6 @@
 package com.app.unify.dto.global;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import com.app.unify.types.NotificationType;
@@ -16,7 +17,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class NotificationDTO {
+public class NotificationDTO implements Serializable {
     String id;
     SenderDTO sender;
     String receiver;

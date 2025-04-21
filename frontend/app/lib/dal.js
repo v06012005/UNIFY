@@ -45,6 +45,33 @@ export const getUser = cache(async () => {
   }
 });
 
+export const fetchUserId = async (id) => {
+  const token = (await cookies()).get("token")?.value;
+  if (!token) {
+    redirect("/login");
+  }
+  try {
+    const response = await fetch(`http://localhost:8080/users/${id}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      console.log("Failed to fetch user");
+      return null;
+    }
+
+    const user = await response.json();
+
+    return user;
+  } catch (error) {
+    console.log("Failed to fetch user");
+    return null;
+  }
+}
+
 export const savePost = async (post) => {
   const token = (await cookies()).get("token")?.value;
 
@@ -114,7 +141,6 @@ export const saveMedia = async (postId, newMedia) => {
   }
 
   try {
-
     const response = await fetch("http://localhost:8080/media", {
       method: "POST",
       headers: {
@@ -136,6 +162,7 @@ export const saveMedia = async (postId, newMedia) => {
   }
 };
 
+
 export const fetchPosts = async (pageParam) => {
   const token = (await cookies()).get("token")?.value;
 
@@ -143,7 +170,7 @@ export const fetchPosts = async (pageParam) => {
     redirect("/login");
   }
 
-  const pageSize = 7;
+  const pageSize = 3;
 
   try {
     const response = await fetch(
@@ -166,13 +193,14 @@ export const fetchPosts = async (pageParam) => {
 
     return {
       posts: data.posts,
-      nextPage: data.hasNextPage ? pageParam + 1 : null
+      nextPage: data.hasNextPage ? pageParam + 1 : null,
     };
   } catch (error) {
     console.log("Failed to fetch posts: " + error);
     return { posts: [], nextPage: null };
   }
 };
+
 
 
 export const fetchReels = async (pageParam, pageSize) => {
@@ -407,13 +435,16 @@ export const fetchSuggestedUsers = async (userId) => {
   }
 
   try {
-    const response = await fetch("http://localhost:8080/users/suggestions?currentUserId=" + userId, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await fetch(
+      "http://localhost:8080/users/suggestions?currentUserId=" + userId,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     if (!response.ok) {
       console.log("Failed to fetch users");
@@ -436,13 +467,46 @@ export const fetchFilteredReportedPosts = async (key = 0) => {
   }
 
   try {
-    const response = await fetch("http://localhost:8080/reports/filter/" + key, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await fetch(
+      "http://localhost:8080/reports/filter/" + key,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (!response.ok) {
+      console.log("Failed to fetch posts, please check again");
+      return null;
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.log("Failed to fetch users: " + error);
+    return null;
+  }
+};
+
+export const updateReport = async (id, status) => {
+  const token = (await cookies()).get("token")?.value;
+
+  if (!token) {
+    redirect("/login");
+  }
+
+  try {
+    const response = await fetch(
+      "http://localhost:8080/reports/" + id + "/status?status=" + status,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
     if (!response.ok) {
       console.log("Failed to fetch posts, please check again");
       return null;

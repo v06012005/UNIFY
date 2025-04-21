@@ -29,13 +29,13 @@ public interface PostRepository extends JpaRepository<Post, String> {
     List<Object[]> findPostsWithInteractionCounts();
 
     @Query("SELECT p, COUNT(DISTINCT pc.id) as commentCount, (COUNT(DISTINCT lp.id) + COUNT(DISTINCT pc.id)) as interactionCount "
-    	    + "FROM Post p "
-    	    + "LEFT JOIN p.likedPosts lp " + "LEFT JOIN p.comments pc "
-    	    + "WHERE p.user.id NOT IN (SELECT f.userFollowing.id FROM Follower f WHERE f.userFollower.id = ?1) "
-    	    + "AND p.user.id NOT IN (SELECT u.id From User u WHERE u.id = ?1) "
-    	    + "GROUP BY p "
-    	    + "ORDER BY interactionCount DESC")
-    	List<Object[]> findPostsWithInteractionCountsAndNotFollow(String userId);
+            + "FROM Post p "
+            + "LEFT JOIN p.likedPosts lp " + "LEFT JOIN p.comments pc "
+            + "WHERE p.user.id NOT IN (SELECT f.userFollowing.id FROM Follower f WHERE f.userFollower.id = ?1) "
+            + "AND p.user.id NOT IN (SELECT u.id From User u WHERE u.id = ?1) "
+            + "GROUP BY p "
+            + "ORDER BY interactionCount DESC")
+    List<Object[]> findPostsWithInteractionCountsAndNotFollow(String userId);
 
     @Query(value = "FROM Post o WHERE o.postedAt BETWEEN ?1 AND ?2")
     List<Post> getPostsByDate(LocalDateTime start, LocalDateTime end);
@@ -56,28 +56,31 @@ public interface PostRepository extends JpaRepository<Post, String> {
     @Override
     Optional<Post> findById(String id);
 
-    @Query("SELECT new com.app.unify.dto.global.PersonalizedPostDTO("
+    @Query("SELECT new com.app.unify.dto.global.PersonalizedPostDTO"
+            + "("
             + "p, "
             + "COUNT(DISTINCT lp.id) + COUNT(DISTINCT pc.id), "
             + "COUNT(DISTINCT pc.id)"
-            + ") "
+            + ")"
             + "FROM Post p "
             + "LEFT JOIN p.likedPosts lp "
             + "LEFT JOIN p.comments pc "
             + "WHERE p.status = 1 "
-            + "GROUP BY p")
+            + "GROUP BY p "
+            + "ORDER BY COUNT(DISTINCT lp.id) + COUNT(DISTINCT pc.id) DESC")
     Page<PersonalizedPostDTO> findPersonalizedPosts(Pageable pageable);
 
     @Query("SELECT p, COUNT(pc) "
             + "FROM Post p LEFT JOIN p.comments pc "
             + "WHERE p.status = 1 "
             + "GROUP BY p")
-       List<Object[]> findPostsWithCommentCount();
+    List<Object[]> findPostsWithCommentCount();
 
-       @Query("SELECT p, COUNT(pc) "
+    @Query("SELECT p, COUNT(pc) "
             + "FROM Post p LEFT JOIN p.comments pc "
             + "WHERE p.id = :postId AND p.status = 1 "
             + "GROUP BY p")
+
        Object[] findPostWithCommentCountById(@Param("postId") String postId);
        @Query("SELECT p, COUNT(c) as commentCount " +
                "FROM Post p " +
@@ -86,4 +89,5 @@ public interface PostRepository extends JpaRepository<Post, String> {
                "WHERE m.mediaType = 'VIDEO' AND p.status = 1 " +
                "GROUP BY p")
         Page<Object[]> findReelsPostsWithCommentCount(Pageable pageable);
+
 }

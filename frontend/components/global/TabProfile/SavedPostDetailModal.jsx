@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { fetchComments } from "app/api/service/commentService";
+import { fetchComments } from "@/app/lib/api/services/commentService";
 import CommentItem from "@/components/comments/CommentItem";
 import CommentInput from "@/components/comments/CommentInput";
 import Cookies from "js-cookie";
@@ -244,18 +244,18 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
           <div className="w-1/2 relative dark:border-neutral-700 border-r">
             {selectedMedia ? (
               selectedMedia.mediaType === "VIDEO" ? (
-                <div className="w-full h-full flex items-center justify-center bg-black">
+                <div className="w-full h-full flex items-center justify-center bg-gray-200">
                   <video
                     src={selectedMedia.url}
                     controls
-                    className="max-w-full max-h-full object-contain"
+                    className="w-full h-full object-contain"
                   />
                 </div>
               ) : (
-                <div className="w-full h-full flex items-center justify-center bg-black">
+                <div className="w-full h-full flex items-center justify-center bg-gray-200">
                   <img
                     src={selectedMedia.url}
-                    className="max-w-full max-h-full object-contain"
+                    className="w-full h-full object-contain"
                     alt="Post Media"
                   />
                 </div>

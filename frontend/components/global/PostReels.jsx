@@ -42,7 +42,7 @@ const PostReels = forwardRef(
 
     return (
       <div
-        className="absolute inset-0 flex justify-center items-center"
+        className="absolute inset-0 bg-black flex justify-center items-center"
         onClick={togglePlayPause}
       >
         <button
