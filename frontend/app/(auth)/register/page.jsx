@@ -45,6 +45,7 @@ const RegisterPage = () => {
     confirmPassword: "",
     gender: "true",
     status: 0,
+    agreeToTerms: false,
   });
 
   const [date, setDate] = useState({
@@ -104,6 +105,10 @@ const RegisterPage = () => {
     }
     if (age < 13) {
       newErrors.birthDay = "You must be at least 13 years old";
+    }
+
+    if (!formData.agreeToTerms) {
+      newErrors.agreeToTerms = "You must agree to the Terms of Service";
     }
 
     setErrors(newErrors);
@@ -285,6 +290,29 @@ const RegisterPage = () => {
                 Sign in
               </Link>
             </div>
+
+            <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="terms"
+                  checked={formData.agreeToTerms}
+                  onChange={(e) =>
+                    setFormData((prevData) => ({
+                      ...prevData,
+                      agreeToTerms: e.target.checked,
+                    }))
+                  }
+                />
+                <Label htmlFor="terms" className="text-sm">
+                  I agree to the{" "}
+                  <Link href="/landing" className="text-blue-600 underline">
+                    Terms of Service
+                  </Link>
+                </Label>
+              </div>
+              {errors.agreeToTerms && (
+                <p className="text-red-500 text-sm">{errors.agreeToTerms}</p>
+              )}
 
             <Button type="submit" className="text-2xl p-6 mt-3">
               Sign Up
