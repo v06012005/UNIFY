@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -204,6 +205,19 @@ public class PostServiceImp implements PostService {
         return posts.map(dto -> {
             PostDTO postDTO = mapper.toPostDTO(dto.getPost());
             postDTO.setCommentCount(dto.getCommentCount());
+            return postDTO;
+        });
+    }
+    
+    @Override
+    public Page<PostDTO> getReelsPosts(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Object[]> postPage = postRepository.findReelsPostsWithCommentCount(pageable);
+        return postPage.map(result -> {
+            Post post = (Post) result[0];
+            Long commentCount = (Long) result[1];
+            PostDTO postDTO = mapper.toPostDTO(post);
+            postDTO.setCommentCount(commentCount);
             return postDTO;
         });
     }
