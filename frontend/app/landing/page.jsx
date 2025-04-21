@@ -7,10 +7,12 @@ import DataSecurity from '@/public/images/data_security.png';
 import Community from '@/public/images/community.png';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import gsap from 'gsap';
+import { useRouter } from 'next/navigation';
 
 export default function LandingPage() {
   const canvasRef = useRef(null);
   const contentRef = useRef(null);
+  const router = useRouter();
 
   useEffect(() => {
 
@@ -162,6 +164,9 @@ export default function LandingPage() {
     };
   }, []);
 
+
+
+
   return (
     <div ref={contentRef} className="relative w-full bg-gradient-to-b from-gray-900 to-indigo-900 overflow-y-auto no-scrollbar scroll-smooth overflow-x-hidden">
       
@@ -174,7 +179,7 @@ export default function LandingPage() {
           Connect, share, and grow with our community-driven platform.
         </p>
         <div className="buttons flex gap-4">
-          <button className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 rounded-lg font-semibold shadow-lg transition-transform hover:scale-105">
+          <button onClick={() => router.push('/register')} className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 rounded-lg font-semibold shadow-lg transition-transform hover:scale-105">
             Get Started
           </button>
           <button className="px-6 py-3 bg-white text-indigo-600 hover:bg-gray-100 rounded-lg font-semibold shadow-lg transition-transform hover:scale-105">

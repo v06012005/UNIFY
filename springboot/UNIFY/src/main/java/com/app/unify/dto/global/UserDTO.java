@@ -1,7 +1,9 @@
 package com.app.unify.dto.global;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Set;
 
 import com.app.unify.entities.Role;
@@ -16,7 +18,7 @@ import lombok.experimental.FieldDefaults;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserDTO {
+public class UserDTO implements Serializable {
 
 	private String id;
 
@@ -47,7 +49,7 @@ public class UserDTO {
 	private Boolean gender;
 
 	@Past(message = "Birthdate must be in the past")
-	private LocalDate birthDay;
+	private Date birthDay;
 
 	private String location;
 

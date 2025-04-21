@@ -30,14 +30,15 @@ public interface FollowRepository extends JpaRepository<Follower, FollowerUserId
             "WHERE fo.userFollowing.username = :currentUsername")
     List<User> findUsersFollowingMe(@Param("currentUsername") String currentUsername);
 
-    @Query("SELECT f.userFollowing"
-            + " FROM Follower f"
-            + " WHERE f.userFollower.id = :myId"
-            + " AND f.userFollowing.id IN ("
-                + " SELECT f2.userFollower.id"
-                + " FROM Follower f2"
-                + " WHERE f2.userFollowing.id = :myId"
-            + ")"
-    )
-    List<User> findMutualFollows(@Param("myId") String myId);
+    @Query("""
+                SELECT f.userFollowing
+                FROM Follower f
+                WHERE f.userFollower.id = :myId
+                AND f.userFollowing.id IN (
+                    SELECT f2.userFollower.id
+                    FROM Follower f2
+                    WHERE f2.userFollowing.id = :myId
+                )
+            """)
+    List<User> findMutualFollowingUsers(@Param("myId") String myId);
 }

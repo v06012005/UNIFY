@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -49,7 +50,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/posts")
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class PostController {
 
     @Autowired
@@ -65,21 +65,14 @@ public class PostController {
     public ResponseEntity<List<PostDTO>> getAllPosts() {
         return ResponseEntity.ok(postService.getPostsWithCommentCount()); // Sửa để trả commentCount
     }
-    
+
     @GetMapping("/personalized")
     public ResponseEntity<PostFeedResponse> getPersonalizedFeed(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "7") int size
     ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("postedAt").descending());
-        Page<PostDTO> postPage = postService.getPersonalizedFeed(pageable);
-
-        PostFeedResponse response = new PostFeedResponse();
-        response.setPosts(postPage.getContent());
-        response.setHasNextPage(postPage.hasNext());
-        response.setCurrentPage(page);
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(postService.getPersonalizedFeed(pageable));
     }
 
     @PostMapping

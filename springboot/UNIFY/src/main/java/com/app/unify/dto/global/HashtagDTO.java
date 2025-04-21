@@ -1,5 +1,6 @@
 package com.app.unify.dto.global;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import lombok.AccessLevel;
@@ -12,7 +13,7 @@ import lombok.experimental.FieldDefaults;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class HashtagDTO {
+public class HashtagDTO implements Serializable {
 	String id;
 	String content;
 	Set<HashtagDetailDTO> hashtags;

@@ -9,6 +9,9 @@ import com.app.unify.dto.global.UserDTO;
 import com.app.unify.entities.User;
 import com.app.unify.repositories.projections.ChatPreviewProjection;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Collation;
@@ -36,15 +39,16 @@ public class MessageService {
         this.userService = userService;
     }
 
+    @Cacheable(value = "messages", key = "#sender + '-' + #receiver")
     public List<Message> getMessagesBySenderAndReceiver(String sender, String receiver) {
         Query query = new Query();
         query.addCriteria(new Criteria().orOperator(Criteria.where("sender").is(sender).and("receiver").is(receiver), Criteria.where("sender").is(receiver).and("receiver").is(sender)));
-
         query.collation(Collation.of("en"));
         query.with(Sort.by(Sort.Direction.ASC, "timestamp"));
         return mongoTemplate.find(query, Message.class);
     }
 
+    @Cacheable(value = "chatLists", key = "#userId")
     public List<ListChatDTO> getChatList(String userId) {
         List<ChatPreviewProjection> rawList = messageRepository.findChatList(userId);
         return rawList.stream()
@@ -63,6 +67,12 @@ public class MessageService {
                 .collect(Collectors.toList());
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "messages", key = "#message.sender + '-' + #message.receiver"),
+            @CacheEvict(value = "messages", key = "#message.receiver + '-' + #message.sender"),
+            @CacheEvict(value = "chatLists", key = "#message.sender"),
+            @CacheEvict(value = "chatLists", key = "#message.receiver")
+    })
     public Message saveMessage(Message message) {
         return messageRepository.save(message);
     }

@@ -6,11 +6,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.io.Serializable;
+
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class HashtagDetailDTO {
+public class HashtagDetailDTO implements Serializable {
 	String id;
 
 	PostDTO post;

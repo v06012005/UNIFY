@@ -1,10 +1,9 @@
 "use client";
 
 import React, { createContext, useState, useEffect, useContext } from "react";
-import { redirect, useRouter, usePathname } from "next/navigation"; // Thêm usePathname
+import { useRouter, usePathname, redirect } from "next/navigation";
 import axios from "axios";
 import Cookies from "js-cookie";
-
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { getQueryClient } from "@/components/client/QueryClient";
 
@@ -17,6 +16,8 @@ const UserContext = createContext(null);
 
 export const AppProvider = ({ children }) => {
   const queryClient = getQueryClient();
+  const router = useRouter();
+  const pathname = usePathname();
 
   const [user, setUser] = useState({
     id: "",
@@ -38,8 +39,7 @@ export const AppProvider = ({ children }) => {
     avatar: { url: "" },
   });
   const [isAdmin, setIsAdmin] = useState(false);
-  const router = useRouter();
-  const pathname = usePathname(); // Lấy đường dẫn hiện tại
+  const [userFromAPI, setUserFromAPI] = useState(null);
 
   const loginUser = async (email, password) => {
     try {
@@ -60,25 +60,19 @@ export const AppProvider = ({ children }) => {
 
       const userInfo = await getInfoUser();
       if (userInfo) {
-        if (userInfo.roles[0].id === 1) {
-          setIsAdmin(true);
+        const isAdmin = userInfo.roles?.[0]?.id === 1;
+        setIsAdmin(isAdmin);
+
+        if (isAdmin) {
           router.push("/manage/users/list");
         } else {
-          setIsAdmin(false);
           router.push("/");
         }
       }
     } catch (error) {
-      if (
-        error.response &&
-        (error.response.status === 401 || error.response.status === 400)
-      ) {
-        throw new Error(
-          error.response.data?.message || "Invalid email or password."
-        );
-      }
-
-      throw new Error("Something went wrong. Please try again.");
+      const msg =
+        error.response?.data?.message || "Invalid email or password.";
+      throw new Error(msg);
     }
   };
 
@@ -88,16 +82,16 @@ export const AppProvider = ({ children }) => {
       if (!token) {
         setUser(null);
         setIsAdmin(false);
-        redirect("/login");
+        router.push("/login");
+        return;
       }
+
       const response = await axios.get(`${API_URL_REFRESH}`, {
         headers: {
-          Authorization: `Bearer ${Cookies.get("token")}`,
+          Authorization: `Bearer ${token}`,
         },
       });
-      if (response.status !== 200) {
-        throw new Error(response.statusText);
-      }
+
       Cookies.set("token", response.data.token, {
         path: "/",
         sameSite: "Strict",
@@ -105,7 +99,7 @@ export const AppProvider = ({ children }) => {
         expires: 7,
       });
     } catch (error) {
-      console.log(error);
+      console.log("Refresh token error:", error);
     }
   };
 
@@ -118,6 +112,7 @@ export const AppProvider = ({ children }) => {
       });
       Cookies.remove("token", { path: "/" });
       setUser(null);
+      setIsAdmin(false);
       router.push("/login");
     } catch (error) {
       console.error("Logout failed:", error.response?.data || error.message);
@@ -127,26 +122,20 @@ export const AppProvider = ({ children }) => {
   const getInfoUser = async () => {
     try {
       const token = Cookies.get("token");
-      if (!token) {
-        return null;
-      }
+      if (!token) return null;
 
       const response = await axios.get(`${API_URL}/users/my-info`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (response.data) {
-        const data = response.data;
-        const parsedBirthDay = parseBirthDay(data.birthDay);
+      const data = response.data;
+      const parsedBirthDay = parseBirthDay(data.birthDay);
+      const isAdmin = data.roles?.[0]?.id === 1;
 
-        setUser({ ...data, birthDay: parsedBirthDay });
+      setUser({ ...data, birthDay: parsedBirthDay });
+      setIsAdmin(isAdmin);
 
-        if (pathname === "/profile" && data.username) {
-          router.replace(`/user/${data.username}`);
-        }
-
-        return data;
-      }
+      return data;
     } catch (err) {
       console.error("Error fetching user info:", err);
       return null;
@@ -155,26 +144,15 @@ export const AppProvider = ({ children }) => {
 
   const parseBirthDay = (birthDay) => {
     if (!birthDay) return { month: "", day: "", year: "" };
-
     const [year, month, day] = birthDay.split("-");
-    return {
-      month: month.padStart(2, "0"),
-      day: day.padStart(2, "0"),
-      year,
-    };
+    return { month: month.padStart(2, "0"), day: day.padStart(2, "0"), year };
   };
 
   const getUserInfoByUsername = async (username) => {
     try {
-      if (!username) {
-        console.error("Lỗi: Không có username để gọi API!");
-        return;
-      }
+      if (!username) return;
 
       const token = Cookies.get("token");
-
-      console.log("Token gửi lên:", token);
-      console.log("Fetching user info for:", username);
 
       const response = await axios.get(
         `${API_URL}/users/username/${username}`,
@@ -186,70 +164,26 @@ export const AppProvider = ({ children }) => {
         }
       );
 
-      if (response.data) {
-        console.log("Dữ liệu nhận được:", response.data);
-        return response.data;
-      }
+      return response.data;
     } catch (err) {
-      console.error("Error fetching user info:", err);
-      if (err.response) {
-        console.error("Status Code:", err.response.status);
-      } else if (err.request) {
-        console.error("No response received from server", err.request);
-      } else {
-        console.error("Error setting up request", err.message);
-      }
+      console.error("Error fetching user by username:", err);
     }
   };
 
-  const [userFromAPI, setUserFromAPI] = useState(null);
-
   useEffect(() => {
-    const checkUserAndRedirect = async () => {
-      const token = Cookies.get("token");
-      if (!token) {
-        if (pathname !== "/login") {
-          router.push("/login");
-        }
-        return;
+    getInfoUser().then((userInfo) => {
+      const isAdmin = userInfo?.roles?.[0]?.id === 1;
+      const isAdminRoute = pathname.startsWith("/manage") || pathname.startsWith("/statistics");
+
+      if (isAdmin && !isAdminRoute) {
+        router.push("/manage/users/list");
       }
 
-      const userInfo = await getInfoUser();
-      if (userInfo) {
-        if (userInfo.roles[0].id === 1) {
-          setIsAdmin(true);
-          // Chỉ chuyển hướng nếu không ở trang admin
-          if (!pathname.startsWith("/manage")) {
-            router.push("/manage/users/list");
-          }
-        } else {
-          setIsAdmin(false);
-          // Nếu không phải admin và đang ở trang admin, chuyển về trang chính
-          if (pathname.startsWith("/manage")) {
-            router.push("/");
-          }
-        }
+      if (isAdmin && !isAdminRoute && pathname === "/profile") {
+        router.push("/manage/users/list");
       }
-      //  else {
-      //   // Nếu không lấy được thông tin người dùng, xóa token và chuyển đến login
-      //   Cookies.remove("token", { path: "/" });
-      //   router.push("/login");
-      // }
-    };
-
-    checkUserAndRedirect().catch((error) => console.log(error));
-
-    // Xử lý userFromAPI nếu cần
-    if (userFromAPI?.username) {
-      getUserInfoByUsername(userFromAPI.username)
-        .then((data) => {
-          if (data) {
-            setUserFromAPI(data);
-          }
-        })
-        .catch((error) => console.log(error));
-    }
-  }, [pathname, router]); // Thêm pathname và router vào dependencies
+    });
+  }, [pathname]);
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
@@ -259,6 +193,8 @@ export const AppProvider = ({ children }) => {
           setUser,
           userFromAPI,
           setUserFromAPI,
+          isAdmin,
+          setIsAdmin,
           loginUser,
           refreshToken,
           logoutUser,

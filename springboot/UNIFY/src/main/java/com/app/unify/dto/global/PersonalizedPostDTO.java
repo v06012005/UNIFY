@@ -6,9 +6,11 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
+import java.io.Serializable;
+
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class PersonalizedPostDTO {
+public class PersonalizedPostDTO implements Serializable {
     private Post post;
     private Long interactionCount;
     private Long commentCount;

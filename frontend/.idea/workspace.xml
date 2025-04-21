@@ -4,13 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1dc806c8-9b06-409a-84de-1db3bd7b8131" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(pages)/messages/page.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(pages)/messages/page.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(pages)/video-call/page.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(pages)/video-call/page.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/global/chat/InComingCallModal.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/global/chat/InComingCallModal.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hooks/useCall.js" beforeDir="false" afterPath="$PROJECT_DIR$/hooks/useCall.js" afterDir="false" />
-    </list>
+    <list default="true" id="1dc806c8-9b06-409a-84de-1db3bd7b8131" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -35,22 +29,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;fix/call&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/UNIFY_V2/UNIFY/frontend&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;npm.dev.executor&quot;: &quot;Run&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;D:\\Program Files\\webstorm\\WebStorm 2024.2.4\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "develop/cache",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "D:/UNIFY_V2/UNIFY/frontend",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "npm.dev.executor": "Run",
+    "ts.external.directory.path": "D:\\Program Files\\webstorm\\WebStorm 2024.2.4\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\Unify\UNIFY\frontend\public\images" />
@@ -115,6 +109,7 @@
       <workItem from="1744112311730" duration="4945000" />
       <workItem from="1744528138271" duration="9251000" />
       <workItem from="1744560079175" duration="10000" />
+      <workItem from="1745218968829" duration="18000" />
     </task>
     <servers />
   </component>

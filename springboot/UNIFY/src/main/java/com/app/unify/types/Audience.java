@@ -1,5 +1,7 @@
 package com.app.unify.types;
 
-public enum Audience {
+import java.io.Serializable;
+
+public enum Audience implements Serializable {
 	PUBLIC, PRIVATE
 }

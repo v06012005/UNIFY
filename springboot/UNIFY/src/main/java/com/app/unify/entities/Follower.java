@@ -1,5 +1,6 @@
 package com.app.unify.entities;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import com.app.unify.types.FollowerUserId;
@@ -24,7 +25,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Follower {
+public class Follower implements Serializable {
 
 	@EmbeddedId
 	FollowerUserId id;

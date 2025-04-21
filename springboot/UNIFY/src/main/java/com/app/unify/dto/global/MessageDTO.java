@@ -1,5 +1,6 @@
 package com.app.unify.dto.global;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -17,7 +18,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class MessageDTO {
+public class MessageDTO implements Serializable {
 	String id;
 	String sender;
 	String receiver;

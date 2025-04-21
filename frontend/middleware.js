@@ -7,6 +7,7 @@ const publicRoutes = [
   "/login",
   "/register",
   "/password/reset",
+  "/landing",
   "/password/reset/otp-verification",
   "/password/reset/confirm",
 ];
@@ -14,18 +15,11 @@ const publicRoutes = [
 export default async function middleware(req) {
   // 2. Check if the current route is protected or public
   const path = req.nextUrl.pathname;
-  const isPublicRoute = publicRoutes.includes(path);
+  const isPublicRoute = publicRoutes.some((p) => path.startsWith(p));
   const isProtectedRoute = protectedRoutes.some((p) => path.startsWith(p));
 
   // 3. Decrypt the session from the cookie
   const session = await verifySession();
-
-  // if (isProtectedRoute && session?.isAuth) {
-  //     const user = await getUser();
-  //     if (user?.roles[0]?.id === 1 || user?.roles[0]?.id === 3) {
-  //         return NextResponse.redirect(new URL('/manage/users/list', req.nextUrl))
-  //     }
-  // }
 
   if (isProtectedRoute && session?.isAuth) {
     const user = await getUser();
