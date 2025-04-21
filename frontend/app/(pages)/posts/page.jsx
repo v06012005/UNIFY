@@ -15,7 +15,7 @@ import {
   insertHashtags,
   saveMedia,
   savePost,
-} from "@/app/lib/dal";
+} from "@/lib/dal";
 import { cn } from "@/lib/utils";
 import { addToast, ToastProvider } from "@heroui/toast";
 

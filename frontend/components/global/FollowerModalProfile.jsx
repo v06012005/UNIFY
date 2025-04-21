@@ -1,43 +1,37 @@
+"use client";
+
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  SuggestedUsersProvider,
-  useSuggestedUsers,
-} from "@/components/provider/SuggestedUsersProvider";
 import { useApp } from "@/components/provider/AppProvider";
 import FollowButton from "../ui/follow-button";
-const FollowerModal = ({ isOpen, onClose }) => {
+import { useFollowerUsers } from "@/hooks/useSuggestedUsers";
+
+const FollowerModal = ({ isOpen, onClose, isFollow, toggleFollow }) => {
   if (!isOpen) return null;
 
-  const { followerUsers, getFollowerUsers, loading } = useSuggestedUsers();
-  const router = useRouter();
   const { user } = useApp();
+  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const hasFetched = useRef(false);
 
-  useEffect(() => {
-    if (!hasFetched.current && (!followerUsers || followerUsers.length === 0)) {
-      getFollowerUsers();
-      hasFetched.current = true;
-    }
-  }, [followerUsers]);
+  const { data: followerUsers = [], isLoading } = useFollowerUsers(user?.id);
 
   const handleClick = (username) => {
     if (!username) {
-      console.error("Lỗi: Username bị null hoặc undefined!");
+      console.error("Username is null or undefined!");
       return;
     }
     router.push(`/othersProfile/${username}`);
   };
 
-  const filteredUsers = followerUsers?.filter((userData) =>
+  const filteredUsers = followerUsers.filter((userData) =>
     userData.username.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]">
-      <div className="bg-white dark:bg-neutral-800 rounded-lg w-[450px] h-[500px] p-6 ">
+      <div className="bg-white dark:bg-neutral-800 rounded-lg w-[450px] h-[500px] p-6">
         <div className="flex justify-between mb-4 text-2xl">
           <h2 className="text-lg font-bold">Follower</h2>
           <button
@@ -47,56 +41,51 @@ const FollowerModal = ({ isOpen, onClose }) => {
             ×
           </button>
         </div>
+
         <input
           type="text"
           placeholder="Search ..."
-          className="w-full border rounded-full px-4 py-1  dark:bg-black dark:border-gray-600"
+          className="w-full border rounded-full px-4 py-1 dark:bg-neutral-800 dark:border-gray-600"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <ul className="h-[390px]  overflow-y-auto scrollbar-hide">
-          {loading ? (
+
+        <ul className="h-[390px] overflow-y-auto scrollbar-hide mt-2">
+          {isLoading ? (
             <p className="text-gray-500">Loading...</p>
-          ) : !filteredUsers || filteredUsers.length === 0 ? (
+          ) : filteredUsers.length === 0 ? (
             <p className="text-gray-500">No followers.</p>
           ) : (
             filteredUsers.slice(0, 11).map((userData) => (
               <li
                 key={userData.username}
-                className="flex items-center justify-between py-2 border-b border-gray-500 "
+                className="flex items-center justify-between py-2 border-b border-gray-300 dark:border-neutral-700"
               >
                 <div
                   onClick={() => handleClick(userData.username)}
                   className="flex items-center cursor-pointer"
                 >
-                  <div className="relative w-[50px] h-[50px] overflow-hidden rounded-full border-2 border-gray-300">
-                    {userData?.avatar?.url ? (
-                      <Image
-                        src={userData.avatar.url}
-                        alt="Avatar"
-                        width={50}
-                        height={50}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <Image
-                        src="/images/unify_icon_2.svg"
-                        alt="Default Avatar"
-                        width={200}
-                        height={200}
-                        className="w-full h-full object-cover"
-                      />
-                    )}
+                  <div className="relative w-[50px] h-[50px] overflow-hidden rounded-full border-2 border-gray-300 dark:border-neutral-700">
+                    <Image
+                      src={userData.avatar?.url || "/images/unify_icon_2.svg"}
+                      alt="Avatar"
+                      layout="fill"
+                      objectFit="cover"
+                    />
                   </div>
-                  <span className="font-medium ml-3">{userData.username}</span>
+                  <div className="ml-4">
+                    <p className="font-semibold text-sm text-neutral-800 dark:text-white">
+                      {userData.username}
+                    </p>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                      {userData.fullName || userData.email}
+                    </p>
+                  </div>
                 </div>
                 <FollowButton
-                  userId={user.id}
-                  followingId={userData.id}
-                  classFollow="bg-red-500 font-bold py-1 px-4 rounded-lg text-white text-md"
-                  classFollowing="bg-zinc-700 hover:bg-zinc-600 font-bold py-1 px-4 rounded-lg text-white text-md"
-                  contentFollow="Follow"
-                  contentFollowing="Unfollow"
+                  userId={userData.id}
+                  isFollow={isFollow}
+                  toggleFollow={toggleFollow}
                 />
               </li>
             ))

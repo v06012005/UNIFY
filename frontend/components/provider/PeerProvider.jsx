@@ -4,7 +4,7 @@
 import { createContext, useContext, useRef, useState, useEffect } from 'react';
 import Peer from 'peerjs';
 import { usePathname } from 'next/navigation';
-import { getUser } from '@/app/lib/dal';
+import { fetchUserId, getUser } from '@/lib/dal';
 import { useApp } from './AppProvider';
 
 const PeerContext = createContext();
@@ -24,6 +24,7 @@ export const PeerProvider = ({ children }) => {
   const [incomingCall, setIncomingCall] = useState(null);
   const [isInCall, setIsInCall] = useState(false);
   const [idToCall, setIdToCall] = useState('');
+  const [userToCall, setUserToCall] = useState(null);
   const path = usePathname(); 
   
   const currentUserVideoRef = useRef(null);
@@ -110,6 +111,16 @@ export const PeerProvider = ({ children }) => {
       }
     };
   }, [path]);
+
+  useEffect(() => {
+    async function fetchUser() {
+      if (idToCall) {
+          const user = await fetchUserId(idToCall);
+          setUserToCall(user);
+        } 
+    };
+    fetchUser();
+  }, [idToCall])
 
   const handleData = (data) => {
     switch (data.type) {
@@ -286,7 +297,9 @@ export const PeerProvider = ({ children }) => {
         setAvatarRemote,
         avatarDefault,
         idToCall,
-        setIdToCall
+        setIdToCall,
+        userToCall,
+        setUserToCall
       }}
     >
       {children}

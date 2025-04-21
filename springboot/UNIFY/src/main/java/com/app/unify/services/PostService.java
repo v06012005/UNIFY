@@ -40,6 +40,8 @@ public interface PostService {
 
 
     List<PostDTO> getArchiveMyPosts(String userId, Integer status);
-    List<PostDTO> getRecommendedPostsForExplore(String userId);
+
+	List<PostDTO> getRecommendedPostsForExplore(String userId);
+
     Page<PostDTO> getPersonalizedFeed(Pageable pageable);
 }

@@ -12,6 +12,11 @@ import com.app.unify.repositories.RoleRepository;
 import com.app.unify.repositories.UserRepository;
 import com.app.unify.utils.EncryptPasswordUtil;
 import jakarta.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,12 +25,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -167,7 +166,10 @@ public class UserService {
             return Collections.emptyList();
         }
 
-        return userRepository.findUsersNotFriendsOrFollowing(userDTO.getId()).stream().map(userMapper::toUserDTO).collect(Collectors.toList()).subList(0, 6);
+        return userRepository.findUsersNotFriendsOrFollowing(userDTO.getId())
+                .stream()
+                .map(userMapper::toUserDTO)
+                .collect(Collectors.toList());
     }
 
     public List<UserDTO> findUsersFollowingMe(String currentUserId) {

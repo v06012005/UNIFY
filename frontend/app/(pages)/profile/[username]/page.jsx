@@ -12,6 +12,7 @@ import { useApp } from "@/components/provider/AppProvider";
 import People from "@/components/global/TabProfile/People";
 import { useFollow } from "@/components/provider/FollowProvider";
 import { useQuery } from "@tanstack/react-query";
+import { set } from "date-fns";
 
 const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   return (
@@ -35,10 +36,12 @@ const Page = () => {
   const [taggedPosts, setTaggedPosts] = useState([]);
   const params = useParams();
   const router = useRouter();
+  const [isClient, setIsClient] = useState(false);
   const { user } = useApp();
   const { countFollowers, countFollowing } = useFollow();
 
-  const handleClickView = () => router.push(`/settings/archive/${params.username}`);
+  const handleClickView = () =>
+    router.push(`/settings/archive/${params.username}`);
   const handleClickEdit = () => router.push("/settings/edit-profile");
 
   const [isFollowerOpen, setIsFollowerOpen] = useState(false);
@@ -55,13 +58,27 @@ const Page = () => {
     queryKey: ["followerCount", user?.id],
     queryFn: () => countFollowers(user.id),
     enabled: !!user?.id,
+    refetchInterval: 10000,
+    refetchIntervalInBackground: true,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
   });
 
   const { data: followingCount = 0 } = useQuery({
     queryKey: ["followingCount", user?.id],
     queryFn: () => countFollowing(user.id),
     enabled: !!user?.id,
+    refetchInterval: 10000,
+    refetchIntervalInBackground: true,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
   });
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) return null;
 
   return (
     <div className="max-w-4xl mx-auto py-6">
@@ -153,7 +170,7 @@ const Page = () => {
               className="flex items-center font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 bg-gray-100 dark:bg-neutral-700 dark:hover:bg-zinc-800 transition-colors w-full justify-center"
               onClick={handleClickView}
             >
-              <i className="fa-regular fa-bookmark mr-2"></i>
+              <i className="fa-solid fa-box-archive mr-2"></i>
               <span>View Archive</span>
             </button>
           </div>

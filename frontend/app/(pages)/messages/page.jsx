@@ -62,6 +62,13 @@ const Page = () => {
   };
 
   const [files, setFiles] = useState([]);
+  const [searchQuery, setSearchQuery] = useState(""); // State for search input
+
+  const filteredChatList = chatList?.filter(
+    (chat) =>
+      chat.fullname.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      chat.username.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   useEffect(() => {
     const userId = searchParams.get("userId");
@@ -207,53 +214,69 @@ const Page = () => {
               <Input
                 placeholder={"Search..."}
                 className={`p-3 w-full h-10 dark:border-neutral-600 placeholder-gray-500 border-gray-300`}
+                value={searchQuery} // Bind input to searchQuery state
+                onChange={(e) => setSearchQuery(e.target.value)} // Update searchQuery on input change
               />
             </div>
           </div>
 
           {/* Chat List */}
           <div className="flex-1 overflow-y-scroll scrollbar-hide px-4 py-1 dark:bg-black border-r-1 dark:border-r-neutral-700">
-            {chatList?.map((chat, index) => (
-              <div
-                key={index}
-                className={`flex items-center justify-between p-3 rounded-lg w-full max-w-md mt-3 cursor-pointer transition duration-200 ease-in-out 
-                ${
-                  chat.userId === chatPartner
-                    ? "dark:bg-neutral-800 bg-gray-200 shadow-md ring-1 ring-white dark:ring-neutral-600"
-                    : "dark:hover:bg-neutral-700 dark:bg-neutral-900 hover:bg-gray-300"
-                } dark:text-white text-black`}
-                onClick={() => handleChatSelect(chat)}
-              >
-                <div className="flex items-center">
-                  <img
-                    src={chat?.avatar?.url || opChat?.avatar}
-                    alt="Avatar"
-                    className="rounded-full w-12 h-12 border-2 border-gray-500 dark:border-neutral-500"
-                  />
-                  <div className="ml-4">
-                    <h4 className="text-sm font-medium truncate w-23">
-                      {chat.fullname || opChat?.fullname}
-                    </h4>
-                    <p className="text-sm dark:text-gray-400 text-neutral-500 truncate w-60">
-                      {chat.lastMessage}
-                    </p>
+            {filteredChatList?.length > 0 ? (
+              filteredChatList.map((chat, index) => (
+                <div
+                  key={index}
+                  className={`flex items-center justify-between p-3 rounded-lg w-full max-w-md mt-3 cursor-pointer transition duration-200 ease-in-out 
+        ${
+          chat.userId === chatPartner
+            ? "dark:bg-neutral-800 bg-gray-200 shadow-md ring-1 ring-white dark:ring-neutral-600"
+            : "dark:hover:bg-neutral-700 hover:bg-gray-300"
+        } dark:text-white text-black`}
+                  onClick={() => handleChatSelect(chat)}
+                >
+                  <div className="flex items-center">
+                    <img
+                      src={chat?.avatar?.url || opChat?.avatar}
+                      alt="Avatar"
+                      className="rounded-full w-12 h-12 border-2 border-gray-500 dark:border-neutral-500"
+                    />
+                    <div className="ml-4">
+                      <h4 className="text-sm font-medium truncate w-23">
+                        {chat.fullname || opChat?.fullname}
+                      </h4>
+                      <p className="text-sm dark:text-gray-400 text-neutral-500 truncate w-60">
+                        {chat.lastMessage}
+                      </p>
+                    </div>
                   </div>
+                  <span className="text-sm text-gray-400">
+                    {new Date(chat.lastUpdated).toLocaleTimeString("vi-VN", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
                 </div>
-                <span className="text-sm text-gray-400">
-                  {new Date(chat.lastUpdated).toLocaleTimeString("vi-VN", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </span>
+              ))
+            ) : (
+              <div className="flex items-center justify-center h-full">
+                <p className="text-gray-500 dark:text-neutral-400 text-lg">
+                  Let's start with a chat
+                </p>
               </div>
-            ))}
+            )}
           </div>
         </div>
 
         {/* Chat Window */}
         <div className="ml-5 h-screen basis-2/3 mr-5  ">
           {!opChat?.userId ? (
-            null
+            <div className="w-full h-full">
+              <div className="flex items-center justify-center h-full">
+                <h1 className="text-gray-500 dark:text-neutral-400 text-lg">
+                  Select a chat to start messaging
+                </h1>
+              </div>
+            </div>
           ) : (
             <>
               <div className="flex p-3 w-full">
@@ -288,12 +311,12 @@ const Page = () => {
                     onClick={handleCallVideo}
                     title="Video Call"
                     className="mr-2 p-2 rounded-md  dark:hover:bg-neutral-700 hover:bg-gray-300  transition ease-in-out duration-200"
-              >
-                <i className="fa-solid fa-video dark:text-neutral-400"></i>
-              </button>
-              <button
-                title="Video Call"
-                className="mr-2 p-2 rounded-md  dark:hover:bg-neutral-700 hover:bg-gray-300  transition ease-in-out duration-200"
+                  >
+                    <i className="fa-solid fa-video dark:text-neutral-400"></i>
+                  </button>
+                  <button
+                    title="Video Call"
+                    className="mr-2 p-2 rounded-md  dark:hover:bg-neutral-700 hover:bg-gray-300  transition ease-in-out duration-200"
                   >
                     <i className="fa-solid fa-ellipsis-vertical dark:text-neutral-400"></i>
                   </button>
@@ -301,14 +324,15 @@ const Page = () => {
               </div>
               <hr className=" border-1 dark:border-neutral-700" />
 
-              <div className="h-3/4 overflow-y-scroll scrollbar-hide">
-                <h2 className="text-center m-3 dark:text-neutral-400">23:48, 20/01/2025</h2>
+              <div className="h-[78.5%] overflow-y-scroll scrollbar-hide">
+                <h2 className="text-center m-3 dark:text-neutral-400">
+                  23:48, 20/01/2025
+                </h2>
                 <Message
                   messages={chatMessages}
                   messagesEndRef={messagesEndRef}
                   avatar={opChat.avatar}
                 />
-                {/*<div ref={messagesEndRef}/>*/}
               </div>
 
               <div className={`relative w-full`}>
@@ -363,6 +387,7 @@ const Page = () => {
                     </div>
                   </div>
                 )}
+
                 <div className="flex items-center mt-3 bg-gray-200 dark:bg-neutral-800 dark:text-white text-black p-3 rounded-2xl w-full justify-center">
                   {user?.avatar.url && (
                     <img
@@ -396,12 +421,13 @@ const Page = () => {
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
                     onKeyDown={(e) => {
-                      if (e.key === "Enter") {
+                      if (e.key === "Enter" && newMessage.trim()) {
                         e.preventDefault();
                         handleSendMessage();
                       }
                     }}
                   />
+                  
                   <button
                     type="button"
                     onClick={() => setShowPicker(!showPicker)}

@@ -10,7 +10,7 @@ import Error from "next/error";
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Input } from "@heroui/react";
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from "@heroui/react";
 import TableLoading from "@/components/loading/TableLoading";
-import { getUser } from "@/app/lib/dal";
+import { getUser } from "@/lib/dal";
 
 
 
@@ -158,12 +158,12 @@ const UserManagementPage = () => {
             </TableHeader>
             <TableBody>
               {currentItems.map((user, index) => (
-                <TableRow key={user.id}>
-                  <TableCell>{index + 1}</TableCell>
-                  <TableCell>{user.username}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.reportApprovalCount}</TableCell>
-                  <TableCell>
+                <TableRow key={user.id + index}>
+                  <TableCell className="dark:text-black">{index + 1}</TableCell>
+                  <TableCell className="dark:text-black">{user.username}</TableCell>
+                  <TableCell className="dark:text-black">{user.email}</TableCell>
+                  <TableCell className="dark:text-black">{user.reportApprovalCount}</TableCell>
+                  <TableCell className="dark:text-black">
                     <Dropdown>
                       <DropdownTrigger>
                         <i className="fa-solid fa-ellipsis-vertical hover:bg-gray-200 py-2 px-4 rounded-full hover:cursor-pointer"></i>

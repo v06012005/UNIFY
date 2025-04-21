@@ -41,9 +41,9 @@ const Slider = ({ srcs = [] }) => {
     }, [srcs, currentIndex]);
 
     return (
-        <div className="max-w-[450px] w-full h-[550px] my-auto bg-cover relative mx-auto group">
+        <div className="max-w-[450px] w-full h-[550px] my-auto bg-cover relative mx-auto group ">
             {loading && (
-                <div className="absolute inset-0 flex justify-center rounded-lg items-center bg-gray-200 dark:bg-gray-800">
+                <div className="absolute inset-0 flex justify-center rounded-lg items-center">
                     <Spinner
                         classNames={{ label: "text-foreground mt-4" }}
                         label="Please wait..."
@@ -62,9 +62,9 @@ const Slider = ({ srcs = [] }) => {
                     src={srcs[currentIndex].url}
                     alt="Image"
                     className={`transition-opacity duration-300 ${loading ? "opacity-0" : "opacity-100"
-                        } object-cover w-full h-full rounded-lg duration-500`}
-                    width={450}
-                    height={550}
+                        } object-contain w-full h-full rounded-lg duration-500`}
+                    width={1000}
+                    height={1000}
                     onLoad={() => {
                         setLoading(false);
                         setError(false);

@@ -1,21 +1,22 @@
 "use client";
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { fetchComments } from "app/api/service/commentService";
+import { fetchComments } from "@/lib/api/services/commentService";
 import CommentItem from "@/components/comments/CommentItem";
 import CommentInput from "@/components/comments/CommentInput";
 import Cookies from "js-cookie";
 import Link from "next/link";
-import Avatar from "@/public/images/unify_icon_2.svg";
-import { redirect } from "next/navigation";
-import { fetchPostById } from "@/app/lib/dal";
 import Image from "next/image";
 import { useApp } from "@/components/provider/AppProvider";
+import { fetchPostById } from "@/lib/dal";
+import Skeleton from "@/components/global/SkeletonLoad"; // Thêm Skeleton
+import Avatar from "@/public/images/unify_icon_2.svg";
 import iconVideo from "@/public/vds.svg";
 import iconImage from "@/public/imgs.svg";
 import OptionsPostModal from "@/components/global/TabProfile/OptionsPostModal";
 import DeletePostModal from "@/components/global/TabProfile/Modal/DeletePostModal";
 import ArchivePostModal from "@/components/global/TabProfile/Modal/ArchivePostModal";
 import RestorePostModal from "@/components/global/TabProfile/Modal/RestorePostModal";
+
 const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   return (
     <Link
@@ -75,7 +76,7 @@ const PostDetailModal = ({ post, onClose, onArchive, onDelete }) => {
     });
   };
 
-  // tải comments
+  // Tải bình luận
   const loadComments = useCallback(async () => {
     if (!post?.id || !token) return;
     setIsCommentsLoading(true);
@@ -90,66 +91,77 @@ const PostDetailModal = ({ post, onClose, onArchive, onDelete }) => {
     }
   }, [post?.id, token]);
 
-  //   loadComments
+  // Tải bình luận khi modal mở
   useEffect(() => {
     loadComments();
   }, [loadComments]);
 
-  //  comment mới (bao gồm cả reply)
-  const handleNewComment = (newComment) => {
-    const enrichedComment = {
-      ...newComment,
-      username: user?.username || "Unknown",
-      user: { avatar: user?.avatar || "/unify_icon_2.svg" }, 
-    };
-    setComments((prevComments) => {
-      if (newComment.parentId) {
-        //  thêm vào danh sách replies
-        const addReplyToComment = (comments) => {
-          return comments.map((comment) => {
+  // Cập nhật danh sách bình luận (tương tự updateComments trong Reels)
+  const updateComments = useCallback(
+    (newComment) => {
+      setComments((prevComments) => {
+        const currentComments = Array.isArray(prevComments) ? prevComments : [];
+
+        const updateRepliesRecursively = (comments) =>
+          comments.map((comment) => {
             if (comment.id === newComment.parentId) {
               return {
                 ...comment,
-                replies: [enrichedComment, ...(comment.replies || [])],
+                replies: [
+                  {
+                    ...newComment,
+                    username: user?.username || "Unknown",
+                    avatarUrl: user?.avatar?.url || Avatar.src,
+                  },
+                  ...(comment.replies || []),
+                ],
               };
             }
-            if (comment.replies) {
+            if (comment.replies?.length) {
               return {
                 ...comment,
-                replies: addReplyToComment(comment.replies),
+                replies: updateRepliesRecursively(comment.replies),
               };
             }
             return comment;
           });
-        };
-        return addReplyToComment(prevComments);
-      }
-      //   không phải reply, thêm vào   comments gốc
-      return [enrichedComment, ...prevComments];
-    });
 
-    // Cuộn
-    if (commentsContainerRef.current) {
-      commentsContainerRef.current.scrollTo({
-        top: 0,
-        behavior: "smooth",
+        const updatedComments = newComment.parentId
+          ? updateRepliesRecursively(currentComments)
+          : [
+              {
+                ...newComment,
+                username: user?.username || "Unknown",
+                avatarUrl: user?.avatar?.url || Avatar.src,
+              },
+              ...currentComments,
+            ];
+
+        return updatedComments;
       });
-    }
 
-    // Reset trạng thái
-    setReplyingTo(null);
-  };
+      // Cuộn lên đầu danh sách bình luận
+      if (commentsContainerRef.current) {
+        commentsContainerRef.current.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
+      }
 
-  //   nhấn nút reply
-  const handleReplyClick = (comment) => {
+      setReplyingTo(null); // Reset trạng thái reply
+    },
+    [user]
+  );
+
+  // Xử lý khi nhấn Reply
+  const handleReplyClick = useCallback((comment) => {
     setReplyingTo(comment);
-    console.log("Replying to:", comment);
-  };
+  }, []);
 
-  //   hủy reply
-  const handleCancelReply = () => {
+  // Hủy trả lời
+  const handleCancelReply = useCallback(() => {
     setReplyingTo(null);
-  };
+  }, []);
 
   const handleOpenDeleteModal = () => {
     setShowDeleteModal(true);
@@ -170,27 +182,41 @@ const PostDetailModal = ({ post, onClose, onArchive, onDelete }) => {
     onClose();
   };
 
+  // Skeleton loading cho bình luận
+  const CommentSkeleton = () => (
+    <div className="items-start">
+      <div className="flex space-x-2 mb-14">
+        <Skeleton variant="circle" width={32} height={32} />
+        <div className="flex-1">
+          <Skeleton width={96} height={12} rounded />
+          <Skeleton width="75%" height={12} rounded className="mt-1" />
+          <Skeleton width="50%" height={12} rounded className="mt-1" />
+        </div>
+      </div>
+    </div>
+  );
+
   if (!post) return null;
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/10 dark:bg-neutral-700/40 backdrop-blur-sm z-50 pointer-events-auto">
-      <div className="bg-gray-100 dark:bg-neutral-900 rounded-xl shadow-2xl border-neutral-700 border-1 flex flex-row w-[1300px] h-[690px] overflow-hidden">
+      <div className="bg-gray-100 dark:bg-neutral-900 rounded-xl shadow-2xl border-neutral-200 dark:border-neutral-700 border-1 flex flex-row w-[1300px] h-[690px] overflow-hidden">
         {/* Media */}
-        <div className="w-1/2 relative dark:border-neutral-700 border-r">
+        <div className="w-full relative dark:border-neutral-700 border-r">
           {selectedMedia ? (
             selectedMedia.mediaType === "VIDEO" ? (
-              <div className="w-full h-full flex items-center justify-center bg-black">
+              <div className="w-full h-full flex items-center justify-center bg-gray-200 dark:bg-black">
                 <video
                   src={selectedMedia.url}
                   controls
-                  className="max-w-full max-h-full object-contain"
+                  className="max-w-full max-h-full object-none"
                 />
               </div>
             ) : (
-              <div className="w-full h-full flex items-center justify-center bg-black">
+              <div className="flex items-center justify-center bg-bgray-200 h-full">
                 <img
                   src={selectedMedia.url}
-                  className="max-w-full max-h-full object-contain rounded mr-2"
+                  className="w-full h-full object-contain rounded"
                   alt="Post Media"
                 />
               </div>
@@ -202,7 +228,7 @@ const PostDetailModal = ({ post, onClose, onArchive, onDelete }) => {
           )}
 
           {post.media.length > 1 && (
-            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-[90%] bg-black bg-opacity-60 p-2 rounded-lg overflow-x-auto flex gap-2 scrollbar-hide">
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-full bg-black bg-opacity-60 p-2 rounded-lg overflow-x-auto flex gap-2 scrollbar-hide">
               {post.media.map((item, index) => (
                 <div
                   key={index}
@@ -253,7 +279,7 @@ const PostDetailModal = ({ post, onClose, onArchive, onDelete }) => {
         </div>
 
         {/* Nội dung */}
-        <div className="w-1/2 flex flex-col">
+        <div className="w-full flex flex-col">
           <div className="flex items-center justify-between p-4 border-b dark:border-neutral-800">
             <div className="flex items-center">
               <div className="w-10 h-10 rounded-full border-2 border-gray-300 dark:border-gray-600">
@@ -261,7 +287,7 @@ const PostDetailModal = ({ post, onClose, onArchive, onDelete }) => {
                   src={post.user?.avatar?.url || Avatar}
                   alt="User Avatar"
                   width={40}
-                  height={40} 
+                  height={40}
                   className="w-full h-full rounded-full object-cover"
                 />
               </div>
@@ -296,7 +322,6 @@ const PostDetailModal = ({ post, onClose, onArchive, onDelete }) => {
                 setShowDeleteModal(false);
               }}
             />
-
             <ArchivePostModal
               isOpen={showArchiveModal}
               onClose={() => setShowArchiveModal(false)}
@@ -305,7 +330,6 @@ const PostDetailModal = ({ post, onClose, onArchive, onDelete }) => {
                 setShowArchiveModal(false);
               }}
             />
-
             <RestorePostModal
               isOpen={showRestoreModal}
               onClose={() => setShowRestoreModal(false)}
@@ -317,7 +341,7 @@ const PostDetailModal = ({ post, onClose, onArchive, onDelete }) => {
           </div>
 
           <div
-            className="flex-1 px-4 py-3 overflow-y-auto no-scrollbar"
+            className="flex-auto px-4 py-3 overflow-y-auto no-scrollbar"
             ref={commentsContainerRef}
           >
             {post.captions === null ? (
@@ -327,8 +351,8 @@ const PostDetailModal = ({ post, onClose, onArchive, onDelete }) => {
                 <div className="flex-shrink-0 w-10 h-10 rounded-full overflow-hidden border-2 border-gray-300 dark:border-gray-600">
                   <Image
                     src={post.user?.avatar?.url || Avatar}
-                    width={1000}
-                    height={1000}
+                    width={40}
+                    height={40}
                     alt="User Avatar"
                     className="object-cover w-full h-full"
                   />
@@ -344,19 +368,23 @@ const PostDetailModal = ({ post, onClose, onArchive, onDelete }) => {
 
             <div className="mt-5 space-y-2">
               {isCommentsLoading ? (
-                <p>Loading comments...</p>
+                [...Array(6)].map((_, index) => (
+                  <CommentSkeleton key={index} />
+                ))
               ) : comments.length > 0 ? (
                 comments.map((comment) => (
                   <CommentItem
                     key={comment.id}
                     comment={comment}
                     currentUserId={currentUserId}
-                    onReplySubmit={handleNewComment}
-                    onReplyClick={() => handleReplyClick(comment)}
+                    onReplySubmit={updateComments}
+                    onReplyClick={handleReplyClick}
                   />
                 ))
               ) : (
-                <p>No comments yet.</p>
+                <p className="text-zinc-500 font-bold text-xl">
+                  No comments yet
+                </p>
               )}
             </div>
           </div>
@@ -364,15 +392,15 @@ const PostDetailModal = ({ post, onClose, onArchive, onDelete }) => {
           <div className="p-4 border-t dark:border-neutral-800">
             <CommentInput
               postId={post.id}
-              setComments={handleNewComment}
-              parentComment={replyingTo} //   được reply
-              onCancelReply={handleCancelReply} //   hủy reply
+              setComments={updateComments}
+              parentComment={replyingTo}
+              onCancelReply={handleCancelReply}
             />
           </div>
         </div>
 
         <button
-          className="absolute right-4 top-4 dark:text-gray-200 text-neutral-600 dark:hover:text-white hover:text-neutral-400 text-3xl font-bold rounded-full w-10 h-10 flex items-center justify-center transition-colors"
+          className="absolute right-4 top-4 dark:text-gray-200 text-neutral-600 dark:hover:text-white hover:text-neutral-400 text-3xl font-bold rounded-full w escucha aquí -10 h-10 flex items-center justify-center transition-colors"
           onClick={handleClose}
         >
           ×

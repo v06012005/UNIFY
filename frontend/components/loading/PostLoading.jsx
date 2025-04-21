@@ -16,7 +16,7 @@ const PostLoading = () => {
                 </div>
             </div>
             <Skeleton className='mx-auto my-2 w-[450px] rounded-lg'>
-                <div className='h-[550px]'>Images/ Videos</div>
+                <div className='h-[400px]'>Images/ Videos</div>
             </Skeleton>
             <Skeleton className='mt-1 w-[450px] mx-auto rounded-md'>
                 <div>Captions</div>

@@ -28,7 +28,7 @@ public interface PostRepository extends JpaRepository<Post, String> {
             + "ORDER BY interactionCount DESC")
     List<Object[]> findPostsWithInteractionCounts();
 
-    @Query("SELECT p, (COUNT(DISTINCT lp.id) + COUNT(DISTINCT pc.id)) as interactionCount "
+    @Query("SELECT p, COUNT(DISTINCT pc.id) as commentCount, (COUNT(DISTINCT lp.id) + COUNT(DISTINCT pc.id)) as interactionCount "
             + "FROM Post p "
             + "LEFT JOIN p.likedPosts lp " + "LEFT JOIN p.comments pc "
             + "WHERE p.user.id NOT IN (SELECT f.userFollowing.id FROM Follower f WHERE f.userFollower.id = ?1) "
@@ -56,20 +56,29 @@ public interface PostRepository extends JpaRepository<Post, String> {
     @Override
     Optional<Post> findById(String id);
 
-    @Query("SELECT new com.app.unify.dto.global.PersonalizedPostDTO("
-            + "p,"
-            + "COUNT(DISTINCT lp.id) + COUNT(DISTINCT pc.id)"
-            + ")" + "FROM Post p "
-            + "LEFT JOIN p.likedPosts lp " + "LEFT JOIN p.comments pc " + "GROUP BY p "
+    @Query("SELECT new com.app.unify.dto.global.PersonalizedPostDTO"
+            + "("
+            + "p, "
+            + "COUNT(DISTINCT lp.id) + COUNT(DISTINCT pc.id), "
+            + "COUNT(DISTINCT pc.id)"
+            + ")"
+            + "FROM Post p "
+            + "LEFT JOIN p.likedPosts lp "
+            + "LEFT JOIN p.comments pc "
+            + "WHERE p.status = 1 "
+            + "GROUP BY p "
             + "ORDER BY COUNT(DISTINCT lp.id) + COUNT(DISTINCT pc.id) DESC")
     Page<PersonalizedPostDTO> findPersonalizedPosts(Pageable pageable);
 
-    // Thêm query mới
-    @Query("SELECT p, (SELECT COUNT(pc) FROM PostComment pc WHERE pc.post.id = p.id) AS commentCount " +
-            "FROM Post p WHERE p.status = 1")
+    @Query("SELECT p, COUNT(pc) "
+            + "FROM Post p LEFT JOIN p.comments pc "
+            + "WHERE p.status = 1 "
+            + "GROUP BY p")
     List<Object[]> findPostsWithCommentCount();
 
-    @Query("SELECT p, (SELECT COUNT(pc) FROM PostComment pc WHERE pc.post.id = p.id) AS commentCount " +
-            "FROM Post p WHERE p.id = :postId AND p.status = 1")
+    @Query("SELECT p, COUNT(pc) "
+            + "FROM Post p LEFT JOIN p.comments pc "
+            + "WHERE p.id = :postId AND p.status = 1 "
+            + "GROUP BY p")
     Object[] findPostWithCommentCountById(@Param("postId") String postId);
 }

@@ -1,21 +1,22 @@
 "use client";
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { fetchComments } from "app/api/service/commentService";
+import { fetchComments } from "@/lib/api/services/commentService";
 import CommentItem from "@/components/comments/CommentItem";
 import CommentInput from "@/components/comments/CommentInput";
 import Cookies from "js-cookie";
 import Link from "next/link";
-import Avatar from "@/public/images/unify_icon_2.svg";
-import { redirect } from "next/navigation";
-import { fetchPostById } from "@/app/lib/dal";
-import { useBookmarks } from "@/components/provider/BookmarkProvider";
 import Image from "next/image";
+import { useBookmarks } from "@/components/provider/BookmarkProvider";
 import ReportModal from "@/components/global/Report/ReportModal";
 import { useReports } from "@/components/provider/ReportProvider";
-import { useApp } from "@/components/provider/AppProvider"; // Thêm AppProvider để lấy thông tin user
+import { useApp } from "@/components/provider/AppProvider";
 import { addToast, ToastProvider } from "@heroui/toast";
-import iconVideo from "@/public/vds.svg"; // Correct video icon path
-import iconImage from "@/public/imgs.svg"; // Correct image icon path
+import { fetchPostById } from "@/lib/dal";
+import Skeleton from "@/components/global/SkeletonLoad"; // Thêm Skeleton
+import Avatar from "@/public/images/unify_icon_2.svg";
+import iconVideo from "@/public/vds.svg";
+import iconImage from "@/public/imgs.svg";
+
 const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   return (
     <Link
@@ -31,27 +32,33 @@ const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
 
 const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
   const [openList, setOpenList] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { createPostReport } = useReports();
   const { bookmarks = [], toggleBookmark } = useBookmarks();
   const [selectedMedia, setSelectedMedia] = useState(post?.media?.[0] || null);
   const [comments, setComments] = useState([]);
-  const [isCommentsLoading, setIsCommentsLoading] = useState(false); // Thêm trạng thái loading
-  const [replyingTo, setReplyingTo] = useState(null); // Thêm trạng thái để theo dõi reply
+  const [isCommentsLoading, setIsCommentsLoading] = useState(false);
+  const [replyingTo, setReplyingTo] = useState(null);
   const token = Cookies.get("token");
-  const commentsContainerRef = useRef(null); // Ref để cuộn comment
-  const { user } = useApp(); // Lấy thông tin user từ context
-  const currentUserId = user?.id; // ID của user hiện tại
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const openReportModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
+  const commentsContainerRef = useRef(null);
+  const { user } = useApp();
+  const currentUserId = user?.id;
   const [myPost, setMyPost] = useState([]);
 
+  // Tải bài post
+  useEffect(() => {
+    async function fetchPost() {
+      try {
+        const res = await fetchPostById(post?.id);
+        setMyPost(res);
+      } catch (error) {
+        console.error("Failed to fetch posts:", error);
+      }
+    }
+    fetchPost();
+  }, [post?.id]);
+
+  // Xử lý report bài post
   const handleReportPost = useCallback(
     async (postId, reason) => {
       const report = await createPostReport(postId, reason);
@@ -66,7 +73,6 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
             shouldShowTimeoutProgess: true,
             color: "warning",
           });
-          setIsModalOpen(false);
         } else {
           addToast({
             title: "Encountered an error",
@@ -75,8 +81,8 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
             shouldShowTimeoutProgess: true,
             color: "danger",
           });
-          setIsModalOpen(false);
         }
+        setIsModalOpen(false);
         return;
       }
 
@@ -92,18 +98,8 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
     },
     [createPostReport]
   );
-  useEffect(() => {
-    async function fetchPost() {
-      try {
-        const res = await fetchPostById(post?.id);
-        setMyPost(res);
-      } catch (error) {
-        console.error("Failed to fetch posts:", error);
-      }
-    }
-    fetchPost();
-  }, [post?.id]);
 
+  // Biến đổi hashtag thành link
   const transformHashtags = (text) => {
     return text.split(/(\#[a-zA-Z0-9_]+)/g).map((part, index) => {
       if (part.startsWith("#")) {
@@ -121,7 +117,7 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
     });
   };
 
-  // tải comments
+  // Tải bình luận
   const loadComments = useCallback(async () => {
     if (!post?.id || !token) return;
     setIsCommentsLoading(true);
@@ -136,72 +132,106 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
     }
   }, [post?.id, token]);
 
-  //   loadComments
+  // Tải bình luận khi modal mở
   useEffect(() => {
     loadComments();
   }, [loadComments]);
 
-  //  comment mới (bao gồm cả reply)
-  const handleNewComment = (newComment) => {
-    const enrichedComment = {
-      ...newComment,
-      username: user?.username || "Unknown",
-      user: { avatar: user?.avatar || "/default-avatar.jpg" }, // Thêm thông tin user
-    };
-    setComments((prevComments) => {
-      if (newComment.parentId) {
-        //  thêm vào danh sách replies
-        const addReplyToComment = (comments) => {
-          return comments.map((comment) => {
+  // Cập nhật danh sách bình luận (tương tự updateComments trong Reels)
+  const updateComments = useCallback(
+    (newComment) => {
+      setComments((prevComments) => {
+        const currentComments = Array.isArray(prevComments) ? prevComments : [];
+
+        const updateRepliesRecursively = (comments) =>
+          comments.map((comment) => {
             if (comment.id === newComment.parentId) {
               return {
                 ...comment,
-                replies: [enrichedComment, ...(comment.replies || [])],
+                replies: [
+                  {
+                    ...newComment,
+                    username: user?.username || "Unknown",
+                    avatarUrl: user?.avatar?.url || Avatar.src,
+                  },
+                  ...(comment.replies || []),
+                ],
               };
             }
-            if (comment.replies) {
+            if (comment.replies?.length) {
               return {
                 ...comment,
-                replies: addReplyToComment(comment.replies),
+                replies: updateRepliesRecursively(comment.replies),
               };
             }
             return comment;
           });
-        };
-        return addReplyToComment(prevComments);
-      }
-      //   không phải reply, thêm vào   comments gốc
-      return [enrichedComment, ...prevComments];
-    });
 
-    // Cuộn
-    if (commentsContainerRef.current) {
-      commentsContainerRef.current.scrollTo({
-        top: 0,
-        behavior: "smooth",
+        const updatedComments = newComment.parentId
+          ? updateRepliesRecursively(currentComments)
+          : [
+              {
+                ...newComment,
+                username: user?.username || "Unknown",
+                avatarUrl: user?.avatar?.url || Avatar.src,
+              },
+              ...currentComments,
+            ];
+
+        return updatedComments;
       });
-    }
 
-    // Reset trạng thái
-    setReplyingTo(null);
-  };
+      // Cuộn lên đầu danh sách bình luận
+      if (commentsContainerRef.current) {
+        commentsContainerRef.current.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
+      }
 
-  //   nhấn nút reply
-  const handleReplyClick = (comment) => {
+      setReplyingTo(null); // Reset trạng thái reply
+    },
+    [user]
+  );
+
+  // Xử lý khi nhấn Reply
+  const handleReplyClick = useCallback((comment) => {
     setReplyingTo(comment);
-    console.log("Replying to:", comment);
-  };
+  }, []);
 
-  //   hủy reply
-  const handleCancelReply = () => {
+  // Hủy trả lời
+  const handleCancelReply = useCallback(() => {
     setReplyingTo(null);
+  }, []);
+
+  // Mở/đóng modal report
+  const openReportModal = () => {
+    setIsModalOpen(true);
+  };
+  const closeModal = () => {
+    setIsModalOpen(false);
   };
 
+  // Đóng modal chính
   const handleClose = () => {
     setOpenList(false);
-    setShowDeleteModal(false);
+    setIsModalOpen(false);
     onClose();
   };
+
+  // Skeleton loading cho bình luận
+  const CommentSkeleton = () => (
+    <div className="items-start">
+      <div className="flex space-x-2 mb-14">
+        <Skeleton variant="circle" width={32} height={32} />
+        <div className="flex-1">
+          <Skeleton width={96} height={12} rounded />
+          <Skeleton width="75%" height={12} rounded className="mt-1" />
+          <Skeleton width="50%" height={12} rounded className="mt-1" />
+        </div>
+      </div>
+    </div>
+  );
 
   if (!post) return null;
 
@@ -214,18 +244,18 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
           <div className="w-1/2 relative dark:border-neutral-700 border-r">
             {selectedMedia ? (
               selectedMedia.mediaType === "VIDEO" ? (
-                <div className="w-full h-full flex items-center justify-center bg-black">
+                <div className="w-full h-full flex items-center justify-center bg-gray-200">
                   <video
                     src={selectedMedia.url}
                     controls
-                    className="max-w-full max-h-full object-contain"
+                    className="w-full h-full object-contain"
                   />
                 </div>
               ) : (
-                <div className="w-full h-full flex items-center justify-center bg-black">
+                <div className="w-full h-full flex items-center justify-center bg-gray-200">
                   <img
                     src={selectedMedia.url}
-                    className="max-w-full max-h-full object-contain "
+                    className="w-full h-full object-contain"
                     alt="Post Media"
                   />
                 </div>
@@ -241,10 +271,11 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
                 {post.media.map((item, index) => (
                   <div
                     key={index}
-                    className={`w-16 h-16 cursor-pointer border-2 rounded-md flex items-center justify-center bg-black ${selectedMedia?.url === item.url
-                      ? "border-blue-500"
-                      : "border-gray-500"
-                      } hover:border-blue-400 transition-colors`}
+                    className={`w-16 h-16 cursor-pointer border-2 rounded-md flex items-center justify-center bg-black ${
+                      selectedMedia?.url === item.url
+                        ? "border-blue-500"
+                        : "border-gray-500"
+                    } hover:border-blue-400 transition-colors`}
                     onClick={() => setSelectedMedia(item)}
                   >
                     {item.mediaType === "VIDEO" ? (
@@ -294,8 +325,8 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
                   <Image
                     src={post.user?.avatar?.url || Avatar}
                     alt="User Avatar"
-                    width={40} // Add width
-                    height={40} // Add height
+                    width={40}
+                    height={40}
                     className="w-full h-full rounded-full object-cover"
                   />
                 </div>
@@ -308,7 +339,6 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
                 content="•••"
                 className="text-2xl"
               />
-              {/* Modal Options */}
               {openList && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[60]">
                   <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-xl w-80 transform transition-all duration-200 scale-100 hover:scale-105">
@@ -379,19 +409,23 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
 
               <div className="mt-5 space-y-2">
                 {isCommentsLoading ? (
-                  <p>Loading comments...</p>
+                  [...Array(6)].map((_, index) => (
+                    <CommentSkeleton key={index} />
+                  ))
                 ) : comments.length > 0 ? (
                   comments.map((comment) => (
                     <CommentItem
                       key={comment.id}
                       comment={comment}
                       currentUserId={currentUserId}
-                      onReplySubmit={handleNewComment}
-                      onReplyClick={() => handleReplyClick(comment)}
+                      onReplySubmit={updateComments}
+                      onReplyClick={handleReplyClick}
                     />
                   ))
                 ) : (
-                  <p>No comments yet.</p>
+                  <p className="text-zinc-500 font-bold text-xl">
+                    No comments yet
+                  </p>
                 )}
               </div>
             </div>
@@ -399,9 +433,9 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
             <div className="p-4 border-t dark:border-neutral-800">
               <CommentInput
                 postId={post.id}
-                setComments={handleNewComment}
-                parentComment={replyingTo} //   được reply
-                onCancelReply={handleCancelReply} //   hủy reply
+                setComments={updateComments}
+                parentComment={replyingTo}
+                onCancelReply={handleCancelReply}
               />
             </div>
           </div>

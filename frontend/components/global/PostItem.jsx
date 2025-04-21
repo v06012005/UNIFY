@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useCallback } from "react";
 import LikeButton from "./LikeButton";
 import CommentButton from "./CommentButton";
 import ShareButton from "./ShareButton";
@@ -8,11 +8,10 @@ import Bookmark from "@/components/global/Bookmark";
 import Slider from "./Slider";
 import usePostLikeStatus from "@/hooks/usePostLikeStatus";
 import { useApp } from "../provider/AppProvider";
-import { Avatar, ToastProvider } from "@heroui/react";
+import { addToast, Avatar, ToastProvider } from "@heroui/react";
 import Link from "next/link";
 import ReportModal from "./Report/ReportModal";
 import { useReports } from "../provider/ReportProvider";
-
 const User = ({
   href = "",
   username = "",
@@ -22,7 +21,10 @@ const User = ({
 }) => (
   <Link href={href}>
     <div className="flex mb-2">
-      <Avatar className=" w-12 h-12 " src={avatar} />
+      <Avatar
+        className=" w-12 h-12 border border-gray-300 dark:border-neutral-700 "
+        src={avatar}
+      />
 
       <div className="ml-5">
         <p className="my-auto text-sm font-bold">@{username}</p>
@@ -65,9 +67,9 @@ const Caption = ({ text, maxLength = 100 }) => {
         : `${text.slice(0, maxLength)}...`}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="text-gray-500 font-semibold ml-2"
+        className="text-neutral-500 font-normal ml-2"
       >
-        {isExpanded ? "Less" : "More"}
+        {isExpanded ? "less" : "more"}
       </button>
     </div>
   );
@@ -156,7 +158,7 @@ const PostItem = ({ post }) => {
     <>
       <ToastProvider placement={"top-right"} />
       <div key={post.id} className="w-3/4 mb-8 mx-auto pb-8">
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center mx-10">
           <User
             avatar={post?.user?.avatar?.url}
             href={`/othersProfile/${post?.user?.username}`}
@@ -204,14 +206,14 @@ const PostItem = ({ post }) => {
           postId={post.id}
         />
         <Slider srcs={post.media} />
-        <div className="w-3/4 mx-auto px-2">
+        <div className="w-4/4 mx-10 px-2">
           <Caption text={transformHashtags(post.captions)} />
           <div className="flex justify-between text-xl">
-            <div className="flex gap-3">
+            <div className="flex gap-4">
               <LikeButton
                 className="!text-xl hover:opacity-50"
-                userId={user.id}
-                postId={post.id}
+                userId={user?.id}
+                postId={post?.id}
                 isLiked={isLiked}
                 setIsLiked={setIsLiked}
                 setLikeCount={setLikeCount}
@@ -225,11 +227,12 @@ const PostItem = ({ post }) => {
               <Bookmark
                 postId={post.id}
                 className="!text-xl hover:opacity-90"
+                classNameIcon={"text-black dark:text-white"}
               />
             </div>
           </div>
           <div>
-            <span className="text-base text-zinc-400">{likeCount} likes</span>
+            <span className="text-base font-normal text-neutral-700 dark:text-zinc-200">{likeCount} likes</span>
           </div>
           <div className="mt-2 flex flex-wrap">
             {hashtags.map((hashtag, index) => {
@@ -247,9 +250,10 @@ const PostItem = ({ post }) => {
               postId={post.id}
               className="text-black hover:text-gray-500 text-md animate-none transition-none dark:text-zinc-400 dark:hover:text-white"
             >
-              View all comments
+              View all {post.commentCount || 0} comments
             </CommentButton>
           </div>
+        
         </div>
       </div>
     </>

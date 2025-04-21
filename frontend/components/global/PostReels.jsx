@@ -42,7 +42,7 @@ const PostReels = forwardRef(
 
     return (
       <div
-        className="absolute inset-0 bg-gray-700 flex justify-center items-center"
+        className="absolute inset-0 bg-black flex justify-center items-center"
         onClick={togglePlayPause}
       >
         <button
@@ -80,7 +80,7 @@ const PostReels = forwardRef(
           }}
           muted={muted}
           loop={loop}
-          className="w-full h-full object-cover relative z-0"
+          className="w-full h-full object-contain relative z-0"
           playsInline
           onError={(e) => console.error("Video error:", e)}
         >

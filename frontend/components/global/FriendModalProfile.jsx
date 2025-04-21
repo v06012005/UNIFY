@@ -51,7 +51,7 @@ const FriendModal = ({ isOpen, onClose }) => {
             friendUsers.slice(0, 11).map((user) => (
               <li
                 key={user.username}
-                className="flex items-center justify-between py-2 border-b border-gray-500 "
+                className="flex items-center justify-between py-2 border-b border-gray-300 "
               >
                 <div
                   onClick={() => handleClick(user.username)}

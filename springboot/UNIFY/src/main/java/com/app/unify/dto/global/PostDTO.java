@@ -7,7 +7,9 @@ import com.app.unify.entities.Media;
 import com.app.unify.types.Audience;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -38,5 +40,4 @@ public class PostDTO {
     Set<HashtagDetailDTO> hashtags;
     
     private Long commentCount;
-
 }

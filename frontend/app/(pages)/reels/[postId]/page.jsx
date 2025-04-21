@@ -5,8 +5,8 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import ShareReels from "@/components/global/ShareReels";
 import PostReels from "@/components/global/PostReels";
-import { fetchComments } from "app/api/service/commentService";
-import { fetchPosts } from "@/app/lib/dal";
+import { fetchComments } from "@/lib/api/services/commentService";
+import { fetchPosts } from "@/lib/dal";
 import Cookies from "js-cookie";
 import { useApp } from "@/components/provider/AppProvider";
 import CommentItem from "@/components/comments/CommentItem";
@@ -556,7 +556,7 @@ export default function Reels() {
                 </div>
                 <div className="flex flex-col items-center">
 
-                  <BookmarkButton postId={post.id} />
+                  <BookmarkButton postId={post.id}/>
 
                 </div>
                 <div className="flex flex-col items-center relative">

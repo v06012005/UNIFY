@@ -11,10 +11,11 @@ import lombok.experimental.FieldDefaults;
 public class PersonalizedPostDTO {
     private Post post;
     private Long interactionCount;
-
-    public PersonalizedPostDTO(Post post, Long interactionCount) {
+    private Long commentCount;
+    public PersonalizedPostDTO(Post post, Long interactionCount, Long commentCount) {
         this.post = post;
         this.interactionCount = interactionCount;
+        this.commentCount = commentCount;
     }
 
 }
