@@ -1,31 +1,5 @@
 package com.app.unify.controllers;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.app.unify.dto.global.PostDTO;
 import com.app.unify.dto.global.PostFeedResponse;
 import com.app.unify.repositories.UserRepository;
@@ -36,6 +10,10 @@ import com.app.unify.services.PostService;
 import com.app.unify.types.Audience;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -67,16 +45,15 @@ public class PostController {
     }
 
     @GetMapping("/personalized")
-    public ResponseEntity<PostFeedResponse> getPersonalizedFeed(
+    public ResponseEntity<?> getPersonalizedFeed(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "7") int size
     ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("postedAt").descending());
         return ResponseEntity.ok(postService.getPersonalizedFeed(pageable));
     }
-    
-    
-    
+
+
     @GetMapping("/reels")
     public ResponseEntity<PostFeedResponse> getReelsPosts(
             @RequestParam(defaultValue = "0") int page,
@@ -84,14 +61,14 @@ public class PostController {
     ) {
         Page<PostDTO> postPage = postService.getReelsPosts(page, size);
 
-        PostFeedResponse response = new PostFeedResponse();
-        response.setPosts(postPage.getContent());
-        response.setHasNextPage(postPage.hasNext());
-        response.setCurrentPage(page);
-
+        PostFeedResponse response = PostFeedResponse.builder()
+                .posts(postPage.getContent())
+                .currentPage(postPage.getNumber())
+                .hasNextPage(postPage.hasNext())
+                .build();
         return ResponseEntity.ok(response);
     }
-    
+
 
     @PostMapping
     public PostDTO createPost(@RequestBody PostDTO postDTO) {
@@ -170,8 +147,7 @@ public class PostController {
         List<PostDTO> posts = postService.getRecommendedPostsForExplore(userId);
         return ResponseEntity.ok(posts);
     }
-    
-   
+
 
     private String getCurrentUserId() {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
