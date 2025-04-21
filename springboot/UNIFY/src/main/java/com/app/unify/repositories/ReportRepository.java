@@ -20,5 +20,6 @@ public interface ReportRepository extends JpaRepository<Report, String> {
     List<Report> findByEntityType(EntityType entityType);
     boolean existsByUserIdAndReportedIdAndEntityType(String userId, String reportedId, EntityType entityType);
     List<Report> findByStatusAndEntityType(Integer status, EntityType entityType);
+    List<Report> findByStatusInAndEntityType(List<Integer> statuses, EntityType entityType);
 }
 

@@ -131,7 +131,7 @@ const UserManagementPage = () => {
     <div className="py-10 px-6 h-screen w-[78rem]">
       <div className="max-w-7xl mx-auto mb-3 flex justify-between items-center">
         <div className="pl-4 w-1/2">
-          <h1 className="text-4xl font-bold">Reported Users</h1>
+          <h1 className="text-4xl font-bold">User List</h1>
           <p className="text-gray-500">
             Manage all reports about users who violated UNIFY's policies.
           </p>
