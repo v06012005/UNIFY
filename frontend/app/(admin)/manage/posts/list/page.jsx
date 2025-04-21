@@ -9,6 +9,7 @@ import TableLoading from "@/components/loading/TableLoading";
 import { useRouter } from "next/navigation";
 import clsx from "clsx";
 import { fetchFilteredReportedPosts } from "@/lib/dal";
+import { postCache } from "@/app/utils/cache";
 
 export const STATUSES = [
   { key: "pending", value: "Pending" },
@@ -39,18 +40,28 @@ const PostManagementPage = () => {
   }
 
   useEffect(() => {
+    const cached = postCache.get(filterKey);
+    if (cached) {
+      setPosts(cached);
+      setFilteredPosts(cached);
+      setLoading(false);
+      return;
+    }
+
     const fetchPosts = async () => {
       setLoading(true);
       try {
         const data = await fetchFilteredReportedPosts(filterKey);
         setPosts(data);
         setFilteredPosts(data);
+        postCache.set(filterKey, data);
       } catch (error) {
-        console.error("Lỗi khi tải danh sách người dùng: ", error);
+        console.error("Failed to fetch posts:", error);
       } finally {
         setLoading(false);
       }
     };
+
     fetchPosts();
   }, [filterKey]);
 

@@ -45,7 +45,7 @@ export const getUser = cache(async () => {
   }
 });
 
-export const fetchUserId = async(id) => {
+export const fetchUserId = async (id) => {
   const token = (await cookies()).get("token")?.value;
   if (!token) {
     redirect("/login");
@@ -436,6 +436,36 @@ export const fetchFilteredReportedPosts = async (key = 0) => {
       "http://localhost:8080/reports/filter/" + key,
       {
         method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (!response.ok) {
+      console.log("Failed to fetch posts, please check again");
+      return null;
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.log("Failed to fetch users: " + error);
+    return null;
+  }
+};
+
+export const updateReport = async (id, status) => {
+  const token = (await cookies()).get("token")?.value;
+
+  if (!token) {
+    redirect("/login");
+  }
+
+  try {
+    const response = await fetch(
+      "http://localhost:8080/reports/" + id + "/status?status=" + status,
+      {
+        method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
