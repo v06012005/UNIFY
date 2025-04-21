@@ -157,17 +157,30 @@ public class ReportService {
         reportDTO.setReportedEntity(getReportedEntity(report.getReportedId(), report.getEntityType()));
         return reportDTO;
     }
-    public List<ReportDTO> getReportsByStatuses(List<Integer> statuses) {
-        validateStatuses(statuses);
-        List<Report> reports = reportRepository.findByStatusIn(statuses);
+//    public List<ReportDTO> getReportsByStatuses(List<Integer> statuses) {
+//        validateStatuses(statuses);
+//        List<Report> reports = reportRepository.findByStatusIn(statuses);
+//
+//        return reports.stream()
+//                      .map(report -> {
+//                          ReportDTO reportDTO = reportMapper.toReportDTO(report);
+//                          reportDTO.setReportedEntity(getReportedEntity(report.getReportedId(), report.getEntityType()));
+//                          return reportDTO;
+//                      })
+//                      .collect(Collectors.toList());
+//    }
+    public List<ReportDTO> getReportsByStatuses(List<Integer> statuses, EntityType entityType) {
+        validateStatuses(statuses); 
+
+        List<Report> reports = reportRepository.findByStatusInAndEntityType(statuses, entityType);
 
         return reports.stream()
-                      .map(report -> {
-                          ReportDTO reportDTO = reportMapper.toReportDTO(report);
-                          reportDTO.setReportedEntity(getReportedEntity(report.getReportedId(), report.getEntityType()));
-                          return reportDTO;
-                      })
-                      .collect(Collectors.toList());
+                .map(report -> {
+                    ReportDTO reportDTO = reportMapper.toReportDTO(report);
+                    reportDTO.setReportedEntity(getReportedEntity(report.getReportedId(), report.getEntityType()));
+                    return reportDTO;
+                })
+                .collect(Collectors.toList());
     }
 
     private void validateStatuses(List<Integer> statuses) {

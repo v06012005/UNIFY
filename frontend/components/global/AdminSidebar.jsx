@@ -49,7 +49,7 @@ const AdminSidebar = () => {
 
   return (
     <div className="relative flex flex-row ">
-      <div className="flex flex-col border border-gray-500 dark:border-neutral-500 h-screen fixed bg-gray-200 dark:bg-neutral-800 left-0 top-0 z-50 p-3">
+      <div className="flex flex-col border border-none dark:border-neutral-500 h-screen fixed bg-gray-200 dark:bg-neutral-800 left-0 top-0 p-3">
         <UnifyLogo className="w-52 mx-auto" />
         <Divider className="mt-5 mb-2" />
         <div className="flex w-full justify-between">
@@ -75,7 +75,8 @@ const AdminSidebar = () => {
                     <NavButton
                       iconClass="fa-solid fa-user-xmark"
                       text="Reported Users"
-                      href="/manage/users/list"
+                       href="/manage/users/reports"
+                      
                     />
                   </li>
                   <li>

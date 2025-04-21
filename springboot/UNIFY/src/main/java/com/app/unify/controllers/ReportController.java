@@ -40,17 +40,31 @@ public class ReportController {
 	@Autowired
 	private ReportMapper mapper;
 
-	@GetMapping("/status")
-	public ResponseEntity<?> getReportsByStatuses(@RequestParam List<Integer> statuses) {
-		try {
-			List<ReportDTO> reports = reportService.getReportsByStatuses(statuses);
-			return ResponseEntity.ok(reports);
-		} catch (IllegalArgumentException e) {
-			Map<String, String> errorResponse = new HashMap<>();
-			errorResponse.put("error", e.getMessage());
-			return ResponseEntity.badRequest().body(errorResponse);
-		}
+//	@GetMapping("/status")
+//	public ResponseEntity<?> getReportsByStatuses(@RequestParam List<Integer> statuses) {
+//		try {
+//			List<ReportDTO> reports = reportService.getReportsByStatuses(statuses);
+//			return ResponseEntity.ok(reports);
+//		} catch (IllegalArgumentException e) {
+//			Map<String, String> errorResponse = new HashMap<>();
+//			errorResponse.put("error", e.getMessage());
+//			return ResponseEntity.badRequest().body(errorResponse);
+//		}
+//	}
+	@GetMapping("/reportUser/status")
+	public ResponseEntity<?> findFilteredReportsByStatusesAndType(
+	        @RequestParam List<Integer> statuses,
+	        @RequestParam EntityType entityType) {
+	    try {
+	        List<ReportDTO> reports = reportService.getReportsByStatuses(statuses, entityType);
+	        return ResponseEntity.ok(reports);
+	    } catch (IllegalArgumentException e) {
+	        Map<String, String> errorResponse = new HashMap<>();
+	        errorResponse.put("error", e.getMessage());
+	        return ResponseEntity.badRequest().body(errorResponse);
+	    }
 	}
+
 
 	@GetMapping("/allPosts")
 	public List<ReportDTO> findAllReportedPosts() {
