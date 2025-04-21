@@ -38,8 +38,9 @@ public class MessageService {
 
     public List<Message> getMessagesBySenderAndReceiver(String sender, String receiver) {
         Query query = new Query();
-        query.addCriteria(new Criteria().orOperator(Criteria.where("sender").is(sender).and("receiver").is(receiver), Criteria.where("sender").is(receiver).and("receiver").is(sender)));
-
+        query.addCriteria(new Criteria()
+                .orOperator(Criteria.where("sender").is(sender).and("receiver").is(receiver),
+                        Criteria.where("sender").is(receiver).and("receiver").is(sender)));
         query.collation(Collation.of("en"));
         query.with(Sort.by(Sort.Direction.ASC, "timestamp"));
         return mongoTemplate.find(query, Message.class);

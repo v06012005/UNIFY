@@ -1,5 +1,6 @@
 package com.app.unify.services;
 
+import com.app.unify.dto.global.ShareAbleUserDTO;
 import com.app.unify.dto.global.UserDTO;
 import com.app.unify.entities.Avatar;
 import com.app.unify.entities.Role;
@@ -8,15 +9,11 @@ import com.app.unify.exceptions.UserNotFoundException;
 import com.app.unify.mapper.AvatarMapper;
 import com.app.unify.mapper.UserMapper;
 import com.app.unify.repositories.AvatarRepository;
+import com.app.unify.repositories.FollowRepository;
 import com.app.unify.repositories.RoleRepository;
 import com.app.unify.repositories.UserRepository;
 import com.app.unify.utils.EncryptPasswordUtil;
 import jakarta.transaction.Transactional;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,6 +23,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -33,24 +36,33 @@ public class UserService {
     private UserRepository userRepository;
     private RoleRepository roleRepository;
     private UserMapper userMapper;
-    private AvatarRepository avatarRepository;
     private PasswordEncoder passwordEncoder;
     private AvatarMapper avatarMapper;
+    private FollowRepository followRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository, RoleRepository roleRepository, UserMapper userMapper, PasswordEncoder passwordEncoder, AvatarRepository avatarRepository, AvatarMapper avatarMapper) {
+    public UserService(
+            UserRepository userRepository,
+            RoleRepository roleRepository,
+            UserMapper userMapper,
+            PasswordEncoder passwordEncoder,
+            AvatarRepository avatarRepository,
+            AvatarMapper avatarMapper,
+            FollowRepository followRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.userMapper = userMapper;
         this.avatarMapper = avatarMapper;
-        this.avatarRepository = avatarRepository;
         this.passwordEncoder = passwordEncoder;
-
+        this.followRepository = followRepository;
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     public List<UserDTO> findAll() {
-        return userRepository.findAll().stream().map(userMapper::toUserDTO).collect(Collectors.toList());
+        return userRepository.findAll()
+                .stream()
+                .map(userMapper::toUserDTO)
+                .collect(Collectors.toList());
     }
 
     public UserDTO createUser(UserDTO userDto) {
@@ -58,7 +70,8 @@ public class UserService {
         if (userDto.getReportApprovalCount() == null) {
             userDto.setReportApprovalCount(0);
         }
-        Role role = roleRepository.findByName("USER").orElseThrow(() -> new RuntimeException("Role not found !"));
+        Role role = roleRepository.findByName("USER")
+                .orElseThrow(() -> new RuntimeException("Role not found !"));
         userDto.setRoles(Collections.singleton(role));
 
         User user = userRepository.save(userMapper.toUser(userDto));
@@ -67,7 +80,8 @@ public class UserService {
 
     // @PreAuthorize("hasRole('ADMIN')")
     public UserDTO findById(String id) {
-        return userMapper.toUserDTO(userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found !")));
+        return userMapper.toUserDTO(userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found !")));
     }
 
     //	@PreAuthorize("#userDto.email == authentication.name")
@@ -85,9 +99,12 @@ public class UserService {
     public UserDTO updateUser(UserDTO userDto) {
 
         try {
-            Role role = roleRepository.findByName("USER").orElseThrow(() -> new RuntimeException("Role not found!"));
+            Role role = roleRepository.findByName("USER")
+                    .orElseThrow(() -> new RuntimeException("Role not found!"));
 
-            User existingUser = userRepository.findById(userDto.getId()).orElseThrow(() -> new UserNotFoundException("User not found!"));
+            User existingUser = userRepository.findById(userDto
+                    .getId())
+                    .orElseThrow(() -> new UserNotFoundException("User not found!"));
 
             userDto.setRoles(Collections.singleton(role));
 
@@ -124,27 +141,31 @@ public class UserService {
 
     @PreAuthorize("hasRole('ADMIN')")
     public void removeUser(String id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found !"));
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found !"));
         userRepository.delete(user);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     public void temporarilyDisableUser(String id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found !"));
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found !"));
         user.setStatus(1);
         userRepository.save(user);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     public void permanentlyDisableUser(String id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found !"));
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found !"));
         user.setStatus(2);
         userRepository.save(user);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     public void unlockUser(String id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found !"));
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found !"));
         user.setStatus(0);
         userRepository.save(user);
     }
@@ -152,12 +173,15 @@ public class UserService {
     public UserDTO getMyInfo() {
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
-        User user = userRepository.findByEmail(name).orElseThrow(() -> new UserNotFoundException("User not found !"));
+        User user = userRepository.findByEmail(name)
+                .orElseThrow(() -> new UserNotFoundException("User not found !"));
         return userMapper.toUserDTO(user);
     }
 
     public UserDTO findByUsername(String username) {
-        return userRepository.findByUsername(username).map(userMapper::toUserDTO).orElseThrow(() -> new UserNotFoundException("Username not found: " + username));
+        return userRepository.findByUsername(username)
+                .map(userMapper::toUserDTO)
+                .orElseThrow(() -> new UserNotFoundException("Username not found: " + username));
     }
 
     public List<UserDTO> getSuggestedUsers(String currentUserId) {
@@ -177,7 +201,11 @@ public class UserService {
         if (userDTO == null) {
             return Collections.emptyList();
         }
-        return userRepository.findUsersFollowingMe(userDTO.getId()).stream().map(userMapper::toUserDTO).collect(Collectors.toList());
+        return userRepository.findUsersFollowingMe(userDTO
+                .getId())
+                .stream()
+                .map(userMapper::toUserDTO)
+                .collect(Collectors.toList());
     }
 
     public List<UserDTO> findUsersFollowedBy(String currentUserId) {
@@ -186,7 +214,11 @@ public class UserService {
             return Collections.emptyList();
         }
 
-        return userRepository.findUsersFollowedBy(userDTO.getId()).stream().map(userMapper::toUserDTO).collect(Collectors.toList());
+        return userRepository.findUsersFollowedBy(userDTO
+                .getId())
+                .stream()
+                .map(userMapper::toUserDTO)
+                .collect(Collectors.toList());
     }
 
     public List<UserDTO> getFriends(String currentUserId) {
@@ -195,7 +227,11 @@ public class UserService {
             return Collections.emptyList();
         }
 
-        return userRepository.findFriendsByUserId(userDTO.getId()).stream().map(userMapper::toUserDTO).collect(Collectors.toList());
+        return userRepository.findFriendsByUserId(userDTO
+                .getId())
+                .stream()
+                .map(userMapper::toUserDTO)
+                .collect(Collectors.toList());
     }
 
     public UserDTO changePassword(String currentPassword, String newPassword) {
@@ -216,4 +252,19 @@ public class UserService {
         return userMapper.toUserDTO(updatedUser);
     }
 
+    public List<ShareAbleUserDTO> getMutualFollowers(String myId) {
+        List<User> mutualUsers = followRepository.findMutualFollowingUsers(myId);
+
+        return mutualUsers.stream()
+                .map(user -> {
+                    Avatar latestAvatar = user.getLatestAvatar();
+                    return new ShareAbleUserDTO(
+                            user.getId(),
+                            user.getUsername(),
+                            user.getFirstName() + " " + user.getLastName(),
+                            latestAvatar != null ? String.valueOf(avatarMapper.toAvatarDTO(latestAvatar)) : null
+                    );
+                })
+                .toList();
+    }
 }
