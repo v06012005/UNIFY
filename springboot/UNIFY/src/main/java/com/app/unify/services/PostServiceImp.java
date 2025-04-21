@@ -58,7 +58,7 @@ public class PostServiceImp implements PostService {
     private HashtagDetailRepository hashtagDetailRepository;
 
 
-
+    @CacheEvict(value = "personalizedFeedCache", allEntries = true)
     @Override
     public PostDTO createPost(PostDTO postDTO) {
         Post post = mapper.toPost(postDTO);
@@ -79,6 +79,7 @@ public class PostServiceImp implements PostService {
         return mapper.toPostDTO(post);
     }
 
+    @CacheEvict(value = "personalizedFeedCache", allEntries = true)
     @Override
     public PostDTO updatePost(PostDTO postDTO) {
     	Post post = postRepository.findById(postDTO.getId())
