@@ -4,8 +4,8 @@ import Image from "next/image";
 import avatar from "@/public/images/testreel.jpg";
 import avatar2 from "@/public/images/testAvt.jpg";
 import Link from "next/link";
-import { fetchPostById } from "@/lib/dal";
-import { useParams } from "next/navigation";
+import { fetchPostById, updateReport } from "@/lib/dal";
+import { useParams, useRouter } from "next/navigation";
 import {
   Modal,
   ModalContent,
@@ -18,6 +18,8 @@ import {
   CardHeader,
   CardBody,
   User,
+  addToast,
+  Spinner,
 } from "@heroui/react";
 import Cookies from "js-cookie";
 import { cn } from "@/lib/utils";
@@ -36,6 +38,56 @@ const PostDetail = () => {
   const [post, setPost] = useState(null);
   const [report, setReport] = useState(null);
   const { postId } = useParams();
+  const [isButtonLoading, setButtonLoading] = useState(false);
+  const [confirmAction, setConfirmAction] = useState(null);
+  const router = useRouter();
+
+  const {
+    isOpen: isConfirmOpen,
+    onOpen: onOpenConfirm,
+    onOpenChange: onConfirmOpenChange,
+  } = useDisclosure();
+
+  const handleApprove = async () => {
+    try {
+      setButtonLoading(true);
+      const data = await updateReport(report?.id, 1);
+      setReport(data);
+    } catch (error) {
+      addToast({
+        title: "Fail",
+        description:
+          "Encounter an error. Cannot process this report.",
+        timeout: 3000,
+        shouldShowTimeoutProgess: true,
+        color: "danger",
+      });
+    }
+    finally {
+      setButtonLoading(false);
+    }
+  }
+
+  const handleReject = async () => {
+    try {
+      setButtonLoading(true);
+      const data = await updateReport(report?.id, 2);
+      setReport(data);
+    } catch (error) {
+      addToast({
+        title: "Fail",
+        description:
+          "Encounter an error. Cannot process this report.",
+        timeout: 3000,
+        shouldShowTimeoutProgess: true,
+        color: "danger",
+      });
+    }
+    finally {
+      setButtonLoading(false);
+    }
+  }
+
 
   useEffect(() => {
     async function getReportedPost() {
@@ -74,16 +126,41 @@ const PostDetail = () => {
         <h1 className="font-bold text-3xl uppercase">Reported Post Details</h1>
         <p className="text-gray-500">Show all the details about the reported post.</p>
       </div>
-      <div className="flex w-1/3">
-        <button className="border rounded-md bg-green-500 font-bold text-white p-3"><i className="fa-solid fa-thumbs-up"></i> Approve</button>
-        <button className="border rounded-md bg-red-500 font-bold ml-3 text-white p-3"><i className="fa-solid fa-circle-minus"></i> Deny</button>
+
+      <div className="flex justify-between">
+        <button
+          onClick={() => router.back()}
+          className="px-4 py-2 rounded-md border border-blue-500 hover:bg-blue-500 hover:text-white text-blue-500"
+        >
+          ← Return to List
+        </button>
+        {report?.status === 0 &&
+          <div className="">
+            <button onClick={() => {
+              setConfirmAction(() => handleApprove);
+              onOpenConfirm();
+            }} disabled={isButtonLoading} className="border rounded-md bg-green-500 font-bold text-white p-3">
+              {isButtonLoading && <><Spinner size="sm" /> Loading</>}
+              {!isButtonLoading && <><i className="fa-solid fa-thumbs-up"></i> Approve</>}
+            </button>
+            <button onClick={() => {
+              setConfirmAction(() => handleReject);
+              onOpenConfirm();
+            }} disabled={isButtonLoading} className="border rounded-md bg-red-500 font-bold ml-3 text-white p-3">
+              {isButtonLoading && <><Spinner size="sm" /> Loading</>}
+              {!isButtonLoading && <><i className="fa-solid fa-circle-minus"></i> Reject</>}
+            </button>
+          </div>}
+
       </div>
+
       {loading ? (<ReportedPostLoading />) : (
         <>
           <div className="border p-3 bg-gray-200 my-3 rounded-md">
             <MyHeading2 content="Basic Info" />
             <div className="w-3/4 pl-5">
               <ul>
+                <li><p className="font-bold">Report ID: <span className="font-normal">{report?.id}</span></p></li>
                 <li><p className="font-bold">Reported Date: <span className="font-normal">{new Date(report?.reportedAt).toLocaleString('en-US', {
                   day: '2-digit',
                   month: 'short',
@@ -109,7 +186,7 @@ const PostDetail = () => {
               </ul>
             </div>
             <div className="flex w-3/4 pl-5 my-4 ">
-              <Card className="py-2 shadow-none border rounded-md w-1/3">
+              {/* <Card className="py-2 shadow-none border rounded-md w-1/3">
                 <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
                   <h4 className="font-bold text-large">Reporter</h4>
                 </CardHeader>
@@ -122,7 +199,7 @@ const PostDetail = () => {
                     name={`Matt Le`} className="my-3 justify-start"
                   />
                 </CardBody>
-              </Card>
+              </Card> */}
               <div className="flex mx-5">
                 <i className="fa-regular my-auto fa-circle-right text-4xl"></i>
               </div>
@@ -209,6 +286,30 @@ const PostDetail = () => {
           )}
         </ModalContent>
       </Modal>
+
+      <Modal isOpen={isConfirmOpen} onOpenChange={onConfirmOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader>Are you sure?</ModalHeader>
+              <ModalBody>This action can't be undone. You will not be able to change this report's status later on.</ModalBody>
+              <ModalFooter>
+                <Button onPress={onClose}>Cancel</Button>
+                <Button
+                  color="danger"
+                  onPress={() => {
+                    if (confirmAction) confirmAction();
+                    onClose();
+                  }}
+                >
+                  Confirm
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+
     </div>
   );
 };
