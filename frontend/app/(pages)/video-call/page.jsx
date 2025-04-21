@@ -5,7 +5,7 @@ import { useApp } from "@/components/provider/AppProvider";
 import { usePeer } from "@/components/provider/PeerProvider";
 import { Mic, MicOff, Video, VideoOff, MonitorUp, PhoneOff } from 'lucide-react';
 import Logo from "@/public/images/unify_darkmode_full.svg"
-import { fetchUserId } from '@/app/lib/dal';
+import { fetchUserId } from '@/lib/dal';
 
 export default function VideoCallApp() {
   const { user } = useApp();
@@ -81,7 +81,7 @@ export default function VideoCallApp() {
               <div className="w-full relative h-[410px] bg-gradient-to-br from-gray-700 to-gray-900 rounded-2xl overflow-hidden">
                 <video
                   ref={currentUserVideoRef}
-                  className={`w-full h-full object-cover ${!cameraOn && 'invisible'} z-10`} 
+                  className={`w-full h-full object-cover scale-x-[-1] ${!cameraOn && 'invisible'} z-10`} 
                   autoPlay
                   muted
                 />
@@ -145,7 +145,7 @@ export default function VideoCallApp() {
               <div className="w-full relative h-[410px] bg-gradient-to-br from-gray-700 to-gray-900 rounded-2xl overflow-hidden">
                 <video
                   ref={remoteVideoRef}
-                  className={`w-full h-full object-cover ${!remoteCameraOn && 'invisible'} z-10`}
+                  className={`w-full h-full object-cover scale-x-[-1] ${!remoteCameraOn && 'invisible'} z-10`}
                   autoPlay
                 />
                 {

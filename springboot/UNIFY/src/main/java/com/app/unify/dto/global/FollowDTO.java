@@ -1,5 +1,6 @@
 package com.app.unify.dto.global;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import com.app.unify.entities.User;
@@ -11,7 +12,7 @@ import lombok.experimental.FieldDefaults;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class FollowDTO {
+public class FollowDTO implements Serializable {
 	private FollowerUserId id;
 
 	private User userFollower;

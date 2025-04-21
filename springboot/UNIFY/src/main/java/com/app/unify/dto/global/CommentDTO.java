@@ -1,5 +1,6 @@
 package com.app.unify.dto.global;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,7 +19,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class CommentDTO {
+public class CommentDTO  implements Serializable {
     private String id;
     private String content;
     private String userId;
@@ -29,7 +30,6 @@ public class CommentDTO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     private LocalDateTime commentedAt;
 
-//    @JsonIgnoreProperties("replies")
     private List<CommentDTO> replies;
 
     public CommentDTO(PostComment comment) {

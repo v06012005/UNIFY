@@ -1,5 +1,6 @@
 package com.app.unify.entities;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import com.app.unify.types.FriendshipStatus;
@@ -27,7 +28,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Friendship {
+public class Friendship implements Serializable {
 
 	@EmbeddedId
 	FriendshipUserId id;

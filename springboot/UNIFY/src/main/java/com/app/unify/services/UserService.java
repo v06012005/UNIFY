@@ -16,6 +16,8 @@ import com.app.unify.utils.EncryptPasswordUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -79,6 +81,8 @@ public class UserService {
     }
 
     // @PreAuthorize("hasRole('ADMIN')")
+
+    @Cacheable(value = "user", key = "#id")
     public UserDTO findById(String id) {
         return userMapper.toUserDTO(userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found !")));
