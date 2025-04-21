@@ -6,7 +6,7 @@ import { useRouter, useParams } from "next/navigation";
 import ShareReels from "@/components/global/ShareReels";
 import PostReels from "@/components/global/PostReels";
 
-import { fetchComments } from "app/api/service/commentService";
+import { fetchComments } from "@/app/lib/api/services/commentService";
 import { fetchReels } from "@/app/lib/dal";
 
 import Cookies from "js-cookie";
