@@ -4,7 +4,7 @@ import { useApp } from "@/components/provider/AppProvider";
 import { File, FileText, FileImage, FileVideo, FileMusic } from "lucide-react";
 import { useEffect } from "react";
 
-const Message = ({ messages, messagesEndRef, avatar}) => {
+const Message = ({ messages, messagesEndRef, avatar }) => {
   const { user } = useApp();
   const currentUser = user.id;
 
@@ -53,7 +53,7 @@ const Message = ({ messages, messagesEndRef, avatar}) => {
                 <img
                   src={avatar}
                   alt="Avatar"
-                  className="rounded-full w-10 h-10"
+                  className="rounded-full w-10 h-10 border-2 border-neutral-700"
                   width={35}
                   height={35}
                 />
