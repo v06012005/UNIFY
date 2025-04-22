@@ -5,10 +5,8 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import ShareReels from "@/components/global/ShareReels";
 import PostReels from "@/components/global/PostReels";
-
 import { fetchComments } from "@/app/lib/api/services/commentService";
 import { fetchReels } from "@/app/lib/dal";
-
 import Cookies from "js-cookie";
 import { useApp } from "@/components/provider/AppProvider";
 import CommentItem from "@/components/comments/CommentItem";
@@ -20,13 +18,11 @@ import LikeButton from "@/components/global/LikeButton";
 import ReportModal from "@/components/global/Report/ReportModal";
 import { useReports } from "@/components/provider/ReportProvider";
 import { addToast, ToastProvider } from "@heroui/toast";
-
-
 import Skeleton from "@/components/global/SkeletonLoad";
 import VideoPostSkeleton from "@/components/global/VideoPostSkeleton";
 import BookmarkButton from "@/components/global/Bookmark";
 import { useInView } from "react-intersection-observer";
-import usePostLikeStatus from "@/hooks/usePostLikeStatus";
+import { useRouter } from "next/navigation";
 
 const PAGE_SIZE = 13;
 
@@ -54,7 +50,6 @@ export default function Reels() {
   const [isLoadingInitial, setIsLoadingInitial] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const isFetchingRef = useRef(false);
-
   const { ref: loadMoreRef, inView } = useInView({
     threshold: 0.05, 
     triggerOnce: false,
