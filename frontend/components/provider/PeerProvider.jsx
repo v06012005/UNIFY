@@ -1,20 +1,21 @@
 // context/PeerContext.js
-'use client';
+"use client";
 
-import { createContext, useContext, useRef, useState, useEffect } from 'react';
-import Peer from 'peerjs';
-import { usePathname } from 'next/navigation';
-import { fetchUserId, getUser } from '@/app/lib/dal';
-import { useApp } from './AppProvider';
+import { createContext, useContext, useRef, useState, useEffect } from "react";
+import Peer from "peerjs";
+import { usePathname } from "next/navigation";
+import { fetchUserId, getUser } from "@/app/lib/dal";
+import { useApp } from "./AppProvider";
 
 const PeerContext = createContext();
 
 export const PeerProvider = ({ children }) => {
-  const [peerId, setPeerId] = useState('');
-  const [remotePeerIdValue, setRemotePeerIdValue] = useState('');
-  const [yourName, setYourName] = useState('');
-  const [callerName, setCallerName] = useState('');
-  const avatarDefault = 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fcellphones.com.vn%2Fsforum%2Favatar-trang&psig=AOvVaw1tGu62oBQWs8Ln4Dowu7wc&ust=1744781189259000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCMinvcqm2YwDFQAAAAAdAAAAABAE';
+  const [peerId, setPeerId] = useState("");
+  const [remotePeerIdValue, setRemotePeerIdValue] = useState("");
+  const [yourName, setYourName] = useState("");
+  const [callerName, setCallerName] = useState("");
+  const avatarDefault =
+    "https://www.google.com/url?sa=i&url=https%3A%2F%2Fcellphones.com.vn%2Fsforum%2Favatar-trang&psig=AOvVaw1tGu62oBQWs8Ln4Dowu7wc&ust=1744781189259000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCMinvcqm2YwDFQAAAAAdAAAAABAE";
   const [avatarRemote, setAvatarRemote] = useState(avatarDefault);
   const [cameraOn, setCameraOn] = useState(true);
   const [micOn, setMicOn] = useState(true);
@@ -23,38 +24,37 @@ export const PeerProvider = ({ children }) => {
   const [mediaStream, setMediaStream] = useState(null);
   const [incomingCall, setIncomingCall] = useState(null);
   const [isInCall, setIsInCall] = useState(false);
-  const [idToCall, setIdToCall] = useState('');
+  const [idToCall, setIdToCall] = useState("");
   const [userToCall, setUserToCall] = useState(null);
-  const path = usePathname(); 
-  
+  const path = usePathname();
+
   const currentUserVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
   const peerInstance = useRef(null);
   const currentCallRef = useRef(null);
   const dataConnectionRef = useRef(null);
-  const {user} = useApp();
+  const { user } = useApp();
 
- 
   useEffect(() => {
     async function initPeer() {
-      const user = await getUser(); 
+      const user = await getUser();
       let userId = user?.id || undefined;
-      setYourName(`${user.firstName} ${user.lastName}`)
+      setYourName(`${user.firstName} ${user.lastName}`);
 
       let peer = new Peer(userId);
 
-      peer.on('open', () => {
-        localStorage.setItem('cid', userId);
+      peer.on("open", () => {
+        localStorage.setItem("cid", userId);
         setPeerId(userId);
       });
 
-      peer.on('error', (err) => {
-        if (err.type === 'unavailable-id') {
-          console.warn('ID taken. Falling back to random ID.');
-          peer = new Peer(); 
+      peer.on("error", (err) => {
+        if (err.type === "unavailable-id") {
+          console.warn("ID taken. Falling back to random ID.");
+          peer = new Peer();
           setupPeerEvents(peer);
         } else {
-          console.error('Peer error:', err);
+          console.error("Peer error:", err);
         }
       });
 
@@ -63,18 +63,18 @@ export const PeerProvider = ({ children }) => {
     }
 
     function setupPeerEvents(peer) {
-      peer.on('call', (call) => {
-        console.log('Incoming call:', call);
-        setCallerName(call.metadata?.name || 'Unknown');
+      peer.on("call", (call) => {
+        console.log("Incoming call:", call);
+        setCallerName(call.metadata?.name || "Unknown");
         setRemoteMicOn(call.metadata?.micOn ?? true);
         setRemoteCameraOn(call.metadata?.cameraOn ?? true);
         setAvatarRemote(call.metadata.avatar || avatarDefault);
         setIncomingCall(call);
       });
 
-      peer.on('connection', (conn) => {
+      peer.on("connection", (conn) => {
         dataConnectionRef.current = conn;
-        conn.on('data', handleData);
+        conn.on("data", handleData);
       });
     }
 
@@ -89,17 +89,20 @@ export const PeerProvider = ({ children }) => {
 
     const initMedia = async () => {
       try {
-        if (path === '/video-call') {
-          stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        if (path === "/video-call") {
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: true,
+          });
           setMediaStream(stream);
-          
+
           if (currentUserVideoRef.current) {
             currentUserVideoRef.current.srcObject = stream;
             currentUserVideoRef.current.play().catch(console.error);
           }
         }
       } catch (error) {
-        console.error('Media initialization error:', error);
+        console.error("Media initialization error:", error);
       }
     };
 
@@ -107,7 +110,7 @@ export const PeerProvider = ({ children }) => {
 
     return () => {
       if (stream) {
-        stream.getTracks().forEach(track => track.stop());
+        stream.getTracks().forEach((track) => track.stop());
       }
     };
   }, [path]);
@@ -115,24 +118,24 @@ export const PeerProvider = ({ children }) => {
   useEffect(() => {
     async function fetchUser() {
       if (idToCall) {
-          const user = await fetchUserId(idToCall);
-          setUserToCall(user);
-        } 
-    };
+        const user = await fetchUserId(idToCall);
+        setUserToCall(user);
+      }
+    }
     fetchUser();
-  }, [idToCall])
+  }, [idToCall]);
 
   const handleData = (data) => {
     switch (data.type) {
-      case 'status':
+      case "status":
         setRemoteMicOn(data.micOn);
         setRemoteCameraOn(data.cameraOn);
         break;
-      case 'intro':
-        setCallerName(data.name || 'Unknown');
+      case "intro":
+        setCallerName(data.name || "Unknown");
         setAvatarRemote(data.avatar || avatarDefault);
         break;
-      case 'end-call':
+      case "end-call":
         endCall();
         break;
       default:
@@ -143,7 +146,7 @@ export const PeerProvider = ({ children }) => {
   const sendStatus = (micStatus, camStatus) => {
     if (dataConnectionRef.current?.open) {
       dataConnectionRef.current.send({
-        type: 'status',
+        type: "status",
         micOn: micStatus,
         cameraOn: camStatus,
       });
@@ -161,28 +164,28 @@ export const PeerProvider = ({ children }) => {
       const conn = peerInstance.current.connect(incomingCall.peer);
       dataConnectionRef.current = conn;
 
-      conn.on('open', () => {
+      conn.on("open", () => {
         conn.send({
-          type: 'intro',
-          name: yourName || 'Anonymous',
+          type: "intro",
+          name: yourName || "Anonymous",
           avatar: user?.avatar?.url || "",
         });
         sendStatus(micOn, cameraOn);
       });
 
-      conn.on('data', handleData);
+      conn.on("data", handleData);
 
-      incomingCall.on('stream', (remoteStream) => {
+      incomingCall.on("stream", (remoteStream) => {
         if (remoteVideoRef.current) {
           remoteVideoRef.current.srcObject = remoteStream;
           remoteVideoRef.current.play().catch(console.error);
         }
       });
 
-      incomingCall.on('close', endCall);
+      incomingCall.on("close", endCall);
       setIncomingCall(null);
     } catch (error) {
-      console.error('Error answering call:', error);
+      console.error("Error answering call:", error);
     }
   };
 
@@ -195,9 +198,12 @@ export const PeerProvider = ({ children }) => {
 
   const call = async (remotePeerId) => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true,
+      });
       setMediaStream(stream);
-      
+
       if (currentUserVideoRef.current) {
         currentUserVideoRef.current.srcObject = stream;
         currentUserVideoRef.current.play().catch(console.error);
@@ -206,20 +212,29 @@ export const PeerProvider = ({ children }) => {
       const conn = peerInstance.current.connect(remotePeerId);
       dataConnectionRef.current = conn;
 
-      conn.on('open', () => {
+      conn.on("open", () => {
         sendStatus(micOn, cameraOn);
       });
 
-      conn.on('data', handleData);
+      conn.on("data", handleData);
 
-      const outgoingCall = peerInstance.current.call(idToCall || remotePeerId, stream, {
-        metadata: { name: yourName || 'Anonymous', micOn, cameraOn, avatar: user.avatar.url || "" },
-      });
+      const outgoingCall = peerInstance.current.call(
+        idToCall || remotePeerId,
+        stream,
+        {
+          metadata: {
+            name: yourName || "Anonymous",
+            micOn,
+            cameraOn,
+            avatar: user.avatar.url || "",
+          },
+        }
+      );
 
       currentCallRef.current = outgoingCall;
       setIsInCall(true);
 
-      outgoingCall.on('stream', (remoteStream) => {
+      outgoingCall.on("stream", (remoteStream) => {
         if (remoteVideoRef.current) {
           remoteVideoRef.current.srcObject = remoteStream;
           remoteVideoRef.current.onloadedmetadata = () => {
@@ -228,9 +243,9 @@ export const PeerProvider = ({ children }) => {
         }
       });
 
-      outgoingCall.on('close', endCall);
+      outgoingCall.on("close", endCall);
     } catch (error) {
-      console.error('Error making call:', error);
+      console.error("Error making call:", error);
     }
   };
 
@@ -258,7 +273,7 @@ export const PeerProvider = ({ children }) => {
 
   const endCall = () => {
     if (dataConnectionRef.current?.open) {
-      dataConnectionRef.current.send({ type: 'end-call' });
+      dataConnectionRef.current.send({ type: "end-call" });
     }
 
     if (currentCallRef.current) {
@@ -267,7 +282,7 @@ export const PeerProvider = ({ children }) => {
     }
 
     setIsInCall(false);
-    setCallerName('');
+    setCallerName("");
   };
 
   return (
@@ -299,7 +314,7 @@ export const PeerProvider = ({ children }) => {
         idToCall,
         setIdToCall,
         userToCall,
-        setUserToCall
+        setUserToCall,
       }}
     >
       {children}
@@ -310,7 +325,7 @@ export const PeerProvider = ({ children }) => {
 export const usePeer = () => {
   const context = useContext(PeerContext);
   if (!context) {
-    throw new Error('usePeer must be used within a PeerProvider');
+    throw new Error("usePeer must be used within a PeerProvider");
   }
   return context;
 };

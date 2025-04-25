@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
 import Cookies from "js-cookie";
 
 const FollowContext = createContext();
@@ -124,7 +124,13 @@ export const FollowProvider = ({ children }) => {
 
   return (
     <FollowContext.Provider
-      value={{ followingStatus, checkFollowing, toggleFollow, countFollowers, countFollowing }}
+      value={{
+        followingStatus,
+        checkFollowing,
+        toggleFollow,
+        countFollowers,
+        countFollowing,
+      }}
     >
       {children}
     </FollowContext.Provider>

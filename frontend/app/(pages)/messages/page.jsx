@@ -81,7 +81,7 @@ const Page = () => {
       // Cập nhật opChat với thông tin từ query parameters
       setOpChat({
         userId,
-        avatar: avatar || "Avatar",
+        avatar: avatar || AvatarDefault.src,
         fullname: fullname || "Fullname",
         username,
       });
@@ -190,14 +190,14 @@ const Page = () => {
     setOpChat({
       userId: chat?.userId,
       avatar: chat?.avatar?.url,
-      fullname: chat.fullname,
-      username: chat.username,
+      fullname: chat?.fullname,
+      username: chat?.username,
     });
-    setChatPartner(chat.userId);
+    setChatPartner(chat?.userId);
   };
 
   const handleCallVideo = () => {
-    if (opChat.userId) {
+    if (opChat?.userId) {
       setIdToCall(opChat.userId);
       router.push("/video-call");
     }
@@ -237,21 +237,21 @@ const Page = () => {
                 >
                   <div className="flex items-center">
                     <img
-                      src={chat?.avatar?.url || AvatarDefault.src}
+                      src={chat?.avatar?.url || AvatarDefault?.src}
                       alt="Avatar"
                       className="rounded-full w-12 h-12 border-2 border-gray-500 dark:border-neutral-500"
                     />
                     <div className="ml-4">
                       <h4 className="text-sm font-medium truncate w-23">
-                        {chat.fullname || opChat?.fullname}
+                        {chat?.fullname || opChat?.fullname}
                       </h4>
                       <p className="text-sm dark:text-gray-400 text-neutral-500 truncate w-60">
-                        {chat.lastMessage}
+                        {chat?.lastMessage}
                       </p>
                     </div>
                   </div>
                   <span className="text-sm text-gray-400">
-                    {new Date(chat.lastUpdated).toLocaleTimeString("vi-VN", {
+                    {new Date(chat?.lastUpdated).toLocaleTimeString("vi-VN", {
                       hour: "2-digit",
                       minute: "2-digit",
                     })}
@@ -283,7 +283,7 @@ const Page = () => {
               <div className="flex p-3 w-full">
                 <div className="flex grow">
                   <img
-                    src={opChat?.avatar || AvatarDefault.src}
+                    src={opChat?.avatar}
                     alt="Avatar user"
                     className="rounded-full w-12 h-12 border-2 border-gray-500 dark:border-neutral-700"
                   />

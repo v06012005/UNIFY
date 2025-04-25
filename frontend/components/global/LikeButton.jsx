@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { likePost, unlikePost } from "@/app/lib/api/services/likeService";
+import { likePost, unlikePost } from "@/app/services/likeService";
 import usePostLikeStatus from "@/hooks/usePostLikeStatus";
 
 const LikeButton = ({

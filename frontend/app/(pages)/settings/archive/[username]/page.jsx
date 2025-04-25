@@ -47,7 +47,7 @@ const Archives = () => {
     queryFn: fetchPosts,
     enabled: !!username?.trim(),
     // refetchOnWindowFocus: true,
-    refetchInterval: 3000,
+    // refetchInterval: 3000,
     onError: (error) => {
       addToast({
         title: "Error",

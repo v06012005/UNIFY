@@ -1,6 +1,7 @@
 "use client";
 
 import AuthProvider from "@/components/provider/AuthProvider";
+import InComingCall from "@/components/global/chat/InComingCallModal";
 import { AppProvider } from "@/components/provider/AppProvider";
 import { FollowProvider } from "@/components/provider/FollowProvider";
 import { ModalProvider } from "@/components/provider/ModalProvider";
@@ -9,8 +10,8 @@ import { getQueryClient } from "@/components/client/QueryClient";
 import { SuggestedUsersProvider } from "./SuggestedUsersProvider";
 import { ReportProvider } from "./ReportProvider";
 import { BookmarkProvider } from "./BookmarkProvider";
-import InComingCall from "@/components/global/chat/InComingCallModal";
 import { PeerProvider } from "./PeerProvider";
+
 const RootProviders = ({ children }) => {
   const queryClient = getQueryClient();
 
@@ -22,7 +23,12 @@ const RootProviders = ({ children }) => {
             <BookmarkProvider>
               <ModalProvider>
                 <SuggestedUsersProvider>
-                  <FollowProvider><PeerProvider>{children}<InComingCall/></PeerProvider></FollowProvider>
+                  <FollowProvider>
+                    <PeerProvider>
+                      {children}
+                      <InComingCall />
+                    </PeerProvider>
+                  </FollowProvider>
                 </SuggestedUsersProvider>
               </ModalProvider>
             </BookmarkProvider>

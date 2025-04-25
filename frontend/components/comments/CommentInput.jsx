@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { Smile, Send } from "lucide-react";
 import Picker from "emoji-picker-react";
-import { postComment } from "@/app/lib/api/services/commentService";
+import { postComment } from "@/app/services/commentService";
 import Cookies from "js-cookie";
 import { useApp } from "@/components/provider/AppProvider";
 import defaultAvatar from "public/images/unify_icon_2.svg";

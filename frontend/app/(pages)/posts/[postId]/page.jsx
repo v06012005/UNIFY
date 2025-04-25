@@ -9,7 +9,15 @@ import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { Select, SelectItem, Textarea } from "@heroui/react";
 import PostSwitch from "@/components/global/PostSwitch";
 import { useEffect, useRef, useState } from "react";
-import { fetchPostById, getUser, insertHashtagDetails, insertHashtags, saveMedia, savePost, updatePost } from "@/app/lib/dal";
+import {
+  fetchPostById,
+  getUser,
+  insertHashtagDetails,
+  insertHashtags,
+  saveMedia,
+  savePost,
+  updatePost,
+} from "@/app/lib/dal";
 import { cn } from "@/app/lib/utils";
 import { addToast, ToastProvider } from "@heroui/toast";
 import { redirect, useParams } from "next/navigation";
@@ -52,31 +60,28 @@ const Page = () => {
       const fetchedPost = await fetchPostById(postId);
       setPost(fetchedPost);
       setPreviews(fetchedPost?.media);
-      setCaption(fetchedPost?.captions)
-      setAudience(fetchedPost?.audience)
-      setIsCommentVisible(fetchedPost?.isCommentVisible)
-      setIsLikeVisible(fetchedPost?.isLikeVisible)
+      setCaption(fetchedPost?.captions);
+      setAudience(fetchedPost?.audience);
+      setIsCommentVisible(fetchedPost?.isCommentVisible);
+      setIsLikeVisible(fetchedPost?.isLikeVisible);
       setLoading(false);
-      const eFiles = fetchedPost?.media.map(m => ({
+      const eFiles = fetchedPost?.media.map((m) => ({
         url: m.url,
         file_type: m.fileType,
         size: m.size,
-        media_type: m.mediaType
-      }))
+        media_type: m.mediaType,
+      }));
       setExistingFiles([...eFiles]);
     }
 
     fetchUser();
     fetchPost();
-
-
-
   }, []);
 
   useEffect(() => {
     handleCommentVisibility(isCommentVisible);
     handleLikeVisibility(isLikeVisible);
-  }, [isCommentVisible, isLikeVisible])
+  }, [isCommentVisible, isLikeVisible]);
 
   const handleDivClick = () => {
     fileInputRef.current?.click();
@@ -138,7 +143,6 @@ const Page = () => {
   }, [previews]);
 
   const handleUpload = async () => {
-
     if (files.length === 0 && existingFiles.length === 0) {
       addToast({
         title: "No files uploaded",
@@ -153,7 +157,7 @@ const Page = () => {
     const formData = new FormData();
     files.forEach((file) => formData.append("files", file));
 
-    const res = await fetch("/lib/api/upload", {
+    const res = await fetch("/api/upload", {
       method: "POST",
       body: formData,
     });
@@ -161,7 +165,6 @@ const Page = () => {
     const data = await res.json();
     return data;
   };
-
 
   const refreshPost = () => {
     setFiles([]);
@@ -232,7 +235,7 @@ const Page = () => {
       const fetchedFiles = await handleUpload();
       let savedMedia = [];
       if (fetchedFiles.length !== 0) {
-        const newMedia = fetchedFiles?.files?.map(file => ({
+        const newMedia = fetchedFiles?.files?.map((file) => ({
           post: post,
           url: file.url,
           fileType: file.file_type,
@@ -244,14 +247,14 @@ const Page = () => {
       }
 
       const finalMedia = [...savedMedia, ...existingFiles];
-      console.log(finalMedia)
+      console.log(finalMedia);
       const newPost = {
         ...post,
         captions: caption,
         audience: audience,
         isCommentVisible: isCommentVisible,
         isLikeVisible: isLikeVisible,
-        media: finalMedia
+        media: finalMedia,
       };
 
       const updatedPost = await updatePost(newPost);
@@ -268,7 +271,8 @@ const Page = () => {
       } else {
         addToast({
           title: "Success",
-          description: "Your post is updated successfully. Other users can now interact with your post.",
+          description:
+            "Your post is updated successfully. Other users can now interact with your post.",
           timeout: 3000,
           shouldShowTimeoutProgess: true,
           color: "success",
@@ -292,7 +296,9 @@ const Page = () => {
       prevPreviews.filter((item) => item.url !== value.url)
     );
     setFiles((prevFiles) => prevFiles.filter((item) => item.url !== value.url));
-    setExistingFiles((prevFiles) => prevFiles.filter((item) => item.url !== value.url));
+    setExistingFiles((prevFiles) =>
+      prevFiles.filter((item) => item.url !== value.url)
+    );
   };
 
   useEffect(() => {
@@ -336,7 +342,7 @@ const Page = () => {
                 <div
                   className={cn(
                     previews.length > 0 &&
-                    "mt-4 grid grid-cols-4 gap-2 items-stretch",
+                      "mt-4 grid grid-cols-4 gap-2 items-stretch",
                     previews.length < 1 && "h-full"
                   )}
                 >

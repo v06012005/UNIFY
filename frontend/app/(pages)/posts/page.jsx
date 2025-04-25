@@ -135,7 +135,7 @@ const Page = () => {
     const formData = new FormData();
     files.forEach((file) => formData.append("files", file));
 
-    const res = await fetch("/lib/api/upload", {
+    const res = await fetch("/api/upload", {
       method: "POST",
       body: formData,
     });

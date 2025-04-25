@@ -70,7 +70,7 @@ export const fetchUserId = async (id) => {
     console.log("Failed to fetch user");
     return null;
   }
-}
+};
 
 export const savePost = async (post) => {
   const token = (await cookies()).get("token")?.value;
@@ -162,7 +162,6 @@ export const saveMedia = async (postId, newMedia) => {
   }
 };
 
-
 export const fetchPosts = async (pageParam) => {
   const token = (await cookies()).get("token")?.value;
 
@@ -201,8 +200,6 @@ export const fetchPosts = async (pageParam) => {
   }
 };
 
-
-
 export const fetchReels = async (pageParam, pageSize) => {
   const token = (await cookies()).get("token")?.value;
   if (!token) {
@@ -224,17 +221,16 @@ export const fetchReels = async (pageParam, pageSize) => {
       return { posts: [], nextPage: null };
     }
     const data = await response.json();
-    console.log("Reels response:", data);
+    // console.log("Reels response:", data);
     return {
       posts: data.posts,
-      nextPage: data.hasNextPage ? pageParam + 1 : null
+      nextPage: data.hasNextPage ? pageParam + 1 : null,
     };
   } catch (error) {
     console.log("Failed to fetch reels: " + error);
     return { posts: [], nextPage: null };
   }
 };
-
 
 export const fetchPostList = async () => {
   const token = (await cookies()).get("token")?.value;

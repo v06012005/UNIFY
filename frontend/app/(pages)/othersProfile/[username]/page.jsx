@@ -11,6 +11,7 @@ import FollowButton from "@/components/ui/follow-button";
 import { useReports } from "@/components/provider/ReportProvider";
 import { addToast, ToastProvider } from "@heroui/toast";
 import { useFollow } from "@/components/provider/FollowProvider";
+import AvatarDefault from "@/public/images/unify_icon_2.svg";
 
 import ReportUserModal from "@/components/global/Report/ReportUserModal";
 
@@ -210,7 +211,7 @@ const Page = () => {
                     userId: userInfo.id,
                     username: userInfo.username,
                     avatar:
-                      userInfo.avatar?.url || "/images/default-avatar.svg",
+                      userInfo.avatar?.url || AvatarDefault.src,
                     fullname: userInfo.firstName + " " + userInfo.lastName,
                   },
                 }}

@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { fetchComments } from "@/app/lib/api/services/commentService";
+import { fetchComments } from "@/app/services/commentService";
 import CommentItem from "@/components/comments/CommentItem";
 import CommentInput from "@/components/comments/CommentInput";
 import Cookies from "js-cookie";

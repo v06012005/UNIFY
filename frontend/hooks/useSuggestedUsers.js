@@ -5,7 +5,7 @@ import {
   getFollowerUsers,
   getFollowingUsers,
   getFriendUsers,
-} from "@/app/lib/api/user";
+} from "@/app/api/user";
 
 export const useUserInfo = () =>
   useQuery({
@@ -19,8 +19,8 @@ export const useSuggestedUsers = (userId) =>
     queryKey: ["suggestedUsers", userId],
     queryFn: () => getSuggestedUsers(userId),
     enabled: !!userId,
-    refetchInterval: 10000,
-    refetchIntervalInBackground: true,
+    // refetchInterval: 10000,
+    // refetchIntervalInBackground: true,
   });
 
 export const useFollowerUsers = (userId) =>
@@ -28,8 +28,8 @@ export const useFollowerUsers = (userId) =>
     queryKey: ["followerUsers", userId],
     queryFn: () => getFollowerUsers(userId),
     enabled: !!userId,
-    refetchInterval: 10000,
-    refetchIntervalInBackground: true,
+    // refetchInterval: 10000,
+    // refetchIntervalInBackground: true,
   });
 
 export const useFollowingUsers = (userId) =>
@@ -37,8 +37,8 @@ export const useFollowingUsers = (userId) =>
     queryKey: ["followingUsers", userId],
     queryFn: () => getFollowingUsers(userId),
     enabled: !!userId,
-    refetchInterval: 10000,
-    refetchIntervalInBackground: true,
+    // refetchInterval: 10000,
+    // refetchIntervalInBackground: true,
   });
 
 export const useFriendUsers = (userId) =>

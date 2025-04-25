@@ -5,7 +5,8 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import ShareReels from "@/components/global/ShareReels";
 import PostReels from "@/components/global/PostReels";
-import { fetchComments } from "@/app/lib/api/services/commentService";
+
+import { fetchComments } from "@/app/services/commentService";
 import { fetchReels } from "@/app/lib/dal";
 import Cookies from "js-cookie";
 import { useApp } from "@/components/provider/AppProvider";
@@ -71,13 +72,13 @@ export default function Reels() {
 
     try {
       const data = await fetchReels(page, PAGE_SIZE);
-      console.log("Reels response:", {
-        page,
-        postCount: data.posts.length,
-        hasNextPage: data.hasNextPage,
-        totalPosts: videoPosts.length + data.posts.length,
-        postIds: data.posts.map(p => p.id),
-      });
+      // console.log("Reels response:", {
+      //   page,
+      //   postCount: data.posts.length,
+      //   hasNextPage: data.hasNextPage,
+      //   totalPosts: videoPosts.length + data.posts.length,
+      //   postIds: data.posts.map(p => p.id),
+      // });
       setVideoPosts((prev) => {
         const existingIds = new Set(prev.map((p) => p.id));
         const newPosts = data.posts.filter((p) => !existingIds.has(p.id));
