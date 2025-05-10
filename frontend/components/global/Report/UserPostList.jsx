@@ -37,7 +37,7 @@ const UserPostList = ({ userId, onPostClick }) => {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold dark:text-white">Posts</h3>
+      <h3 className="text-lg font-semibold dark:text-zinc-300">Posts</h3>
       {loading ? (
         <p className="text-gray-500 dark:text-gray-400">Loading posts...</p>
       ) : posts.length > 0 ? (
