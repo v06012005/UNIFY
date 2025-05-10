@@ -94,12 +94,6 @@ public class ReportController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(reportDTO);
 	}
 
-	@PostMapping("/comment")
-	public ResponseEntity<ReportDTO> createCommentReport(@RequestParam String reportedId, String reason) {
-		ReportDTO reportDTO = reportService.createCommentReport(reportedId, reason);
-		return ResponseEntity.status(HttpStatus.CREATED).body(reportDTO);
-	}
-
 	@PutMapping("/{id}/status")
 	public ResponseEntity<ReportDTO> updateReportStatus(@PathVariable String id, @RequestParam Integer status) {
 		ReportDTO updatedReport = reportService.updateReportStatus(id, status);

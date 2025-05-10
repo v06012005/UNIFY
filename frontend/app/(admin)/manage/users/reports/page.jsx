@@ -2,8 +2,6 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Cookies from "js-cookie";
-import ToggleFilter from "@/components/global/Report/ToggleFilter";
-import Pagination from "@/components/global/Report/Pagination";
 import {
   ReportProvider,
   useReports,
@@ -76,14 +74,7 @@ const VerifyReportUser = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const itemsPerPage = 20;
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [isDescendingByType, setIsDescendingByType] = useState(true);
-  const [isDescendingByReportDate, setIsDescendingByReportDate] =
-    useState(true);
-
-  const toggleFilter = () => setIsFilterOpen(!isFilterOpen);
-  const toggleTypeOrder = () => setIsDescendingByType((prev) => !prev);
-  const toggleReportDateOrder = () =>
-    setIsDescendingByReportDate((prev) => !prev);
+  const [dateFilter, setDateFilter] = useState("all");
 
   useEffect(() => {
     let updatedReports = [...pendingReports];
@@ -92,23 +83,30 @@ const VerifyReportUser = () => {
       (report.reportedId || "").toLowerCase().includes(search.toLowerCase())
     );
 
-    updatedReports.sort((a, b) => {
-      const typeComparison = isDescendingByType
-        ? (b.entityType || "").localeCompare(a.entityType || "")
-        : (a.entityType || "").localeCompare(b.entityType || "");
+    const now = new Date();
+    updatedReports = updatedReports.filter((report) => {
+      const reportedDate = new Date(report.reportedAt || "");
+      if (!report.reportedAt) return false;
 
-      if (typeComparison === 0) {
-        const dateA = new Date(a.reportedAt || "");
-        const dateB = new Date(b.reportedAt || "");
-        return isDescendingByReportDate ? dateB - dateA : dateA - dateB;
+      switch (dateFilter) {
+        case "today":
+          return reportedDate.toDateString() === now.toDateString();
+        case "1month":
+          const oneMonthAgo = new Date();
+          oneMonthAgo.setMonth(now.getMonth() - 1);
+          return reportedDate >= oneMonthAgo;
+        case "3months":
+          const threeMonthsAgo = new Date();
+          threeMonthsAgo.setMonth(now.getMonth() - 3);
+          return reportedDate >= threeMonthsAgo;
+        default:
+          return true;
       }
-
-      return typeComparison;
     });
 
     setFilteredReports(updatedReports);
     setCurrentPage(1);
-  }, [pendingReports, search, isDescendingByType, isDescendingByReportDate]);
+  }, [pendingReports, dateFilter, search]);
 
   const handleUpdateStatus = async (reportId, status) => {
     try {
@@ -129,93 +127,63 @@ const VerifyReportUser = () => {
     setSelectedReport(null);
   };
 
-  const handleRefresh = async () => {
-    try {
-      setSearch("");
-      setIsDescendingByType(true);
-      setIsDescendingByReportDate(true);
-      await fetchPendingReports();
-    } catch (error) {
-      console.error("Failed to refresh reports:", error);
-    }
-  };
-
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredReports.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(filteredReports.length / itemsPerPage);
 
   return (
     <>
       <ToastProvider placement={"top-right"} />
-      <div className="py-5 px-7 h-screen w-[78rem]">
+      <div className="py-10 px-6 h-screen w-[78rem]">
         <div className="w-full flex justify-between items-center">
-          <h1 className="text-2xl font-black">Reported Users</h1>
-          <div className="flex gap-2">
-            <button
-              onClick={handleRefresh}
-              className="border border-blue-500 text-blue-500 px-3 py-1 rounded-md hover:bg-blue-500 hover:text-white"
-            >
-              Refresh
-            </button>
+          <div>
+            <h1 className="text-4xl font-black uppercase">Reported Users</h1>
+            <p className="text-gray-500">
+              Manage all reports about users that violated UNIFY's policies.
+            </p>
           </div>
-        </div>
-
-        <div className="mt-5 flex items-center gap-4">
-          <input
-            type="text"
-            className="border border-gray-300 dark:bg-black px-4 py-2 rounded-md w-full focus:outline-none hover:border-gray-500 focus:border-gray-400 focus:ring-2 focus:ring-gray-200"
-            placeholder="Search reports..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <NavButton
-            iconClass="fa-solid fa-filter text-3xl dark:text-gray-400"
-            onClick={toggleFilter}
-          />
-          <ToggleFilter
-            isFilterOpen={isFilterOpen}
-            toggleTypeOrder={toggleTypeOrder}
-            toggleReportDateOrder={toggleReportDateOrder}
-            isDescendingByType={isDescendingByType}
-            isDescendingByReportDate={isDescendingByReportDate}
-          />
+          <div className="flex gap-2 items-center">
+            <select
+              value={dateFilter}
+              onChange={(e) => setDateFilter(e.target.value)}
+              className="border px-5 py-2 rounded-md dark:bg-neutral-800 dark:text-white"
+            >
+              <option value="all">All</option>
+              <option value="today">Today</option>
+              <option value="1month">Within the past month</option>
+              <option value="3months">Within the past three months</option>
+            </select>
+          </div>
         </div>
 
         <div className="mt-5">
           {loading ? (
             <p>Loading reports...</p>
           ) : (
-            <div className="overflow-auto h-[calc(73vh-0.7px)] no-scrollbar rounded-2xl shadow-md p-4">
-              <table className="min-w-full bg-white dark:bg-neutral-900 table-auto ">
-                <thead className="shadow-inner sticky top-0 text-gray-500 dark:text-gray-600 bg-gray-100 dark:bg-neutral-800 rounded-2xl">
+            <div className="overflow-auto h-[calc(73vh-0.7px)] no-scrollbar rounded-2xl shadow-md dark:shadow-[0_4px_6px_rgba(229,229,229,0.4)] p-4">
+              <table className="min-w-full bg-white dark:bg-neutral-900 table-auto">
+                <thead className="shadow-inner sticky top-0 text-gray-500 dark:text-gray-300 bg-gray-100 dark:bg-neutral-800">
                   <tr>
-                    <th className="py-3 px-2 text-left w-[5%]">No.</th>
-                    <th className="py-3 px-2 text-left w-[25%]">Reported</th>
-                    <th className="py-3 px-2 text-left w-[15%]">Reason</th>
+                    <th className="py-3 px-2 pl-5 text-left w-[5%] ">No.</th>
+                    <th className="py-3 px-2 text-left w-[30%]">Reason</th>
                     <th className="py-3 px-2 text-left w-[11%]">Report at</th>
-                    <th className="py-3 px-2 text-center w-[20%]">ACTIONS</th>
+                    <th className="py-3 px-2 text-center w-[20%]">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody>
                   {currentItems.map((report, index) => (
                     <tr
+                      onClick={() => openModal(report)}
                       key={report.id}
                       className={`hover:bg-gray-100 dark:hover:bg-neutral-700 ${
-                        index % 2 === 0 ? "bg-white" : "bg-gray-100"
+                        index % 2 === 0 ? "bg-white dark:bg-black" : "bg-gray-100 dark:bg-neutral-800 "
                       }`}
                     >
-                      <td className="py-3 px-2">
+                      <td className="py-3 pl-5 rounded-l-xl">
                         {indexOfFirstItem + index + 1}
                       </td>
                       <td
-                        className="py-3 px-2 truncate max-w-[30%] cursor-pointer text-blue-500 hover:underline"
-                        onClick={() => openModal(report)}
-                      >
-                        {report.reportedId || ""}
-                      </td>
-                      <td
-                        className="py-3 px-2 max-w-[300px] truncate"
+                        className="py-3 px-2 max-w-[500px] truncate"
                         style={{ textOverflow: "ellipsis" }}
                         title={report.reason}
                       >
@@ -223,30 +191,29 @@ const VerifyReportUser = () => {
                       </td>
                       <td className="py-3 px-2 truncate max-w-[11%]">
                         {report.reportedAt
-                          ? (() => {
-                              const date = new Date(report.reportedAt);
-                              const mm = String(date.getMonth() + 1).padStart(
-                                2,
-                                "0"
-                              );
-                              const dd = String(date.getDate()).padStart(
-                                2,
-                                "0"
-                              );
-                              const yyyy = date.getFullYear();
-                              return `${mm}-${dd}-${yyyy}`;
-                            })()
+                          ? new Date(report.reportedAt).toLocaleString(
+                              "en-US",
+                              {
+                                month: "short", // "Mar"
+                                day: "numeric", // "23"
+                                year: "numeric", // "2025"
+                                hour: "numeric", // "10"
+                                minute: "2-digit", // "39"
+                                hour12: true, // PM format
+                              }
+                            )
                           : ""}
                       </td>
-                      <td className="py-2 text-center flex justify-center gap-2">
+
+                      <td className="py-2 text-center rounded-r-xl">
                         <button
-                          className="border border-green-500 text-green-500 px-3 py-1 rounded-md hover:bg-green-500 hover:text-white"
+                          className="border border-green-500 text-green-500 px-3 py-1 rounded-md mr-2 hover:bg-green-500 hover:text-white"
                           onClick={() => handleUpdateStatus(report.id, 1)}
                         >
                           Approve
                         </button>
                         <button
-                          className="border border-red-500 text-red-500 px-3 py-1 rounded-md hover:bg-red-500 hover:text-white"
+                          className="border border-red-500 text-red-500 px-3 py-1 rounded-md hover:bg-red-500 hover:text-white "
                           onClick={() => handleUpdateStatus(report.id, 2)}
                         >
                           Reject
@@ -259,12 +226,6 @@ const VerifyReportUser = () => {
             </div>
           )}
         </div>
-
-        {/* <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-        /> */}
 
         {selectedReport?.entityType === "POST" ? (
           <ModalPost

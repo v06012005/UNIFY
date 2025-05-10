@@ -93,15 +93,6 @@ public class ReportService {
         return createReport(reportDTO, EntityType.USER);
     }
 
-    public ReportDTO createCommentReport(String reportedId, String reason) {
-        String userId = userService.getMyInfo().getId();
-        ReportDTO reportDTO = new ReportDTO();
-        reportDTO.setUserId(userId);
-        reportDTO.setReportedId(reportedId);
-        reportDTO.setReason(reason);
-        reportDTO.setStatus(PENDING);
-        return createReport(reportDTO, EntityType.COMMENT);
-    }
     private boolean isSelfReport(String userId, String reportedId, EntityType entityType) {
         switch (entityType) {
             case POST:
@@ -157,18 +148,6 @@ public class ReportService {
         reportDTO.setReportedEntity(getReportedEntity(report.getReportedId(), report.getEntityType()));
         return reportDTO;
     }
-//    public List<ReportDTO> getReportsByStatuses(List<Integer> statuses) {
-//        validateStatuses(statuses);
-//        List<Report> reports = reportRepository.findByStatusIn(statuses);
-//
-//        return reports.stream()
-//                      .map(report -> {
-//                          ReportDTO reportDTO = reportMapper.toReportDTO(report);
-//                          reportDTO.setReportedEntity(getReportedEntity(report.getReportedId(), report.getEntityType()));
-//                          return reportDTO;
-//                      })
-//                      .collect(Collectors.toList());
-//    }
     public List<ReportDTO> getReportsByStatuses(List<Integer> statuses, EntityType entityType) {
         validateStatuses(statuses); 
 

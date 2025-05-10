@@ -24,7 +24,7 @@ const ToggleFilter = ({
   if (!isFilterOpen) return null;
 
   return (
-    <div className="absolute mt-40 right-2 w-90 bg-gray-300 dark:bg-neutral-700 dark:text-white shadow-lg rounded-md z-50">
+    <div className="absolute mt-[40px] right-10 w-90 bg-gray-200 dark:bg-neutral-700 dark:text-white shadow-lg rounded-md z-50">
       <ul className="py-2 px-2">
         <div className="hover:bg-gray-100 dark:hover:bg-neutral-600 rounded-lg mb-2 px-2">
           <NavButton
