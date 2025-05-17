@@ -27,7 +27,7 @@ const ModalUser = ({ report, isOpen, onClose }) => {
           <div className="mt-4 border-t dark:border-t-neutral-800 pt-4 space-y-2">
             <h3 className="text-lg font-semibold">Report Details</h3>
             <p className="text-sm">
-              <span className="font-semibold">Reported by:</span> {report.userId}
+              <span className="font-semibold">Reported by:</span> {report.user?.username}
             </p>
             <p className="text-sm">
               <span className="font-semibold">Reported at:</span>{" "}
