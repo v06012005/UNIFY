@@ -11,8 +11,8 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ReportDTO implements Serializable {
 	private String id;
-    private String userId;
-//	private UserDTO user;
+   // private String userId;
+	private UserDTO user;
 	private String reportedId;
 	private String entityType;
 	private LocalDateTime reportedAt;
