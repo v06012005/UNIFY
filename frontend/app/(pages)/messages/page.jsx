@@ -17,6 +17,7 @@ import { Smile, Send, Plus } from "lucide-react";
 import useChat from "@/hooks/useChat";
 import { useRouter, useSearchParams } from "next/navigation";
 import { usePeer } from "@/components/provider/PeerProvider";
+import AvatarDefault from "@/public/images/unify_icon_2.svg";
 
 const Page = () => {
   const { user } = useApp();
@@ -236,7 +237,7 @@ const Page = () => {
                 >
                   <div className="flex items-center">
                     <img
-                      src={chat?.avatar?.url || opChat?.avatar}
+                      src={chat?.avatar?.url || AvatarDefault.src}
                       alt="Avatar"
                       className="rounded-full w-12 h-12 border-2 border-gray-500 dark:border-neutral-500"
                     />
@@ -282,10 +283,7 @@ const Page = () => {
               <div className="flex p-3 w-full">
                 <div className="flex grow">
                   <img
-                    src={
-                      opChat?.avatar ||
-                      "https://file.hstatic.net/1000292100/file/img_1907_grande_e05accd5a03247069db4f3169cfb8b11_grande.jpg"
-                    }
+                    src={opChat?.avatar || AvatarDefault.src}
                     alt="Avatar user"
                     className="rounded-full w-12 h-12 border-2 border-gray-500 dark:border-neutral-700"
                   />
@@ -325,13 +323,13 @@ const Page = () => {
               <hr className=" border-1 dark:border-neutral-700" />
 
               <div className="h-[78.5%] overflow-y-scroll scrollbar-hide">
-                <h2 className="text-center m-3 dark:text-neutral-400">
+                {/* <h2 className="text-center m-3 dark:text-neutral-400">
                   23:48, 20/01/2025
-                </h2>
+                </h2> */}
                 <Message
                   messages={chatMessages}
                   messagesEndRef={messagesEndRef}
-                  avatar={opChat.avatar}
+                  avatar={opChat.avatar || AvatarDefault.src}
                 />
               </div>
 
@@ -389,7 +387,7 @@ const Page = () => {
                 )}
 
                 <div className="flex items-center mt-3 bg-gray-200 dark:bg-neutral-800 dark:text-white text-black p-3 rounded-2xl w-full justify-center">
-                  {user?.avatar.url && (
+                  {user?.avatar?.url && (
                     <img
                       src={user?.avatar.url}
                       alt="Avatar"
@@ -427,7 +425,7 @@ const Page = () => {
                       }
                     }}
                   />
-                  
+
                   <button
                     type="button"
                     onClick={() => setShowPicker(!showPicker)}

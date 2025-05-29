@@ -80,7 +80,7 @@ const CommentItem = ({
       </div>
 
       <CardFooter className="flex flex-row justify-end p-0">
-        <LikeButton className="!text-sm space-x-1" />
+        {/* <LikeButton className="!text-sm space-x-1" /> */}
         <Button
           size="sm"
           className="bg-transparent dark:text-white"

@@ -1,10 +1,8 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { fetchPosts } from "@/lib/dal";
-import {
-  useInfiniteQuery,
-} from "@tanstack/react-query";
+import { fetchPosts } from "@/app/lib/dal";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import PostItem from "./PostItem";
 import { useInView } from "react-intersection-observer";
 import PostLoading from "../loading/PostLoading";
@@ -38,12 +36,10 @@ const Post = () => {
     );
   }
 
-
-
   return (
     <>
-      {data?.pages.map((page, i) => (
-        <div key={i}>
+      {data?.pages.map((page) => (
+        <div key={page.id || page.nextPage}>
           {page.posts.map((post) => (
             <PostItem key={post.id} post={post} />
           ))}

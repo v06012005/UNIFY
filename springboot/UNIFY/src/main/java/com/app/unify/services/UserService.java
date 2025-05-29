@@ -2,6 +2,7 @@ package com.app.unify.services;
 
 import com.app.unify.dto.global.ShareAbleUserDTO;
 import com.app.unify.dto.global.UserDTO;
+import com.app.unify.dto.request.UserReportCountDTO;
 import com.app.unify.entities.Avatar;
 import com.app.unify.entities.Role;
 import com.app.unify.entities.User;
@@ -60,11 +61,22 @@ public class UserService {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    public List<UserDTO> findAll() {
-        return userRepository.findAll()
+    public List<UserDTO> findAllUserByRole() {
+        return userRepository.findAllUserByRole()
                 .stream()
                 .map(userMapper::toUserDTO)
                 .collect(Collectors.toList());
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<UserReportCountDTO> findAllUserReportCount() {
+        List<UserReportCountDTO> usersWithReports = userRepository.findAllUserAndCountReportByRole();
+        usersWithReports.forEach(dto -> {
+            String id = dto.id();
+            String username = dto.username();
+            Long reportCount = dto.reportApprovalCount();
+        });
+        return usersWithReports;
     }
 
     public UserDTO createUser(UserDTO userDto) {

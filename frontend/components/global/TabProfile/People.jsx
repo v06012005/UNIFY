@@ -23,7 +23,7 @@ const People = () => {
   }, []);
 
   useEffect(() => {
-    setShowArrows(suggestedUsers.length > 5); // Giảm xuống 5 để giống Instagram
+    setShowArrows(suggestedUsers.length > 5); 
   }, [suggestedUsers]);
 
   const handleClick = (username) => {

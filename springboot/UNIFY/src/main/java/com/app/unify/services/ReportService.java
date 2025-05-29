@@ -8,6 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.app.unify.dto.global.ReportDTO;
+import com.app.unify.dto.global.UserDTO;
 import com.app.unify.entities.Post;
 import com.app.unify.entities.PostComment;
 import com.app.unify.entities.Report;
@@ -75,8 +76,11 @@ public class ReportService {
 
     public ReportDTO createPostReport(String reportedId, String reason) {
         String userId = userService.getMyInfo().getId();
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId(userId);
+
         ReportDTO reportDTO = new ReportDTO();
-        reportDTO.setUserId(userId);
+       // reportDTO.setUserId(userId);
         reportDTO.setReportedId(reportedId);
         reportDTO.setReason(reason);
         reportDTO.setStatus(PENDING);
@@ -85,23 +89,17 @@ public class ReportService {
 
     public ReportDTO createUserReport(String reportedId, String reason) {
         String userId = userService.getMyInfo().getId();
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId(userId);
+
         ReportDTO reportDTO = new ReportDTO();
-        reportDTO.setUserId(userId);
+        //reportDTO.setUserId(userId);
         reportDTO.setReportedId(reportedId);
         reportDTO.setReason(reason);
         reportDTO.setStatus(PENDING);
         return createReport(reportDTO, EntityType.USER);
     }
 
-    public ReportDTO createCommentReport(String reportedId, String reason) {
-        String userId = userService.getMyInfo().getId();
-        ReportDTO reportDTO = new ReportDTO();
-        reportDTO.setUserId(userId);
-        reportDTO.setReportedId(reportedId);
-        reportDTO.setReason(reason);
-        reportDTO.setStatus(PENDING);
-        return createReport(reportDTO, EntityType.COMMENT);
-    }
     private boolean isSelfReport(String userId, String reportedId, EntityType entityType) {
         switch (entityType) {
             case POST:
@@ -123,7 +121,9 @@ public class ReportService {
 
 
     public ReportDTO createReport(ReportDTO reportDTO, EntityType entityType) {
-        String userId = reportDTO.getUserId();
+     //   String userId = reportDTO.getUserId();
+    	String userId = userService.getMyInfo().getId();
+
         String reportedId = reportDTO.getReportedId();
         String reason = reportDTO.getReason();
         if (reason == null || reason.trim().isEmpty()) {
@@ -157,17 +157,18 @@ public class ReportService {
         reportDTO.setReportedEntity(getReportedEntity(report.getReportedId(), report.getEntityType()));
         return reportDTO;
     }
-    public List<ReportDTO> getReportsByStatuses(List<Integer> statuses) {
-        validateStatuses(statuses);
-        List<Report> reports = reportRepository.findByStatusIn(statuses);
+    public List<ReportDTO> getReportsByStatuses(List<Integer> statuses, EntityType entityType) {
+        validateStatuses(statuses); 
+
+        List<Report> reports = reportRepository.findByStatusInAndEntityType(statuses, entityType);
 
         return reports.stream()
-                      .map(report -> {
-                          ReportDTO reportDTO = reportMapper.toReportDTO(report);
-                          reportDTO.setReportedEntity(getReportedEntity(report.getReportedId(), report.getEntityType()));
-                          return reportDTO;
-                      })
-                      .collect(Collectors.toList());
+                .map(report -> {
+                    ReportDTO reportDTO = reportMapper.toReportDTO(report);
+                    reportDTO.setReportedEntity(getReportedEntity(report.getReportedId(), report.getEntityType()));
+                    return reportDTO;
+                })
+                .collect(Collectors.toList());
     }
 
     private void validateStatuses(List<Integer> statuses) {

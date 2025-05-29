@@ -1,2 +1,4 @@
 frontend/.env
 springboot/UNIFY/.env
+frontend/package-lock.json
+frontend/package.json

@@ -1,6 +1,6 @@
 "use client";
 
-import { fetchPostsByHashtag } from "@/lib/dal";
+import { fetchPostsByHashtag } from "@/app/lib/dal";
 import Picture from "@/components/global/Exp_Picture";
 import Video from "@/components/global/Exp_Video";
 import { useParams } from "next/navigation";

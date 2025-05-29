@@ -163,7 +163,7 @@ const SideBar = () => {
                   href={`/profile/${user.username}`}
                   className=""
                 >
-                  <div className="w-8 h-8 rounded-full border-2 dark:border-gray-300 overflow-hidden">
+                  <div className="w-8 h-8 rounded-full border-2 dark:border-gray-300 border-black overflow-hidden">
                     <Image
                       src={user.avatar?.url || avatar}
                       alt="Avatar"

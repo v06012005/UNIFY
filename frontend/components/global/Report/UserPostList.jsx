@@ -13,7 +13,7 @@ const UserPostList = ({ userId, onPostClick }) => {
       if (!token) return;
 
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/posts/my?userId=${userId}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/posts/my?userId=${userId}&status=1&audience=PUBLIC`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -37,11 +37,11 @@ const UserPostList = ({ userId, onPostClick }) => {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold dark:text-white">Posts</h3>
+      <h3 className="text-lg font-semibold dark:text-zinc-300">Posts</h3>
       {loading ? (
         <p className="text-gray-500 dark:text-gray-400">Loading posts...</p>
       ) : posts.length > 0 ? (
-        <div className="grid grid-cols-2 gap-2 max-h-[60vh] overflow-y-auto">
+        <div className="grid grid-cols-2 gap-2 max-h-[60vh] overflow-y-auto no-scrollbar">
           {posts.map((post) => (
             <div
               key={post.id}

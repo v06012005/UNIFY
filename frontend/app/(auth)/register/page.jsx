@@ -3,23 +3,20 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-
 import FullUnifyLogoIcon from "@/components/global/FullUnifyLogoIcon_Auth";
-
 import { Button } from "@/components/ui/button";
 import DateSelector from "@/components/global/DateInput";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useApp } from "@/components/provider/AppProvider";
 import { redirect } from "next/navigation";
-
 import { router } from "next/client";
-
 import { useRouter } from "next/navigation";
 
 const RegisterPage = () => {
   const [errors, setErrors] = useState({});
   const [serverError, setServerError] = useState("");
+  const router = useRouter();
 
   const months = [
     "January",
@@ -155,7 +152,6 @@ const RegisterPage = () => {
       const result = await response.text();
 
       if (response.ok) {
-        alert("Registration successful!");
         setTimeout(() => {
           router.push("/login");
         }, 1500);
@@ -292,27 +288,27 @@ const RegisterPage = () => {
             </div>
 
             <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="terms"
-                  checked={formData.agreeToTerms}
-                  onChange={(e) =>
-                    setFormData((prevData) => ({
-                      ...prevData,
-                      agreeToTerms: e.target.checked,
-                    }))
-                  }
-                />
-                <Label htmlFor="terms" className="text-sm">
-                  I agree to the{" "}
-                  <Link href="/landing" className="text-blue-600 underline">
-                    Terms of Service
-                  </Link>
-                </Label>
-              </div>
-              {errors.agreeToTerms && (
-                <p className="text-red-500 text-sm">{errors.agreeToTerms}</p>
-              )}
+              <input
+                type="checkbox"
+                id="terms"
+                checked={formData.agreeToTerms}
+                onChange={(e) =>
+                  setFormData((prevData) => ({
+                    ...prevData,
+                    agreeToTerms: e.target.checked,
+                  }))
+                }
+              />
+              <Label htmlFor="terms" className="text-sm">
+                I agree to the{" "}
+                <Link href="/landing" className="text-blue-600 underline">
+                  Terms of Service
+                </Link>
+              </Label>
+            </div>
+            {errors.agreeToTerms && (
+              <p className="text-red-500 text-sm">{errors.agreeToTerms}</p>
+            )}
 
             <Button type="submit" className="text-2xl p-6 mt-3">
               Sign Up

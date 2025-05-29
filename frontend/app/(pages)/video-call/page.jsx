@@ -5,7 +5,7 @@ import { useApp } from "@/components/provider/AppProvider";
 import { usePeer } from "@/components/provider/PeerProvider";
 import { Mic, MicOff, Video, VideoOff, MonitorUp, PhoneOff } from 'lucide-react';
 import Logo from "@/public/images/unify_darkmode_full.svg"
-import { fetchUserId } from '@/lib/dal';
+import { fetchUserId } from '@/app/lib/dal';
 
 export default function VideoCallApp() {
   const { user } = useApp();

@@ -4,7 +4,7 @@ import { useParams } from "next/navigation";
 import { useApp } from "@/components/provider/AppProvider";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { fetchComments } from "@/lib/api/services/commentService";
+import { fetchComments } from "@/app/lib/api/services/commentService";
 import PostDetailModal from "./PostDetailModal";
 import { Spinner } from "@heroui/react";
 

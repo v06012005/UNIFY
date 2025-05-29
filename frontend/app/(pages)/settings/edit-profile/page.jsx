@@ -233,7 +233,7 @@ const Page = () => {
     formData.append("files", userData.avatar.file);
 
     const token = Cookies.get("token");
-    const res = await fetch("/api/upload", {
+    const res = await fetch("/lib/api/upload", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,

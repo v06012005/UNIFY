@@ -83,9 +83,12 @@ const FollowerModal = ({ isOpen, onClose, isFollow, toggleFollow }) => {
                   </div>
                 </div>
                 <FollowButton
-                  userId={userData.id}
-                  isFollow={isFollow}
-                  toggleFollow={toggleFollow}
+                  userId={user.id}
+                  followingId={userData.id}
+                  classFollow="bg-red-500 font-bold py-1 px-4 rounded-lg text-white text-md"
+                  classFollowing="dark:bg-zinc-700 bg-gray-300 dark:hover:bg-zinc-600 hover:bg-gray-400 font-bold py-1 px-4 rounded-lg dark:text-white text-black text-md"
+                  contentFollowing="Unfollow"
+                  contentFollow="Follow"
                 />
               </li>
             ))

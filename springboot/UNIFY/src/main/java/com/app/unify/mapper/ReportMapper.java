@@ -14,7 +14,7 @@ public interface ReportMapper {
     @Mapping(target = "entityType", ignore = true)
     Report toReport(ReportDTO reportDTO);
 
-    @Mapping(target = "userId", source = "user.id")
+  //  @Mapping(target = "userId", source = "user.id")
     @Mapping(target = "reportedEntity", ignore = true)
     ReportDTO toReportDTO(Report report);
 }
