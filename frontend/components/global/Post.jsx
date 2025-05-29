@@ -10,8 +10,6 @@ import { useInView } from "react-intersection-observer";
 import PostLoading from "../loading/PostLoading";
 import { useDebounce } from "@/hooks/use-debounce";
 
-
-
 const Post = () => {
   const { ref, inView } = useInView({ threshold: 0.3 });
 
@@ -23,8 +21,8 @@ const Post = () => {
       keepPreviousData: true,
     });
 
-    
-const showLoading = useDebounce(isFetchingNextPage, 50);
+
+  const showLoading = useDebounce(isFetchingNextPage, 50);
 
   useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) {
