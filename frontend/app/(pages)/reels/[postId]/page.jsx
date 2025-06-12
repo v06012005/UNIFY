@@ -22,7 +22,7 @@ import Skeleton from "@/components/global/SkeletonLoad";
 import VideoPostSkeleton from "@/components/global/VideoPostSkeleton";
 import BookmarkButton from "@/components/global/Bookmark";
 import { useInView } from "react-intersection-observer";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const PAGE_SIZE = 13;
 
@@ -51,17 +51,15 @@ export default function Reels() {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const isFetchingRef = useRef(false);
   const { ref: loadMoreRef, inView } = useInView({
-    threshold: 0.05, 
+    threshold: 0.05,
     triggerOnce: false,
   });
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-
   const fetchNewReels = useCallback(async () => {
     if (isFetchingRef.current || !hasMore) return;
     isFetchingRef.current = true;
-
 
     if (page === 0) {
       setIsLoadingInitial(true);
@@ -76,12 +74,16 @@ export default function Reels() {
         postCount: data.posts.length,
         hasNextPage: data.hasNextPage,
         totalPosts: videoPosts.length + data.posts.length,
-        postIds: data.posts.map(p => p.id),
+        postIds: data.posts.map((p) => p.id),
       });
       setVideoPosts((prev) => {
         const existingIds = new Set(prev.map((p) => p.id));
         const newPosts = data.posts.filter((p) => !existingIds.has(p.id));
-        console.log("New posts added:", newPosts.length, newPosts.map(p => p.id));
+        console.log(
+          "New posts added:",
+          newPosts.length,
+          newPosts.map((p) => p.id)
+        );
         return [...prev, ...newPosts];
       });
       setHasMore(data.hasNextPage);
@@ -98,14 +100,12 @@ export default function Reels() {
       } else {
         setIsLoadingMore(false);
       }
-
     }
   }, [page, hasMore, videoPosts.length]);
 
   useEffect(() => {
     fetchNewReels();
   }, [fetchNewReels]);
-
 
   useEffect(() => {
     if (inView && hasMore && !isFetchingRef.current) {
@@ -137,8 +137,6 @@ export default function Reels() {
       [postId]: { ...prev[postId], ...updates },
     }));
 
-
-
   const hasSetInitialRoute = useRef(false);
 
   useEffect(() => {
@@ -152,7 +150,6 @@ export default function Reels() {
     }
 
     hasSetInitialRoute.current = true;
-
   }, [videoPosts, postId, router]);
 
   useEffect(() => {
@@ -402,14 +399,13 @@ export default function Reels() {
   }
 
   const lastPostId = videoPosts[videoPosts.length - 1]?.id;
-  
 
   return (
     <>
       <ToastProvider placement={"top-right"} />
       <div
         ref={containerRef}
-        className="h-screen w-full overflow-y-scroll snap-y snap-mandatory scrollbar-hide shadow-lg"
+        className="h-screen w-full overflow-y-scroll snap-y snap-mandatory scrollbar-hide "
       >
         {videoPosts.length === 0 ? (
           <div className="flex justify-center items-center h-screen">
@@ -419,7 +415,7 @@ export default function Reels() {
           videoPosts.map((post, index) => (
             <div
               key={post.id}
-              className={`relative w-[450px] h-[710px] mx-auto rounded-b-xl overflow-hidden m-5 snap-start flex-shrink-0 ${
+              className={`relative w-[408] h-[742px] aspect-[450/742] mx-auto snap-start flex-shrink-0 ${
                 isCommentOpen ? "translate-x-[-150px]" : "translate-x-0"
               } transition-transform duration-400 ease-in-out`}
             >
@@ -442,7 +438,7 @@ export default function Reels() {
                     />
                   )
               )}
-              <div className="absolute bottom-4 left-4 flex flex-col text-white">
+              <div className="absolute bottom-6 left-4 flex flex-col text-white">
                 <div className="flex items-center">
                   <div className="w-10 h-10 min-w-10 min-h-10 rounded-full overflow-hidden">
                     <Image
