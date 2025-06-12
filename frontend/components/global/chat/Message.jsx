@@ -128,8 +128,8 @@ const Message = ({ messages, messagesEndRef, avatar }) => {
                 <div
                   className={`p-3 rounded-2xl shadow-md ${
                     isCurrentUser
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-800 text-white"
+                      ? "bg-blue-600 text-white"
+                      : "bg-zinc-700 dark:bg-zinc-800 text-white"
                   }`}
                 >
                   {message.content}

@@ -8,12 +8,14 @@ import FullUnifyLogo from "@/components/global/FullUnifyLogo";
 import SuggestedUsers from "@/components/global/TabProfile/SuggestedUsers";
 
 export default async function Home() {
-
   return (
     <RootLayout>
       <div className="flex">
         <div className="basis-3/4 h-screen">
-          <div id="newsfeed" className="h-full py-8 overflow-y-scroll no-scrollbar">
+          <div
+            id="newsfeed"
+            className="h-full py-8 overflow-y-scroll no-scrollbar"
+          >
             <div className="w-3/4 flex flex-col mx-auto">
               <Post />
             </div>
@@ -24,7 +26,7 @@ export default async function Home() {
             <div>
               <p className="font-bold text-xl mb-8">People you may know</p>
               <div className="max-h-[460px] overflow-y-auto no-scrollbar pr-1">
-              <SuggestedUsers />
+                <SuggestedUsers />
               </div>
             </div>
             <hr className="my-4 dark:border-neutral-700" />
@@ -37,6 +39,6 @@ export default async function Home() {
           </div>
         </div>
       </div>
-    </RootLayout >
+    </RootLayout>
   );
 }

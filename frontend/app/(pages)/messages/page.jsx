@@ -303,24 +303,24 @@ const Page = () => {
                     title="Call"
                     className="mr-2 p-2 rounded-md dark:hover:bg-neutral-700 hover:bg-gray-300  transition ease-in-out duration-200"
                   >
-                    <i className="fa-solid fa-phone dark:text-gray-400"></i>
+                    <i className="fa-solid fa-phone dark:text-zinc-100"></i>
                   </button>
                   <button
                     onClick={handleCallVideo}
                     title="Video Call"
                     className="mr-2 p-2 rounded-md  dark:hover:bg-neutral-700 hover:bg-gray-300  transition ease-in-out duration-200"
                   >
-                    <i className="fa-solid fa-video dark:text-neutral-400"></i>
+                    <i className="fa-solid fa-video dark:text-zinc-100"></i>
                   </button>
                   <button
                     title="Video Call"
                     className="mr-2 p-2 rounded-md  dark:hover:bg-neutral-700 hover:bg-gray-300  transition ease-in-out duration-200"
                   >
-                    <i className="fa-solid fa-ellipsis-vertical dark:text-neutral-400"></i>
+                    <i className="fa-solid fa-ellipsis-vertical dark:text-zinc-100"></i>
                   </button>
                 </div>
               </div>
-              <hr className=" border-1 dark:border-neutral-700" />
+              <hr className=" dark:border-neutral-700" />
 
               <div className="h-[78.5%] overflow-y-scroll scrollbar-hide">
                 {/* <h2 className="text-center m-3 dark:text-neutral-400">
@@ -386,7 +386,7 @@ const Page = () => {
                   </div>
                 )}
 
-                <div className="flex items-center mt-3 bg-gray-200 dark:bg-neutral-800 dark:text-white text-black p-3 rounded-2xl w-full justify-center">
+                <div className="flex items-center mt-3  border dark:border-neutral-700 border-zinc-300  dark:text-white text-black p-3 rounded-3xl w-full justify-center">
                   {user?.avatar?.url && (
                     <img
                       src={user?.avatar.url}
@@ -399,7 +399,7 @@ const Page = () => {
                     onClick={() =>
                       document.getElementById("chatFileInput").click()
                     }
-                    className="dark:text-gray-400 text-black dark:hover:text-gray-300 hover:text-neutral-600 mr-3 ml-3"
+                    className="dark:text-zinc-100 text-black dark:hover:text-zinc-500 hover:text-zinc-500 mr-3 ml-3"
                   >
                     <Plus size={28} />
                   </button>
@@ -414,8 +414,8 @@ const Page = () => {
 
                   <input
                     type="text"
-                    placeholder="Type your message here..."
-                    className="dark:bg-neutral-700 bg-gray-300 dark:text-white text-black placeholder-gray-500 flex-grow py-2 px-4 rounded-3xl focus:outline-none"
+                    placeholder="Message..."
+                    className="dark:bg-black border dark:border-neutral-700 border-zinc-300  text-black dark:text-white placeholder-zinc-400  flex-grow py-2 px-4 rounded-3xl focus:outline-none"
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
                     onKeyDown={(e) => {
@@ -429,7 +429,7 @@ const Page = () => {
                   <button
                     type="button"
                     onClick={() => setShowPicker(!showPicker)}
-                    className="ml-2 dark:text-gray-400 text-black dark:hover:text-gray-300 hover:text-neutral-700"
+                    className="ml-2 dark:text-zinc-100 text-black  dark:hover:text-zinc-500 hover:text-zinc-500"
                   >
                     <Smile size={28} />
                   </button>
@@ -449,7 +449,7 @@ const Page = () => {
                   {(newMessage.trim() || files.length > 0) && (
                     <button
                       onClick={handleSendMessage}
-                      className="ml-2 text-blue-600 hover:text-white"
+                      className="ml-2 dark:text-zinc-100 text-black  dark:hover:text-zinc-500 hover:text-zinc-500"
                     >
                       <Send size={30} />
                     </button>

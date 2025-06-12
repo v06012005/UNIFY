@@ -42,7 +42,7 @@ const PostReels = forwardRef(
 
     return (
       <div
-        className="absolute inset-0 bg-black flex justify-center items-center"
+        className="absolute inset-0 flex justify-center my-2 items-center rounded-md border-white/20 dark:shadow-[0_0_500px_rgba(255,255,255,0.1)] shadow-[0_0_900px_rgba(0,0,0,0.1)] overflow-hidden"
         onClick={togglePlayPause}
       >
         <button
@@ -63,7 +63,7 @@ const PostReels = forwardRef(
         <AnimatePresence>
           {isPaused && (
             <motion.div
-              className="absolute z-[5] flex justify-center items-center bg-black bg-opacity-55 rounded-full h-20 w-20"
+              className="absolute z-[5] flex justify-center items-center bg-neutral-800 bg-opacity-55 rounded-full h-20 w-20"
               initial={{ opacity: 0, scale: 1.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 1.4 }}
@@ -80,7 +80,7 @@ const PostReels = forwardRef(
           }}
           muted={muted}
           loop={loop}
-          className="w-full h-full object-contain relative z-0"
+          className="w-[430] h-full bg-black rounded-md"
           playsInline
           onError={(e) => console.error("Video error:", e)}
         >
