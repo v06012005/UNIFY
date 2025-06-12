@@ -12,68 +12,53 @@ import { addToast, Avatar, ToastProvider } from "@heroui/react";
 import Link from "next/link";
 import ReportModal from "./Report/ReportModal";
 import { useReports } from "../provider/ReportProvider";
-const User = ({
-  href = "",
-  username = "",
-  firstname = "",
-  lastname = "",
-  avatar = "",
-}) => (
-  <Link href={href}>
-    <div className="flex mb-2">
-      <Avatar
-        className=" w-12 h-12 border border-gray-300 dark:border-neutral-700 "
-        src={avatar}
-      />
 
-      <div className="ml-5">
-        <p className="my-auto text-sm font-bold">@{username}</p>
-        <p className="my-auto">
-          {firstname} {lastname}
+const User = ({ user }) => (
+  <Link href={`/othersProfile/${user?.username}`} className="hover:opacity-80 transition-opacity">
+    <div className="flex items-center">
+      <Avatar
+        className="w-9 h-9 border border-gray-200 dark:border-neutral-700 rounded-full overflow-hidden transition-transform hover:scale-105"
+        src={user?.avatar?.url}
+      />
+      <div className="ml-3">
+        <p className="text-sm font-bold text-gray-900 dark:text-gray-100">@{user?.username}</p>
+        <p className="text-xs text-gray-600 dark:text-gray-400">
+          {user?.firstName} {user?.lastName}
         </p>
       </div>
     </div>
   </Link>
 );
 
-const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
-  return (
-    <Link
-      className="flex h-full items-center text-center text-gray-500 hover:text-black dark:hover:text-white transition-colors"
-      href={href}
-      onClick={onClick}
-    >
-      <i className={`${iconClass}`}></i>
-      <span className="ml-1">{content}</span>
-    </Link>
-  );
-};
+const Caption = ({ text }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const shouldShowMore = text.length > 100;
 
-const Hashtag = ({ content = "", to = "" }) => (
-  <Link
-    href={to}
-    className="text-lg text-sky-500 mr-4 hover:underline hover:decoration-sky-500"
-  >
-    {content}
-  </Link>
-);
+  if (!shouldShowMore) {
+    return <div className="my-2 leading-snug text-wrap text-sm text-gray-800 dark:text-gray-200">{text}</div>;
+  }
 
-const Caption = ({ text, maxLength = 100 }) => {
-  const [isExpanded, setIsExpanded] = React.useState(false);
   return (
-    <div className="my-3 leading-snug text-wrap">
-      {isExpanded || text.length < maxLength
-        ? text
-        : `${text.slice(0, maxLength)}...`}
+    <div className="my-2 leading-snug text-wrap text-sm text-gray-800 dark:text-gray-200">
+      {isExpanded ? text : `${text.slice(0, 100)}...`}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="text-neutral-500 font-normal ml-2"
+        className="text-blue-500 dark:text-blue-400 font-medium ml-1.5 hover:underline focus:outline-none"
       >
         {isExpanded ? "less" : "more"}
       </button>
     </div>
   );
 };
+
+const Hashtag = ({ content }) => (
+  <Link
+    href={`/explore/${content}`}
+    className="text-blue-500 dark:text-blue-400 mr-2.5 text-sm hover:underline transition-colors"
+  >
+    {content}
+  </Link>
+);
 
 const PostItem = ({ post }) => {
   const { user } = useApp();
@@ -84,43 +69,27 @@ const PostItem = ({ post }) => {
   const { createPostReport } = useReports();
   const [openList, setOpenList] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const openReportModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
 
   const handleReportPost = useCallback(
     async (postId, reason) => {
       const report = await createPostReport(postId, reason);
+      
       if (report?.error) {
         const errorMessage = report.error;
-        console.warn("Failed to report post:", errorMessage);
-        if (errorMessage === "You have reported this content before.") {
-          addToast({
-            title: "Fail to report post",
-            description: "You have reported this content before.",
-            timeout: 3000,
-            shouldShowTimeoutProgess: true,
-            color: "warning",
-          });
-          setIsModalOpen(false);
-        } else {
-          addToast({
-            title: "Encountered an error",
-            description: "Error: " + errorMessage,
-            timeout: 3000,
-            shouldShowTimeoutProgess: true,
-            color: "danger",
-          });
-          setIsModalOpen(false);
-        }
+        const isDuplicateReport = errorMessage === "You have reported this content before.";
+        
+        addToast({
+          title: isDuplicateReport ? "Fail to report post" : "Encountered an error",
+          description: isDuplicateReport ? errorMessage : `Error: ${errorMessage}`,
+          timeout: 3000,
+          shouldShowTimeoutProgess: true,
+          color: isDuplicateReport ? "warning" : "danger",
+        });
+        
+        setIsModalOpen(false);
         return;
       }
 
-      console.log("Post reported successfully:", report);
       addToast({
         title: "Success",
         description: "Report post successful.",
@@ -144,7 +113,7 @@ const PostItem = ({ post }) => {
           <Link
             key={index}
             href={`/explore/${part.substring(1)}`}
-            className="text-blue-500 hover:underline"
+            className="text-blue-500 dark:text-blue-400 hover:underline transition-colors"
           >
             {part}
           </Link>
@@ -156,105 +125,99 @@ const PostItem = ({ post }) => {
 
   return (
     <>
-      <ToastProvider placement={"top-right"} />
-      <div key={post.id} className="w-3/4 mb-8 mx-auto pb-8">
-        <div className="flex justify-between items-center mx-10">
-          <User
-            avatar={post?.user?.avatar?.url}
-            href={`/othersProfile/${post?.user?.username}`}
-            username={post.user?.username}
-            firstname={post.user?.firstName}
-            lastname={post.user?.lastName}
-          />
-          <NavButton
+      <ToastProvider placement="top-right" />
+      <div className="w-full max-w-lg mx-auto mb-5 bg-white dark:bg-neutral-900 rounded-lg shadow-md hover:shadow-lg transition-all duration-300">
+        <div className="flex justify-between items-center p-2.5 border-b border-gray-200 dark:border-neutral-800">
+          <User user={post.user} />
+          <button
             onClick={() => setOpenList(true)}
-            content="•••"
-            className="text-2xl"
-          />
+            className="text-lg text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+          >
+            •••
+          </button>
         </div>
+
         {openList && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[60]">
-            <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-xl w-80 transform transition-all duration-200 scale-100 hover:scale-105">
+          <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-[60]">
+            <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-xl w-64 transform transition-all duration-200">
               <button
                 onClick={() => {
-                  openReportModal();
+                  setIsModalOpen(true);
                   setOpenList(false);
                 }}
-                className="w-full py-3 text-red-500 dark:hover:bg-neutral-700 hover:bg-gray-100 rounded-t-lg font-medium"
+                className="w-full py-2 text-red-500 dark:text-red-400 dark:hover:bg-neutral-700 hover:bg-gray-100 rounded-t-lg font-medium transition-colors text-sm"
               >
                 Report
               </button>
-              <button className="w-full py-3 text-gray-800 dark:text-gray-200 dark:hover:bg-neutral-700 hover:bg-gray-100 font-medium">
+              <button className="w-full py-2 text-gray-800 dark:text-gray-200 dark:hover:bg-neutral-700 hover:bg-gray-100 font-medium transition-colors text-sm">
                 Not interested
               </button>
-              <button className="w-full py-3 text-gray-800 dark:text-gray-200 dark:hover:bg-neutral-700 hover:bg-gray-100 font-medium">
+              <button className="w-full py-2 text-gray-800 dark:text-gray-200 dark:hover:bg-neutral-700 hover:bg-gray-100 font-medium transition-colors text-sm">
                 Share
               </button>
               <button
                 onClick={() => setOpenList(false)}
-                className="w-full py-3 text-gray-500 dark:text-gray-400 dark:hover:bg-neutral-700 hover:bg-gray-100 rounded-b-lg font-medium"
+                className="w-full py-2 text-gray-500 dark:text-gray-400 dark:hover:bg-neutral-700 hover:bg-gray-100 rounded-b-lg font-medium transition-colors text-sm"
               >
                 Close
               </button>
             </div>
           </div>
         )}
+
         <ReportModal
           isOpen={isModalOpen}
-          onClose={closeModal}
+          onClose={() => setIsModalOpen(false)}
           onSubmit={handleReportPost}
           postId={post.id}
         />
-        <Slider srcs={post.media} />
-        <div className="w-4/4 mx-10 px-2">
+
+        <div className="w-full bg-white dark:bg-neutral-900">
+          <Slider srcs={post.media} />
+        </div>
+
+        <div className="p-2.5">
           <Caption text={transformHashtags(post.captions)} />
-          <div className="flex justify-between text-xl">
-            <div className="flex gap-4">
+          
+          <div className="flex justify-between text-base">
+            <div className="flex gap-2.5">
               <LikeButton
-                className="!text-xl hover:opacity-50"
+                className="!text-base hover:opacity-50 transition-opacity"
                 userId={user?.id}
                 postId={post?.id}
-                // isLiked={isLiked}
-                // setIsLiked={setIsLiked}
                 setLikeCount={setLikeCount}
                 classText="hidden"
               />
-              <CommentButton className="!text-xl" postId={post.id}>
+              <CommentButton className="!text-base hover:opacity-50 transition-opacity" postId={post.id}>
                 <i className="fa-regular fa-comment"></i>
               </CommentButton>
               <ShareButton />
             </div>
-            <div>
-              <Bookmark
-                postId={post.id}
-                className="!text-xl hover:opacity-90"
-                classNameIcon={"text-black dark:text-white"}
-              />
-            </div>
+            <Bookmark
+              postId={post.id}
+              className="!text-base hover:opacity-90 transition-opacity"
+              classNameIcon="text-gray-900 dark:text-gray-100"
+            />
           </div>
-          <div>
-            <span className="text-base font-normal text-neutral-700 dark:text-zinc-200">{likeCount} likes</span>
+
+          <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mt-1.5">
+            {likeCount} likes
           </div>
+
           <div className="mt-2 flex flex-wrap">
-            {hashtags.map((hashtag, index) => {
-              return (
-                <Hashtag
-                  key={index}
-                  content={hashtag}
-                  to={`/explore/${hashtag}`}
-                />
-              );
-            })}
+            {hashtags.map((hashtag, index) => (
+              <Hashtag key={index} content={hashtag} />
+            ))}
           </div>
+
           <div className="mt-2">
             <CommentButton
               postId={post.id}
-              className="text-black hover:text-gray-500 text-md animate-none transition-none dark:text-zinc-400 dark:hover:text-white"
+              className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 text-sm transition-colors"
             >
               View all {post.commentCount || 0} comments
             </CommentButton>
           </div>
-        
         </div>
       </div>
     </>

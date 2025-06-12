@@ -35,80 +35,73 @@ const CommentItem = ({
   return (
     <Card
       key={comment.id}
-      className="overflow-visible border-none bg-transparent shadow-none p-3"
+      className="overflow-visible border-none bg-transparent shadow-none p-0 mb-2"
     >
-      <div>
-        <div className="flex items-center">
-          <div className="relative w-11 h-11 rounded-full overflow-hidden border-2 border-zinc-300">
-            {comment.avatarUrl ? (
-              <Image
-                src={comment.avatarUrl}
-                alt={`${comment.username || "Unknown"}'s avatar`}
-                width={44}
-                height={44}
-                className="object-cover w-full h-full"
-              />
-            ) : (
-              <Image
-                src={defaultAvatar}
-                alt="Default Avatar"
-                width={44}
-                height={44}
-                className="object-cover w-full h-full"
-              />
-            )}
-          </div>
-          <h4 className="text-base font-bold truncate max-w-96 px-3">
-            {comment.username || "Unknown"}
-          </h4>
-          <h4 className="text-xs truncate w-32 dark:text-gray-500">
-            {comment.commentedAt &&
-            !isNaN(new Date(comment.commentedAt).getTime())
-              ? formatDistanceToNow(new Date(comment.commentedAt), {
-                  addSuffix: true,
-                })
-              : "Vừa xong"}
-          </h4>
+      <div className="flex items-start gap-3">
+        <div className="relative w-10 h-10 rounded-full overflow-hidden border border-zinc-300 dark:border-zinc-700">
+          {comment.avatarUrl ? (
+            <Image
+              src={comment.avatarUrl}
+              alt={`${comment.username || "Unknown"}'s avatar`}
+              width={40}
+              height={40}
+              className="object-cover w-full h-full"
+            />
+          ) : (
+            <Image
+              src={defaultAvatar}
+              alt="Default Avatar"
+              width={40}
+              height={40}
+              className="object-cover w-full h-full"
+            />
+          )}
         </div>
-
-        <div className="indent-14 mb-5">
-          <Content
-            text={comment.content}
-            className="leading-snug text-sm dark:text-gray-200 w-fit max-w-full"
-          />
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <span className="font-semibold text-sm text-gray-900 dark:text-gray-100 truncate max-w-[120px]">{comment.username || "Unknown"}</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400 truncate">
+              {comment.commentedAt && !isNaN(new Date(comment.commentedAt).getTime())
+                ? formatDistanceToNow(new Date(comment.commentedAt), { addSuffix: true })
+                : "Just now"}
+            </span>
+          </div>
+          <div className="mt-1 text-sm text-gray-800 dark:text-gray-200 break-words">
+            <Content text={comment.content} className="leading-snug" />
+          </div>
+          <div className="flex gap-2 mt-2">
+            <Button
+              size="sm"
+              className="bg-transparent text-xs px-2 py-1 hover:bg-gray-100 dark:hover:bg-neutral-700 dark:text-gray-300"
+              onPress={() => onReplyClick(comment)}
+              aria-label="Reply to comment"
+            >
+              <i className="fa-solid fa-reply mr-1"></i>Reply
+            </Button>
+            {comment.replies && comment.replies.length > 0 && (
+              <Button
+                onPress={() => setIsShown(!isShown)}
+                size="sm"
+                className="bg-transparent text-xs px-2 py-1 hover:bg-gray-100 dark:hover:bg-neutral-700 dark:text-gray-300"
+                aria-label={isShown ? "Hide replies" : "Show replies"}
+              >
+                <i className="fa-solid fa-comments mr-1"></i>
+                {isShown ? "Hide Replies" : `Show Replies (${allReplies.length})`}
+              </Button>
+            )}
+            <Button
+              size="sm"
+              className="bg-transparent text-xs px-2 py-1 hover:bg-gray-100 dark:hover:bg-neutral-700 dark:text-gray-300"
+              startContent={<i className="fa-solid fa-ellipsis"></i>}
+              aria-label="More actions"
+            >
+              More
+            </Button>
+          </div>
         </div>
       </div>
-
-      <CardFooter className="flex flex-row justify-end p-0">
-        {/* <LikeButton className="!text-sm space-x-1" /> */}
-        <Button
-          size="sm"
-          className="bg-transparent dark:text-white"
-          onPress={() => onReplyClick(comment)}
-        >
-          <i className="fa-solid fa-reply"></i> Reply
-        </Button>
-        {comment.replies && comment.replies.length > 0 && (
-          <Button
-            onPress={() => setIsShown(!isShown)}
-            size="sm"
-            className="bg-transparent dark:text-white"
-          >
-            <i className="fa-solid fa-comments"></i>{" "}
-            {isShown ? "Hide Replies" : `Show Replies (${allReplies.length})`}
-          </Button>
-        )}
-        <Button
-          size="sm"
-          className="bg-transparent dark:text-white"
-          startContent={<i className="fa-solid fa-ellipsis"></i>}
-        >
-          More
-        </Button>
-      </CardFooter>
-
       {isShown && allReplies.length > 0 && (
-        <div className="w-full flex flex-col items-end">
+        <div className="w-full flex flex-col items-end mt-2 pl-8 border-l-2 border-gray-200 dark:border-neutral-700 bg-gray-50/60 dark:bg-neutral-800/40 rounded-lg">
           {allReplies.map((reply) => (
             <Reply
               key={reply.id}

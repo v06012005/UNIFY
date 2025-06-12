@@ -13,6 +13,39 @@ import { fetchPostById, getUser, insertHashtagDetails, insertHashtags, saveMedia
 import { cn } from "@/app/lib/utils";
 import { addToast, ToastProvider } from "@heroui/toast";
 import { redirect, useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { Button } from "@heroui/react";
+import { Spinner } from "@heroui/react";
+
+const MediaPreview = ({ file, onRemove }) => {
+  const isVideo = file.type?.startsWith("video/") || file.mediaType === 'VIDEO';
+
+  return (
+    <div className="relative group">
+      <button
+        onClick={() => onRemove(file)}
+        className="absolute -right-2 -top-2 z-10 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+      >
+        <i className="fa-solid fa-xmark text-sm"></i>
+      </button>
+      {isVideo ? (
+        <video
+          src={file.url}
+          controls
+          className="w-full aspect-square object-cover rounded-lg border border-gray-200 dark:border-neutral-700"
+        />
+      ) : (
+        <Image
+          src={file.url}
+          alt="Preview"
+          width={200}
+          height={200}
+          className="w-full aspect-square object-cover rounded-lg border border-gray-200 dark:border-neutral-700"
+        />
+      )}
+    </div>
+  );
+};
 
 const User = ({ user }) => {
   return (
@@ -41,6 +74,7 @@ const Page = () => {
   const [existingFiles, setExistingFiles] = useState([]);
 
   const [user, setUser] = useState(null);
+  const router = useRouter();
 
   useEffect(() => {
     async function fetchUser() {
@@ -176,17 +210,19 @@ const Page = () => {
     try {
       setLoading(true);
 
+      // Validate media
       if (files.length === 0 && existingFiles.length === 0) {
         addToast({
           title: "No files uploaded",
-          description: "Please upload at least one media file (image/ video).",
+          description: "Please upload at least one media file (image/video).",
           timeout: 3000,
           shouldShowTimeoutProgess: true,
-          color: "danger",
+          color: "warning",
         });
         return;
       }
 
+      // Process hashtags first
       const hashtagList = caption
         .toString()
         .split(/(\#[a-zA-Z0-9_]+)/g)
@@ -301,203 +337,182 @@ const Page = () => {
 
   return (
     <>
-      <ToastProvider placement={"top-right"} />
-      <div className="h-screen">
-        <div className="flex flex-col h-full px-4">
-          <div className="grid grid-cols-2">
-            <h1 className="font-bold text-4xl border rounded-md w-fit p-2 my-4 mx-3 bg-black text-white dark:text-black dark:bg-white">
-              POST
-            </h1>
-            <User user={user} />
+      <ToastProvider placement="top-right" />
+      <div className="h-screen bg-gray-50 dark:bg-neutral-900 overflow-hidden">
+        <div className="h-full max-w-7xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between mb-4">
+            <div className="space-y-1">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Edit Post</h1>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Update your post details
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={openModal}
+                className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
+              >
+                Cancel
+              </button>
+              <ModalDialog
+                icon={<ExclamationTriangleIcon className="w-6 h-6 text-red-500" />}
+                buttonText="Discard"
+                handleClick={refreshPost}
+                title="Discard changes?"
+              >
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  If you leave now, your changes will be lost. Are you sure you want to discard editing this post?
+                </p>
+              </ModalDialog>
+              <button
+                type="button"
+                onClick={handleSave}
+                disabled={loading || (files.length === 0 && existingFiles.length === 0)}
+                className={cn(
+                  "px-4 py-2 text-sm font-medium text-white rounded-lg",
+                  "bg-indigo-600 hover:bg-indigo-700",
+                  "disabled:opacity-50 disabled:cursor-not-allowed",
+                  "transition-colors duration-200"
+                )}
+              >
+                {loading ? "Saving..." : "Save Changes"}
+              </button>
+            </div>
           </div>
-          {loading && (
-            <div className="fixed inset-0 bg-transparent z-[9998]"></div>
-          )}
 
           {loading && (
-            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[9998]">
-              <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-white"></div>
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
+              <Spinner
+                classNames={{
+                  label: "text-white mt-4 font-medium",
+                  base: "text-white"
+                }}
+                label="Saving your post..."
+                variant="wave"
+              />
             </div>
           )}
 
-          <div className="flex h-full border-t">
-            <div className="basis-1/2 p-3">
-              <div className="h-full">
-                <div className="flex justify-between">
-                  <label
-                    htmlFor="cover-photo"
-                    className="block text-sm/6 font-medium text-gray-900 dark:text-white"
-                  >
-                    Photos or/and videos
-                  </label>
-                  {/* <button onClick={handleDivClick} className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-green-500"><i className="fa-solid fa-arrow-up-from-bracket"></i></button> */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100vh-8rem)]">
+            {/* Media Upload Section */}
+            <div className="bg-white dark:bg-neutral-800 rounded-xl p-6 shadow-sm overflow-y-auto">
+              <div className="flex justify-between items-center mb-6">
+                <div className="space-y-1">
+                  <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Media</h2>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Upload photos or videos to share
+                  </p>
                 </div>
-                {/* {images.length > 0 && ( */}
-                <div
-                  className={cn(
-                    previews.length > 0 &&
-                    "mt-4 grid grid-cols-4 gap-2 items-stretch",
-                    previews.length < 1 && "h-full"
-                  )}
-                >
-                  {previews.map((file) => {
-                    const isVideo = file?.mediaType?.startsWith("VIDEO");
+                <span className="text-sm font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-neutral-700 px-3 py-1 rounded-full">
+                  {previews.length}/12 files
+                </span>
+              </div>
 
-                    return (
-                      <div key={file.url} className="relative w-full h-full">
-                        <button
-                          onClick={() => removeFile(file)}
-                          className="z-50 absolute right-[-5px] top-[-5px] bg-red-500 text-white rounded-full h-4 w-4 flex"
-                        >
-                          <i className="fa-solid m-auto fa-sm fa-xmark"></i>
-                        </button>
-                        {isVideo ? (
-                          <video
-                            src={file.url}
-                            controls
-                            className="w-full aspect-square h-full object-cover rounded-md border"
-                          />
-                        ) : (
-                          <Image
-                            src={file.url}
-                            alt="Preview"
-                            width={100}
-                            height={100}
-                            className="w-full aspect-square h-full object-cover rounded-md border"
-                          />
-                        )}
-                      </div>
-                    );
-                  })}
+              <div className={cn(
+                "grid gap-4",
+                previews.length > 0 ? "grid-cols-2 sm:grid-cols-3" : "h-[calc(100%-4rem)]"
+              )}>
+                {previews.map((file) => (
+                  <MediaPreview
+                    key={file.url}
+                    file={file}
+                    onRemove={removeFile}
+                  />
+                ))}
+
+                {previews.length < 12 && (
                   <div
-                    onClick={handleDivClick}
+                    onClick={() => fileInputRef.current?.click()}
                     className={cn(
-                      "mt-2 cursor-pointer flex justify-center rounded-lg border border-dashed dark:border-gray-200 border-gray-900/25",
-                      previews.length < 1 && "h-5/6 px-6 py-10",
-                      previews.length > 0 && "h-full my-auto",
-                      previews.length >= 12 && "hidden"
+                      "border-2 border-dashed rounded-xl flex flex-col items-center justify-center cursor-pointer transition-colors",
+                      "border-gray-300 dark:border-neutral-600",
+                      "hover:border-gray-400 dark:hover:border-neutral-500",
+                      "hover:bg-gray-50 dark:hover:bg-neutral-700/50",
+                      previews.length === 0 ? "h-full" : "aspect-square"
                     )}
                   >
-                    <div className="text-center my-auto">
-                      <PhotoIcon
-                        aria-hidden="true"
-                        className="mx-auto size-12 text-gray-300 dark:text-white"
-                      />
-                      <div className="mt-4 flex text-sm/6 text-gray-600 dark:text-white">
-                        <label
-                          htmlFor="file-upload"
-                          className="relative cursor-pointer rounded-md bg-white dark:bg-black font-semibold text-indigo-600 hover:text-indigo-500"
-                        >
-                          <span>Upload photos or/and videos here</span>
-                        </label>
-                      </div>
-                      <p className="text-xs/5 text-gray-600 dark:text-gray-100">
-                        PHOTOS AND VIDEOS
-                      </p>
-                    </div>
+                    <PhotoIcon className="w-12 h-12 text-gray-400 dark:text-gray-500 mb-3" />
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
+                      Click to upload
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      PNG, JPG, GIF up to 10MB
+                    </p>
                   </div>
-                </div>
-                {/* )} */}
+                )}
+              </div>
 
-                <input
-                  ref={fileInputRef}
-                  id="file-upload"
-                  multiple
-                  name="file-upload"
-                  type="file"
-                  accept="image/png, image/jpeg, image/gif, video/mp4, video/webm"
-                  className="sr-only"
-                  onChange={handleFileChange}
-                />
-              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                accept="image/png, image/jpeg, image/gif, video/mp4, video/webm"
+                className="hidden"
+                onChange={handleFileChange}
+              />
             </div>
-            <div className="basis-1/2 border-l p-3 overflow-y-scroll no-scrollbar">
-              <div>
-                <p className="text-sm/6 font-medium text-gray-900 dark:text-white">
-                  Write Your Caption
-                </p>
-                <Textarea
-                  value={caption}
-                  onChange={(e) => setCaption(e.target.value)}
-                  placeholder="Write your caption here"
-                  minRows={9}
-                  variant="underlined"
-                />
-              </div>
-              <div>
-                <p className="text-sm/6 mt-3 font-medium text-gray-900 mb-2 dark:text-white">
-                  Who can see your post?
-                </p>
-                <Select
-                  onSelectionChange={handleAudienceChange}
-                  defaultSelectedKeys={["PUBLIC"]}
-                  className="w-full"
-                  label=""
-                  variant="underlined"
-                  selectedKeys={[audience]}
-                >
-                  <SelectItem
-                    key={"PUBLIC"}
-                    startContent={<i className="fa-solid fa-earth-asia"></i>}
-                  >
-                    Public
-                  </SelectItem>
-                  <SelectItem
-                    key={"PRIVATE"}
-                    startContent={<i className="fa-solid fa-lock"></i>}
-                  >
-                    Private
-                  </SelectItem>
-                </Select>
-              </div>
-              <div>
-                <p className="text-sm/6 font-medium text-gray-900 my-2 dark:text-white">
-                  Advanced Settings
-                </p>
+
+            {/* Post Details Section */}
+            <div className="bg-white dark:bg-neutral-800 rounded-xl p-6 shadow-sm overflow-y-auto">
+              <div className="space-y-6">
+                <div className="flex items-center justify-between pb-4 border-b border-gray-200 dark:border-neutral-700">
+                  <User user={user} />
+                </div>
                 <div>
-                  <PostSwitch
-                    isOn={isLikeVisible}
-                    onToggle={handleLikeVisibility}
-                    className="mb-3"
-                    title={"Hide like and comment counts on this post"}
-                    subtitle="Control your privacy by hiding the like and comment counts on this post, keeping the focus on the content rather than the numbers."
-                  />
-                  <PostSwitch
-                    isOn={isCommentVisible}
-                    onToggle={handleCommentVisibility}
-                    title={"Turn off commenting"}
-                    subtitle="Disable comments on this post to maintain control over interactions and focus solely on the content."
+                  <label className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
+                    Caption
+                  </label>
+                  <Textarea
+                    value={caption}
+                    onChange={(e) => setCaption(e.target.value)}
+                    placeholder="Write your caption here..."
+                    minRows={4}
+                    className="w-full"
                   />
                 </div>
-              </div>
-              <div className="mt-6 flex items-center justify-end gap-x-6">
-                <button
-                  type="button"
-                  onClick={openModal}
-                  className="text-sm/6 font-semibold text-gray-900 dark:text-white"
-                >
-                  Cancel
-                </button>
-                <ModalDialog
-                  icon={
-                    <ExclamationTriangleIcon className="w-6 h-6 text-red-500" />
-                  }
-                  buttonText="Discard"
-                  handleClick={handleClick}
-                  title={"Discard this post"}
-                >
-                  <p className="mt-4 text-sm text-gray-600">
-                    If you leave, your edits will be deleted. Are you sure that
-                    you want to discard this post?
-                  </p>
-                </ModalDialog>
-                <button
-                  type="button"
-                  onClick={handleSave}
-                  className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                >
-                  Save
-                </button>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
+                    Audience
+                  </label>
+                  <Select
+                    selectedKeys={[audience]}
+                    onSelectionChange={(keys) => setAudience(Array.from(keys)[0])}
+                    className="w-full"
+                  >
+                    <SelectItem
+                      key="PUBLIC"
+                      startContent={<i className="fa-solid fa-earth-asia"></i>}
+                    >
+                      Public
+                    </SelectItem>
+                    <SelectItem
+                      key="PRIVATE"
+                      startContent={<i className="fa-solid fa-lock"></i>}
+                    >
+                      Private
+                    </SelectItem>
+                  </Select>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    Advanced Settings
+                  </h3>
+                  <PostSwitch
+                    onToggle={setIsLikeVisible}
+                    title="Hide like and comment counts"
+                    subtitle="Keep the focus on your content by hiding engagement metrics"
+                    isOn={isLikeVisible}
+                  />
+                  <PostSwitch
+                    onToggle={setIsCommentVisible}
+                    title="Turn off commenting"
+                    subtitle="Disable comments to control interactions on your post"
+                    isOn={isCommentVisible}
+                  />
+                </div>
               </div>
             </div>
           </div>

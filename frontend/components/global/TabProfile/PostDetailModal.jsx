@@ -183,15 +183,27 @@ const PostDetailModal = ({ post, onClose, onArchive, onDelete }) => {
   };
 
   // Skeleton loading cho bình luận
-  const CommentSkeleton = () => (
-    <div className="items-start">
-      <div className="flex space-x-2 mb-14">
-        <Skeleton variant="circle" width={32} height={32} />
+  const PostSkeleton = () => (
+    <div className="animate-pulse">
+      <div className="flex items-center gap-3 mb-4">
+        <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-neutral-700" />
         <div className="flex-1">
-          <Skeleton width={96} height={12} rounded />
-          <Skeleton width="75%" height={12} rounded className="mt-1" />
-          <Skeleton width="50%" height={12} rounded className="mt-1" />
+          <div className="h-4 w-24 bg-gray-200 dark:bg-neutral-700 rounded" />
         </div>
+      </div>
+      <div className="space-y-3">
+        <div className="h-4 w-3/4 bg-gray-200 dark:bg-neutral-700 rounded" />
+        <div className="h-4 w-1/2 bg-gray-200 dark:bg-neutral-700 rounded" />
+      </div>
+    </div>
+  );
+
+  const CommentSkeleton = () => (
+    <div className="animate-pulse flex items-start gap-3 mb-4">
+      <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-neutral-700" />
+      <div className="flex-1">
+        <div className="h-3 w-20 bg-gray-200 dark:bg-neutral-700 rounded mb-2" />
+        <div className="h-3 w-3/4 bg-gray-200 dark:bg-neutral-700 rounded" />
       </div>
     </div>
   );
@@ -199,99 +211,46 @@ const PostDetailModal = ({ post, onClose, onArchive, onDelete }) => {
   if (!post) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/10 dark:bg-neutral-700/40 backdrop-blur-sm z-50 pointer-events-auto">
-      <div className="bg-gray-100 dark:bg-neutral-900 rounded-xl shadow-2xl border-neutral-200 dark:border-neutral-700 border-1 flex flex-row w-[1300px] h-[690px] overflow-hidden">
-        {/* Media */}
-        <div className="w-full relative dark:border-neutral-700 border-r">
+    <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50">
+      <div className="bg-white dark:bg-neutral-900 rounded-xl flex flex-row w-[900px] h-[600px] overflow-hidden">
+        {/* Media Section */}
+        <div className="w-1/2 relative bg-black">
           {selectedMedia ? (
             selectedMedia.mediaType === "VIDEO" ? (
-              <div className="w-full h-full flex items-center justify-center bg-gray-200 dark:bg-black">
-                <video
-                  src={selectedMedia.url}
-                  controls
-                  className="max-w-full max-h-full object-none"
-                />
-              </div>
+              <video
+                src={selectedMedia.url}
+                controls
+                className="w-full h-full object-contain"
+              />
             ) : (
-              <div className="flex items-center justify-center bg-bgray-200 h-full">
-                <img
-                  src={selectedMedia.url}
-                  className="w-full h-full object-contain rounded"
-                  alt="Post Media"
-                />
-              </div>
+              <img
+                src={selectedMedia.url}
+                alt="Post Media"
+                className="w-full h-full object-contain"
+              />
             )
           ) : (
-            <div className="w-full h-full flex items-center justify-center bg-black text-white">
-              <p>No images/videos available</p>
-            </div>
-          )}
-
-          {post.media.length > 1 && (
-            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-full bg-black bg-opacity-60 p-2 rounded-lg overflow-x-auto flex gap-2 scrollbar-hide">
-              {post.media.map((item, index) => (
-                <div
-                  key={index}
-                  className={`w-16 h-16 cursor-pointer border-2 rounded-md flex items-center justify-center bg-black ${
-                    selectedMedia?.url === item.url
-                      ? "border-blue-500"
-                      : "border-gray-500"
-                  } hover:border-blue-400 transition-colors`}
-                  onClick={() => setSelectedMedia(item)}
-                >
-                  {item.mediaType === "VIDEO" ? (
-                    <div className="relative w-full h-full flex items-center justify-center">
-                      <video
-                        src={item.url}
-                        className="max-w-full max-h-full object-contain rounded"
-                        muted
-                      />
-                      <div className="absolute top-1 left-1">
-                        <Image
-                          src={iconVideo}
-                          width={16}
-                          height={16}
-                          alt="Video"
-                        />
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="relative w-full h-full flex items-center justify-center">
-                      <img
-                        src={item.url}
-                        className="max-w-full max-h-full object-contain rounded"
-                        alt="Thumbnail"
-                      />
-                      <div className="absolute top-1 left-1">
-                        <Image
-                          src={iconImage}
-                          width={16}
-                          height={16}
-                          alt="Image"
-                        />
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ))}
+            <div className="w-full h-full flex items-center justify-center text-white">
+              <p>No media available</p>
             </div>
           )}
         </div>
 
-        {/* Nội dung */}
-        <div className="w-full flex flex-col">
+        {/* Content Section */}
+        <div className="w-1/2 flex flex-col">
+          {/* Header */}
           <div className="flex items-center justify-between p-4 border-b dark:border-neutral-800">
-            <div className="flex items-center">
-              <div className="w-10 h-10 rounded-full border-2 border-gray-300 dark:border-gray-600">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full border-2 border-gray-300 dark:border-gray-600 overflow-hidden">
                 <Image
                   src={post.user?.avatar?.url || Avatar}
                   alt="User Avatar"
                   width={40}
                   height={40}
-                  className="w-full h-full rounded-full object-cover"
+                  className="w-full h-full object-cover"
                 />
               </div>
-              <span className="font-semibold ml-3 text-gray-900 dark:text-white">
+              <span className="font-semibold text-gray-900 dark:text-white">
                 {post.user?.username}
               </span>
             </div>
@@ -340,67 +299,85 @@ const PostDetailModal = ({ post, onClose, onArchive, onDelete }) => {
             />
           </div>
 
-          <div
-            className="flex-auto px-4 py-3 overflow-y-auto no-scrollbar"
-            ref={commentsContainerRef}
-          >
-            {post.captions === null ? (
-              ""
-            ) : (
-              <div className="flex items-center gap-3 leading-tight text-gray-800 dark:text-gray-200">
-                <div className="flex-shrink-0 w-10 h-10 rounded-full overflow-hidden border-2 border-gray-300 dark:border-gray-600">
-                  <Image
-                    src={post.user?.avatar?.url || Avatar}
-                    width={40}
-                    height={40}
-                    alt="User Avatar"
-                    className="object-cover w-full h-full"
-                  />
-                </div>
-                <span className="text-sm font-bold mr-4">
-                  {post.user?.username}
-                </span>
-                <div className="ml-3 text-sm">
-                  {transformHashtags(post.captions)}
+          {/* Comments Section */}
+          <div className="flex-1 flex flex-col">
+            {/* Caption */}
+            {post.captions && (
+              <div className="p-4 border-b dark:border-neutral-800">
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full overflow-hidden border-2 border-gray-300 dark:border-gray-600">
+                    <Image
+                      src={post.user?.avatar?.url || Avatar}
+                      width={32}
+                      height={32}
+                      alt="User Avatar"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                        {post.user?.username}
+                      </span>
+                      <span className="text-sm text-gray-500 dark:text-gray-400">
+                        {new Date(post.postedAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <div className="text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-words">
+                      {transformHashtags(post.captions)}
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
 
-            <div className="mt-5 space-y-2">
+            {/* Comments List */}
+            <div
+              className="flex-1 overflow-y-auto no-scrollbar px-4 py-3"
+              ref={commentsContainerRef}
+            >
               {isCommentsLoading ? (
-                [...Array(6)].map((_, index) => (
-                  <CommentSkeleton key={index} />
-                ))
+                <div className="space-y-4">
+                  {[...Array(6)].map((_, index) => (
+                    <CommentSkeleton key={index} />
+                  ))}
+                </div>
               ) : comments.length > 0 ? (
-                comments.map((comment) => (
-                  <CommentItem
-                    key={comment.id}
-                    comment={comment}
-                    currentUserId={currentUserId}
-                    onReplySubmit={updateComments}
-                    onReplyClick={handleReplyClick}
-                  />
-                ))
+                <div className="space-y-4">
+                  {comments.map((comment) => (
+                    <CommentItem
+                      key={comment.id}
+                      comment={comment}
+                      currentUserId={currentUserId}
+                      onReplySubmit={updateComments}
+                      onReplyClick={handleReplyClick}
+                    />
+                  ))}
+                </div>
               ) : (
-                <p className="text-zinc-500 font-bold text-xl">
-                  No comments yet
-                </p>
+                <div className="h-full flex items-center justify-center">
+                  <p className="text-zinc-500 dark:text-zinc-400 font-medium">
+                    No comments yet
+                  </p>
+                </div>
               )}
             </div>
-          </div>
 
-          <div className="p-4 border-t dark:border-neutral-800">
-            <CommentInput
-              postId={post.id}
-              setComments={updateComments}
-              parentComment={replyingTo}
-              onCancelReply={handleCancelReply}
-            />
+            {/* Comment Input */}
+            <div className="p-4 border-t dark:border-neutral-800">
+              <CommentInput
+                postId={post.id}
+                setComments={updateComments}
+                parentComment={replyingTo}
+                onCancelReply={handleCancelReply}
+              />
+            </div>
           </div>
         </div>
 
+        {/* Close Button */}
         <button
-          className="absolute right-4 top-4 dark:text-gray-200 text-neutral-600 dark:hover:text-white hover:text-neutral-400 text-3xl font-bold rounded-full w escucha aquí -10 h-10 flex items-center justify-center transition-colors"
+          className="absolute right-4 top-4 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 text-2xl font-bold rounded-full w-8 h-8 flex items-center justify-center transition-colors"
           onClick={handleClose}
         >
           ×

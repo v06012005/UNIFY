@@ -8,6 +8,12 @@ import { Spinner } from "@heroui/react";
 import { addToast, ToastProvider } from "@heroui/toast";
 import { useQuery } from "@tanstack/react-query";
 
+const PostSkeleton = () => (
+  <div className="aspect-square relative animate-pulse">
+    <div className="w-full h-full bg-gray-200 dark:bg-neutral-700" />
+  </div>
+);
+
 const UserPosts = ({ username }) => {
   const [selectedPost, setSelectedPost] = useState(null);
   const { getUserInfoByUsername } = useApp();
@@ -170,12 +176,10 @@ const UserPosts = ({ username }) => {
       <ToastProvider placement={"top-right"} />
       <div className="max-w-3xl mx-auto">
         {loading ? (
-          <div className="flex justify-center items-center h-screen">
-            <Spinner
-              color="primary"
-              label="Loading posts..."
-              labelColor="primary"
-            />
+          <div className="grid grid-cols-3 gap-1">
+            {[...Array(9)].map((_, index) => (
+              <PostSkeleton key={index} />
+            ))}
           </div>
         ) : memoizedPostUsers.length > 0 ? (
           <div className="grid grid-cols-3 gap-1">
@@ -185,21 +189,24 @@ const UserPosts = ({ username }) => {
                 className="aspect-square relative group cursor-pointer"
                 onClick={() => handlePostClick(post)}
               >
-                <div className="absolute top-0 left-0 right-0 text-white bg-black/50 p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                  <p className="text-sm">
-                    {post.postedAt
-                      ? (() => {
-                          const date = new Date(post.postedAt);
-                          const mm = String(date.getMonth() + 1).padStart(
-                            2,
-                            "0"
-                          );
-                          const dd = String(date.getDate()).padStart(2, "0");
-                          const yyyy = date.getFullYear();
-                          return `${mm}-${dd}-${yyyy}`;
-                        })()
-                      : ""}
-                  </p>
+                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                  <div className="text-white text-center">
+                    <p className="text-sm mb-2">
+                      {post.postedAt
+                        ? new Date(post.postedAt).toLocaleDateString()
+                        : ""}
+                    </p>
+                    <div className="flex items-center justify-center gap-4">
+                      <div className="flex items-center gap-1">
+                        <i className="fa-regular fa-heart"></i>
+                        <span>{post.likes?.length || 0}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <i className="fa-regular fa-comment"></i>
+                        <span>{post.comments?.length || 0}</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 {post.media.length === 0 ? (
                   <div className="w-full h-full bg-black flex items-center justify-center">
@@ -223,64 +230,31 @@ const UserPosts = ({ username }) => {
                   </div>
                 )}
                 {post.media.length > 1 && (
-                  <div className="absolute bottom-0 left-0 right-0 bg-black/50 p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                    <div className="flex gap-1 overflow-x-auto scrollbar-hide">
-                      {post.media.map((mediaItem, index) => (
-                        <div key={index} className="w-12 h-12 flex-shrink-0">
-                          {mediaItem?.mediaType === "VIDEO" ? (
-                            <video
-                              src={mediaItem?.url}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <img
-                              src={mediaItem?.url}
-                              className="w-full h-full object-cover"
-                              alt="Media preview"
-                            />
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                {post.media.length > 1 && (
-                  <div className="absolute top-2 right-2 bg-black/50 text-white text-xs px-1 py-0.5 rounded pointer-events-none">
-                    <span>
-                      <i className="fa-solid fa-layer-group"></i>
-                    </span>
-                  </div>
-                )}
-                {post.media[0]?.mediaType === "VIDEO" && (
-                  <div className="absolute top-2 right-2 bg-black/50 text-white text-xs px-1 py-0.5 rounded pointer-events-none">
-                    {post.media.length > 1 ? (
-                      <i className="fa-solid fa-layer-group"></i>
-                    ) : (
-                      <i className="fa-solid fa-film"></i>
-                    )}
+                  <div className="absolute top-2 right-2 bg-black/50 text-white text-xs px-1.5 py-0.5 rounded-full">
+                    <i className="fa-solid fa-layer-group mr-1"></i>
+                    {post.media.length}
                   </div>
                 )}
               </div>
             ))}
           </div>
         ) : (
-          <div className="text-center text-gray-500 mt-4">
-            <p>No posts available.</p>
-            <button onClick={refetch} className="text-blue-500">
-              Try again
-            </button>
+          <div className="flex flex-col items-center justify-center h-[400px] text-gray-500 dark:text-gray-400">
+            <i className="fa-regular fa-image text-4xl mb-4"></i>
+            <p className="text-lg font-medium mb-2">No posts yet</p>
+            <p className="text-sm">When you share photos and videos, they'll appear on your profile.</p>
           </div>
         )}
-
-        {selectedPost && (
-          <PostDetailModal
-            post={selectedPost}
-            onClose={closeModal}
-            onDelete={handleDeletePost}
-            onArchive={handleArchivePost}
-          />
-        )}
       </div>
+
+      {selectedPost && (
+        <PostDetailModal
+          post={selectedPost}
+          onClose={closeModal}
+          onDelete={handleDeletePost}
+          onArchive={handleArchivePost}
+        />
+      )}
     </>
   );
 };
