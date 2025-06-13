@@ -29,21 +29,11 @@ export default function TableLoading({ tableHeaders = [""] }) {
         <TableBody>
           {[...Array(10)].map((_, index) => (
             <TableRow key={index}>
-              <TableCell>
-                <Skeleton className="h-6 rounded-lg" />
-              </TableCell>
-              <TableCell>
-                <Skeleton className="h-6 rounded-lg" />
-              </TableCell>
-              <TableCell>
-                <Skeleton className="h-6 rounded-lg" />
-              </TableCell>
-              <TableCell>
-                <Skeleton className="h-6 rounded-lg" />
-              </TableCell>
-              <TableCell>
-                <Skeleton className="h-6 rounded-lg" />
-              </TableCell>
+              {tableHeaders.map((_, cellIndex) => (
+                <TableCell key={cellIndex}>
+                  <Skeleton className="h-6 rounded-lg" />
+                </TableCell>
+              ))}
             </TableRow>
           ))}
         </TableBody>
