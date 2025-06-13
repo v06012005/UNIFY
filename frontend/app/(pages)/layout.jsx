@@ -23,7 +23,7 @@ const RootLayout = ({ children }) => {
                   </div>
                 </aside>
               )}
-              <main className="w-full flex-initial relative">
+              <main className="w-full flex-initial relative  h-screen overflow-y-auto scrollbar-hide">
                 {children}
                 {/*<CallNotification />*/}
               </main>
