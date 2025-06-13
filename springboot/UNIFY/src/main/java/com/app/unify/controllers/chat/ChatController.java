@@ -8,10 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
+import org.springframework.messaging.simp.annotation.SubscribeMapping;
+import org.springframework.messaging.simp.annotation.support.SimpAnnotationMethodMessageHandler;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,20 +21,48 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ChatController {
 
-    private SimpMessagingTemplate messagingTemplate;
-    private MessageService messageService;
-
-    @Autowired
-    public ChatController(SimpMessagingTemplate messagingTemplate, MessageService messageService) {
-        this.messagingTemplate = messagingTemplate;
-        this.messageService = messageService;
-    }
+    private final SimpMessagingTemplate messagingTemplate;
+    private final MessageService messageService;
 
     @MessageMapping("/chat.sendMessage")
     public void sendMessage(@Payload Message message) {
-        message.setTimestamp(LocalDateTime.now());
-        Message messageSaved = messageService.saveMessage(message);
-        messagingTemplate.convertAndSendToUser(message.getReceiver(), "/queue/messages", messageSaved);
+        try {
+            message.setTimestamp(LocalDateTime.now());
+            Message messageSaved = messageService.saveMessage(message);
+            
+            // Send to receiver
+            messagingTemplate.convertAndSendToUser(
+                message.getReceiver(),
+                "/queue/messages",
+                messageSaved
+            );
+            
+            // Send back to sender for confirmation
+            messagingTemplate.convertAndSendToUser(
+                message.getSender(),
+                "/queue/messages",
+                messageSaved
+            );
+        } catch (Exception e) {
+            // Send error back to sender
+            messagingTemplate.convertAndSendToUser(
+                message.getSender(),
+                "/queue/errors",
+                "Failed to send message: " + e.getMessage()
+            );
+        }
+    }
+
+    @SubscribeMapping("/user/{userId}/queue/messages")
+    public void subscribeToMessages(@PathVariable String userId) {
+        // This method is called when a user subscribes to their message queue
+        // You can use this to send any pending messages or status updates
+    }
+
+    @MessageExceptionHandler
+    public void handleException(Throwable exception) {
+        // Handle any exceptions that occur during message processing
+        messagingTemplate.convertAndSend("/topic/errors", exception.getMessage());
     }
 
     @GetMapping("/{user1}/{user2}")
@@ -46,5 +74,4 @@ public class ChatController {
     public ResponseEntity<?> getChatList(@PathVariable String userId) {
         return ResponseEntity.ok(messageService.getChatList(userId));
     }
-
 }

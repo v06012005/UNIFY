@@ -6,13 +6,16 @@ import { v4 as uuidv4 } from "uuid";
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import { supabase } from "@/supbaseConfig";
+import { FixedSizeList as List } from 'react-window';
 
 const useChat = (user, chatPartner) => {
 
   const [chatMessages, setChatMessages] = useState([]);
+  const [isConnected, setIsConnected] = useState(false);
   const stompClientRef = useRef(null);
   const messagesEndRef = useRef(null);
   const queryClient = useQueryClient();
+  const reconnectTimeoutRef = useRef(null);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -155,7 +158,22 @@ const useChat = (user, chatPartner) => {
   }
 };
 
-  useEffect(() => {
+  const handleIncomingMessage = (message) => {
+    try {
+      const newMessage = JSON.parse(message.body);
+      setChatMessages((prev) => {
+        const updated = [...prev, newMessage].sort(
+          (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+        );
+        return updated;
+      });
+      updateChatListCache(newMessage);
+    } catch (error) {
+      console.error("❌ Error handling incoming message:", error);
+    }
+  };
+
+  const connectWebSocket = () => {
     if (!user?.id) return;
 
     const socket = new SockJS(
@@ -165,29 +183,60 @@ const useChat = (user, chatPartner) => {
     const client = new Client({
       webSocketFactory: () => socket,
       reconnectDelay: 5000,
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000,
       onConnect: () => {
         console.log("✅ WebSocket connected");
+        setIsConnected(true);
         client.subscribe(`/user/${user.id}/queue/messages`, handleIncomingMessage);
+        client.subscribe(`/user/${user.id}/queue/errors`, (error) => {
+          console.error("❌ WebSocket error:", error);
+        });
       },
       onStompError: (frame) => {
         console.error("❌ STOMP Error:", frame);
+        setIsConnected(false);
       },
+      onWebSocketClose: () => {
+        console.log("WebSocket connection closed");
+        setIsConnected(false);
+        // Attempt to reconnect after 5 seconds
+        reconnectTimeoutRef.current = setTimeout(connectWebSocket, 5000);
+      },
+      onWebSocketError: (event) => {
+        console.error("WebSocket error:", event);
+        setIsConnected(false);
+      }
     });
 
     client.activate();
     stompClientRef.current = client;
+  };
+
+  useEffect(() => {
+    connectWebSocket();
 
     return () => {
-      client.deactivate();
-      stompClientRef.current = null;
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+      }
+      if (stompClientRef.current) {
+        stompClientRef.current.deactivate();
+        stompClientRef.current = null;
+      }
     };
-  }, [user?.id, chatPartner]);
+  }, [user?.id]);
 
   const sendMessage = async (content, files, messagesEndRef) => {
-    if (stompClientRef.current?.connected && user.id) {
+    if (!isConnected || !stompClientRef.current?.connected) {
+      console.error("❌ WebSocket not connected");
+      return;
+    }
+
+    try {
       let fileUrls = [];
 
-      if (files.length > 0) {
+      if (files?.length > 0) {
         try {
           await Promise.all(
             files.map(async (item) => {
@@ -225,14 +274,7 @@ const useChat = (user, chatPartner) => {
         fileUrls,
       };
 
-      queryClient.setQueryData(["messages", user.id, chatPartner], (old = []) =>
-        [...old, message].sort(
-          (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
-        )
-      );
-
-      updateChatListCache(message);
-
+      // Send message through WebSocket
       stompClientRef.current.publish({
         destination: "/app/chat.sendMessage",
         body: JSON.stringify(message),
@@ -241,6 +283,8 @@ const useChat = (user, chatPartner) => {
       setTimeout(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
       }, 100);
+    } catch (error) {
+      console.error("❌ Error sending message:", error);
     }
   };
 
@@ -250,6 +294,7 @@ const useChat = (user, chatPartner) => {
     chatList,
     isLoadingChatList,
     messagesEndRef,
+    isConnected,
   };
 };
 

@@ -13,14 +13,13 @@ const People = () => {
   const [showArrows, setShowArrows] = useState(false);
   const hasFetched = useRef(false);
 
-  const { suggestedUsers, getSuggestedUsers, loading } = useSuggestedUsers();
+  const { suggestedUsers, loading } = useSuggestedUsers();
 
   useEffect(() => {
     if (!hasFetched.current && suggestedUsers.length === 0) {
-      getSuggestedUsers();
       hasFetched.current = true;
     }
-  }, []);
+  }, [suggestedUsers]);
 
   useEffect(() => {
     setShowArrows(suggestedUsers.length > 5); 

@@ -96,6 +96,18 @@ const PostDetailModal = ({ post, onClose, onArchive, onDelete }) => {
     loadComments();
   }, [loadComments]);
 
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        handleClose();
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
   // Cập nhật danh sách bình luận (tương tự updateComments trong Reels)
   const updateComments = useCallback(
     (newComment) => {

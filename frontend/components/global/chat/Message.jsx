@@ -32,7 +32,7 @@ const Message = ({ messages, messagesEndRef, avatar }) => {
   };
 
   return (
-    <div className="m-4 flex flex-col gap-3 ">
+    <div className="m-4 mb-0 flex flex-col gap-3 ">
       {messages.map((message, index) => {
         const isCurrentUser = message.sender === currentUser;
         const isFirstOfGroup =
