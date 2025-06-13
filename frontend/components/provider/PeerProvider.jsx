@@ -32,58 +32,39 @@ export const PeerProvider = ({ children }) => {
   const peerInstance = useRef(null);
   const currentCallRef = useRef(null);
   const dataConnectionRef = useRef(null);
-  const {user} = useApp();
+  const { user } = useApp();
 
- 
   useEffect(() => {
     async function initPeer() {
-      const user = await getUser(); 
-      let userId = user?.id || undefined;
-      setYourName(`${user.firstName} ${user.lastName}`)
-
-      let peer = new Peer(userId);
-
-      peer.on('open', () => {
-        localStorage.setItem('cid', userId);
-        setPeerId(userId);
-      });
-
-      peer.on('error', (err) => {
-        if (err.type === 'unavailable-id') {
-          console.warn('ID taken. Falling back to random ID.');
-          peer = new Peer(); 
-          setupPeerEvents(peer);
-        } else {
-          console.error('Peer error:', err);
+      try {
+        if (!user?.id) {
+          console.warn('User ID not available');
+          return;
         }
-      });
 
-      setupPeerEvents(peer);
-      peerInstance.current = peer;
-    }
+        let peer = new Peer(user.id);
+        
+        peer.on('open', (id) => {
+          setPeerId(id);
+        });
 
-    function setupPeerEvents(peer) {
-      peer.on('call', (call) => {
-        console.log('Incoming call:', call);
-        setCallerName(call.metadata?.name || 'Unknown');
-        setRemoteMicOn(call.metadata?.micOn ?? true);
-        setRemoteCameraOn(call.metadata?.cameraOn ?? true);
-        setAvatarRemote(call.metadata.avatar || avatarDefault);
-        setIncomingCall(call);
-      });
+        peer.on('call', (call) => {
+          setIncomingCall(call);
+        });
 
-      peer.on('connection', (conn) => {
-        dataConnectionRef.current = conn;
-        conn.on('data', handleData);
-      });
+        peerInstance.current = peer;
+
+        return () => {
+          peer.destroy();
+        };
+      } catch (error) {
+        console.error('Error initializing peer:', error);
+      }
     }
 
     initPeer();
+  }, [user?.id]);
 
-    return () => {
-      peerInstance.current?.destroy();
-    };
-  }, []);
   useEffect(() => {
     let stream = null;
 
