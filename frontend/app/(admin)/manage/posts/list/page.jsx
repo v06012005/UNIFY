@@ -90,184 +90,168 @@ const PostManagementPage = () => {
   }, [search, posts]);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-neutral-900 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-              Reported Posts
-            </h1>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              Manage all reports about posts that violated UNIFY's policies.
-            </p>
-          </div>
-          <div className="w-full md:w-72">
-            <Input
-              placeholder="Search posts..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              startContent={
-                <i className="fa-solid fa-magnifying-glass text-gray-400"></i>
-              }
-              className="w-full"
-            />
-          </div>
+    <div className="py-10 px-6 h-screen">
+      <div className="mx-auto mb-3 flex justify-between items-center pr-5">
+        <div className="pl-4 w-1/2">
+          <h1 className={`text-4xl font-black uppercase`}>Reported Posts</h1>
+          <p className="text-gray-500">
+            Manage all reports about posts that violated UNIFY's policies.
+          </p>
         </div>
-
-        <div className="flex flex-col md:flex-row md:items-center gap-4">
-          <Select
-            className="w-full md:w-72"
-            label="Filter by status"
-            placeholder="Select a status"
-            onSelectionChange={(val) => {
-              const selected = Array.from(val)[0];
-              setFilterKey(selected);
-            }}
-            isRequired
-            defaultSelectedKeys={[filterKey]}
+        <div className="flex items-center w-1/2">
+          <Input
+            label=""
+            className="w-full"
+            labelPlacement="inside"
+            placeholder="Enter Post ID or Hashtags"
+            startContent={<i className="fa-solid fa-magnifying-glass"></i>}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            type="text"
+          />
+          {/* <input
+            type="text"
+            className="bg-white border border-gray-500 text-black px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-black dark:bg-black dark:text-white"
+            placeholder="Search users..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          /> */}
+        </div>
+      </div>
+      <div className="flex">
+        <Select
+          className="max-w-xs mb-2 w-2/3 ml-auto pr-5"
+          label="Filter by status"
+          placeholder="Select a status"
+          onSelectionChange={(val) => {
+            const selected = Array.from(val)[0];
+            setFilterKey(selected);
+          }}
+          isRequired
+          defaultSelectedKeys={[filterKey]}
+        >
+          <SelectItem
+            key={"0"}
+            startContent={<i className="fa-solid fa-hourglass-half"></i>}
+            className="text-primary-500"
           >
-            <SelectItem
-              key={"0"}
-              startContent={<i className="fa-solid fa-hourglass-half"></i>}
-              className="text-primary-500"
-            >
-              Pending
-            </SelectItem>
-            <SelectItem
-              key={"1"}
-              startContent={<i className="fa-solid fa-thumbs-up"></i>}
-              className="text-success-500"
-            >
-              Approved
-            </SelectItem>
-            <SelectItem
-              key={"2"}
-              startContent={<i className="fa-solid fa-ban"></i>}
-              className="text-red-500"
-            >
-              Rejected
-            </SelectItem>
-            <SelectItem
-              key={"3"}
-              startContent={<i className="fa-brands fa-resolving"></i>}
-              className="text-warning-500"
-            >
-              Resolved
-            </SelectItem>
-            <SelectItem
-              key={"4"}
-              startContent={<i className="fa-solid fa-rectangle-xmark"></i>}
-              className="text-zinc-500"
-            >
-              Canceled
-            </SelectItem>
-          </Select>
-        </div>
-
-        <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-sm border border-gray-200 dark:border-neutral-700">
-          <div className="overflow-x-auto">
-            {loading ? (
-              <TableLoading
-                tableHeaders={["No.", "Reported At", "Reason", "Status", "Actions"]}
-              />
-            ) : (
-              <Table 
-                className="w-full" 
-                isStriped 
-                aria-label="Reported posts table"
-                removeWrapper
-              >
-                <TableHeader>
-                  <TableColumn className="text-sm font-semibold">No.</TableColumn>
-                  <TableColumn className="text-sm font-semibold">Reported At</TableColumn>
-                  <TableColumn className="text-sm font-semibold">Reason</TableColumn>
-                  <TableColumn className="text-sm font-semibold">Status</TableColumn>
-                  <TableColumn className="text-sm font-semibold">Actions</TableColumn>
-                </TableHeader>
-                <TableBody>
-                  {posts.map((post, index) => (
-                    <TableRow key={post.id} className="text-gray-700 dark:text-gray-200">
-                      <TableCell>{index + 1}</TableCell>
-                      <TableCell>
-                        {new Date(post.reportedAt).toLocaleString("en-US", {
-                          day: "2-digit",
-                          month: "short",
-                          year: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </TableCell>
-                      <TableCell className="max-w-md truncate">{post.reason}</TableCell>
-                      <TableCell>
-                        <span
-                          className={clsx("px-3 py-1 rounded-full text-xs font-medium", {
-                            "bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-300": post?.status === 0,
-                            "bg-success-100 text-success-700 dark:bg-success-900 dark:text-success-300": post?.status === 1,
-                            "bg-danger-100 text-danger-700 dark:bg-danger-900 dark:text-danger-300": post?.status === 2,
-                            "bg-warning-100 text-warning-700 dark:bg-warning-900 dark:text-warning-300": post?.status === 3,
-                            "bg-gray-100 text-gray-700 dark:bg-gray-900 dark:text-gray-300": post?.status === 4,
-                          })}
+            Pending
+          </SelectItem>
+          <SelectItem
+            key={"1"}
+            startContent={<i className="fa-solid fa-thumbs-up"></i>}
+            className="text-success-500"
+          >
+            Approved
+          </SelectItem>
+          <SelectItem
+            key={"2"}
+            startContent={<i className="fa-solid fa-ban"></i>}
+            className="text-red-500"
+          >
+            Rejected
+          </SelectItem>
+          <SelectItem
+            key={"3"}
+            startContent={<i className="fa-brands fa-resolving"></i>}
+            className="text-warning-500"
+          >
+            Resolved
+          </SelectItem>
+          <SelectItem
+            key={"4"}
+            startContent={<i className="fa-solid fa-rectangle-xmark"></i>}
+            className="text-zinc-500"
+          >
+            Canceled
+          </SelectItem>
+        </Select>
+        {/* <Button className="mr-7 h-14 w-14 border text-xl"><i className="fa-solid fa-filter"></i></Button> */}
+      </div>
+      <div className="overflow-auto h-[calc(73vh-0.7px)] no-scrollbar">
+        {loading ? (
+          // <p className="text-center text-gray-500">Loading users...</p>
+          <TableLoading
+            tableHeaders={["No.", "Reported At", "Reason", "Status", "Actions"]}
+          />
+        ) : (
+          <Table className="rounded-lg h-[95%]" isStriped aria-label="">
+            <TableHeader className="mb-0">
+              <TableColumn>No.</TableColumn>
+              <TableColumn>Reported At</TableColumn>
+              <TableColumn>Reason</TableColumn>
+              <TableColumn>Status</TableColumn>
+              <TableColumn>Actions</TableColumn>
+            </TableHeader>
+            <TableBody>
+              {posts.map((post, index) => (
+                <TableRow key={post.id} className="text-black">
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>
+                    {new Date(post.reportedAt).toLocaleString("en-US", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </TableCell>
+                  <TableCell>{post.reason}</TableCell>
+                  <TableCell
+                    className={clsx("my-0.5 font-bold", {
+                      "text-primary-500": post?.status === 0,
+                      "text-success-500": post?.status === 1,
+                      "text-red-500": post?.status === 2,
+                      "text-warning-500": post?.status === 3,
+                      "text-zinc-500": post?.status === 4,
+                    })}
+                  >
+                    {" "}
+                    {post?.status === 0
+                      ? "Pending"
+                      : post?.status === 1
+                      ? "Approved"
+                      : post?.status === 2
+                      ? "Rejected"
+                      : post?.status === 3
+                      ? "Resolved"
+                      : "Canceled"}
+                  </TableCell>
+                  <TableCell>
+                    <Dropdown>
+                      <DropdownTrigger>
+                        <i className="fa-solid fa-ellipsis-vertical hover:bg-gray-200 py-2 px-4 rounded-full hover:cursor-pointer"></i>
+                      </DropdownTrigger>
+                      <DropdownMenu
+                        aria-label="Action event example"
+                        onAction={(key) => handleClick(key, post.id)}
+                      >
+                        <DropdownItem key="view">
+                          <i className="fa-solid fa-eye"></i> View Details
+                        </DropdownItem>
+                        <DropdownItem
+                          key="temp"
+                          className="text-success-500"
+                          color="success"
                         >
-                          {post?.status === 0
-                            ? "Pending"
-                            : post?.status === 1
-                            ? "Approved"
-                            : post?.status === 2
-                            ? "Rejected"
-                            : post?.status === 3
-                            ? "Resolved"
-                            : "Canceled"}
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <Dropdown>
-                          <DropdownTrigger>
-                            <Button
-                              isIconOnly
-                              variant="light"
-                              className="rounded-full"
-                            >
-                              <i className="fa-solid fa-ellipsis-vertical"></i>
-                            </Button>
-                          </DropdownTrigger>
-                          <DropdownMenu
-                            aria-label="Post actions"
-                            onAction={(key) => handleClick(key, post.id)}
-                          >
-                            <DropdownItem
-                              key="view"
-                              startContent={
-                                <i className="fa-solid fa-eye text-blue-500"></i>
-                              }
-                            >
-                              View Details
-                            </DropdownItem>
-                            <DropdownItem
-                              key="temp"
-                              startContent={
-                                <i className="fa-solid fa-thumbs-up text-success-500"></i>
-                              }
-                            >
-                              Approve This Report
-                            </DropdownItem>
-                            <DropdownItem
-                              key="perm"
-                              startContent={
-                                <i className="fa-solid fa-ban text-danger"></i>
-                              }
-                            >
-                              Reject This Report
-                            </DropdownItem>
-                          </DropdownMenu>
-                        </Dropdown>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </div>
-        </div>
+                          <i className="fa-solid fa-thumbs-up"></i> Approve This
+                          Report
+                        </DropdownItem>
+                        <DropdownItem
+                          key="perm"
+                          className="text-danger"
+                          color="danger"
+                        >
+                          <i className="fa-solid fa-ban"></i> Reject This Report
+                        </DropdownItem>
+                      </DropdownMenu>
+                    </Dropdown>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
       </div>
     </div>
   );

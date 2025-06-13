@@ -20,7 +20,6 @@ import {
   User,
   addToast,
   Spinner,
-  Input,
 } from "@heroui/react";
 import Cookies from "js-cookie";
 import { cn } from "@/app/lib/utils";
@@ -38,8 +37,7 @@ const PostDetail = () => {
   const [report, setReport] = useState(null);
   const { postId } = useParams();
   const [isButtonLoading, setButtonLoading] = useState(false);
-  const [actionReason, setActionReason] = useState("");
-  const [actionType, setActionType] = useState(null); // 'approve' or 'reject'
+  const [confirmAction, setConfirmAction] = useState(null);
   const router = useRouter();
 
   const {
@@ -49,14 +47,10 @@ const PostDetail = () => {
   } = useDisclosure();
 
   const handleApprove = async () => {
-    if (!actionReason.trim()) {
-      return;
-    }
     try {
       setButtonLoading(true);
-      const data = await updateReport(report?.id, 1, actionReason);
+      const data = await updateReport(report?.id, 1);
       setReport(data);
-      setActionReason("");
     } catch (error) {
       addToast({
         title: "Fail",
@@ -73,14 +67,10 @@ const PostDetail = () => {
   }
 
   const handleReject = async () => {
-    if (!actionReason.trim()) {
-      return;
-    }
     try {
       setButtonLoading(true);
-      const data = await updateReport(report?.id, 2, actionReason);
+      const data = await updateReport(report?.id, 2);
       setReport(data);
-      setActionReason("");
     } catch (error) {
       addToast({
         title: "Fail",
@@ -95,6 +85,7 @@ const PostDetail = () => {
       setButtonLoading(false);
     }
   }
+
 
   useEffect(() => {
     async function getReportedPost() {
@@ -131,271 +122,247 @@ const PostDetail = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-neutral-900 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-              Reported Post Details
-            </h1>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              Show all the details about the reported post.
-            </p>
-          </div>
-          <div className="flex gap-3">
-            <Button
-              variant="bordered"
-              startContent={<i className="fa-solid fa-arrow-left"></i>}
-              onPress={() => router.back()}
-              className="text-blue-500 border-blue-500 hover:bg-blue-500 hover:text-white"
-            >
-              Return to List
-            </Button>
-            {report?.status === 0 && (
-              <div className="flex gap-3">
-                <Button
-                  color="success"
-                  startContent={<i className="fa-solid fa-thumbs-up"></i>}
-                  onPress={() => {
-                    setActionType('approve');
-                    onOpenConfirm();
-                  }}
-                  isLoading={isButtonLoading}
-                >
-                  Approve
-                </Button>
-                <Button
-                  color="danger"
-                  startContent={<i className="fa-solid fa-ban"></i>}
-                  onPress={() => {
-                    setActionType('reject');
-                    onOpenConfirm();
-                  }}
-                  isLoading={isButtonLoading}
-                >
-                  Reject
-                </Button>
-              </div>
-            )}
-          </div>
-        </div>
+    <div className="h-screen p-6">
+      <div className="mb-4">
+        <h1 className="font-bold text-3xl uppercase">Reported Post Details</h1>
+        <p className="text-gray-500">
+          Show all the details about the reported post.
+        </p>
+      </div>
 
-        {loading ? (
-          <ReportedPostLoading />
-        ) : (
-          <div className="space-y-6">
-            <Card className="bg-white dark:bg-neutral-800">
-              <CardHeader>
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Basic Info</h2>
-              </CardHeader>
-              <CardBody>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <div>
-                      <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Report ID</p>
-                      <p className="mt-1">{report?.id}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Reported Date</p>
-                      <p className="mt-1">
-                        {new Date(report?.reportedAt).toLocaleString("en-US", {
-                          day: "2-digit",
-                          month: "short",
-                          year: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Status</p>
-                      <span
-                        className={clsx("mt-1 inline-flex items-center px-3 py-1 rounded-full text-xs font-medium", {
-                          "bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-300": report?.status === 0,
-                          "bg-success-100 text-success-700 dark:bg-success-900 dark:text-success-300": report?.status === 1,
-                          "bg-danger-100 text-danger-700 dark:bg-danger-900 dark:text-danger-300": report?.status === 2,
-                          "bg-warning-100 text-warning-700 dark:bg-warning-900 dark:text-warning-300": report?.status === 3,
-                          "bg-gray-100 text-gray-700 dark:bg-gray-900 dark:text-gray-300": report?.status === 4,
-                        })}
-                      >
-                        {report?.status === 0
-                          ? "Pending"
-                          : report?.status === 1
-                          ? "Approved"
-                          : report?.status === 2
-                          ? "Rejected"
-                          : report?.status === 3
-                          ? "Resolved"
-                          : "Canceled"}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="space-y-4">
-                    <div>
-                      <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Reporter's ID</p>
-                      <p className="mt-1">{report?.userId}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Reported Post's ID</p>
-                      <p className="mt-1">{report?.reportedId}</p>
-                    </div>
-                  </div>
-                </div>
-              </CardBody>
-            </Card>
+      <div className="flex justify-between">
+        <button
+          onClick={() => router.back()}
+          className="px-4 py-2 rounded-md border border-blue-500 hover:bg-blue-500 hover:text-white text-blue-500"
+        >
+          ← Return to List
+        </button>
+        {report?.status === 0 &&
+          <div className="">
+            <button onClick={() => {
+              setConfirmAction(() => handleApprove);
+              onOpenConfirm();
+            }} disabled={isButtonLoading} className="border rounded-md bg-green-500 font-bold text-white p-3">
+          
+              {isButtonLoading && <><Spinner size="sm" /> Loading</>}
+              {!isButtonLoading && <><i className="fa-solid fa-thumbs-up"></i> Approve</>}
+            
+        </button>
+            <button onClick={() => {
+              setConfirmAction(() => handleReject);
+              onOpenConfirm();
+            }} disabled={isButtonLoading} className="border rounded-md bg-red-500 font-bold ml-3 text-white p-3">
+          
+              {isButtonLoading && <><Spinner size="sm" /> Loading</>}
+              {!isButtonLoading && <><i className="fa-solid fa-circle-minus"></i> Reject</>}
+            
+        </button>
+          </div>}
 
-            <Card className="bg-white dark:bg-neutral-800">
-              <CardHeader>
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Reported Post Owner</h2>
-              </CardHeader>
-              <CardBody>
-                <User
-                  avatarProps={{
-                    src: post?.user?.avatar?.url,
-                    className: "w-12 h-12",
-                  }}
-                  description={post?.user?.email}
-                  name={`${post?.user?.firstName} ${post?.user?.lastName}`}
-                  className="gap-3"
-                />
-              </CardBody>
-            </Card>
+      </div>
 
-            <Card className="bg-white dark:bg-neutral-800">
-              <CardHeader>
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Reported Reason</h2>
-              </CardHeader>
-              <CardBody>
-                <div className="bg-gray-50 dark:bg-neutral-900 rounded-lg p-4">
-                  <p className="text-gray-700 dark:text-gray-300">{report?.reason}</p>
-                </div>
-              </CardBody>
-            </Card>
-
-            <Card className="bg-white dark:bg-neutral-800">
-              <CardHeader>
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Post Details</h2>
-              </CardHeader>
-              <CardBody>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <div
-                      className="border-2 border-dashed border-gray-300 dark:border-neutral-700 rounded-lg p-4 cursor-pointer hover:border-gray-400 dark:hover:border-neutral-600 transition-colors"
-                      onClick={onOpen}
+      {loading ? (
+        <ReportedPostLoading />
+      ) : (
+        <>
+          <div className="border p-3 bg-gray-200 my-3 rounded-md">
+            <MyHeading2 content="Basic Info" />
+            <div className="w-3/4 pl-5">
+              <ul>
+                <li><p className="font-bold">Report ID: <span className="font-normal">{report?.id}</span></p></li>
+                <li>
+                  <p className="font-bold">
+                    Reported Date:{" "}
+                    <span className="font-normal">
+                      {new Date(report?.reportedAt).toLocaleString("en-US", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </span>
+                  </p>
+                </li>
+                <li>
+                  <p className="font-bold">
+                    Status:{" "}
+                    <span
+                      className={clsx("font-normal p-1 rounded italic", {
+                        "bg-primary-200": report?.status === 0,
+                        "bg-success-200": report?.status === 1,
+                        "bg-red-200": report?.status === 2,
+                        "bg-warning-200": report?.status === 3,
+                        "bg-zinc-300": report?.status === 4,
+                      })}
                     >
-                      <div className="flex flex-col items-center justify-center h-32">
-                        <i className="fa-solid fa-photo-film text-3xl text-gray-400 mb-2"></i>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Click to view media</p>
-                      </div>
-                    </div>
+                      {report?.status === 0
+                        ? "Pending"
+                        : report?.status === 1
+                        ? "Approved"
+                        : report?.status === 2
+                        ? "Rejected"
+                        : report?.status === 3
+                        ? "Resolved"
+                        : "Canceled"}
+                    </span>
+                  </p>
+                </li>
+                <li>
+                  <p className="font-bold">
+                    Reporter's ID:{" "}
+                    <span className="font-normal">{report?.userId}</span>
+                  </p>
+                </li>
+                <li>
+                  <p className="font-bold">
+                    Reported Post's ID:{" "}
+                    <span className="font-normal">{report?.reportedId}</span>
+                  </p>
+                </li>
+              </ul>
+            </div>
+            <div className="flex w-3/4 pl-5 my-4 ">
+              {/* <Card className="py-2 shadow-none border rounded-md w-1/3">
+                <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
+                  <h4 className="font-bold text-large">Reporter</h4>
+                </CardHeader>
+                <CardBody className="overflow-visible">
+                  <User
+                    avatarProps={{
+                      src: `${""}`,
+                    }}
+                    description={`mattle1@gmail.com`}
+                    name={`Matt Le`}
+                    className="my-3 justify-start"
+                  />
+                </CardBody>
+              </Card> */}
+              <div className="flex mx-5">
+                <i className="fa-regular my-auto fa-circle-right text-4xl"></i>
+              </div>
+              <Card className="py-2 shadow-none border rounded-md w-1/3">
+                <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
+                  <h4 className="font-bold text-large text-red-500">
+                    Reported Post Owner
+                  </h4>
+                </CardHeader>
+                <CardBody className="overflow-visible">
+                  <User
+                    avatarProps={{
+                      src: `${post?.user?.avatar?.url}`,
+                    }}
+                    description={`${post?.user?.email}`}
+                    name={`${post?.user?.firstName} ${post?.user?.lastName}`}
+                    className="my-3 justify-start"
+                  />
+                </CardBody>
+              </Card>
+            </div>
+          </div>
+          <div className="border p-3 bg-gray-200 my-3 rounded-md">
+            <MyHeading2 content="Reported Reason" />
+            <div className="w-full pl-5 max-h-52 overflow-y-auto mb-5">
+              <p className="p-3 bg-white rounded-md">{report?.reason}</p>
+            </div>
+          </div>
+          <div className="border p-3 bg-gray-200 my-3 rounded-md">
+            <MyHeading2 content="Post Details" />
+            <div className="w-full pb-5 pl-5">
+              <div className="flex flex-col md:flex-row">
+                <div className="w-1/3 md:w-1/2 mb-6 md:mb-0 md:mr-6">
+                  <div
+                    className="border rounded-md flex h-32 cursor-pointer select-none bg-white"
+                    onClick={onOpen}
+                  >
+                    <i className="fa-solid fa-photo-film fa-2xl m-auto">
+                      {" "}
+                      Media
+                    </i>
                   </div>
-                  <div className="space-y-4">
-                    <div className="bg-gray-50 dark:bg-neutral-900 rounded-lg p-4">
-                      {post?.captions ? (
-                        <p className="text-gray-700 dark:text-gray-300">{post.captions}</p>
+                </div>
+
+                <div className="w-full md:w-2/3 bg-white p-2 rounded-lg">
+                  {post?.captions ? (
+                    post.captions
+                  ) : (
+                    <p className="italic">This post contains no captions.</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      <Modal isOpen={isOpen} size="5xl" onOpenChange={onOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                Post Media
+              </ModalHeader>
+              <ModalBody className="mt-4 grid grid-cols-4 gap-2 items-stretch">
+                {post?.media?.map((file) => {
+                  const isVideo = file.mediaType.includes("VIDEO");
+
+                  return (
+                    <div key={file.url} className="relative w-full h-full">
+                      {isVideo ? (
+                        <video
+                          src={file.url}
+                          controls
+                          className="w-full aspect-square h-full object-cover rounded-md border"
+                        />
                       ) : (
-                        <p className="text-gray-500 dark:text-gray-400 italic">This post contains no captions.</p>
+                        <Image
+                          src={file.url}
+                          alt="Preview"
+                          width={100}
+                          height={100}
+                          className="w-full aspect-square h-full object-cover rounded-md border"
+                        />
                       )}
                     </div>
-                  </div>
-                </div>
-              </CardBody>
-            </Card>
-          </div>
-        )}
+                  );
+                })}
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Close
+                </Button>
+                {/* <Button color="primary" onPress={onClose}>
+                  Action
+                </Button> */}
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
 
-        <Modal isOpen={isOpen} size="5xl" onOpenChange={onOpenChange}>
-          <ModalContent>
-            {(onClose) => (
-              <>
-                <ModalHeader className="flex flex-col gap-1">
-                  <h2 className="text-xl font-bold">Post Media</h2>
-                </ModalHeader>
-                <ModalBody>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {post?.media?.map((file) => {
-                      const isVideo = file.mediaType.includes("VIDEO");
-                      return (
-                        <div key={file.url} className="relative aspect-square">
-                          {isVideo ? (
-                            <video
-                              src={file.url}
-                              controls
-                              className="w-full h-full object-cover rounded-lg"
-                            />
-                          ) : (
-                            <Image
-                              src={file.url}
-                              alt="Preview"
-                              fill
-                              className="object-cover rounded-lg"
-                            />
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </ModalBody>
-                <ModalFooter>
-                  <Button color="danger" variant="light" onPress={onClose}>
-                    Close
-                  </Button>
-                </ModalFooter>
-              </>
-            )}
-          </ModalContent>
-        </Modal>
+      <Modal isOpen={isConfirmOpen} onOpenChange={onConfirmOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader>Are you sure?</ModalHeader>
+              <ModalBody>This action can't be undone. You will not be able to change this report's status later on.</ModalBody>
+              <ModalFooter>
+                <Button onPress={onClose}>Cancel</Button>
+                <Button
+                  color="danger"
+                  onPress={() => {
+                    if (confirmAction) confirmAction();
+                    onClose();
+                  }}
+                >
+                  Confirm
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
 
-        <Modal isOpen={isConfirmOpen} onOpenChange={onConfirmOpenChange}>
-          <ModalContent>
-            {(onClose) => (
-              <>
-                <ModalHeader>
-                  <h2 className="text-xl font-bold">
-                    {actionType === 'approve' ? "Approve Report" : "Reject Report"}
-                  </h2>
-                </ModalHeader>
-                <ModalBody>
-                  <div className="space-y-4">
-                    <p className="text-gray-700 dark:text-gray-300">
-                      Please provide a reason for {actionType === 'approve' ? 'approving' : 'rejecting'} this report. This information will be recorded.
-                    </p>
-                    <Input
-                      label={`${actionType === 'approve' ? 'Approval' : 'Rejection'} Reason`}
-                      placeholder={`Enter your reason for ${actionType === 'approve' ? 'approval' : 'rejection'}`}
-                      value={actionReason}
-                      onChange={(e) => setActionReason(e.target.value)}
-                      isRequired
-                      errorMessage={!actionReason.trim() && "Reason is required"}
-                    />
-                  </div>
-                </ModalBody>
-                <ModalFooter>
-                  <Button variant="light" onPress={onClose}>
-                    Cancel
-                  </Button>
-                  <Button
-                    color={actionType === 'approve' ? "success" : "danger"}
-                    onPress={() => {
-                      if (actionReason.trim()) {
-                        if (actionType === 'approve') {
-                          handleApprove();
-                        } else {
-                          handleReject();
-                        }
-                        onClose();
-                      }
-                    }}
-                    isDisabled={!actionReason.trim()}
-                  >
-                    {actionType === 'approve' ? 'Approve' : 'Reject'}
-                  </Button>
-                </ModalFooter>
-              </>
-            )}
-          </ModalContent>
-        </Modal>
-      </div>
     </div>
   );
 };

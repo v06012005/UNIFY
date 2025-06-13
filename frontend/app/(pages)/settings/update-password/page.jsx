@@ -1,75 +1,95 @@
 "use client";
 
-import React from "react";
-import { Form, Input, Button } from "@heroui/react";
-import { axiosResult } from "@/app/lib/api/cookie";
+import React, { useState } from "react";
+import { useApp } from "@/components/provider/AppProvider";
+import Cookies from "js-cookie";
 import { addToast, ToastProvider } from "@heroui/toast";
-const ChangePassword = () => {
-  const [currentPassword, setCurrentPassword] = React.useState("");
-  const [newPassword, setNewPassword] = React.useState("");
-  const [confirmPassword, setConfirmPassword] = React.useState("");
-  const [errors, setErrors] = React.useState({});
-  const [loading, setLoading] = React.useState(false);
+import { useRouter } from "next/navigation";
 
-  const getPasswordError = (value) => {
-    if (value.length < 8) {
+const Page = () => {
+  const { user, setUser } = useApp();
+  const router = useRouter();
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+
+  const getPasswordError = (password) => {
+    if (password.length < 8) {
       return "Password must be at least 8 characters long";
-    } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(value)) {
-      return "Password must contain at least one special character";
     }
-    return null;
+    if (!/[A-Z]/.test(password)) {
+      return "Password must contain at least one uppercase letter";
+    }
+    if (!/[a-z]/.test(password)) {
+      return "Password must contain at least one lowercase letter";
+    }
+    if (!/[0-9]/.test(password)) {
+      return "Password must contain at least one number";
+    }
+    if (!/[!@#$%^&*]/.test(password)) {
+      return "Password must contain at least one special character (!@#$%^&*)";
+    }
+    return "";
   };
 
   const onSubmit = async (e) => {
     e.preventDefault();
+    setErrors({});
 
-    const newErrors = {};
-    const passwordError = getPasswordError(newPassword);
-    if (passwordError) {
-      newErrors.newPassword = passwordError;
-    }
-
-    if (newPassword !== confirmPassword) {
-      newErrors.confirmPassword = "Password do not match";
-    }
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
+    // Validate current password
+    if (!currentPassword) {
+      setErrors((prev) => ({ ...prev, currentPassword: "Current password is required" }));
       return;
     }
 
-    setErrors({});
-    setLoading(true);
+    // Validate new password
+    const passwordError = getPasswordError(newPassword);
+    if (passwordError) {
+      setErrors((prev) => ({ ...prev, newPassword: passwordError }));
+      return;
+    }
 
+    // Validate confirm password
+    if (newPassword !== confirmPassword) {
+      setErrors((prev) => ({ ...prev, confirmPassword: "Passwords do not match" }));
+      return;
+    }
+
+    setLoading(true);
     try {
-      const result = await ChangePassword(currentPassword, newPassword);
-      if (result === "Password changed successfully!") {
+      const response = await ChangePassword(currentPassword, newPassword);
+      if (response.success) {
+        addToast({
+          title: "Success",
+          description: "Password updated successfully",
+          type: "success",
+        });
         setCurrentPassword("");
         setNewPassword("");
         setConfirmPassword("");
-        addToast({
-          title: "Success",
-          description: result,
-          timeout: 3000,
-          shouldShowTimeoutProgess: true,
-          color: "success",
-        });
+      } else {
+        setErrors((prev) => ({ ...prev, currentPassword: response.message }));
       }
     } catch (error) {
-      setErrors({ form: error.message });
+      addToast({
+        title: "Error",
+        description: "Failed to update password",
+        type: "error",
+      });
     } finally {
       setLoading(false);
     }
   };
 
   const ChangePassword = async (currentPassword, newPassword) => {
-    const tokenData = await axiosResult();
-    const token = tokenData?.token;
-
-    if (!token) {
-      throw new Error("Token is null or undefined. Please log in again.");
-    }
     try {
+      const token = Cookies.get("token");
+      if (!token) {
+        return { success: false, message: "No authentication token found" };
+      }
+
       const response = await fetch("http://localhost:8080/change-password", {
         method: "POST",
         headers: {
@@ -82,163 +102,158 @@ const ChangePassword = () => {
         }),
       });
 
-      if (!response.ok) {
-        const contentType = response.headers.get("content-type");
-        if (contentType && contentType.includes("application/json")) {
-          const errorData = await response.json();
-          if (errorData.action === "logout") {
-            await handleLogout();
-          }
-          throw new Error(errorData.message || "Password changed failed!");
-        } else {
-          throw new Error("Invalid response from the server");
-        }
-      }
-
-      return "Password changed successfully!";
-    } catch (error) {
-      throw error;
-    }
-  };
-  const handleLogout = async () => {
-    try {
-      const response = await fetch("/api/remove-cookie", {
-        method: "GET",
-        credentials: "include",
-      });
+      const data = await response.json();
 
       if (response.ok) {
-        addToast({
-          title: "Waiting",
-          description:
-            "You have entered the wrong password too many times (5 attempts). Please log in again to change your password!",
-          timeout: 3000,
-          shouldShowTimeoutProgess: true,
-          color: "warning",
-        });
-        window.location.href = "/login";
+        return { success: true, data };
       } else {
-        addToast({
-          title: "Waiting",
-          description: "Logout failed. Please try again.",
-          timeout: 3000,
-          shouldShowTimeoutProgess: true,
-          color: "warning",
-        });
+        if (response.status === 401) {
+          handleLogout();
+        }
+        return { success: false, message: data.message || "Failed to change password" };
       }
     } catch (error) {
-      console.error("Error removing cookie:", error);
-      addToast({
-        title: "Waiting",
-        description: "Logout failed. Please try again.",
-        timeout: 3000,
-        shouldShowTimeoutProgess: true,
-        color: "warning",
-      });
+      console.error("Error changing password:", error);
+      return { success: false, message: "An error occurred while changing password" };
     }
+  };
+
+  const handleLogout = () => {
+    Cookies.remove("token");
+    setUser(null);
+    router.push("/login");
   };
 
   return (
     <>
-      <ToastProvider placement={"top-right"} />
+      <ToastProvider placement="top-right" />
+      <div className="min-h-screen bg-gray-50 dark:bg-neutral-900">
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="bg-white dark:bg-neutral-800 rounded-2xl shadow-sm overflow-hidden">
+            {/* Header */}
+            <div className="px-6 py-4 border-b border-gray-200 dark:border-neutral-700">
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Update Password</h1>
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  Change your password to keep your account secure
+                </p>
+              </div>
+            </div>
 
-      <div className="w-full h-screen">
-        <h1 className="text-3xl font-bold mb-5 ">Change password</h1>
-        <Form
-          className="w-full grid place-items-center align-middle mt-20 "
-          onSubmit={onSubmit}
-        >
-          <div className="flex flex-col gap-4 w-2/4">
-            <label
-              htmlFor="current-password"
-              className="block text-lg font-medium text-gray-700 dark:text-white mb-2"
-            >
-              Current Password
-            </label>
-            <Input
-              id="current-password"
-              name="currentPassword"
-              type="password"
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-              placeholder="Enter your current password"
-              className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
-            />
-            {errors.form && <p className="text-red-500">{errors.form}</p>}
-            <label
-              htmlFor="newPassword"
-              className="block text-lg font-medium text-gray-700 dark:text-white mb-2"
-            >
-              New Password
-            </label>
-            <Input
-              id="newPassword"
-              name="newPassword"
-              type="password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              placeholder="Enter your new password"
-              className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
-            />
-            {errors.newPassword && (
-              <span className="text-red-500 text-sm">{errors.newPassword}</span>
-            )}
-            <label
-              htmlFor="confirmPassword"
-              className="block text-lg font-medium text-gray-700 dark:text-white mb-2"
-            >
-              Confirm New Password
-            </label>
-            <Input
-              id="confirmPassword"
-              name="confirmPassword"
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Confirm your new password"
-              className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
-            />
+            {/* Password Requirements */}
+            <div className="px-6 py-4 bg-blue-50 dark:bg-blue-900/20 border-b border-blue-100 dark:border-blue-800">
+              <h2 className="text-sm font-medium text-blue-800 dark:text-blue-200 mb-2">
+                Password Requirements
+              </h2>
+              <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
+                <li className="flex items-center">
+                  <i className="fa-solid fa-check-circle mr-2"></i>
+                  At least 8 characters long
+                </li>
+                <li className="flex items-center">
+                  <i className="fa-solid fa-check-circle mr-2"></i>
+                  Contains at least one uppercase letter
+                </li>
+                <li className="flex items-center">
+                  <i className="fa-solid fa-check-circle mr-2"></i>
+                  Contains at least one lowercase letter
+                </li>
+                <li className="flex items-center">
+                  <i className="fa-solid fa-check-circle mr-2"></i>
+                  Contains at least one number
+                </li>
+                <li className="flex items-center">
+                  <i className="fa-solid fa-check-circle mr-2"></i>
+                  Contains at least one special character (!@#$%^&*)
+                </li>
+              </ul>
+            </div>
 
-            {errors.confirmPassword && (
-              <span className="text-red-500 text-sm">
-                {errors.confirmPassword}
-              </span>
-            )}
+            {/* Form */}
+            <form onSubmit={onSubmit} className="p-6 space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Current Password
+                </label>
+                <input
+                  type="password"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-700 dark:text-white"
+                  placeholder="Enter your current password"
+                />
+                {errors.currentPassword && (
+                  <p className="mt-1 text-sm text-red-500">{errors.currentPassword}</p>
+                )}
+              </div>
 
-            {
-              <div className="flex gap-4">
-                <Button
-                  className="w-full bg-gray-600 dark:bg-neutral-700 dark:hover-neutral-600 hover:bg-gray-500 text-white font-medium py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"
-                  type="submit"
-                  disabled={
-                    loading ||
-                    !currentPassword ||
-                    !newPassword ||
-                    !confirmPassword
-                  }
-                >
-                  {loading ? "Changing password..." : "Change password"}
-                </Button>
-                <Button
-                  type="reset"
-                  variant="bordered"
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  New Password
+                </label>
+                <input
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-700 dark:text-white"
+                  placeholder="Enter your new password"
+                />
+                {errors.newPassword && (
+                  <p className="mt-1 text-sm text-red-500">{errors.newPassword}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Confirm New Password
+                </label>
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-700 dark:text-white"
+                  placeholder="Confirm your new password"
+                />
+                {errors.confirmPassword && (
+                  <p className="mt-1 text-sm text-red-500">{errors.confirmPassword}</p>
+                )}
+              </div>
+
+              {/* Form Actions */}
+              <div className="flex justify-end space-x-3">
+                <button
+                  type="button"
                   onClick={() => {
                     setCurrentPassword("");
                     setNewPassword("");
                     setConfirmPassword("");
                     setErrors({});
                   }}
-                  className="w-full bg-transparent border dark:text-white border-gray-300 hover:border-gray-500 text-gray-700 font-medium py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"
+                  className="px-4 py-2 border border-gray-300 dark:border-neutral-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white dark:bg-neutral-700 hover:bg-gray-50 dark:hover:bg-neutral-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 >
                   Reset
-                </Button>
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading ? (
+                    <span className="flex items-center">
+                      <i className="fa-solid fa-spinner fa-spin mr-2"></i>
+                      Updating...
+                    </span>
+                  ) : (
+                    "Update Password"
+                  )}
+                </button>
               </div>
-            }
+            </form>
           </div>
-        </Form>
+        </div>
       </div>
     </>
   );
 };
 
-export default ChangePassword;
+export default Page;

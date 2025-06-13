@@ -368,325 +368,347 @@ const Page = () => {
 
   return (
     <>
-      <ToastProvider placement={"top-right"} />
-      <div className="w-full">
-        <div className="h-screen">
-          <form onSubmit={handleSubmit}>
-            <div className="flex m-5 my-2 bg-gray-200 dark:bg-neutral-800 rounded-xl items-center pr-5">
-              <div className="flex-shrink-0 p-2">
-                <div className="w-[100px] h-[100px] rounded-full border-2 border-gray-300 overflow-hidden">
-                  <Image
-                    src={avatar}
-                    alt="Avatar"
-                    key={avatar + Date.now()}
-                    width={100}
-                    height={100}
-                    className="object-cover w-full h-full"
-                  />
+      <ToastProvider placement="top-right" />
+      <div className="min-h-screen bg-gray-50 dark:bg-neutral-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="bg-white dark:bg-neutral-800 rounded-2xl shadow-sm overflow-hidden">
+            {/* Header */}
+            <div className="px-6 py-4 border-b border-gray-200 dark:border-neutral-700">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Edit Profile</h1>
+                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    Update your personal information and preferences
+                  </p>
                 </div>
-              </div>
-              <div className="ml-4">
-                <p className="text-2xl">{user?.username || "Unknown User"}</p>
-                <p className="font-bold truncate w-60">
-                  {user?.firstName || user?.lastName
-                    ? `${user?.firstName || ""} ${user?.lastName || ""}`.trim()
-                    : "No Name"}
-                </p>
-              </div>
-              <div className="flex-grow flex justify-end gap-4">
-                <label
-                  htmlFor="avatar"
-                  className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-2 px-4 rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 cursor-pointer shadow-md"
-                >
-                  Change Avatar
-                  <input
-                    id="avatar"
-                    name="avatar"
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    ref={fileInputRef}
-                    onChange={handleChangeAvatar}
-                  />
-                </label>
                 <button
-                  type="button"
-                  onClick={handleDeleteAvatar}
-                  className="bg-gradient-to-r from-red-500 to-rose-600 text-white py-2 px-4 rounded-lg hover:from-red-600 hover:to-rose-700 transition-all duration-300 shadow-md"
-                >
-                  Delete Avatar
-                </button>
-                <button
-                  type="button"
                   onClick={logoutUser}
-                  className="bg-gradient-to-r from-gray-600 to-gray-800 text-white py-2 px-4 rounded-lg hover:from-gray-700 hover:to-gray-900 transition-all duration-300 shadow-md"
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                 >
+                  <i className="fa-solid fa-sign-out-alt mr-2"></i>
                   Logout
                 </button>
               </div>
             </div>
 
-            <div className="m-5">
-              <label className="block text-lg font-medium text-gray-700 dark:text-white mb-2">
-                Biography
-              </label>
-              <input
-                id="biography"
-                name="biography"
-                type="text"
-                placeholder="Enter your biography"
-                value={userData.biography}
-                onChange={(e) => handleChange("biography", e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-1 focus:ring-gray-500 focus:outline-none hover:border-gray-500 hover:shadow-md transition"
-              />
-              {errors.biography && (
-                <div className="text-red-500 text-sm mt-1">
-                  {errors.biography}
+            <form onSubmit={handleSubmit} className="divide-y divide-gray-200 dark:divide-neutral-700">
+              {/* Avatar Section */}
+              <div className="px-6 py-6">
+                <div className="flex items-center space-x-6">
+                  <div className="relative group">
+                    <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-gray-200 dark:border-neutral-700">
+                      <Image
+                        src={avatar}
+                        alt="Profile"
+                        width={96}
+                        height={96}
+                        className="object-cover w-full h-full"
+                      />
+                    </div>
+                    <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="text-white hover:text-gray-200"
+                      >
+                        <i className="fa-solid fa-camera text-2xl"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex space-x-3">
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-neutral-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white dark:bg-neutral-700 hover:bg-gray-50 dark:hover:bg-neutral-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    >
+                      <i className="fa-solid fa-camera mr-2"></i>
+                      Change Photo
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleDeleteAvatar}
+                      className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                    >
+                      <i className="fa-solid fa-trash mr-2"></i>
+                      Remove
+                    </button>
+                  </div>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleChangeAvatar}
+                    className="hidden"
+                    accept="image/*"
+                  />
                 </div>
-              )}
-            </div>
+              </div>
 
-            <div className="m-5 flex gap-4">
-              <div className="flex-1">
-                <label className="block text-lg font-medium text-gray-700 dark:text-white mb-2">
-                  First Name
-                </label>
-                <input
-                  id="firstName"
-                  name="firstName"
-                  type="text"
-                  placeholder="Enter your first name"
-                  value={userData.firstName}
-                  onChange={(e) => handleChange("firstName", e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
-                />
-                {errors.firstName && (
-                  <div className="text-red-500 text-sm mt-1">
-                    {errors.firstName}
+              {/* Basic Information */}
+              <div className="px-6 py-6">
+                <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Basic Information</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      First Name
+                    </label>
+                    <input
+                      type="text"
+                      value={userData.firstName}
+                      onChange={(e) => handleChange("firstName", e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-700 dark:text-white"
+                    />
+                    {errors.firstName && (
+                      <p className="mt-1 text-sm text-red-500">{errors.firstName}</p>
+                    )}
                   </div>
-                )}
-              </div>
-              <div className="flex-1">
-                <label className="block text-lg font-medium text-gray-700 dark:text-white mb-2">
-                  Last Name
-                </label>
-                <input
-                  id="lastName"
-                  name="lastName"
-                  type="text"
-                  placeholder="Enter your last name"
-                  value={userData.lastName}
-                  onChange={(e) => handleChange("lastName", e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
-                />
-                {errors.lastName && (
-                  <div className="text-red-500 text-sm mt-1">
-                    {errors.lastName}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Last Name
+                    </label>
+                    <input
+                      type="text"
+                      value={userData.lastName}
+                      onChange={(e) => handleChange("lastName", e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-700 dark:text-white"
+                    />
+                    {errors.lastName && (
+                      <p className="mt-1 text-sm text-red-500">{errors.lastName}</p>
+                    )}
                   </div>
-                )}
-              </div>
-              <div className="flex-1">
-                <label className="block text-lg font-medium text-gray-700 dark:text-white mb-2">
-                  Username
-                </label>
-                <input
-                  id="username"
-                  name="username"
-                  type="text"
-                  placeholder="Enter your username"
-                  value={userData.username}
-                  onChange={(e) => handleChange("username", e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
-                />
-                {errors.username && (
-                  <div className="text-red-500 text-sm mt-1">
-                    {errors.username}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Username
+                    </label>
+                    <input
+                      type="text"
+                      value={userData.username}
+                      onChange={(e) => handleChange("username", e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-700 dark:text-white"
+                    />
+                    {errors.username && (
+                      <p className="mt-1 text-sm text-red-500">{errors.username}</p>
+                    )}
                   </div>
-                )}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      value={userData.email}
+                      onChange={(e) => handleChange("email", e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-700 dark:text-white"
+                    />
+                    {errors.email && (
+                      <p className="mt-1 text-sm text-red-500">{errors.email}</p>
+                    )}
+                  </div>
+                </div>
               </div>
-            </div>
 
-            <div className="m-5 flex gap-4">
-              <div className="flex-1">
-                <label className="block text-lg font-medium text-gray-700 dark:text-white mb-2">
-                  Email
-                </label>
-                <input
-                  id="email"
-                  name="email"
-                  type="text"
-                  placeholder="Enter your email"
-                  value={userData.email}
-                  onChange={(e) => handleChange("email", e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
-                />
-                {errors.email && (
-                  <div className="text-red-500 text-sm mt-1">
-                    {errors.email}
+              {/* Contact Information */}
+              <div className="px-6 py-6">
+                <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Contact Information</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Phone
+                    </label>
+                    <input
+                      type="tel"
+                      value={userData.phone}
+                      onChange={(e) => handleChange("phone", e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-700 dark:text-white"
+                    />
+                    {errors.phone && (
+                      <p className="mt-1 text-sm text-red-500">{errors.phone}</p>
+                    )}
                   </div>
-                )}
-              </div>
-              <div className="flex-1">
-                <label className="block text-lg font-medium text-gray-700 dark:text-white mb-2">
-                  Phone
-                </label>
-                <input
-                  id="phone"
-                  name="phone"
-                  type="tel"
-                  placeholder="Enter your phone number"
-                  value={userData.phone}
-                  onChange={(e) => handleChange("phone", e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
-                />
-                {errors.phone && (
-                  <div className="text-red-500 text-sm mt-1">
-                    {errors.phone}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Location
+                    </label>
+                    <input
+                      type="text"
+                      value={userData.location}
+                      onChange={(e) => handleChange("location", e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-700 dark:text-white"
+                    />
                   </div>
-                )}
+                </div>
               </div>
-              <div className="flex-1">
-                <label className="block text-lg font-medium text-gray-700 dark:text-white mb-2">
-                  Work
-                </label>
-                <input
-                  id="workAt"
-                  name="workAt"
-                  type="text"
-                  placeholder="Enter your workAt"
-                  value={userData.workAt}
-                  onChange={(e) => handleChange("workAt", e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
-                />
-              </div>
-            </div>
 
-            <div className="m-5 flex gap-4 items-start">
-              <div className="flex flex-col gap-4 basis-1/2">
-                <label className="text-lg font-medium text-gray-700 dark:text-white">
-                  Gender:
-                </label>
-                <RadioGroup
-                  value={gender === true ? "Male" : "Female"}
-                  onValueChange={(value) =>
-                    handleGenderChange(value === "Male")
-                  }
-                  className="flex items-center gap-4"
+              {/* Personal Information */}
+              <div className="px-6 py-6">
+                <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Personal Information</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Gender
+                    </label>
+                    <RadioGroup
+                      value={gender === true ? "Male" : "Female"}
+                      onValueChange={(value) => handleGenderChange(value === "Male")}
+                      className="flex items-center space-x-4"
+                    >
+                      <label className="flex items-center space-x-2">
+                        <RadioGroupItem value="Female" id="female" />
+                        <span className="text-gray-700 dark:text-gray-300">Female</span>
+                      </label>
+                      <label className="flex items-center space-x-2">
+                        <RadioGroupItem value="Male" id="male" />
+                        <span className="text-gray-700 dark:text-gray-300">Male</span>
+                      </label>
+                    </RadioGroup>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Birth Date
+                    </label>
+                    <div className="grid grid-cols-3 gap-4">
+                      <select
+                        value={userData.birthDay.month}
+                        onChange={(e) => handleChange("birthDay.month", e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-700 dark:text-white"
+                      >
+                        <option value="">Month</option>
+                        {months.map((month, index) => (
+                          <option key={index + 1} value={(index + 1).toString().padStart(2, "0")}>
+                            {month}
+                          </option>
+                        ))}
+                      </select>
+                      <select
+                        value={userData.birthDay.day}
+                        onChange={(e) => handleChange("birthDay.day", e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-700 dark:text-white"
+                      >
+                        <option value="">Day</option>
+                        {[...Array(daysInMonth)].map((_, i) => (
+                          <option key={i + 1} value={(i + 1).toString().padStart(2, "0")}>
+                            {i + 1}
+                          </option>
+                        ))}
+                      </select>
+                      <select
+                        value={userData.birthDay.year}
+                        onChange={(e) => handleChange("birthDay.year", e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-700 dark:text-white"
+                      >
+                        <option value="">Year</option>
+                        {[...Array(100)].map((_, i) => (
+                          <option key={i} value={2024 - i}>
+                            {2024 - i}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    {(errors.birthDay?.day || errors.birthDay?.month || errors.birthDay?.year || errors.birthDay?.date || errors.birthDay?.age) && (
+                      <p className="mt-1 text-sm text-red-500">
+                        {errors.birthDay?.day || errors.birthDay?.month || errors.birthDay?.year || errors.birthDay?.date || errors.birthDay?.age}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Education & Work */}
+              <div className="px-6 py-6">
+                <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Education & Work</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Education
+                    </label>
+                    <input
+                      type="text"
+                      value={userData.education}
+                      onChange={(e) => handleChange("education", e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-700 dark:text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Work
+                    </label>
+                    <input
+                      type="text"
+                      value={userData.workAt}
+                      onChange={(e) => handleChange("workAt", e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-700 dark:text-white"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Biography */}
+              <div className="px-6 py-6">
+                <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">About</h2>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Biography
+                  </label>
+                  <textarea
+                    value={userData.biography}
+                    onChange={(e) => handleChange("biography", e.target.value)}
+                    rows={4}
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-700 dark:text-white resize-none"
+                    placeholder="Tell us about yourself..."
+                  />
+                  {errors.biography && (
+                    <p className="mt-1 text-sm text-red-500">{errors.biography}</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Form Actions */}
+              <div className="px-6 py-4 bg-gray-50 dark:bg-neutral-900 flex justify-end space-x-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setUserData({
+                      id: user.id || "",
+                      firstName: user.firstName || "",
+                      lastName: user.lastName || "",
+                      username: user.username || "",
+                      email: user.email || "",
+                      password: user.password || "",
+                      phone: user.phone || "",
+                      gender: user.gender || false,
+                      birthDay: user.birthDay || { day: "", month: "", year: "" },
+                      location: user.location || "",
+                      education: user.education || "",
+                      status: user.status || 0,
+                      reportApprovalCount: user.reportApprovalCount || "",
+                      workAt: user.workAt || "",
+                      biography: user.biography || "",
+                      avatar: user.avatar ? { url: user.avatar.url } : { url: defaultAvatar },
+                    });
+                    setAvatar(user.avatar && user.avatar.url ? user.avatar.url : defaultAvatar);
+                    setGender(user.gender || false);
+                    setErrors({});
+                  }}
+                  className="px-4 py-2 border border-gray-300 dark:border-neutral-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white dark:bg-neutral-700 hover:bg-gray-50 dark:hover:bg-neutral-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 >
-                  <label className="flex items-center gap-1 dark:text-gray-400 mr-10">
-                    <RadioGroupItem value="Female" id="female" />
-                    Female
-                  </label>
-                  <label className="flex items-center gap-1 dark:text-gray-400">
-                    <RadioGroupItem value="Male" id="male" />
-                    Male
-                  </label>
-                </RadioGroup>
+                  Reset
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading ? (
+                    <span className="flex items-center">
+                      <i className="fa-solid fa-spinner fa-spin mr-2"></i>
+                      Saving...
+                    </span>
+                  ) : (
+                    "Save Changes"
+                  )}
+                </button>
               </div>
-
-              <div className="flex flex-col gap-4 basis-1/2">
-                <label className="text-lg font-medium text-gray-700 dark:text-white">
-                  Birthday:
-                </label>
-                <div className="flex items-center gap-4">
-                  <select
-                    value={userData.birthDay.month}
-                    onChange={(e) =>
-                      handleChange("birthDay.month", e.target.value)
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
-                  >
-                    {months.map((m, i) => {
-                      const monthValue = String(i + 1).padStart(2, "0");
-                      return (
-                        <option key={m} value={monthValue}>
-                          {m}
-                        </option>
-                      );
-                    })}
-                  </select>
-                  <select
-                    value={userData.birthDay.day}
-                    onChange={(e) =>
-                      handleChange("birthDay.day", e.target.value)
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
-                  >
-                    {[...Array(daysInMonth)].map((_, i) => {
-                      const dayValue = String(i + 1).padStart(2, "0");
-                      return (
-                        <option key={dayValue} value={dayValue}>
-                          {dayValue}
-                        </option>
-                      );
-                    })}
-                  </select>
-                  <select
-                    value={userData.birthDay.year}
-                    onChange={(e) =>
-                      handleChange("birthDay.year", e.target.value)
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none hover:border-gray-500"
-                  >
-                    {[...Array(100)].map((_, i) => {
-                      const yearValue = 2025 - i;
-                      return (
-                        <option key={yearValue} value={yearValue}>
-                          {yearValue}
-                        </option>
-                      );
-                    })}
-                  </select>
-                </div>
-                {errors.birthDay && (
-                  <div className="text-red-500 text-sm mt-1">
-                    {errors.birthDay.age}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="m-5 flex gap-4 items-start">
-              <div className="flex flex-col gap-2 basis-1/2">
-                <label className="text-lg font-medium text-gray-700 dark:text-white">
-                  Location:
-                </label>
-                <input
-                  id="location"
-                  name="location"
-                  type="text"
-                  placeholder="Enter your location"
-                  value={userData.location}
-                  onChange={(e) => handleChange("location", e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none"
-                />
-              </div>
-              <div className="flex flex-col gap-2 basis-1/2">
-                <label className="text-lg font-medium text-gray-700 dark:text-white">
-                  Education:
-                </label>
-                <input
-                  id="education"
-                  name="education"
-                  type="text"
-                  placeholder="Enter your education"
-                  value={userData.education}
-                  onChange={(e) => handleChange("education", e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:bg-black dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:outline-none"
-                />
-              </div>
-            </div>
-
-            <div className="m-5 flex justify-end">
-              <button
-                type="submit"
-                disabled={loading}
-                className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-2 px-4 rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 cursor-pointer shadow-md"
-              >
-                {loading ? "Saving..." : "Save"}
-              </button>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
       </div>
     </>
