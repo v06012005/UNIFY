@@ -19,9 +19,9 @@ const NotificationModal = ({ isNotificationOpen, modalRef, userId }) => {
 
   useEffect(() => {
     if (isNotificationOpen) {
-      setModalWidth(471); // Open modal width
+      setModalWidth(471); // Open modal
     } else {
-      setModalWidth(0); // Close modal width
+      setModalWidth(0); // Close modal
     }
   }, [isNotificationOpen]);
 

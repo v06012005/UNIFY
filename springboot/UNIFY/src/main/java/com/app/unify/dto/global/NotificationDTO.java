@@ -26,6 +26,7 @@ public class NotificationDTO implements Serializable {
     LocalDateTime timestamp;
     @Default
     boolean isRead = false;
+    String link;
 
     @Data
     @Builder

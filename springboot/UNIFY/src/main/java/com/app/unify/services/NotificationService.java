@@ -42,12 +42,30 @@ public class NotificationService {
         simpMessagingTemplate.convertAndSend("/user/" + receiverId + "/queue/notifications", notificationDTO);
     }
 
+    public void createAndSendNotification(String senderId, String receiverId, NotificationType type, String message, String link) {
+        Notification notification = Notification.builder()
+                .sender(senderId)
+                .receiver(receiverId)
+                .type(type)
+                .message(message)
+                .link(link)
+                .timestamp(LocalDateTime.now())
+                .isRead(false)
+                .build();
+
+        Notification savedNotification = saveNotification(notification);
+
+        List<User> users = userRepository.findAllById(List.of(senderId, receiverId));
+        Map<String, User> userMap = users.stream()
+                .collect(Collectors.toMap(User::getId, user -> user));
+        NotificationDTO notificationDTO = notificationMapper
+                .toNotificationDTO(savedNotification, userMap);
+        sendNotification(receiverId, notificationDTO);
+    }
+
+    // Overload for backward compatibility
     public void createAndSendNotification(String senderId, String receiverId, NotificationType type) {
-        if (type == NotificationType.FOLLOW || type == NotificationType.LIKE) {
-            handleFollowOrLikeNotification(senderId, receiverId, type);
-        } else {
-            sendNewNotification(senderId, receiverId, type);
-        }
+        createAndSendNotification(senderId, receiverId, type, generateMessage(senderId, type), null);
     }
 
     private void handleFollowOrLikeNotification(String senderId, String receiverId, NotificationType type) {
@@ -83,24 +101,7 @@ public class NotificationService {
     }
 
     private void sendNewNotification(String senderId, String receiverId, NotificationType type) {
-        String message = generateMessage(senderId, type);
-        Notification notification = Notification.builder()
-                .sender(senderId)
-                .receiver(receiverId)
-                .type(type)
-                .message(message)
-                .timestamp(LocalDateTime.now())
-                .isRead(false)
-                .build();
-
-        Notification savedNotification = saveNotification(notification);
-
-        List<User> users = userRepository.findAllById(List.of(senderId, receiverId));
-        Map<String, User> userMap = users.stream()
-                .collect(Collectors.toMap(User::getId, user -> user));
-        NotificationDTO notificationDTO = notificationMapper
-                .toNotificationDTO(savedNotification, userMap);
-        sendNotification(receiverId, notificationDTO);
+        createAndSendNotification(senderId, receiverId, type, generateMessage(senderId, type), null);
     }
 
     public List<NotificationDTO> getNotificationsForUser(String receiverId) {

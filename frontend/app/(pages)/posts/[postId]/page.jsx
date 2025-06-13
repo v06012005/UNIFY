@@ -50,7 +50,7 @@ const MediaPreview = ({ file, onRemove }) => {
 const User = ({ user }) => {
   return (
     <div className="flex mb-4 w-full my-auto">
-      <Image src={avatar} alt="Avatar" className="rounded-full w-14 h-14" />
+      <Image src={ avatar } alt="Avatar" className="rounded-full w-14 h-14" />
       <div className="ml-5">
         <p className="my-auto text-lg font-bold">{user?.username}</p>
         <p className="my-auto">{user?.firstName + " " + user?.lastName}</p>

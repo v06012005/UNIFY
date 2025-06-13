@@ -54,6 +54,7 @@ public class AvatarService {
 //
 //		return avatarList.stream().map(avatarMapper::toAvatarDTO).collect(Collectors.toList());
 //	}
+
 	public AvatarDTO saveAvatar(AvatarDTO avatarDTO) {
         User user = userRepository.findById(avatarDTO.getUserId())
             .orElseThrow(() -> new RuntimeException("User not found"));

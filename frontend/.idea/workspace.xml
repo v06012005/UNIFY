@@ -4,7 +4,42 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1dc806c8-9b06-409a-84de-1db3bd7b8131" name="Changes" comment="" />
+    <list default="true" id="1dc806c8-9b06-409a-84de-1db3bd7b8131" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/../.idea/UNIFY.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../springboot/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../springboot/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../springboot/.idea/springboot.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../springboot/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../springboot/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/config/WebSocketAuthInterceptor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/config/WebSocketSecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(pages)/explore/page.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(pages)/explore/page.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(pages)/home/page.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(pages)/home/page.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(pages)/messages/page.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(pages)/messages/page.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(pages)/othersProfile/[username]/page.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(pages)/othersProfile/[username]/page.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(pages)/posts/[postId]/page.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(pages)/posts/[postId]/page.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/global/NotificationModal.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/global/NotificationModal.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/global/SideBar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/global/SideBar.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/global/TabProfile/PostDetailModal.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/global/TabProfile/PostDetailModal.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/global/chat/Message.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/global/chat/Message.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/ui/follow_notification.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/ui/follow_notification.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hooks/useChat.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/hooks/useChat.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../springboot/UNIFY/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../springboot/UNIFY/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/config/WebSocketConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/config/WebSocketConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/controllers/chat/ChatController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/controllers/chat/ChatController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/dto/global/AvatarDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/dto/global/AvatarDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/dto/global/NotificationDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/dto/global/NotificationDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/entities/Notification.java" beforeDir="false" afterPath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/entities/Notification.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/mapper/AvatarMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/mapper/AvatarMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/services/AvatarService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/services/AvatarService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/services/NotificationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../springboot/UNIFY/src/main/java/com/app/unify/services/NotificationService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../springboot/UNIFY/src/main/resources/templates/email-otp-form.html" beforeDir="false" afterPath="$PROJECT_DIR$/../springboot/UNIFY/src/main/resources/templates/email-otp-form.html" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -29,22 +64,29 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "develop/cache",
-    "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "D:/UNIFY_V2/UNIFY/frontend",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "npm.dev.executor": "Run",
-    "ts.external.directory.path": "D:\\Program Files\\webstorm\\WebStorm 2024.2.4\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;js.debugger.nextJs.config.created.client&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/miyatoshi/Public/Code/UNIFY/frontend&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.standard&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.standard&quot;: &quot;&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_interpreter_path&quot;: &quot;/home/miyatoshi/.var/app/com.jetbrains.WebStorm/config/JetBrains/WebStorm2024.3/node/versions/22.15.0/bin/node&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;npm.dev.executor&quot;: &quot;Run&quot;,
+    &quot;npm.install.executor&quot;: &quot;Run&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/home/miyatoshi/.local/share/JetBrains/Toolbox/apps/webstorm/plugins/javascript-plugin/jsLanguageServicesImpl/external&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\Unify\UNIFY\frontend\public\images" />
@@ -57,7 +99,10 @@
       <recent name="D:\Unify\UNIFY\frontend\app\(auth)" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="npm.dev">
+    <configuration name="Next.js: debug client-side" type="JavascriptDebugType" uri="http://localhost:3000/">
+      <method v="2" />
+    </configuration>
     <configuration name="dev" type="js.build_tools.npm" nameIsGenerated="true">
       <package-json value="$PROJECT_DIR$/package.json" />
       <command value="run" />
@@ -68,11 +113,23 @@
       <envs />
       <method v="2" />
     </configuration>
+    <configuration name="install" type="js.build_tools.npm">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="install" />
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="JavaScript Debug.Next.js: debug client-side" />
+      <item itemvalue="npm.install" />
+      <item itemvalue="npm.dev" />
+    </list>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-WS-242.23726.96" />
+        <option value="bundled-js-predefined-d6986cc7102b-b26f3e71634d-JavaScript-WS-251.26094.131" />
       </set>
     </attachedChunks>
   </component>
@@ -110,6 +167,21 @@
       <workItem from="1744528138271" duration="9251000" />
       <workItem from="1744560079175" duration="10000" />
       <workItem from="1745218968829" duration="18000" />
+      <workItem from="1746454267719" duration="63000" />
+      <workItem from="1746454393272" duration="122000" />
+      <workItem from="1746458065178" duration="1326000" />
+      <workItem from="1746459789013" duration="101000" />
+      <workItem from="1746534817811" duration="1115000" />
+      <workItem from="1747408900170" duration="619000" />
+      <workItem from="1747410659091" duration="484000" />
+      <workItem from="1747411875998" duration="583000" />
+      <workItem from="1747457401369" duration="2514000" />
+      <workItem from="1747561520593" duration="2776000" />
+      <workItem from="1747565572732" duration="1681000" />
+      <workItem from="1747567539609" duration="4793000" />
+      <workItem from="1749625777484" duration="641000" />
+      <workItem from="1749794438174" duration="2165000" />
+      <workItem from="1749815906439" duration="366000" />
     </task>
     <servers />
   </component>
@@ -117,14 +189,56 @@
     <option name="version" value="3" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
-    <option name="TAB_STATES">
+    <option name="RECENT_FILTERS">
       <map>
-        <entry key="MAIN">
+        <entry key="Branch">
           <value>
-            <State />
+            <list>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="main" />
+                </option>
+              </RecentGroup>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="origin/tempbranch" />
+                </option>
+              </RecentGroup>
+            </list>
           </value>
         </entry>
       </map>
     </option>
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="main" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/app/(pages)/othersProfile/[username]/page.jsx</url>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

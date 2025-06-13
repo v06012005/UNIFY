@@ -29,4 +29,5 @@ public class Notification implements Serializable {
     @Builder.Default
     boolean isRead = false;
     String message;
+    String link;
 }
