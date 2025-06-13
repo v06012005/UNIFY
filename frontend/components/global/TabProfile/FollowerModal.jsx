@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getFollowerUsers } from "@/app/lib/api/user";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
+import FollowButton from "@/components/ui/follow-button";
 import { cn } from "@/app/lib/utils";
 
 const UserSkeleton = () => (
@@ -101,21 +101,14 @@ const FollowerModal = ({ isOpen, onClose, userId, currentUserId }) => {
                     </div>
                   </div>
                   {follower.id !== currentUserId && (
-                    <Button
-                      variant={follower.isFollowing ? "outline" : "default"}
-                      size="sm"
-                      onClick={() => {
-                        router.push(`/profile/${follower.username}`);
-                        onClose();
-                      }}
-                      className={cn(
-                        "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-800",
-                        follower.isFollowing &&
-                          "border-gray-300 dark:border-gray-600"
-                      )}
-                    >
-                      {follower.isFollowing ? "Following" : "Follow"}
-                    </Button>
+                    <FollowButton
+                      userId={currentUserId}
+                      followingId={follower.id}
+                      classFollow="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-800 bg-white dark:bg-neutral-900 border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1.5 text-sm font-medium"
+                      classFollowing="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-800 bg-white dark:bg-neutral-900 border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1.5 text-sm font-medium"
+                      contentFollow="Follow"
+                      contentFollowing="Following"
+                    />
                   )}
                 </div>
               ))}
