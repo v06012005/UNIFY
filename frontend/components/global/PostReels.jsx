@@ -1,99 +1,213 @@
 import React, { useRef, forwardRef, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Avatar } from "@heroui/react";
+import Link from "next/link";
 
 const PostReels = forwardRef(
-  ({ src: initialSrc, muted, loop, onPauseChange, onMuteChange }, ref) => {
+  ({ src: initialSrc, muted, loop, onPauseChange, onMuteChange, post }, ref) => {
     const [isPaused, setIsPaused] = useState(false);
+    const [isMuted, setIsMuted] = useState(muted);
+    const [isLoading, setIsLoading] = useState(true);
+    const [videoError, setVideoError] = useState(false);
+    const [isVideoReady, setIsVideoReady] = useState(false);
     const videoRef = useRef(null);
+    const containerRef = useRef(null);
+    const playAttemptRef = useRef(null);
+    const loadingTimeoutRef = useRef(null);
 
     useEffect(() => {
-      console.log("Received src in PostReels:", initialSrc);
-      if (!initialSrc) {
-        console.error("Invalid or missing src in PostReels");
-      }
-    }, [initialSrc]);
-
-    useEffect(() => {
-      if (videoRef.current && videoRef.current.muted !== muted) {
+      if (videoRef.current) {
         videoRef.current.muted = muted;
+        setIsMuted(muted);
       }
     }, [muted]);
 
-    const toggleMute = () => {
-      const newMuted = !muted;
-      if (videoRef.current) videoRef.current.muted = newMuted;
-      onMuteChange(newMuted);
+    // Cleanup function for play attempts and loading timeout
+    useEffect(() => {
+      return () => {
+        if (playAttemptRef.current) {
+          clearTimeout(playAttemptRef.current);
+        }
+        if (loadingTimeoutRef.current) {
+          clearTimeout(loadingTimeoutRef.current);
+        }
+      };
+    }, []);
+
+    const attemptPlay = () => {
+      if (!videoRef.current) return;
+
+      if (playAttemptRef.current) {
+        clearTimeout(playAttemptRef.current);
+      }
+
+      playAttemptRef.current = setTimeout(() => {
+        if (videoRef.current) {
+          videoRef.current.play()
+            .then(() => {
+              setIsPaused(false);
+              onPauseChange?.(false);
+            })
+            .catch((err) => {
+              console.error("Play error:", err);
+              setIsPaused(true);
+              onPauseChange?.(true);
+            });
+        }
+      }, 50); // Reduced from 100ms to 50ms
+    };
+
+    const toggleMute = (e) => {
+      e.stopPropagation();
+      const newMuted = !isMuted;
+      if (videoRef.current) {
+        videoRef.current.muted = newMuted;
+      }
+      setIsMuted(newMuted);
+      onMuteChange?.(newMuted);
     };
 
     const togglePlayPause = () => {
-      const video = videoRef.current;
-      if (!video) return;
-
-      if (video.paused) {
-        video.play().catch((err) => console.error("Play error:", err));
-        setIsPaused(false);
-        onPauseChange(false);
+      if (!videoRef.current) return;
+      
+      if (videoRef.current.paused) {
+        attemptPlay();
       } else {
-        video.pause();
+        videoRef.current.pause();
         setIsPaused(true);
-        onPauseChange(true);
+        onPauseChange?.(true);
       }
     };
 
+    const handleVideoLoad = () => {
+      // Set a maximum loading time of 300ms
+      if (loadingTimeoutRef.current) {
+        clearTimeout(loadingTimeoutRef.current);
+      }
+      
+      loadingTimeoutRef.current = setTimeout(() => {
+        setIsLoading(false);
+        setVideoError(false);
+        setIsVideoReady(true);
+        attemptPlay();
+      }, 300);
+    };
+
+    const handleVideoError = (e) => {
+      if (loadingTimeoutRef.current) {
+        clearTimeout(loadingTimeoutRef.current);
+      }
+      console.error("Video error:", e);
+      setIsLoading(false);
+      setVideoError(true);
+      setIsVideoReady(false);
+    };
+
+    // Handle video scaling
+    useEffect(() => {
+      const handleResize = () => {
+        if (videoRef.current && containerRef.current) {
+          const container = containerRef.current;
+          const video = videoRef.current;
+          
+          const containerAspectRatio = container.clientWidth / container.clientHeight;
+          const videoAspectRatio = video.videoWidth / video.videoHeight;
+
+          if (containerAspectRatio > videoAspectRatio) {
+            video.style.width = '100%';
+            video.style.height = 'auto';
+          } else {
+            video.style.width = 'auto';
+            video.style.height = '100%';
+          }
+        }
+      };
+
+      handleResize();
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     return (
       <div
-        className="absolute inset-0 flex justify-center my-2 items-center rounded-md border-white/20 dark:shadow-[0_0_500px_rgba(255,255,255,0.1)] shadow-[0_0_900px_rgba(0,0,0,0.1)] overflow-hidden"
+        ref={containerRef}
+        className="relative w-full h-full flex items-center justify-center bg-black overflow-hidden"
         onClick={togglePlayPause}
       >
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            toggleMute();
-          }}
-          className="absolute top-2 right-2 z-10 text-white rounded-full p-2 transition"
-          aria-label={muted ? "Unmute Video" : "Mute Video"}
-        >
-          <i
-            className={`fa-solid ${
-              muted ? "fa-volume-xmark" : "fa-volume-high"
-            }`}
-          ></i>
-        </button>
-
         <AnimatePresence>
-          {isPaused && (
+          {isLoading && !isVideoReady && (
             <motion.div
-              className="absolute z-[5] flex justify-center items-center bg-neutral-800 bg-opacity-55 rounded-full h-20 w-20"
-              initial={{ opacity: 0, scale: 1.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 1.4 }}
-              transition={{ duration: 0.2, ease: "easeOut" }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="absolute inset-0 flex items-center justify-center bg-black/50 z-10"
             >
-              <i className="fa-solid fa-play text-white text-2xl"></i>
+              <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
             </motion.div>
           )}
         </AnimatePresence>
-        <video
-          ref={(el) => {
-            ref(el);
-            videoRef.current = el;
-          }}
-          muted={muted}
-          loop={loop}
-          className="w-[430] h-full bg-black rounded-md"
-          playsInline
-          onError={(e) => console.error("Video error:", e)}
+
+        {videoError && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="absolute inset-0 flex items-center justify-center bg-black/50 z-10"
+          >
+            <div className="text-white text-center">
+              <i className="fa-solid fa-triangle-exclamation text-4xl mb-2"></i>
+              <p>Failed to load video</p>
+            </div>
+          </motion.div>
+        )}
+
+        <div className="absolute inset-0 flex justify-center items-center">
+          <video
+            ref={videoRef}
+            muted={isMuted}
+            loop={loop}
+            className="max-w-full max-h-full object-contain"
+            playsInline
+            onLoadedData={handleVideoLoad}
+            onError={handleVideoError}
+            preload="auto"
+          >
+            {initialSrc ? (
+              <source src={initialSrc} type="video/mp4" />
+            ) : (
+              <p>No valid video source provided.</p>
+            )}
+            Your browser does not support the video tag.
+          </video>
+        </div>
+
+        {/* Sound indicator */}
+        <button
+          onClick={toggleMute}
+          className="absolute top-4 right-4 z-20 text-white p-2 rounded-full hover:bg-white/10 transition-colors"
         >
-          {initialSrc ? (
-            <source src={initialSrc} type="video/mp4" />
-          ) : (
-            <p>No valid video source provided.</p>
+          <i className={`fa-solid ${isMuted ? "fa-volume-xmark" : "fa-volume-high"}`}></i>
+        </button>
+
+        {/* Play/Pause indicator */}
+        <AnimatePresence>
+          {isPaused && !videoError && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="absolute inset-0 flex items-center justify-center bg-black/30 z-10"
+            >
+              <i className="fa-solid fa-play text-white text-4xl"></i>
+            </motion.div>
           )}
-          Your browser does not support the video tag.
-        </video>
+        </AnimatePresence>
       </div>
     );
   }
 );
+
+PostReels.displayName = "PostReels";
 
 export default PostReels;

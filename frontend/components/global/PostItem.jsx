@@ -12,12 +12,13 @@ import { addToast, Avatar, ToastProvider } from "@heroui/react";
 import Link from "next/link";
 import ReportModal from "./Report/ReportModal";
 import { useReports } from "../provider/ReportProvider";
+import { motion } from "framer-motion";
 
 const User = ({ user }) => (
   <Link href={`/othersProfile/${user?.username}`} className="hover:opacity-80 transition-opacity">
     <div className="flex items-center">
       <Avatar
-        className="w-9 h-9 border border-gray-200 dark:border-neutral-700 rounded-full overflow-hidden transition-transform hover:scale-105"
+        className="w-10 h-10 border border-gray-200 dark:border-neutral-700 rounded-full overflow-hidden transition-transform hover:scale-105"
         src={user?.avatar?.url}
       />
       <div className="ml-3">
@@ -69,6 +70,7 @@ const PostItem = ({ post }) => {
   const { createPostReport } = useReports();
   const [openList, setOpenList] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showFullImage, setShowFullImage] = useState(false);
 
   const handleReportPost = useCallback(
     async (postId, reason) => {
@@ -126,8 +128,13 @@ const PostItem = ({ post }) => {
   return (
     <>
       <ToastProvider placement="top-right" />
-      <div className="w-full max-w-lg mx-auto mb-5 bg-white dark:bg-neutral-900 rounded-lg shadow-md hover:shadow-lg transition-all duration-300">
-        <div className="flex justify-between items-center p-2.5 border-b border-gray-200 dark:border-neutral-800">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -20 }}
+        className="w-full bg-white dark:bg-neutral-900 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden"
+      >
+        <div className="flex justify-between items-center p-4 border-b border-gray-200 dark:border-neutral-800">
           <User user={post.user} />
           <button
             onClick={() => setOpenList(true)}
@@ -139,29 +146,34 @@ const PostItem = ({ post }) => {
 
         {openList && (
           <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-[60]">
-            <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-xl w-64 transform transition-all duration-200">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="bg-white dark:bg-neutral-800 rounded-lg shadow-xl w-64"
+            >
               <button
                 onClick={() => {
                   setIsModalOpen(true);
                   setOpenList(false);
                 }}
-                className="w-full py-2 text-red-500 dark:text-red-400 dark:hover:bg-neutral-700 hover:bg-gray-100 rounded-t-lg font-medium transition-colors text-sm"
+                className="w-full py-3 text-red-500 dark:text-red-400 dark:hover:bg-neutral-700 hover:bg-gray-100 rounded-t-lg font-medium transition-colors text-sm"
               >
                 Report
               </button>
-              <button className="w-full py-2 text-gray-800 dark:text-gray-200 dark:hover:bg-neutral-700 hover:bg-gray-100 font-medium transition-colors text-sm">
+              <button className="w-full py-3 text-gray-800 dark:text-gray-200 dark:hover:bg-neutral-700 hover:bg-gray-100 font-medium transition-colors text-sm">
                 Not interested
               </button>
-              <button className="w-full py-2 text-gray-800 dark:text-gray-200 dark:hover:bg-neutral-700 hover:bg-gray-100 font-medium transition-colors text-sm">
+              <button className="w-full py-3 text-gray-800 dark:text-gray-200 dark:hover:bg-neutral-700 hover:bg-gray-100 font-medium transition-colors text-sm">
                 Share
               </button>
               <button
                 onClick={() => setOpenList(false)}
-                className="w-full py-2 text-gray-500 dark:text-gray-400 dark:hover:bg-neutral-700 hover:bg-gray-100 rounded-b-lg font-medium transition-colors text-sm"
+                className="w-full py-3 text-gray-500 dark:text-gray-400 dark:hover:bg-neutral-700 hover:bg-gray-100 rounded-b-lg font-medium transition-colors text-sm"
               >
                 Close
               </button>
-            </div>
+            </motion.div>
           </div>
         )}
 
@@ -173,36 +185,38 @@ const PostItem = ({ post }) => {
         />
 
         <div className="w-full bg-white dark:bg-neutral-900">
-          <Slider srcs={post.media} />
+          <div className="relative max-h-[600px] overflow-hidden">
+            <Slider srcs={post.media} onImageClick={() => setShowFullImage(true)} />
+          </div>
         </div>
 
-        <div className="p-2.5">
-          <Caption text={transformHashtags(post.captions)} />
-          
-          <div className="flex justify-between text-base">
-            <div className="flex gap-2.5">
+        <div className="p-4">
+          <div className="flex justify-between text-base mb-2">
+            <div className="flex gap-4">
               <LikeButton
-                className="!text-base hover:opacity-50 transition-opacity"
+                className="!text-xl hover:opacity-50 transition-opacity"
                 userId={user?.id}
                 postId={post?.id}
                 setLikeCount={setLikeCount}
                 classText="hidden"
               />
-              <CommentButton className="!text-base hover:opacity-50 transition-opacity" postId={post.id}>
+              <CommentButton className="!text-xl hover:opacity-50 transition-opacity" postId={post.id}>
                 <i className="fa-regular fa-comment"></i>
               </CommentButton>
-              <ShareButton />
+              <ShareButton className="!text-xl hover:opacity-50 transition-opacity" />
             </div>
             <Bookmark
               postId={post.id}
-              className="!text-base hover:opacity-90 transition-opacity"
+              className="!text-xl hover:opacity-90 transition-opacity"
               classNameIcon="text-gray-900 dark:text-gray-100"
             />
           </div>
 
-          <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mt-1.5">
+          <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
             {likeCount} likes
           </div>
+
+          <Caption text={transformHashtags(post.captions)} />
 
           <div className="mt-2 flex flex-wrap">
             {hashtags.map((hashtag, index) => (
@@ -219,7 +233,7 @@ const PostItem = ({ post }) => {
             </CommentButton>
           </div>
         </div>
-      </div>
+      </motion.div>
     </>
   );
 };
