@@ -8,6 +8,10 @@ import com.app.unify.mapper.NotificationMapper;
 import com.app.unify.repositories.FollowRepository;
 import com.app.unify.repositories.UserRepository;
 import com.app.unify.types.FollowerUserId;
+import com.app.unify.entities.Friendship;
+import com.app.unify.repositories.FriendshipRepository;
+import com.app.unify.types.FriendshipUserId;
+import com.app.unify.types.FriendshipStatus;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +36,46 @@ public class FollowService {
 
     @Autowired
     private final NotificationMapper notificationMapper;
+
+    @Autowired
+    private final FriendshipRepository friendshipRepository;
+
+    @Transactional
+    private void updateFriendshipStatus(String userId1, String userId2) {
+        boolean user1FollowsUser2 = isFollowing(userId1, userId2);
+        boolean user2FollowsUser1 = isFollowing(userId2, userId1);
+
+        if (user1FollowsUser2 && user2FollowsUser1) {
+            // Check if friendship already exists
+            FriendshipUserId friendshipId = new FriendshipUserId(userId1, userId2);
+            Friendship existingFriendship = friendshipRepository.findById(friendshipId).orElse(null);
+
+            if (existingFriendship == null) {
+                // Create new friendship
+                User user1 = userRepository.findById(userId1).orElseThrow(() -> new RuntimeException("User not found"));
+                User user2 = userRepository.findById(userId2).orElseThrow(() -> new RuntimeException("User not found"));
+
+                Friendship newFriendship = Friendship.builder()
+                    .id(friendshipId)
+                    .user(user1)
+                    .friend(user2)
+                    .friendshipStatus(FriendshipStatus.ACCEPTED)
+                    .createAt(LocalDateTime.now())
+                    .build();
+
+                friendshipRepository.save(newFriendship);
+            } else if (existingFriendship.getFriendshipStatus() != FriendshipStatus.ACCEPTED) {
+                // Update existing friendship status
+                existingFriendship.setFriendshipStatus(FriendshipStatus.ACCEPTED);
+                existingFriendship.setUpdateAt(LocalDateTime.now());
+                friendshipRepository.save(existingFriendship);
+            }
+        } else {
+            // If not mutual follows, remove friendship if it exists
+            FriendshipUserId friendshipId = new FriendshipUserId(userId1, userId2);
+            friendshipRepository.deleteById(friendshipId);
+        }
+    }
 
     @Transactional
     public String followUser(String followingId) {
@@ -60,6 +104,9 @@ public class FollowService {
                     .build();
             followRepository.save(newFollow);
 
+            // Update friendship status after follow
+            updateFriendshipStatus(currentUserId, followingId);
+
             notificationService.createAndSendNotification(currentUserId, followingId, NotificationType.FOLLOW);
             return "Followed successfully!";
         } catch (Exception e) {
@@ -78,6 +125,10 @@ public class FollowService {
 
         try {
             followRepository.deleteById(id);
+            
+            // Update friendship status after unfollow
+            updateFriendshipStatus(currentUserId, followingId);
+            
             return "Unfollowed successfully";
         } catch (Exception e) {
             throw new RuntimeException("Error while unfollowing user: " + e.getMessage());
