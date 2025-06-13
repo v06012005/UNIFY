@@ -33,7 +33,7 @@ const layout = ({ children}) => {
   const { user } = useApp();
   return (
     <div className="flex w-full">
-      <div className="flex basis-1/4 px-3 flex-col border-r-1 dark:border-neutral-700  w-[300px] h-screen overflow-y-auto">
+      <div className="flex basis-1/4 px-3 flex-col border-r-1 dark:border-neutral-700  w-[300px] ">
         <div className="p-3">
           <h3 className="text-2xl font-bold mb-3">Settings</h3>
           <Title content="Account settings" />
@@ -70,10 +70,17 @@ const layout = ({ children}) => {
                 content="Preferences"
               />
             </li>
+              <li className="h-10 flex items-center">
+              <NavButton
+                href="/settings/support"
+                iconClass="fa-solid fa-info-circle"
+                content="Support"
+              />
+            </li>
           </ul>
         </div>
       </div>
-      <div className="h-screen basis-3/4 dark:text-white dark:bg-black py-3 px-10">
+      <div className="basis-3/4 dark:text-white dark:bg-black py-3 px-10">
         {children}
       </div>
     </div>

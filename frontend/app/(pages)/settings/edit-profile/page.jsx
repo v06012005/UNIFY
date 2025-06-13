@@ -370,10 +370,10 @@ const Page = () => {
     <>
       <ToastProvider placement="top-right" />
       <div className="min-h-screen bg-gray-50 dark:bg-neutral-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="bg-white dark:bg-neutral-800 rounded-2xl shadow-sm overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8  h-screen overflow-y-auto scrollbar-hide">
+          <div className="bg-white dark:bg-neutral-800 rounded-2xl shadow-sm">
             {/* Header */}
-            <div className="px-6 py-4 border-b border-gray-200 dark:border-neutral-700">
+            <div className="px-6 py-4 border-b border-gray-200 dark:border-neutral-700 ">
               <div className="flex items-center justify-between">
                 <div>
                   <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Edit Profile</h1>
