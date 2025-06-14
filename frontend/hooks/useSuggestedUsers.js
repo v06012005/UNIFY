@@ -10,7 +10,7 @@ import {
 export const useUserInfo = () =>
   useQuery({
     queryKey: ["userInfo"],
-    queryFn: getUserInfo,
+    queryFn: getMyInfo,
     staleTime: 1000 * 60 * 5,
   });
 
