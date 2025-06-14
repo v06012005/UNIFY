@@ -78,7 +78,7 @@ const FriendModal = ({ isOpen, onClose, userId, currentUserId }) => {
                   <div
                     className="flex items-center gap-3 cursor-pointer"
                     onClick={() => {
-                      router.push(`/profile/${friend.username}`);
+                      router.push(`/othersProfile/${friend.username}`);
                       onClose();
                     }}
                   >

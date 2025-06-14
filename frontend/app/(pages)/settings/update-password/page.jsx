@@ -5,6 +5,8 @@ import { useApp } from "@/components/provider/AppProvider";
 import Cookies from "js-cookie";
 import { addToast, ToastProvider } from "@heroui/toast";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import { Eye, EyeOff, Loader2, Shield } from "lucide-react";
 
 const Page = () => {
   const { user, setUser } = useApp();
@@ -14,6 +16,9 @@ const Page = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const getPasswordError = (password) => {
     if (password.length < 8) {
@@ -38,20 +43,17 @@ const Page = () => {
     e.preventDefault();
     setErrors({});
 
-    // Validate current password
     if (!currentPassword) {
       setErrors((prev) => ({ ...prev, currentPassword: "Current password is required" }));
       return;
     }
 
-    // Validate new password
     const passwordError = getPasswordError(newPassword);
     if (passwordError) {
       setErrors((prev) => ({ ...prev, newPassword: passwordError }));
       return;
     }
 
-    // Validate confirm password
     if (newPassword !== confirmPassword) {
       setErrors((prev) => ({ ...prev, confirmPassword: "Passwords do not match" }));
       return;
@@ -127,43 +129,51 @@ const Page = () => {
   return (
     <>
       <ToastProvider placement="top-right" />
-      <div className="min-h-screen bg-gray-50 dark:bg-neutral-900">
+      <div className="min-h-screen bg-white dark:bg-black">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="bg-white dark:bg-neutral-800 rounded-2xl shadow-sm overflow-hidden">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="bg-white dark:bg-neutral-900 rounded-2xl shadow-sm overflow-hidden border border-neutral-200 dark:border-neutral-800"
+          >
             {/* Header */}
-            <div className="px-6 py-4 border-b border-gray-200 dark:border-neutral-700">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Update Password</h1>
-                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                  Change your password to keep your account secure
-                </p>
+            <div className="px-6 py-4 border-b border-neutral-200 dark:border-neutral-800">
+              <div className="flex items-center space-x-3">
+                <Shield className="h-6 w-6 text-black dark:text-white" />
+                <div>
+                  <h1 className="text-2xl font-bold text-black dark:text-white">Update Password</h1>
+                  <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
+                    Change your password to keep your account secure
+                  </p>
+                </div>
               </div>
             </div>
 
             {/* Password Requirements */}
-            <div className="px-6 py-4 bg-blue-50 dark:bg-blue-900/20 border-b border-blue-100 dark:border-blue-800">
-              <h2 className="text-sm font-medium text-blue-800 dark:text-blue-200 mb-2">
+            <div className="px-6 py-4 bg-neutral-50 dark:bg-neutral-800/50 border-b border-neutral-200 dark:border-neutral-700">
+              <h2 className="text-sm font-medium text-black dark:text-white mb-2">
                 Password Requirements
               </h2>
-              <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
+              <ul className="text-sm text-neutral-600 dark:text-neutral-300 space-y-1">
                 <li className="flex items-center">
-                  <i className="fa-solid fa-check-circle mr-2"></i>
+                  <i className="fa-solid fa-check-circle mr-2 text-black dark:text-white"></i>
                   At least 8 characters long
                 </li>
                 <li className="flex items-center">
-                  <i className="fa-solid fa-check-circle mr-2"></i>
+                  <i className="fa-solid fa-check-circle mr-2 text-black dark:text-white"></i>
                   Contains at least one uppercase letter
                 </li>
                 <li className="flex items-center">
-                  <i className="fa-solid fa-check-circle mr-2"></i>
+                  <i className="fa-solid fa-check-circle mr-2 text-black dark:text-white"></i>
                   Contains at least one lowercase letter
                 </li>
                 <li className="flex items-center">
-                  <i className="fa-solid fa-check-circle mr-2"></i>
+                  <i className="fa-solid fa-check-circle mr-2 text-black dark:text-white"></i>
                   Contains at least one number
                 </li>
                 <li className="flex items-center">
-                  <i className="fa-solid fa-check-circle mr-2"></i>
+                  <i className="fa-solid fa-check-circle mr-2 text-black dark:text-white"></i>
                   Contains at least one special character (!@#$%^&*)
                 </li>
               </ul>
@@ -172,48 +182,87 @@ const Page = () => {
             {/* Form */}
             <form onSubmit={onSubmit} className="p-6 space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
                   Current Password
                 </label>
-                <input
-                  type="password"
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-700 dark:text-white"
-                  placeholder="Enter your current password"
-                />
+                <div className="relative">
+                  <input
+                    type={showCurrentPassword ? "text" : "password"}
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    className="w-full px-4 py-3 border border-neutral-200 dark:border-neutral-700 rounded-xl focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent dark:bg-neutral-800 dark:text-white transition-all"
+                    placeholder="Enter your current password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-neutral-400 hover:text-neutral-500 dark:hover:text-neutral-300"
+                  >
+                    {showCurrentPassword ? (
+                      <EyeOff className="h-5 w-5" />
+                    ) : (
+                      <Eye className="h-5 w-5" />
+                    )}
+                  </button>
+                </div>
                 {errors.currentPassword && (
                   <p className="mt-1 text-sm text-red-500">{errors.currentPassword}</p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
                   New Password
                 </label>
-                <input
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-700 dark:text-white"
-                  placeholder="Enter your new password"
-                />
+                <div className="relative">
+                  <input
+                    type={showNewPassword ? "text" : "password"}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className="w-full px-4 py-3 border border-neutral-200 dark:border-neutral-700 rounded-xl focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent dark:bg-neutral-800 dark:text-white transition-all"
+                    placeholder="Enter your new password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-neutral-400 hover:text-neutral-500 dark:hover:text-neutral-300"
+                  >
+                    {showNewPassword ? (
+                      <EyeOff className="h-5 w-5" />
+                    ) : (
+                      <Eye className="h-5 w-5" />
+                    )}
+                  </button>
+                </div>
                 {errors.newPassword && (
                   <p className="mt-1 text-sm text-red-500">{errors.newPassword}</p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
                   Confirm New Password
                 </label>
-                <input
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-700 dark:text-white"
-                  placeholder="Confirm your new password"
-                />
+                <div className="relative">
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="w-full px-4 py-3 border border-neutral-200 dark:border-neutral-700 rounded-xl focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent dark:bg-neutral-800 dark:text-white transition-all"
+                    placeholder="Confirm your new password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-neutral-400 hover:text-neutral-500 dark:hover:text-neutral-300"
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="h-5 w-5" />
+                    ) : (
+                      <Eye className="h-5 w-5" />
+                    )}
+                  </button>
+                </div>
                 {errors.confirmPassword && (
                   <p className="mt-1 text-sm text-red-500">{errors.confirmPassword}</p>
                 )}
@@ -229,18 +278,18 @@ const Page = () => {
                     setConfirmPassword("");
                     setErrors({});
                   }}
-                  className="px-4 py-2 border border-gray-300 dark:border-neutral-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white dark:bg-neutral-700 hover:bg-gray-50 dark:hover:bg-neutral-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  className="px-4 py-2 border border-neutral-200 dark:border-neutral-700 text-sm font-medium rounded-xl text-neutral-700 dark:text-neutral-300 bg-white dark:bg-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black dark:focus:ring-white transition-all"
                 >
                   Reset
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-2 border border-transparent text-sm font-medium rounded-xl text-white bg-black dark:bg-white dark:text-black hover:bg-neutral-800 dark:hover:bg-neutral-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black dark:focus:ring-white disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                 >
                   {loading ? (
                     <span className="flex items-center">
-                      <i className="fa-solid fa-spinner fa-spin mr-2"></i>
+                      <Loader2 className="h-5 w-5 animate-spin mr-2" />
                       Updating...
                     </span>
                   ) : (
@@ -249,7 +298,7 @@ const Page = () => {
                 </button>
               </div>
             </form>
-          </div>
+          </motion.div>
         </div>
       </div>
     </>

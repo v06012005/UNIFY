@@ -78,7 +78,7 @@ const FollowingModal = ({ isOpen, onClose, userId, currentUserId }) => {
                   <div
                     className="flex items-center gap-3 cursor-pointer"
                     onClick={() => {
-                      router.push(`/profile/${user.username}`);
+                      router.push(`/othersProfile/${user.username}`);
                       onClose();
                     }}
                   >
