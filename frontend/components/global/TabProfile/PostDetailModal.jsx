@@ -16,6 +16,7 @@ import OptionsPostModal from "@/components/global/TabProfile/OptionsPostModal";
 import DeletePostModal from "@/components/global/TabProfile/Modal/DeletePostModal";
 import ArchivePostModal from "@/components/global/TabProfile/Modal/ArchivePostModal";
 import RestorePostModal from "@/components/global/TabProfile/Modal/RestorePostModal";
+import Slider from "@/components/global/Slider";
 
 const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   return (
@@ -35,7 +36,7 @@ const PostDetailModal = ({ post, onClose, onArchive, onDelete }) => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showArchiveModal, setShowArchiveModal] = useState(false);
   const [showRestoreModal, setShowRestoreModal] = useState(false);
-  const [selectedMedia, setSelectedMedia] = useState(post?.media?.[0] || null);
+  const [selectedMedia, setSelectedMedia] = useState(post?.media || []);
   const [comments, setComments] = useState([]);
   const [isCommentsLoading, setIsCommentsLoading] = useState(false);
   const [replyingTo, setReplyingTo] = useState(null);
@@ -227,7 +228,8 @@ const PostDetailModal = ({ post, onClose, onArchive, onDelete }) => {
       <div className="bg-white dark:bg-neutral-900 rounded-xl flex flex-row w-[900px] h-[600px] overflow-hidden">
         {/* Media Section */}
         <div className="w-1/2 relative bg-black">
-          {selectedMedia ? (
+        <Slider srcs={selectedMedia} onImageClick={() => {}} />
+          {/* {selectedMedia ? (
             selectedMedia.mediaType === "VIDEO" ? (
               <video
                 src={selectedMedia.url}
@@ -245,7 +247,7 @@ const PostDetailModal = ({ post, onClose, onArchive, onDelete }) => {
             <div className="w-full h-full flex items-center justify-center text-white">
               <p>No media available</p>
             </div>
-          )}
+          )} */}
         </div>
 
         {/* Content Section */}
