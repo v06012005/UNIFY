@@ -9,6 +9,9 @@ import {
 import ModalPost from "@/components/global/Report/ModalPost";
 import ModalUser from "@/components/global/Report/ModalUser";
 import { addToast, ToastProvider } from "@heroui/toast";
+import { motion } from "framer-motion";
+import { Info, AlertCircle } from "lucide-react";
+
 const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   return (
     <Link
@@ -22,7 +25,7 @@ const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   );
 };
 
-const updateReportStatus = async (id, status) => {
+const updateReportStatus = async (id, status, reason) => {
   try {
     const token = Cookies.get("token");
     const response = await fetch(
@@ -33,6 +36,7 @@ const updateReportStatus = async (id, status) => {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({ reason }),
       }
     );
 
@@ -65,6 +69,63 @@ const updateReportStatus = async (id, status) => {
   }
 };
 
+const ConfirmModal = ({ isOpen, onClose, onConfirm, action, report }) => {
+  const [reason, setReason] = useState("");
+
+  const handleConfirm = () => {
+    if (reason.trim()) {
+      onConfirm(reason);
+      setReason("");
+      onClose();
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        className="bg-white dark:bg-neutral-800 p-6 rounded-lg w-[500px]"
+      >
+        <h2 className="text-xl font-bold mb-4">
+          {action === "approve" ? "Approve Report" : "Reject Report"}
+        </h2>
+        <p className="text-gray-600 dark:text-gray-300 mb-4">
+          Please provide a reason for {action === "approve" ? "approving" : "rejecting"} this report.
+        </p>
+        <textarea
+          className="w-full p-3 border rounded-md dark:bg-neutral-700 dark:text-white mb-4"
+          rows="4"
+          placeholder="Enter your reason..."
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+        />
+        <div className="flex justify-end gap-3">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 border rounded-md hover:bg-gray-100 dark:hover:bg-neutral-700"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleConfirm}
+            disabled={!reason.trim()}
+            className={`px-4 py-2 rounded-md text-white ${
+              action === "approve"
+                ? "bg-green-500 hover:bg-green-600"
+                : "bg-red-500 hover:bg-red-600"
+            } disabled:opacity-50 disabled:cursor-not-allowed`}
+          >
+            Confirm
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
 const VerifyReportUser = () => {
   const { pendingReports, loading, fetchPendingReports } = useReports();
   const [filteredReports, setFilteredReports] = useState([]);
@@ -72,6 +133,9 @@ const VerifyReportUser = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedReport, setSelectedReport] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [confirmAction, setConfirmAction] = useState(null);
+  const [selectedReportId, setSelectedReportId] = useState(null);
   const itemsPerPage = 20;
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [dateFilter, setDateFilter] = useState("all");
@@ -108,9 +172,9 @@ const VerifyReportUser = () => {
     setCurrentPage(1);
   }, [pendingReports, dateFilter, search]);
 
-  const handleUpdateStatus = async (reportId, status) => {
+  const handleUpdateStatus = async (reportId, status, reason) => {
     try {
-      await updateReportStatus(reportId, status);
+      await updateReportStatus(reportId, status, reason);
       await fetchPendingReports();
     } catch (error) {
       console.error("Failed to update status:", error);
@@ -125,6 +189,23 @@ const VerifyReportUser = () => {
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedReport(null);
+  };
+
+  const openConfirmModal = (reportId, action) => {
+    setSelectedReportId(reportId);
+    setConfirmAction(action);
+    setIsConfirmModalOpen(true);
+  };
+
+  const closeConfirmModal = () => {
+    setIsConfirmModalOpen(false);
+    setSelectedReportId(null);
+    setConfirmAction(null);
+  };
+
+  const handleConfirmAction = (reason) => {
+    const status = confirmAction === "approve" ? 1 : 2;
+    handleUpdateStatus(selectedReportId, status, reason);
   };
 
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -161,6 +242,10 @@ const VerifyReportUser = () => {
             <p>Loading reports...</p>
           ) : (
             <div className="overflow-auto h-[calc(73vh-0.7px)] no-scrollbar rounded-2xl shadow-md dark:shadow-[0_4px_6px_rgba(229,229,229,0.4)] p-4">
+              <div className="flex items-center gap-2 mb-4 text-blue-500 dark:text-blue-400">
+                <Info size={20} />
+                <p>Click on any row to view more details</p>
+              </div>
               <table className="min-w-full bg-white dark:bg-neutral-900 table-auto">
                 <thead className="shadow-inner sticky top-0 text-gray-500 dark:text-gray-300 bg-gray-100 dark:bg-neutral-800">
                   <tr>
@@ -172,11 +257,12 @@ const VerifyReportUser = () => {
                 </thead>
                 <tbody>
                   {currentItems.map((report, index) => (
-                    <tr
+                    <motion.tr
+                      whileHover={{ scale: 1.01 }}
                       onClick={() => openModal(report)}
                       key={report.id}
-                      className={`hover:bg-gray-100 dark:hover:bg-neutral-700 ${
-                        index % 2 === 0 ? "bg-white dark:bg-black" : "bg-gray-100 dark:bg-neutral-800 "
+                      className={`cursor-pointer transition-colors ${
+                        index % 2 === 0 ? "bg-white dark:bg-black" : "bg-gray-100 dark:bg-neutral-800"
                       }`}
                     >
                       <td className="py-3 pl-5 rounded-l-xl">
@@ -194,12 +280,12 @@ const VerifyReportUser = () => {
                           ? new Date(report.reportedAt).toLocaleString(
                               "en-US",
                               {
-                                month: "short", // "Mar"
-                                day: "numeric", // "23"
-                                year: "numeric", // "2025"
-                                hour: "numeric", // "10"
-                                minute: "2-digit", // "39"
-                                hour12: true, // PM format
+                                month: "short",
+                                day: "numeric",
+                                year: "numeric",
+                                hour: "numeric",
+                                minute: "2-digit",
+                                hour12: true,
                               }
                             )
                           : ""}
@@ -207,19 +293,25 @@ const VerifyReportUser = () => {
 
                       <td className="py-2 text-center rounded-r-xl">
                         <button
-                          className="border border-green-500 text-green-500 px-3 py-1 rounded-md mr-2 hover:bg-green-500 hover:text-white"
-                          onClick={() => handleUpdateStatus(report.id, 1)}
+                          className="border border-green-500 text-green-500 px-3 py-1 rounded-md mr-2 hover:bg-green-500 hover:text-white transition-colors"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openConfirmModal(report.id, "approve");
+                          }}
                         >
                           Approve
                         </button>
                         <button
-                          className="border border-red-500 text-red-500 px-3 py-1 rounded-md hover:bg-red-500 hover:text-white "
-                          onClick={() => handleUpdateStatus(report.id, 2)}
+                          className="border border-red-500 text-red-500 px-3 py-1 rounded-md hover:bg-red-500 hover:text-white transition-colors"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openConfirmModal(report.id, "reject");
+                          }}
                         >
                           Reject
                         </button>
                       </td>
-                    </tr>
+                    </motion.tr>
                   ))}
                 </tbody>
               </table>
@@ -240,6 +332,13 @@ const VerifyReportUser = () => {
             onClose={closeModal}
           />
         ) : null}
+
+        <ConfirmModal
+          isOpen={isConfirmModalOpen}
+          onClose={closeConfirmModal}
+          onConfirm={handleConfirmAction}
+          action={confirmAction}
+        />
       </div>
     </>
   );
