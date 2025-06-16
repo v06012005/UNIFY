@@ -224,6 +224,13 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
+    public List<UserDTO> searchUsers(String username) {
+        return userRepository.findByUsernameContainingIgnoreCase(username)
+                .stream()
+                .map(userMapper::toUserDTO)
+                .collect(Collectors.toList());
+    }
+
     public List<UserDTO> findUsersFollowedBy(String currentUserId) {
         UserDTO userDTO = findById(currentUserId);
         if (userDTO == null) {
