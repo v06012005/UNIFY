@@ -239,12 +239,12 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
     <>
       <ToastProvider placement={"top-right"} />
       <div className="fixed inset-0 flex items-center justify-center bg-black/40 dark:bg-neutral-700/40 backdrop-blur-sm z-50 pointer-events-auto">
-        <div className="bg-gray-100 dark:bg-neutral-900 rounded-xl shadow-2xl border-neutral-700 border-1 flex flex-row w-[1300px] h-[690px] overflow-hidden">
+        <div className="bg-gray-100 dark:bg-neutral-900 rounded-xl shadow-2xl border-neutral-700 border-1 flex flex-row w-[900px] h-[640px] overflow-hidden">
           {/* Media */}
           <div className="w-1/2 relative dark:border-neutral-700 border-r">
             {selectedMedia ? (
               selectedMedia.mediaType === "VIDEO" ? (
-                <div className="w-full h-full flex items-center justify-center bg-gray-200">
+                <div className="w-full h-full flex items-center justify-center bg-gray-200 dark:bg-neutral-800">
                   <video
                     src={selectedMedia.url}
                     controls
@@ -252,7 +252,7 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
                   />
                 </div>
               ) : (
-                <div className="w-full h-full flex items-center justify-center bg-gray-200">
+                <div className="w-full h-full flex items-center justify-center bg-gray-200 dark:bg-neutral-800">
                   <img
                     src={selectedMedia.url}
                     className="w-full h-full object-contain"
@@ -265,6 +265,7 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
                 <p>No images/videos available</p>
               </div>
             )}
+            
 
             {post.media.length > 1 && (
               <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-[90%] bg-black bg-opacity-60 p-2 rounded-lg overflow-x-auto flex gap-2 scrollbar-hide">
@@ -441,7 +442,7 @@ const SavedPostDetailModal = ({ post, onClose, onDelete }) => {
           </div>
 
           <button
-            className="absolute right-4 top-4 text-gray-200 hover:text-white text-3xl font-bold rounded-full w-10 h-10 flex items-center justify-center transition-colors"
+            className="absolute right-4 top-4 text-gray-200 hover:text-white dark:text-neutral-600 text-3xl font-bold rounded-full w-10 h-10 flex items-center justify-center transition-colors"
             onClick={handleClose}
           >
             ×
