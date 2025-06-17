@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,71 +37,62 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserService {
 
-    private UserRepository userRepository;
-    private RoleRepository roleRepository;
-    private UserMapper userMapper;
-    private PasswordEncoder passwordEncoder;
-    private AvatarMapper avatarMapper;
-    private FollowRepository followRepository;
+	private UserRepository userRepository;
+	private RoleRepository roleRepository;
+	private UserMapper userMapper;
+	private PasswordEncoder passwordEncoder;
+	private AvatarMapper avatarMapper;
+	private FollowRepository followRepository;
 
-    @Autowired
-    public UserService(
-            UserRepository userRepository,
-            RoleRepository roleRepository,
-            UserMapper userMapper,
-            PasswordEncoder passwordEncoder,
-            AvatarRepository avatarRepository,
-            AvatarMapper avatarMapper,
-            FollowRepository followRepository) {
-        this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
-        this.userMapper = userMapper;
-        this.avatarMapper = avatarMapper;
-        this.passwordEncoder = passwordEncoder;
-        this.followRepository = followRepository;
-    }
+	@Autowired
+	public UserService(UserRepository userRepository, RoleRepository roleRepository, UserMapper userMapper,
+			PasswordEncoder passwordEncoder, AvatarRepository avatarRepository, AvatarMapper avatarMapper,
+			FollowRepository followRepository) {
+		this.userRepository = userRepository;
+		this.roleRepository = roleRepository;
+		this.userMapper = userMapper;
+		this.avatarMapper = avatarMapper;
+		this.passwordEncoder = passwordEncoder;
+		this.followRepository = followRepository;
+	}
 
-    @PreAuthorize("hasRole('ADMIN')")
-    public List<UserDTO> findAllUserByRole() {
-        return userRepository.findAllUserByRole()
-                .stream()
-                .map(userMapper::toUserDTO)
-                .collect(Collectors.toList());
-    }
+	@PreAuthorize("hasRole('ADMIN')")
+	public List<UserDTO> findAllUserByRole() {
+		return userRepository.findAllUserByRole().stream().map(userMapper::toUserDTO).collect(Collectors.toList());
+	}
 
-    @PreAuthorize("hasRole('ADMIN')")
-    public List<UserReportCountDTO> findAllUserReportCount() {
-        List<UserReportCountDTO> usersWithReports = userRepository.findAllUserAndCountReportByRole();
-        usersWithReports.forEach(dto -> {
-            String id = dto.id();
-            String username = dto.username();
-            Long reportCount = dto.reportApprovalCount();
-        });
-        return usersWithReports;
-    }
+	@PreAuthorize("hasRole('ADMIN')")
+	public List<UserReportCountDTO> findAllUserReportCount() {
+		List<UserReportCountDTO> usersWithReports = userRepository.findAllUserAndCountReportByRole();
+		usersWithReports.forEach(dto -> {
+			String id = dto.id();
+			String username = dto.username();
+			Long reportCount = dto.reportApprovalCount();
+		});
+		return usersWithReports;
+	}
 
-    public UserDTO createUser(UserDTO userDto) {
-        userDto.setPassword(EncryptPasswordUtil.encryptPassword(userDto.getPassword()));
-        if (userDto.getReportApprovalCount() == null) {
-            userDto.setReportApprovalCount(0);
-        }
-        Role role = roleRepository.findByName("USER")
-                .orElseThrow(() -> new RuntimeException("Role not found !"));
-        userDto.setRoles(Collections.singleton(role));
+	public UserDTO createUser(UserDTO userDto) {
+		userDto.setPassword(EncryptPasswordUtil.encryptPassword(userDto.getPassword()));
+		if (userDto.getReportApprovalCount() == null) {
+			userDto.setReportApprovalCount(0);
+		}
+		Role role = roleRepository.findByName("USER").orElseThrow(() -> new RuntimeException("Role not found !"));
+		userDto.setRoles(Collections.singleton(role));
 
-        User user = userRepository.save(userMapper.toUser(userDto));
-        return userMapper.toUserDTO(user);
-    }
+		User user = userRepository.save(userMapper.toUser(userDto));
+		return userMapper.toUserDTO(user);
+	}
 
-    // @PreAuthorize("hasRole('ADMIN')")
+	// @PreAuthorize("hasRole('ADMIN')")
 
-    @Cacheable(value = "user", key = "#id")
-    public UserDTO findById(String id) {
-        return userMapper.toUserDTO(userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User not found !")));
-    }
+	@Cacheable(value = "user", key = "#id")
+	public UserDTO findById(String id) {
+		return userMapper.toUserDTO(
+				userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found !")));
+	}
 
-    //	@PreAuthorize("#userDto.email == authentication.name")
+	// @PreAuthorize("#userDto.email == authentication.name")
 //	public UserDTO updateUser(UserDTO userDto) {
 //		Role role = roleRepository.findByName("USER").orElseThrow(() -> new RuntimeException("Role not found !"));
 //		userDto.setPassword(userRepository.findById(userDto.getId())
@@ -110,184 +102,179 @@ public class UserService {
 //		User user = userRepository.save(userMapper.toUser(userDto));
 //		return userMapper.toUserDTO(user);
 //	}
-    @Transactional
-    @PreAuthorize("#userDto.email == authentication.name")
-    public UserDTO updateUser(UserDTO userDto) {
+	@Transactional
+	@PreAuthorize("#userDto.email == authentication.name")
+	public UserDTO updateUser(UserDTO userDto) {
 
-        try {
-            Role role = roleRepository.findByName("USER")
-                    .orElseThrow(() -> new RuntimeException("Role not found!"));
+		try {
+			Role role = roleRepository.findByName("USER").orElseThrow(() -> new RuntimeException("Role not found!"));
 
-            User existingUser = userRepository.findById(userDto
-                    .getId())
-                    .orElseThrow(() -> new UserNotFoundException("User not found!"));
+			User existingUser = userRepository.findById(userDto.getId())
+					.orElseThrow(() -> new UserNotFoundException("User not found!"));
 
-            userDto.setRoles(Collections.singleton(role));
+			userDto.setRoles(Collections.singleton(role));
 
-            User updatedUser = userMapper.toUser(userDto);
-            updatedUser.setReportApprovalCount(existingUser.getReportApprovalCount());
-            if (userDto.getAvatar() != null) {
-                Avatar newAvatar = avatarMapper.toAvatar(userDto.getAvatar());
-                newAvatar.setChangedDate(LocalDateTime.now());
-                newAvatar.setUser(updatedUser);
+			User updatedUser = userMapper.toUser(userDto);
+			updatedUser.setReportApprovalCount(existingUser.getReportApprovalCount());
+			if (userDto.getAvatar() != null) {
+				Avatar newAvatar = avatarMapper.toAvatar(userDto.getAvatar());
+				newAvatar.setChangedDate(LocalDateTime.now());
+				newAvatar.setUser(updatedUser);
 
-                if (updatedUser.getAvatars() == null) {
-                    updatedUser.setAvatars(new ArrayList<>());
-                }
-                updatedUser.addAvatar(newAvatar);
-            } else {
-                updatedUser.setAvatars(existingUser.getAvatars());
-            }
-            updatedUser = userRepository.save(updatedUser);
+				if (updatedUser.getAvatars() == null) {
+					updatedUser.setAvatars(new ArrayList<>());
+				}
+				updatedUser.addAvatar(newAvatar);
+			} else {
+				updatedUser.setAvatars(existingUser.getAvatars());
+			}
+			updatedUser = userRepository.save(updatedUser);
 
-            UserDTO responseDto = userMapper.toUserDTO(updatedUser);
+			UserDTO responseDto = userMapper.toUserDTO(updatedUser);
 
-            Avatar latestAvatar = updatedUser.getLatestAvatar();
-            if (latestAvatar != null) {
-                responseDto.setAvatar(avatarMapper.toAvatarDTO(latestAvatar));
-            }
-            return responseDto;
-        } catch (Exception e) {
-            System.err.println("Error in updateUser: " + e.getMessage());
-            e.printStackTrace();
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred: " + e.getMessage());
-        }
+			Avatar latestAvatar = updatedUser.getLatestAvatar();
+			if (latestAvatar != null) {
+				responseDto.setAvatar(avatarMapper.toAvatarDTO(latestAvatar));
+			}
+			return responseDto;
+		} catch (Exception e) {
+			System.err.println("Error in updateUser: " + e.getMessage());
+			e.printStackTrace();
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+					"An unexpected error occurred: " + e.getMessage());
+		}
 
-    }
+	}
 
-    @PreAuthorize("hasRole('ADMIN')")
-    public void removeUser(String id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User not found !"));
-        userRepository.delete(user);
-    }
+	@PreAuthorize("hasRole('ADMIN')")
+	public void removeUser(String id) {
+		User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found !"));
+		userRepository.delete(user);
+	}
 
-    @PreAuthorize("hasRole('ADMIN')")
-    public void temporarilyDisableUser(String id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User not found !"));
-        user.setStatus(1);
-        userRepository.save(user);
-    }
+	@PreAuthorize("hasRole('ADMIN')")
+	public void temporarilyDisableUser(String id) {
+		User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found !"));
+		user.setStatus(1);
+		userRepository.save(user);
+	}
 
-    @PreAuthorize("hasRole('ADMIN')")
-    public void permanentlyDisableUser(String id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User not found !"));
-        user.setStatus(2);
-        userRepository.save(user);
-    }
+	@PreAuthorize("hasRole('ADMIN')")
+	public void permanentlyDisableUser(String id) {
+		User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found !"));
+		user.setStatus(2);
+		userRepository.save(user);
+	}
 
-    @PreAuthorize("hasRole('ADMIN')")
-    public void unlockUser(String id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User not found !"));
-        user.setStatus(0);
-        userRepository.save(user);
-    }
+	@PreAuthorize("hasRole('ADMIN')")
+	public void unlockUser(String id) {
+		User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found !"));
+		user.setStatus(0);
+		userRepository.save(user);
+	}
 
-    public UserDTO getMyInfo() {
-        var context = SecurityContextHolder.getContext();
-        String name = context.getAuthentication().getName();
-        User user = userRepository.findByEmail(name)
-                .orElseThrow(() -> new UserNotFoundException("User not found !"));
-        return userMapper.toUserDTO(user);
-    }
+	public UserDTO getMyInfo() {
+		var context = SecurityContextHolder.getContext();
+		String name = context.getAuthentication().getName();
+		User user = userRepository.findByEmail(name).orElseThrow(() -> new UserNotFoundException("User not found !"));
+		return userMapper.toUserDTO(user);
+	}
 
-    public UserDTO findByUsername(String username) {
-        return userRepository.findByUsername(username)
-                .map(userMapper::toUserDTO)
-                .orElseThrow(() -> new UserNotFoundException("Username not found: " + username));
-    }
+	public UserDTO findByUsername(String username) {
+		return userRepository.findByUsername(username).map(userMapper::toUserDTO)
+				.orElseThrow(() -> new UserNotFoundException("Username not found: " + username));
+	}
 
-    public List<UserDTO> getSuggestedUsers(String currentUserId) {
-        UserDTO userDTO = findById(currentUserId);
-        if (userDTO == null) {
-            return Collections.emptyList();
-        }
+	public List<UserDTO> getSuggestedUsers(String currentUserId) {
+		UserDTO userDTO = findById(currentUserId);
+		if (userDTO == null) {
+			return Collections.emptyList();
+		}
 
-        return userRepository.findUsersNotFriendsOrFollowing(userDTO.getId())
-                .stream()
-                .map(userMapper::toUserDTO)
-                .collect(Collectors.toList());
-    }
+		int limit = 10;
 
-    public List<UserDTO> findUsersFollowingMe(String currentUserId) {
-        UserDTO userDTO = findById(currentUserId);
-        if (userDTO == null) {
-            return Collections.emptyList();
-        }
-        return userRepository.findUsersFollowingMe(userDTO
-                .getId())
-                .stream()
-                .map(userMapper::toUserDTO)
-                .collect(Collectors.toList());
-    }
+		// Lấy người có bạn chung trước
+		List<User> mutuals = userRepository.findSuggestedFriendsWithMutualFriends(userDTO.getId(),
+				PageRequest.of(0, limit));
 
-    public List<UserDTO> searchUsers(String username) {
-        return userRepository.findByUsernameContainingIgnoreCase(username)
-                .stream()
-                .map(userMapper::toUserDTO)
-                .collect(Collectors.toList());
-    }
+		List<UserDTO> suggestedUsers = mutuals.stream().map(userMapper::toUserDTO).collect(Collectors.toList());
 
-    public List<UserDTO> findUsersFollowedBy(String currentUserId) {
-        UserDTO userDTO = findById(currentUserId);
-        if (userDTO == null) {
-            return Collections.emptyList();
-        }
+		// Nếu chưa đủ thì lấy thêm người lạ
+		if (suggestedUsers.size() < limit) {
+			int remaining = limit - suggestedUsers.size();
+			List<String> mutualIds = mutuals.stream().map(User::getId).collect(Collectors.toList());
 
-        return userRepository.findUsersFollowedBy(userDTO
-                .getId())
-                .stream()
-                .map(userMapper::toUserDTO)
-                .collect(Collectors.toList());
-    }
+			List<User> strangers = userRepository.findSuggestedStrangersExcluding(userDTO.getId(), mutualIds,
+					PageRequest.of(0, remaining));
 
-    public List<UserDTO> getFriends(String currentUserId) {
-        UserDTO userDTO = findById(currentUserId);
-        if (userDTO == null) {
-            return Collections.emptyList();
-        }
+			List<UserDTO> strangerDTOs = strangers.stream().map(userMapper::toUserDTO).collect(Collectors.toList());
 
-        return userRepository.findFriendsByUserId(userDTO
-                .getId())
-                .stream()
-                .map(userMapper::toUserDTO)
-                .collect(Collectors.toList());
-    }
+			suggestedUsers.addAll(strangerDTOs);
+		}
 
-    public UserDTO changePassword(String currentPassword, String newPassword) {
-        var context = SecurityContextHolder.getContext();
-        String email = context.getAuthentication().getName();
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found!"));
-        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
-            throw new IllegalArgumentException("Incorrect old password!");
-        }
-        if (passwordEncoder.matches(newPassword, user.getPassword())) {
-            throw new IllegalArgumentException("New password must not be the same as the old password!");
-        }
+		return suggestedUsers;
+	}
 
-        user.setPassword(passwordEncoder.encode(newPassword));
+	public List<UserDTO> findUsersFollowingMe(String currentUserId) {
+		UserDTO userDTO = findById(currentUserId);
+		if (userDTO == null) {
+			return Collections.emptyList();
+		}
+		return userRepository.findUsersFollowingMe(userDTO.getId()).stream().map(userMapper::toUserDTO)
+				.collect(Collectors.toList());
+	}
 
-        User updatedUser = userRepository.save(user);
+	public List<UserDTO> searchUsers(String username) {
+		return userRepository.findByUsernameContainingIgnoreCase(username).stream().map(userMapper::toUserDTO)
+				.collect(Collectors.toList());
+	}
 
-        return userMapper.toUserDTO(updatedUser);
-    }
+	public List<UserDTO> findUsersFollowedBy(String currentUserId) {
+		UserDTO userDTO = findById(currentUserId);
+		if (userDTO == null) {
+			return Collections.emptyList();
+		}
 
-    public List<ShareAbleUserDTO> getMutualFollowers(String myId) {
-        List<User> mutualUsers = followRepository.findMutualFollowingUsers(myId);
+		return userRepository.findUsersFollowedBy(userDTO.getId()).stream().map(userMapper::toUserDTO)
+				.collect(Collectors.toList());
+	}
 
-        return mutualUsers.stream()
-                .map(user -> {
-                    Avatar latestAvatar = user.getLatestAvatar();
-                    return new ShareAbleUserDTO(
-                            user.getId(),
-                            user.getUsername(),
-                            user.getFirstName() + " " + user.getLastName(),
-                            latestAvatar != null ? String.valueOf(avatarMapper.toAvatarDTO(latestAvatar)) : null
-                    );
-                })
-                .toList();
-    }
+	public List<UserDTO> getFriends(String currentUserId) {
+		UserDTO userDTO = findById(currentUserId);
+		if (userDTO == null) {
+			return Collections.emptyList();
+		}
+
+		return userRepository.findFriendsByUserId(userDTO.getId()).stream().map(userMapper::toUserDTO)
+				.collect(Collectors.toList());
+	}
+
+	public UserDTO changePassword(String currentPassword, String newPassword) {
+		var context = SecurityContextHolder.getContext();
+		String email = context.getAuthentication().getName();
+		User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found!"));
+		if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+			throw new IllegalArgumentException("Incorrect old password!");
+		}
+		if (passwordEncoder.matches(newPassword, user.getPassword())) {
+			throw new IllegalArgumentException("New password must not be the same as the old password!");
+		}
+
+		user.setPassword(passwordEncoder.encode(newPassword));
+
+		User updatedUser = userRepository.save(user);
+
+		return userMapper.toUserDTO(updatedUser);
+	}
+
+	public List<ShareAbleUserDTO> getMutualFollowers(String myId) {
+		List<User> mutualUsers = followRepository.findMutualFollowingUsers(myId);
+
+		return mutualUsers.stream().map(user -> {
+			Avatar latestAvatar = user.getLatestAvatar();
+			return new ShareAbleUserDTO(user.getId(), user.getUsername(),
+					user.getFirstName() + " " + user.getLastName(),
+					latestAvatar != null ? String.valueOf(avatarMapper.toAvatarDTO(latestAvatar)) : null);
+		}).toList();
+	}
 }
