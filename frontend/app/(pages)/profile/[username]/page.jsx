@@ -224,7 +224,7 @@ const Page = () => {
   if (!isClient) return null;
 
   const handleClickView = () => router.push(`/settings/archive/${params.username}`);
-  const handleClickEdit = () => router.push("/settings/edit-profile");
+  const handleClickEdit = () => router.push(`/settings/edit-profile/${params.username}`);
 
   const stats = {
     friendsCount: user?.friends?.length || 0,
