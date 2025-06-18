@@ -16,7 +16,75 @@ const useFetchReports = () => {
   const [approvedReports, setApprovedReports] = useState([]);
   const [loading, setLoading] = useState(false);
   const isFetching = useRef(false);
+  const [myReportedEntities, setMyReportedEntities] = useState([]);
+const [reportsOnMyPosts, setReportsOnMyPosts] = useState([]);
 
+  //Lấy báo cáo bên phía người dùng
+  const fetchMyReportedEntities = useCallback(async (username, setState) => {
+  const token = Cookies.get("token");
+  if (!token) {
+    console.warn("Không tìm thấy token.");
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `http://localhost:8080/reports/reportUser/user-reports?username=${username}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => null);
+      console.warn("Lỗi khi lấy báo cáo đã gửi:", errorData?.message);
+      return;
+    }
+
+    const data = await response.json();
+    setState(data);
+  } catch (error) {
+    console.warn("Lỗi khi tải báo cáo đã gửi:", error.message || error);
+  }
+}, []);
+
+const fetchReportsOnMyPosts = useCallback(async (username, setState) => {
+  const token = Cookies.get("token");
+  if (!token) {
+    console.warn("Không tìm thấy token.");
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `http://localhost:8080/reports/reportUser/reported-my-posts?username=${username}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => null);
+      console.warn("Lỗi khi lấy báo cáo bài viết bị người khác report:", errorData?.message);
+      return;
+    }
+
+    const data = await response.json();
+    setState(data);
+  } catch (error) {
+    console.warn("Lỗi khi tải báo cáo bài viết bị report:", error.message || error);
+  }
+}, []);
+
+//Lấy báo cáo bên admin
   const fetchReports = useCallback(async (statuses, setState) => {
     if (isFetching.current) return;
     isFetching.current = true;
@@ -113,18 +181,21 @@ const useFetchReports = () => {
     [createReport]
   );
 
-  return {
-    pendingReports,
-    approvedReports,
-    loading,
-    fetchPendingReports,
-    fetchApprovedReports,
-    createPostReport,
-    createUserReport,
-    createCommentReport,
-  };
+ return {
+  pendingReports,
+  approvedReports,
+  loading,
+  fetchPendingReports,
+  fetchApprovedReports,
+  createPostReport,
+  createUserReport,
+  createCommentReport,
+  myReportedEntities,
+  reportsOnMyPosts,
+  fetchMyReportedEntities,
+  fetchReportsOnMyPosts,
 };
-
+};
 export const ReportProvider = ({ children }) => {
   const {
     pendingReports,
@@ -135,12 +206,11 @@ export const ReportProvider = ({ children }) => {
     createPostReport,
     createUserReport,
     createCommentReport,
+    myReportedEntities,
+    reportsOnMyPosts,
+    fetchMyReportedEntities,
+    fetchReportsOnMyPosts,
   } = useFetchReports();
-
-  useEffect(() => {
-    fetchPendingReports();
-    fetchApprovedReports();
-  }, [fetchPendingReports, fetchApprovedReports]);
 
   return (
     <ReportContext.Provider
@@ -153,6 +223,10 @@ export const ReportProvider = ({ children }) => {
         createPostReport,
         createUserReport,
         createCommentReport,
+        myReportedEntities,
+        reportsOnMyPosts,
+        fetchMyReportedEntities,
+        fetchReportsOnMyPosts,
       }}
     >
       {children}
