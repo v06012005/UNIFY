@@ -89,6 +89,10 @@ public class ReportService {
 		if (entityType == null) {
 			throw new IllegalArgumentException("EntityType cannot be null");
 		}
+		if (reportedId == null) {
+			System.out.println("Warning: Reported ID is null for entityType: " + entityType);
+			return null;
+		}
 		switch (entityType) {
 		case POST:
 			Post post = postRepository.findById(reportedId)
