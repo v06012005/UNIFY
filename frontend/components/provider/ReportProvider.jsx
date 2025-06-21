@@ -211,7 +211,11 @@ export const ReportProvider = ({ children }) => {
     fetchMyReportedEntities,
     fetchReportsOnMyPosts,
   } = useFetchReports();
-
+  
+ useEffect(() => {
+    fetchPendingReports();
+    fetchApprovedReports();
+  }, [fetchPendingReports, fetchApprovedReports]);
   return (
     <ReportContext.Provider
       value={{

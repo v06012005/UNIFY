@@ -210,7 +210,7 @@ export default function SupportPage() {
                 )}
               </div>
 
-              <div className="pt-2">
+              {/* <div className="pt-2">
                 {type === "sent" ? (
                   <Button variant="outline" size="sm" className="w-full">
                     Cancel Report
@@ -222,7 +222,7 @@ export default function SupportPage() {
                     </Button>
                   )
                 )}
-              </div>
+              </div> */}
             </div>
           </div>
         </CardContent>
