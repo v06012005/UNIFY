@@ -162,7 +162,6 @@ export const saveMedia = async (postId, newMedia) => {
   }
 };
 
-
 export const fetchPosts = async (pageParam) => {
   const token = (await cookies()).get("token")?.value;
 
@@ -170,7 +169,7 @@ export const fetchPosts = async (pageParam) => {
     redirect("/login");
   }
 
-  const pageSize = 3;
+  const pageSize = 7;
 
   try {
     const response = await fetch(
@@ -200,8 +199,6 @@ export const fetchPosts = async (pageParam) => {
     return { posts: [], nextPage: null };
   }
 };
-
-
 
 export const fetchReels = async (pageParam, pageSize) => {
   const token = (await cookies()).get("token")?.value;
@@ -234,7 +231,6 @@ export const fetchReels = async (pageParam, pageSize) => {
     return { posts: [], nextPage: null };
   }
 };
-
 
 export const fetchPostList = async () => {
   const token = (await cookies()).get("token")?.value;
@@ -489,7 +485,7 @@ export const fetchFilteredReportedPosts = async (key = 0) => {
   }
 };
 
-export const updateReport = async (id, status) => {
+export const updateReport = async (id, status, adminReason) => {
   const token = (await cookies()).get("token")?.value;
 
   if (!token) {
@@ -498,23 +494,27 @@ export const updateReport = async (id, status) => {
 
   try {
     const response = await fetch(
-      "http://localhost:8080/reports/" + id + "/status?status=" + status,
+      "http://localhost:8080/reports/" + id + "/status",
       {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({
+          status: status,
+          adminReason: adminReason
+        }),
       }
     );
     if (!response.ok) {
-      console.log("Failed to fetch posts, please check again");
+      console.log("Failed to update report, please check again");
       return null;
     }
     const data = await response.json();
     return data;
   } catch (error) {
-    console.log("Failed to fetch users: " + error);
+    console.log("Failed to update report: " + error);
     return null;
   }
 };

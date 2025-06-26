@@ -15,10 +15,11 @@ const Post = () => {
 
   const { data, fetchNextPage, isFetchingNextPage, hasNextPage, status } =
     useInfiniteQuery({
-      queryKey: ["posts"],
+      queryKey: ["personalizedPosts"],
       queryFn: ({ pageParam = 0 }) => fetchPosts(pageParam),
       getNextPageParam: (lastPage) => lastPage.nextPage ?? undefined,
       keepPreviousData: true,
+      staleTime: 5 * 60 * 1000, // 5 minutes
     });
 
   const showLoading = useDebounce(isFetchingNextPage, 50);
@@ -45,6 +46,7 @@ const Post = () => {
 
   return (
     <div className="max-w-2xl mx-auto py-4 px-4">
+
       <AnimatePresence mode="wait">
         {data?.pages.map((page, pageIndex) => (
           <motion.div

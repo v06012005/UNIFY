@@ -34,27 +34,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class UserService {
 
-	private UserRepository userRepository;
-	private RoleRepository roleRepository;
-	private UserMapper userMapper;
-	private PasswordEncoder passwordEncoder;
-	private AvatarMapper avatarMapper;
-	private FollowRepository followRepository;
-
 	@Autowired
-	public UserService(UserRepository userRepository, RoleRepository roleRepository, UserMapper userMapper,
-			PasswordEncoder passwordEncoder, AvatarRepository avatarRepository, AvatarMapper avatarMapper,
-			FollowRepository followRepository) {
-		this.userRepository = userRepository;
-		this.roleRepository = roleRepository;
-		this.userMapper = userMapper;
-		this.avatarMapper = avatarMapper;
-		this.passwordEncoder = passwordEncoder;
-		this.followRepository = followRepository;
-	}
+    private UserRepository userRepository;
+    @Autowired
+    private RoleRepository roleRepository;
+    @Autowired
+    private UserMapper userMapper;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private AvatarMapper avatarMapper;
+    @Autowired
+    private FollowRepository followRepository;
 
 	@PreAuthorize("hasRole('ADMIN')")
 	public List<UserDTO> findAllUserByRole() {
@@ -224,57 +217,44 @@ public class UserService {
 				.collect(Collectors.toList());
 	}
 
-	public List<UserDTO> searchUsers(String username) {
-		return userRepository.findByUsernameContainingIgnoreCase(username).stream().map(userMapper::toUserDTO)
-				.collect(Collectors.toList());
-	}
-
 	public List<UserDTO> findUsersFollowedBy(String currentUserId) {
 		UserDTO userDTO = findById(currentUserId);
 		if (userDTO == null) {
 			return Collections.emptyList();
 		}
-
-		return userRepository.findUsersFollowedBy(userDTO.getId()).stream().map(userMapper::toUserDTO)
+		List<User> mutualUsers = userRepository.findUsersFollowedBy(userDTO.getId());
+		return mutualUsers.stream()
+				.map(userMapper::toUserDTO)
 				.collect(Collectors.toList());
+	}
+
+	public List<UserDTO> searchUsers(String query) {
+		List<User> users = userRepository.findByUsernameContainingIgnoreCaseOrFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(
+			query, query, query);
+		return users.stream()
+				.map(userMapper::toUserDTO)
+				.collect(Collectors.toList());
+	}
+
+	public void changePassword(String currentPassword, String newPassword) {
+		var context = SecurityContextHolder.getContext();
+		String email = context.getAuthentication().getName();
+		User user = userRepository.findByEmail(email)
+				.orElseThrow(() -> new UserNotFoundException("User not found!"));
+		if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+			throw new IllegalArgumentException("Current password is incorrect");
+		}
+		user.setPassword(passwordEncoder.encode(newPassword));
+		userRepository.save(user);
 	}
 
 	public List<UserDTO> getFriends(String currentUserId) {
-		UserDTO userDTO = findById(currentUserId);
-		if (userDTO == null) {
-			return Collections.emptyList();
-		}
-
-		return userRepository.findFriendsByUserId(userDTO.getId()).stream().map(userMapper::toUserDTO)
-				.collect(Collectors.toList());
+		// TODO: Implement actual logic in UserRepository
+		return Collections.emptyList();
 	}
 
-	public UserDTO changePassword(String currentPassword, String newPassword) {
-		var context = SecurityContextHolder.getContext();
-		String email = context.getAuthentication().getName();
-		User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found!"));
-		if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
-			throw new IllegalArgumentException("Incorrect old password!");
-		}
-		if (passwordEncoder.matches(newPassword, user.getPassword())) {
-			throw new IllegalArgumentException("New password must not be the same as the old password!");
-		}
-
-		user.setPassword(passwordEncoder.encode(newPassword));
-
-		User updatedUser = userRepository.save(user);
-
-		return userMapper.toUserDTO(updatedUser);
-	}
-
-	public List<ShareAbleUserDTO> getMutualFollowers(String myId) {
-		List<User> mutualUsers = followRepository.findMutualFollowingUsers(myId);
-
-		return mutualUsers.stream().map(user -> {
-			Avatar latestAvatar = user.getLatestAvatar();
-			return new ShareAbleUserDTO(user.getId(), user.getUsername(),
-					user.getFirstName() + " " + user.getLastName(),
-					latestAvatar != null ? String.valueOf(avatarMapper.toAvatarDTO(latestAvatar)) : null);
-		}).toList();
+	public List<ShareAbleUserDTO> getMutualFollowers(String userId) {
+		// TODO: Implement actual logic in UserRepository
+		return Collections.emptyList();
 	}
 }

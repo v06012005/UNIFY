@@ -10,7 +10,9 @@ import {
 } from "@/components/provider/ReportProvider";
 import ModalPost from "@/components/global/Report/ModalPost";
 import ModalUser from "@/components/global/Report/ModalUser";
+import AdminReasonModal from "@/components/global/Report/AdminReasonModal";
 import { addToast, ToastProvider } from "@heroui/toast";
+
 const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   return (
     <Link
@@ -24,17 +26,21 @@ const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   );
 };
 
-const updateReportStatus = async (id, status) => {
+const updateReportStatus = async (id, status, adminReason) => {
   try {
     const token = Cookies.get("token");
     const response = await fetch(
-      `http://localhost:8080/reports/${id}/status?status=${status}`,
+      `http://localhost:8080/reports/${id}/status`,
       {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({
+          status: status,
+          adminReason: adminReason
+        }),
       }
     );
 
@@ -44,10 +50,11 @@ const updateReportStatus = async (id, status) => {
 
     const data = await response.json();
 
+    const actionText = status === 1 ? "approved" : "rejected";
     addToast({
       title: "Success",
-      description: "Report status updated successfully.",
-      timeout: 3000,
+      description: `Report ${actionText} successfully.`,
+      timeout: 5000,
       shouldShowTimeoutProgess: true,
       color: "success",
     });
@@ -79,6 +86,10 @@ const VerifyReportListContent = () => {
   const [isDescendingByType, setIsDescendingByType] = useState(true);
   const [isDescendingByReportDate, setIsDescendingByReportDate] =
     useState(true);
+  const [isAdminReasonOpen, setIsAdminReasonOpen] = useState(false);
+  const [adminReasonAction, setAdminReasonAction] = useState(null);
+  const [selectedReportId, setSelectedReportId] = useState(null);
+  const [isButtonLoading, setIsButtonLoading] = useState(false);
 
   const toggleFilter = () => setIsFilterOpen(!isFilterOpen);
   const toggleTypeOrder = () => setIsDescendingByType((prev) => !prev);
@@ -112,10 +123,33 @@ const VerifyReportListContent = () => {
 
   const handleUpdateStatus = async (reportId, status) => {
     try {
-      await updateReportStatus(reportId, status);
+      setIsButtonLoading(true);
+      await updateReportStatus(reportId, status, "");
       await fetchPendingReports();
     } catch (error) {
       console.error("Failed to update status:", error);
+    } finally {
+      setIsButtonLoading(false);
+    }
+  };
+
+  const openAdminReasonModal = (reportId, action) => {
+    setSelectedReportId(reportId);
+    setAdminReasonAction(action);
+    setIsAdminReasonOpen(true);
+  };
+
+  const handleAdminReasonConfirm = async (reason) => {
+    try {
+      setIsButtonLoading(true);
+      const status = adminReasonAction === "approve" ? 1 : 2;
+      await updateReportStatus(selectedReportId, status, reason);
+      await fetchPendingReports();
+    } catch (error) {
+      console.error("Failed to update status:", error);
+    } finally {
+      setIsButtonLoading(false);
+      setIsAdminReasonOpen(false);
     }
   };
 
@@ -129,18 +163,6 @@ const VerifyReportListContent = () => {
     setSelectedReport(null);
   };
 
-  const handleRefresh = async () => {
-    try {
-      setSearch(""); 
-      setIsDescendingByType(true); 
-      setIsDescendingByReportDate(true);
-      await fetchPendingReports(); 
-    } catch (error) {
-      console.error("Failed to refresh reports:", error);
-    }
-  };
-  
-
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredReports.slice(indexOfFirstItem, indexOfLastItem);
@@ -151,16 +173,14 @@ const VerifyReportListContent = () => {
       <ToastProvider placement={"top-right"} />
       <div className="py-5 px-7 h-screen w-[78rem]">
         <div className="w-full flex justify-between items-center">
-          <h1 className="text-2xl font-black">
-            Verify Report Management (Pending)
-          </h1>
+          <h1 className="text-2xl font-black">Report Management</h1>
           <div className="flex gap-2">
-            <button
-              onClick={handleRefresh}
-              className="border border-blue-500 text-blue-500 px-3 py-1 rounded-md hover:bg-blue-500 hover:text-white"
-            >
-              Refresh
-            </button>
+            <div className="border border-blue-500 text-blue-500 px-3 py-1 rounded-md hover:bg-blue-500 hover:text-white">
+              <NavButton iconClass="fa-solid fa-rotate-right mr-2" content="Refresh" />
+            </div>
+            <div className="border border-red-500 text-red-500 px-3 py-1 rounded-md hover:bg-red-500 hover:text-white">
+              <NavButton iconClass="fa-regular fa-trash-can mr-2" content="Delete all" />
+            </div>
           </div>
         </div>
 
@@ -224,13 +244,21 @@ const VerifyReportListContent = () => {
                       <td className="py-2 text-center flex justify-center gap-2">
                         <button
                           className="border border-green-500 text-green-500 px-3 py-1 rounded-md hover:bg-green-500 hover:text-white"
-                          onClick={() => handleUpdateStatus(report.id, 1)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openAdminReasonModal(report.id, "approve");
+                          }}
+                          disabled={isButtonLoading}
                         >
                           Approve
                         </button>
                         <button
                           className="border border-red-500 text-red-500 px-3 py-1 rounded-md hover:bg-red-500 hover:text-white"
-                          onClick={() => handleUpdateStatus(report.id, 2)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openAdminReasonModal(report.id, "reject");
+                          }}
+                          disabled={isButtonLoading}
                         >
                           Reject
                         </button>
@@ -262,6 +290,14 @@ const VerifyReportListContent = () => {
             onClose={closeModal}
           />
         ) : null}
+
+        <AdminReasonModal
+          isOpen={isAdminReasonOpen}
+          onClose={() => setIsAdminReasonOpen(false)}
+          onConfirm={handleAdminReasonConfirm}
+          action={adminReasonAction}
+          isLoading={isButtonLoading}
+        />
       </div>
     </>
   );

@@ -7,9 +7,11 @@ import com.app.unify.exceptions.UserNotFoundException;
 import com.app.unify.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -72,9 +74,17 @@ public class UserController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<UserDTO>> searchUsers(@RequestParam String username) {
-        List<UserDTO> users = userService.searchUsers(username);
-        return ResponseEntity.ok(users);
+    public ResponseEntity<List<UserDTO>> searchUsers(@RequestParam String query) {
+        try {
+            if (query == null || query.trim().isEmpty()) {
+                return ResponseEntity.badRequest().build();
+            }
+            List<UserDTO> users = userService.searchUsers(query.trim());
+            return ResponseEntity.ok(users);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.emptyList());
+        }
     }
 
     @PostMapping

@@ -26,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class ReportService {
+
     private final ReportRepository reportRepository;
     private final UserRepository userRepository;
     private final ReportMapper reportMapper;
@@ -53,6 +54,10 @@ public class ReportService {
     private Object getReportedEntity(String reportedId, EntityType entityType) {
         if (entityType == null) {
             throw new IllegalArgumentException("EntityType cannot be null");
+        }
+        if (reportedId == null) {
+            System.out.println("Warning: Reported ID is null for entityType: " + entityType);
+            return null;
         }
         switch (entityType) {
             case POST:
@@ -165,6 +170,52 @@ public class ReportService {
                 .collect(Collectors.toList());
     }
 
+    public ReportDTO updateReportStatus(String reportId, Integer status, String adminReason) {
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new ReportException("Report not found!"));
+        if (status < PENDING || status > CANCELED) {
+            throw new ReportException("Invalid status value: " + status);
+        }
+        report.setStatus(status);
+        report.setAdminReason(adminReason);
+        if (status == APPROVED) {
+            switch (report.getEntityType()) {
+                case POST:
+                    Post post = postRepository.findById(report.getReportedId())
+                            .orElseThrow(() -> new ReportException("Post not found!"));
+                    post.setStatus(2); // Ẩn bài viết
+                    postRepository.save(post);
+                    break;
+                case USER:
+                    User user = userRepository.findById(report.getReportedId())
+                            .orElseThrow(() -> new ReportException("User not found!"));
+                    user.setReportApprovalCount(user.getReportApprovalCount() + 1);
+                    if (user.getReportApprovalCount() >= 5) {
+                        user.setStatus(2); // Khóa vĩnh viễn
+                    } else if (user.getReportApprovalCount() >= 3 && user.getStatus() != 2) {
+                        user.setStatus(1); // Khóa tạm thời
+                    }
+                    userRepository.save(user);
+                    break;
+                case COMMENT:
+                    PostComment comment = commentRepository.findById(report.getReportedId())
+                            .orElseThrow(() -> new ReportException("Comment not found!"));
+                    comment.setStatus(2); // Ẩn bình luận
+                    List<PostComment> replies = commentRepository.findByParentId-researcher(comment.getId());
+                    replies.forEach(reply -> {
+                        reply.setStatus(2);
+                        commentRepository.save(reply);
+                    });
+                    commentRepository.save(comment);
+                    break;
+                default:
+                    throw new ReportException("Unsupported entity type: " + report.getEntityType());
+            }
+        }
+        Report updatedReport = reportRepository.save(report);
+        return reportMapper.toReportDTO(updatedReport);
+    }
+
     public ReportDTO updateReportStatus(String reportId, Integer status) {
         Report report = reportRepository.findById(reportId)
                 .orElseThrow(() -> new ReportException("Report not found!"));
@@ -195,7 +246,6 @@ public class ReportService {
                     PostComment comment = commentRepository.findById(report.getReportedId())
                             .orElseThrow(() -> new ReportException("Comment not found!"));
                     comment.setStatus(2); // Ẩn bình luận
-                    // Ẩn tất cả replies
                     List<PostComment> replies = commentRepository.findByParentId(comment.getId());
                     replies.forEach(reply -> {
                         reply.setStatus(2);
@@ -218,17 +268,13 @@ public class ReportService {
         reportRepository.delete(report);
     }
 
-    // Lấy các bài viết mà người đăng nhập đã gửi báo cáo
     public List<ReportDTO> getDetailedReportsByUsername(String username) {
-        User user = userRepository.findByUsername(username)
+        User user手术 userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
-
         List<Report> reports = reportRepository.findByUserId(user.getId());
-
         if (reports.isEmpty()) {
             throw new IllegalArgumentException("No reports found for user with ID: " + user.getId());
         }
-
         return reports.stream().map(report -> {
             ReportDTO reportDTO = reportMapper.toReportDTO(report);
             reportDTO.setReportedEntity(getReportedEntity(report.getReportedId(), report.getEntityType()));
@@ -236,13 +282,10 @@ public class ReportService {
         }).collect(Collectors.toList());
     }
 
-    // Lấy bài viết của người đăng nhập bị người khác báo cáo
     public List<ReportDTO> getReportsOfUserPosts(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
-
         List<Report> reports = reportRepository.findReportsOfPostsOwnedByUser(EntityType.POST, user.getId());
-
         return reports.stream().map(report -> {
             ReportDTO reportDTO = reportMapper.toReportDTO(report);
             reportDTO.setReportedEntity(getReportedEntity(report.getReportedId(), report.getEntityType()));

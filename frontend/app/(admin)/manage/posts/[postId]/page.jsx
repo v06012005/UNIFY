@@ -25,6 +25,7 @@ import Cookies from "js-cookie";
 import { cn } from "@/app/lib/utils";
 import clsx from "clsx";
 import ReportedPostLoading from "./loading";
+import AdminReasonModal from "@/components/global/Report/AdminReasonModal";
 
 const MyHeading2 = ({ content = "Heading 2" }) => {
   return <h2 className="font-bold text-2xl my-4">{content}</h2>;
@@ -46,46 +47,77 @@ const PostDetail = () => {
     onOpenChange: onConfirmOpenChange,
   } = useDisclosure();
 
-  const handleApprove = async () => {
+  const {
+    isOpen: isAdminReasonOpen,
+    onOpen: onOpenAdminReason,
+    onOpenChange: onAdminReasonOpenChange,
+  } = useDisclosure();
+
+  const [adminReasonAction, setAdminReasonAction] = useState(null);
+
+  const handleApprove = async (adminReason) => {
     try {
       setButtonLoading(true);
-      const data = await updateReport(report?.id, 1);
+      const data = await updateReport(report?.id, 1, adminReason);
       setReport(data);
+      addToast({
+        title: "Success",
+        description: "Report approved successfully. The post has been marked as inappropriate.",
+        timeout: 5000,
+        shouldShowTimeoutProgess: true,
+        color: "success",
+      });
     } catch (error) {
       addToast({
-        title: "Fail",
-        description:
-          "Encounter an error. Cannot process this report.",
+        title: "Error",
+        description: "Failed to approve report. Please try again.",
         timeout: 3000,
         shouldShowTimeoutProgess: true,
         color: "danger",
       });
-    }
-    finally {
+    } finally {
       setButtonLoading(false);
     }
   }
 
-  const handleReject = async () => {
+  const handleReject = async (adminReason) => {
     try {
       setButtonLoading(true);
-      const data = await updateReport(report?.id, 2);
+      const data = await updateReport(report?.id, 2, adminReason);
       setReport(data);
+      addToast({
+        title: "Success",
+        description: "Report rejected successfully.",
+        timeout: 5000,
+        shouldShowTimeoutProgess: true,
+        color: "success",
+      });
     } catch (error) {
       addToast({
-        title: "Fail",
-        description:
-          "Encounter an error. Cannot process this report.",
+        title: "Error",
+        description: "Failed to reject report. Please try again.",
         timeout: 3000,
         shouldShowTimeoutProgess: true,
         color: "danger",
       });
-    }
-    finally {
+    } finally {
       setButtonLoading(false);
     }
   }
 
+  const openAdminReasonModal = (action) => {
+    setAdminReasonAction(action);
+    onOpenAdminReason();
+  };
+
+  const handleAdminReasonConfirm = (reason) => {
+    if (adminReasonAction === "approve") {
+      handleApprove(reason);
+    } else if (adminReasonAction === "reject") {
+      handleReject(reason);
+    }
+    onAdminReasonOpenChange();
+  };
 
   useEffect(() => {
     async function getReportedPost() {
@@ -139,24 +171,22 @@ const PostDetail = () => {
         </button>
         {report?.status === 0 &&
           <div className="">
-            <button onClick={() => {
-              setConfirmAction(() => handleApprove);
-              onOpenConfirm();
-            }} disabled={isButtonLoading} className="border rounded-md bg-green-500 font-bold text-white p-3">
-          
+            <button 
+              onClick={() => openAdminReasonModal("approve")} 
+              disabled={isButtonLoading} 
+              className="border rounded-md bg-green-500 font-bold text-white p-3"
+            >
               {isButtonLoading && <><Spinner size="sm" /> Loading</>}
               {!isButtonLoading && <><i className="fa-solid fa-thumbs-up"></i> Approve</>}
-            
-        </button>
-            <button onClick={() => {
-              setConfirmAction(() => handleReject);
-              onOpenConfirm();
-            }} disabled={isButtonLoading} className="border rounded-md bg-red-500 font-bold ml-3 text-white p-3">
-          
+            </button>
+            <button 
+              onClick={() => openAdminReasonModal("reject")} 
+              disabled={isButtonLoading} 
+              className="border rounded-md bg-red-500 font-bold ml-3 text-white p-3"
+            >
               {isButtonLoading && <><Spinner size="sm" /> Loading</>}
               {!isButtonLoading && <><i className="fa-solid fa-circle-minus"></i> Reject</>}
-            
-        </button>
+            </button>
           </div>}
 
       </div>
@@ -220,6 +250,14 @@ const PostDetail = () => {
                     <span className="font-normal">{report?.reportedId}</span>
                   </p>
                 </li>
+                {report?.adminReason && (
+                  <li>
+                    <p className="font-bold">
+                      Admin Reason:{" "}
+                      <span className="font-normal">{report?.adminReason}</span>
+                    </p>
+                  </li>
+                )}
               </ul>
             </div>
             <div className="flex w-3/4 pl-5 my-4 ">
@@ -340,28 +378,13 @@ const PostDetail = () => {
         </ModalContent>
       </Modal>
 
-      <Modal isOpen={isConfirmOpen} onOpenChange={onConfirmOpenChange}>
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader>Are you sure?</ModalHeader>
-              <ModalBody>This action can't be undone. You will not be able to change this report's status later on.</ModalBody>
-              <ModalFooter>
-                <Button onPress={onClose}>Cancel</Button>
-                <Button
-                  color="danger"
-                  onPress={() => {
-                    if (confirmAction) confirmAction();
-                    onClose();
-                  }}
-                >
-                  Confirm
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
+      <AdminReasonModal
+        isOpen={isAdminReasonOpen}
+        onClose={onAdminReasonOpenChange}
+        onConfirm={handleAdminReasonConfirm}
+        action={adminReasonAction}
+        isLoading={isButtonLoading}
+      />
 
     </div>
   );
