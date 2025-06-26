@@ -15,10 +15,11 @@ const Post = () => {
 
   const { data, fetchNextPage, isFetchingNextPage, hasNextPage, status } =
     useInfiniteQuery({
-      queryKey: ["posts"],
+      queryKey: ["personalizedPosts"],
       queryFn: ({ pageParam = 0 }) => fetchPosts(pageParam),
       getNextPageParam: (lastPage) => lastPage.nextPage ?? undefined,
       keepPreviousData: true,
+      staleTime: 5 * 60 * 1000, // 5 minutes
     });
 
   const showLoading = useDebounce(isFetchingNextPage, 50);
@@ -45,6 +46,16 @@ const Post = () => {
 
   return (
     <div className="max-w-2xl mx-auto py-4 px-4">
+      {/* Feed Header */}
+      <div className="mb-6 text-center">
+        <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
+          Personalized Feed
+        </h2>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          Posts from people you follow appear first
+        </p>
+      </div>
+
       <AnimatePresence mode="wait">
         {data?.pages.map((page, pageIndex) => (
           <motion.div

@@ -49,8 +49,21 @@ public class PostController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "7") int size
     ) {
+        System.out.println("=== Controller Debug ===");
+        System.out.println("Received request for page: " + page + ", size: " + size);
+        
+        String userId = getCurrentUserId();
+        System.out.println("Current user ID: " + userId);
+        
         Pageable pageable = PageRequest.of(page, size, Sort.by("postedAt").descending());
-        return ResponseEntity.ok(postService.getPersonalizedFeed(pageable));
+        System.out.println("Created pageable: " + pageable);
+        
+        PostFeedResponse response = postService.getPersonalizedFeed(userId, pageable);
+        System.out.println("Service returned response with " + response.getPosts().size() + " posts");
+        System.out.println("Has next page: " + response.isHasNextPage());
+        System.out.println("=== End Controller Debug ===");
+        
+        return ResponseEntity.ok(response);
     }
 
 

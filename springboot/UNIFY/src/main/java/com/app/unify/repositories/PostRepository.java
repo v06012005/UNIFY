@@ -24,6 +24,7 @@ public interface PostRepository extends JpaRepository<Post, String> {
     @Query("SELECT p, (COUNT(DISTINCT lp.id) + COUNT(DISTINCT pc.id)) as interactionCount "
             + "FROM Post p "
             + "LEFT JOIN p.likedPosts lp " + "LEFT JOIN p.comments pc "
+            + "WHERE p.status != 2 "
             + "GROUP BY p "
             + "ORDER BY interactionCount DESC")
     List<Object[]> findPostsWithInteractionCounts();
@@ -33,6 +34,7 @@ public interface PostRepository extends JpaRepository<Post, String> {
             + "LEFT JOIN p.likedPosts lp " + "LEFT JOIN p.comments pc "
             + "WHERE p.user.id NOT IN (SELECT f.userFollowing.id FROM Follower f WHERE f.userFollower.id = ?1) "
             + "AND p.user.id NOT IN (SELECT u.id From User u WHERE u.id = ?1) "
+            + "AND p.status != 2 "
             + "GROUP BY p "
             + "ORDER BY interactionCount DESC")
     List<Object[]> findPostsWithInteractionCountsAndNotFollow(String userId);
@@ -59,35 +61,85 @@ public interface PostRepository extends JpaRepository<Post, String> {
     @Query("SELECT new com.app.unify.dto.global.PersonalizedPostDTO"
             + "("
             + "p, "
-            + "COUNT(DISTINCT lp.id) + COUNT(DISTINCT pc.id), "
-            + "COUNT(DISTINCT pc.id)"
+            + "COALESCE(COUNT(lp.id), 0) + COALESCE(COUNT(pc.id), 0), "
+            + "COALESCE(COUNT(pc.id), 0)"
             + ")"
             + "FROM Post p "
             + "LEFT JOIN p.likedPosts lp "
             + "LEFT JOIN p.comments pc "
-            + "WHERE p.status = 1 "
-            + "GROUP BY p "
-            + "ORDER BY COUNT(DISTINCT lp.id) + COUNT(DISTINCT pc.id) DESC")
-    Page<PersonalizedPostDTO> findPersonalizedPosts(Pageable pageable);
+            + "WHERE p.status != 2 "
+            + "AND p.user.id IN (SELECT f.userFollowing.id FROM Follower f WHERE f.userFollower.id = :userId) "
+            + "GROUP BY p.id, p.captions, p.status, p.audience, p.postedAt, p.isCommentVisible, p.isLikeVisible "
+            + "ORDER BY p.postedAt DESC")
+    Page<PersonalizedPostDTO> findPersonalizedPostsFromFollowing(@Param("userId") String userId, Pageable pageable);
+
+    @Query("SELECT new com.app.unify.dto.global.PersonalizedPostDTO"
+            + "("
+            + "p, "
+            + "COALESCE(COUNT(lp.id), 0) + COALESCE(COUNT(pc.id), 0), "
+            + "COALESCE(COUNT(pc.id), 0)"
+            + ")"
+            + "FROM Post p "
+            + "LEFT JOIN p.likedPosts lp "
+            + "LEFT JOIN p.comments pc "
+            + "WHERE p.status != 2 "
+            + "AND p.user.id NOT IN (SELECT f.userFollowing.id FROM Follower f WHERE f.userFollower.id = :userId) "
+            + "AND p.user.id != :userId "
+            + "GROUP BY p.id, p.captions, p.status, p.audience, p.postedAt, p.isCommentVisible, p.isLikeVisible "
+            + "ORDER BY COALESCE(COUNT(lp.id), 0) + COALESCE(COUNT(pc.id), 0) DESC, p.postedAt DESC")
+    Page<PersonalizedPostDTO> findPersonalizedPostsFromOthers(@Param("userId") String userId, Pageable pageable);
+
+    @Query("SELECT new com.app.unify.dto.global.PersonalizedPostDTO"
+            + "("
+            + "p, "
+            + "COALESCE(COUNT(lp.id), 0) + COALESCE(COUNT(pc.id), 0), "
+            + "COALESCE(COUNT(pc.id), 0)"
+            + ")"
+            + "FROM Post p "
+            + "LEFT JOIN p.likedPosts lp "
+            + "LEFT JOIN p.comments pc "
+            + "WHERE p.status != 2 "
+            + "AND p.user.id != :userId "
+            + "GROUP BY p.id, p.captions, p.status, p.audience, p.postedAt, p.isCommentVisible, p.isLikeVisible "
+            + "ORDER BY "
+            + "CASE WHEN p.user.id IN (SELECT f.userFollowing.id FROM Follower f WHERE f.userFollower.id = :userId) THEN 0 ELSE 1 END, "
+            + "p.postedAt DESC, "
+            + "COALESCE(COUNT(lp.id), 0) + COALESCE(COUNT(pc.id), 0) DESC")
+    Page<PersonalizedPostDTO> findPersonalizedPostsCombined(@Param("userId") String userId, Pageable pageable);
+
+    @Query("SELECT new com.app.unify.dto.global.PersonalizedPostDTO"
+            + "("
+            + "p, "
+            + "COALESCE(COUNT(lp.id), 0) + COALESCE(COUNT(pc.id), 0), "
+            + "COALESCE(COUNT(pc.id), 0)"
+            + ")"
+            + "FROM Post p "
+            + "LEFT JOIN p.likedPosts lp "
+            + "LEFT JOIN p.comments pc "
+            + "WHERE p.status != 2 "
+            + "AND p.user.id != :userId "
+            + "GROUP BY p.id, p.captions, p.status, p.audience, p.postedAt, p.isCommentVisible, p.isLikeVisible "
+            + "ORDER BY p.postedAt DESC")
+    Page<PersonalizedPostDTO> findPersonalizedPostsSimple(@Param("userId") String userId, Pageable pageable);
 
     @Query("SELECT p, COUNT(pc) "
             + "FROM Post p LEFT JOIN p.comments pc "
-            + "WHERE p.status = 1 "
+            + "WHERE p.status != 2 "
             + "GROUP BY p")
     List<Object[]> findPostsWithCommentCount();
 
     @Query("SELECT p, COUNT(pc) "
             + "FROM Post p LEFT JOIN p.comments pc "
-            + "WHERE p.id = :postId AND p.status = 1 "
+            + "WHERE p.id = :postId AND p.status != 2 "
             + "GROUP BY p")
+    Object[] findPostWithCommentCountById(@Param("postId") String postId);
 
-       Object[] findPostWithCommentCountById(@Param("postId") String postId);
-       @Query("SELECT p, COUNT(c) as commentCount " +
-               "FROM Post p " +
-               "JOIN p.media m " +
-               "LEFT JOIN p.comments c " +
-               "WHERE m.mediaType = 'VIDEO' AND p.status = 1 " +
-               "GROUP BY p")
-        Page<Object[]> findReelsPostsWithCommentCount(Pageable pageable);
+    @Query("SELECT p, COUNT(c) as commentCount " +
+            "FROM Post p " +
+            "JOIN p.media m " +
+            "LEFT JOIN p.comments c " +
+            "WHERE m.mediaType = 'VIDEO' AND p.status != 2 " +
+            "GROUP BY p")
+    Page<Object[]> findReelsPostsWithCommentCount(Pageable pageable);
 
 }

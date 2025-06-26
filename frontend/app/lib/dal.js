@@ -162,7 +162,6 @@ export const saveMedia = async (postId, newMedia) => {
   }
 };
 
-
 export const fetchPosts = async (pageParam) => {
   const token = (await cookies()).get("token")?.value;
 
@@ -170,7 +169,7 @@ export const fetchPosts = async (pageParam) => {
     redirect("/login");
   }
 
-  const pageSize = 3;
+  const pageSize = 7;
 
   try {
     const response = await fetch(
@@ -200,8 +199,6 @@ export const fetchPosts = async (pageParam) => {
     return { posts: [], nextPage: null };
   }
 };
-
-
 
 export const fetchReels = async (pageParam, pageSize) => {
   const token = (await cookies()).get("token")?.value;
@@ -234,7 +231,6 @@ export const fetchReels = async (pageParam, pageSize) => {
     return { posts: [], nextPage: null };
   }
 };
-
 
 export const fetchPostList = async () => {
   const token = (await cookies()).get("token")?.value;

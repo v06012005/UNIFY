@@ -34,28 +34,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class UserService {
 
 	@Autowired
     private UserRepository userRepository;
+    @Autowired
     private RoleRepository roleRepository;
+    @Autowired
     private UserMapper userMapper;
+    @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
     private AvatarMapper avatarMapper;
+    @Autowired
     private FollowRepository followRepository;
-
-	@Autowired
-	public UserService(UserRepository userRepository, RoleRepository roleRepository, UserMapper userMapper,
-			PasswordEncoder passwordEncoder, AvatarRepository avatarRepository, AvatarMapper avatarMapper,
-			FollowRepository followRepository) {
-		this.userRepository = userRepository;
-		this.roleRepository = roleRepository;
-		this.userMapper = userMapper;
-		this.avatarMapper = avatarMapper;
-		this.passwordEncoder = passwordEncoder;
-		this.followRepository = followRepository;
-	}
 
 	@PreAuthorize("hasRole('ADMIN')")
 	public List<UserDTO> findAllUserByRole() {
