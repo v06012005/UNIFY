@@ -9,8 +9,6 @@ import org.springframework.stereotype.Repository;
 
 import com.app.unify.entities.PostComment;
 
-
-
 @Repository
 public interface PostCommentRepository extends JpaRepository<PostComment, String> {
     @Query("SELECT c FROM PostComment c JOIN FETCH c.user WHERE c.post.id = :postId")
@@ -20,20 +18,23 @@ public interface PostCommentRepository extends JpaRepository<PostComment, String
     List<PostComment> findByUserId(String userId);
     List<PostComment> findByPostIdAndParentIsNull(String postId);
     List<PostComment> findByParent(PostComment parent);
-
-
-    // Thêm query mới để fetch replies lồng nhau
+    List<PostComment> findByParentId(String parentId);
 
     @Query("SELECT DISTINCT pc FROM PostComment pc LEFT JOIN FETCH pc.replies r LEFT JOIN FETCH pc.parent LEFT JOIN FETCH pc.user u WHERE pc.post.id = :postId")
-
     List<PostComment> findAllCommentsByPostId(@Param("postId") String postId);
 
-    // Query để lấy replies của một parent
+    @Query("SELECT DISTINCT pc FROM PostComment pc LEFT JOIN FETCH pc.replies r LEFT JOIN FETCH pc.parent LEFT JOIN FETCH pc.user u WHERE pc.post.id = :postId AND pc.status = :status")
+    List<PostComment> findAllCommentsByPostIdAndStatus(@Param("postId") String postId, @Param("status") Integer status);
+
     @Query("SELECT DISTINCT pc FROM PostComment pc LEFT JOIN FETCH pc.replies r LEFT JOIN FETCH pc.parent WHERE pc.parent = :parent")
     List<PostComment> findByParentWithReplies(@Param("parent") PostComment parent);
-    
-    
-    // Count cmt all reply 
+
+    @Query("SELECT pc FROM PostComment pc WHERE pc.parent.id = :parentId AND pc.status = :status")
+    List<PostComment> findByParentIdAndStatus(@Param("parentId") String parentId, @Param("status") Integer status);
+
     @Query("SELECT COUNT(pc) FROM PostComment pc WHERE pc.post.id = :postId")
-    long countByPostId(String postId);
+    long countByPostId(@Param("postId") String postId);
+
+    @Query("SELECT COUNT(pc) FROM PostComment pc WHERE pc.post.id = :postId AND pc.status = :status")
+    long countByPostIdAndStatus(@Param("postId") String postId, @Param("status") Integer status);
 }

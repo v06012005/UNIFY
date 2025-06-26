@@ -10,16 +10,12 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
-public class CommentDTO  implements Serializable {
+public class CommentDTO implements Serializable {
     private String id;
     private String content;
     private String userId;
@@ -27,6 +23,8 @@ public class CommentDTO  implements Serializable {
     private String username;
     private String avatarUrl;
     private String parentId;
+    private Integer status;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     private LocalDateTime commentedAt;
 
@@ -37,14 +35,13 @@ public class CommentDTO  implements Serializable {
         this.content = comment.getContent();
         this.userId = comment.getUser().getId();
         this.postId = comment.getPost().getId();
-        this.parentId = (comment.getParent() != null) ? comment.getParent().getId() : null;
+        this.username = comment.getUser().getUsername();
+        this.avatarUrl = comment.getUser().getLatestAvatar() != null ? comment.getUser().getLatestAvatar().getUrl() : null;
+        this.parentId = comment.getParent() != null ? comment.getParent().getId() : null;
+        this.status = comment.getStatus();
         this.commentedAt = comment.getCommentedAt();
-
-
-        this.replies = (comment.getReplies() != null) ?
-            comment.getReplies().stream()
-                .map(CommentDTO::new)
-                .collect(Collectors.toList())
-            : List.of();
+        this.replies = comment.getReplies() != null && !comment.getReplies().isEmpty()
+                ? comment.getReplies().stream().map(CommentDTO::new).collect(Collectors.toList())
+                : null;
     }
 }

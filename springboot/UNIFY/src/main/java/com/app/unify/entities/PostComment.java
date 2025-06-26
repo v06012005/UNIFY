@@ -61,10 +61,14 @@ public class PostComment implements Serializable {
     @JsonManagedReference
     private List<PostComment> replies = new ArrayList<>();
 
+    @Column(name = "status", nullable = false)
+    private Integer status = 0;
 
     @PrePersist
     protected void onCreate() {
         this.commentedAt = LocalDateTime.now();
+        if (this.status == null) {
+            this.status = 0;
+        }
     }
-
 }

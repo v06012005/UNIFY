@@ -70,11 +70,24 @@ public class ReportController {
 	public List<ReportDTO> findAllReportedPosts() {
 		return reportRepository.findByEntityType(EntityType.POST).stream().map(mapper::toReportDTO).collect(Collectors.toList());
 	}
+	   @GetMapping("/allComments")
+	    public List<ReportDTO> findAllReportedComments() {
+	        return reportRepository.findByEntityType(EntityType.COMMENT).stream()
+	                .map(mapper::toReportDTO)
+	                .collect(Collectors.toList());
+	    }
 	
 	@GetMapping("/filter/{status}")
 	public List<ReportDTO> findFilteredReportedPosts(@PathVariable Integer status) {
 		return reportRepository.findByStatusAndEntityType(status, EntityType.POST).stream().map(mapper::toReportDTO).collect(Collectors.toList());
 	}
+	
+	   @GetMapping("/filterComments/{status}")
+	    public List<ReportDTO> findFilteredReportedComments(@PathVariable Integer status) {
+	        return reportRepository.findByStatusAndEntityType(status, EntityType.COMMENT).stream()
+	                .map(mapper::toReportDTO)
+	                .collect(Collectors.toList());
+	    }
 
 	@GetMapping("/{id}")
 	public ReportDTO getReport(@PathVariable String id) {
@@ -93,6 +106,12 @@ public class ReportController {
 		ReportDTO reportDTO = reportService.createUserReport(reportedId, reason);
 		return ResponseEntity.status(HttpStatus.CREATED).body(reportDTO);
 	}
+	
+	  @PostMapping("/comment")
+	    public ResponseEntity<ReportDTO> createCommentReport(@RequestParam String reportedId, @RequestParam String reason) {
+	        ReportDTO reportDTO = reportService.createCommentReport(reportedId, reason);
+	        return ResponseEntity.status(HttpStatus.CREATED).body(reportDTO);
+	    }
 
 	@PutMapping("/{id}/status")
 	public ResponseEntity<ReportDTO> updateReportStatus(@PathVariable String id, @RequestParam Integer status) {

@@ -3,7 +3,8 @@ package com.app.unify.services;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.app.unify.dto.global.CommentDTO;
@@ -16,18 +17,17 @@ import com.app.unify.repositories.PostRepository;
 import com.app.unify.repositories.UserRepository;
 
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class PostCommentService {
 
-    @Autowired
-    private PostCommentRepository postCommentRepository;
+    private static final Logger logger = LoggerFactory.getLogger(PostCommentService.class);
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private PostRepository postRepository;
+    private final PostCommentRepository postCommentRepository;
+    private final UserRepository userRepository;
+    private final PostRepository postRepository;
 
     /**
      * Thêm một comment vào bài post
@@ -38,10 +38,10 @@ public class PostCommentService {
         }
 
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         Post post = postRepository.findById(postId)
-            .orElseThrow(() -> new IllegalArgumentException("Post not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Post not found"));
 
         if (post.getIsCommentVisible()) {
             throw new IllegalArgumentException("This post has comments disabled");
@@ -53,57 +53,55 @@ public class PostCommentService {
         PostComment parent = null;
         if (parentId != null && !parentId.isEmpty()) {
             parent = postCommentRepository.findById(parentId)
-                .orElseThrow(() -> new IllegalArgumentException("No comments found"));
+                    .orElseThrow(() -> new IllegalArgumentException("No comments found"));
+            if (parent.getStatus() == 2) {
+                throw new IllegalArgumentException("Cannot reply to a hidden comment");
+            }
         }
 
         PostComment newComment = PostComment.builder()
-            .user(user)
-            .post(post)
-            .content(content)
-            .parent(parent)
-            .build();
+                .user(user)
+                .post(post)
+                .content(content)
+                .parent(parent)
+                .status(0) // Mặc định hiển thị
+                .build();
 
-        return postCommentRepository.save(newComment);
+        PostComment savedComment = postCommentRepository.save(newComment);
+        logger.info("Saved comment with ID: {}", savedComment.getId());
+        return savedComment;
     }
 
-
-
-
+    /**
+     * Lấy danh sách bình luận cấp 1 của bài post, chỉ lấy bình luận hiển thị (status = 0)
+     */
     public List<CommentDTO> getCommentsByPostId(String postId) {
         Post post = postRepository.findById(postId)
-            .orElseThrow(() -> new IllegalArgumentException("Post not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Post not found"));
         if (post.getIsCommentVisible()) {
             return List.of();
         }
 
+        // Lấy tất cả bình luận hiển thị của bài post
+        List<PostComment> allComments = postCommentRepository.findAllCommentsByPostIdAndStatus(postId, 0);
 
-        List<PostComment> allComments = postCommentRepository.findAllCommentsByPostId(postId);
         // Lọc comment cấp 1
         List<PostComment> rootComments = allComments.stream()
-            .filter(c -> c.getParent() == null)
-            .collect(Collectors.toList());
+                .filter(c -> c.getParent() == null)
+                .collect(Collectors.toList());
 
-        // Đảm bảo parent được tải cho tất cả comment
+        // Xử lý replies trong bộ nhớ
         for (PostComment comment : allComments) {
-            if (comment.getParent() != null) {
-                comment.getParent().getId(); // Buộc tải parent
-            }
-
+            List<PostComment> replies = allComments.stream()
+                    .filter(c -> c.getParent() != null && c.getParent().getId().equals(comment.getId()))
+                    .collect(Collectors.toList());
+            comment.setReplies(replies);
         }
 
         return rootComments.stream()
-            .map(this::convertToDto)
-            .collect(Collectors.toList());
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
     }
-
-    private void loadRepliesRecursively(PostComment comment) {
-        List<PostComment> replies = postCommentRepository.findByParent(comment);
-        comment.setReplies(replies);
-        for (PostComment reply : replies) {
-            loadRepliesRecursively(reply);
-        }
-    }
-
 
     /**
      * Chuyển đổi từ PostComment thành CommentDTO
@@ -116,21 +114,21 @@ public class PostCommentService {
         dto.setUsername(comment.getUser().getUsername());
         dto.setPostId(comment.getPost().getId());
         dto.setCommentedAt(comment.getCommentedAt());
-
         dto.setParentId(comment.getParent() != null ? comment.getParent().getId() : null);
+        dto.setStatus(comment.getStatus());
 
-        // Thêm logic lấy avatarUrl
+        // Lấy avatarUrl
         Avatar latestAvatar = comment.getUser().getLatestAvatar();
         dto.setAvatarUrl(latestAvatar != null ? latestAvatar.getUrl() : null);
 
         // Xử lý replies
-
         if (comment.getReplies() != null && !comment.getReplies().isEmpty()) {
             List<CommentDTO> replyDtos = comment.getReplies().stream()
                     .map(this::convertToDto)
                     .collect(Collectors.toList());
             dto.setReplies(replyDtos);
         }
+
         return dto;
     }
 
@@ -138,10 +136,10 @@ public class PostCommentService {
     public void deleteCommentById(String commentId) {
         PostComment comment = postCommentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy bình luận"));
-
+        if (comment.getStatus() == 2) {
+            logger.warn("Deleting hidden comment with ID: {}", commentId);
+        }
         postCommentRepository.delete(comment);
+        logger.info("Deleted comment with ID: {}", commentId);
     }
-
-
-
 }
