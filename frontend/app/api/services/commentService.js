@@ -131,15 +131,20 @@ export const fetchReportedComments = async (token) => {
  * @param {string} reportId
  * @param {number} status (e.g., 1 = approved, 2 = rejected)
  * @param {string} token
+ * @param {string} adminReason - Optional admin reason for the action
  */
-export const updateReportStatus = async (reportId, status, token) => {
+export const updateReportStatus = async (reportId, status, token, adminReason = "") => {
   try {
-    const response = await fetch(`${API_URL}/reports/${reportId}/status?status=${status}`, {
+    const response = await fetch(`${API_URL}/reports/${reportId}/status`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
+      body: JSON.stringify({
+        status: status,
+        adminReason: adminReason
+      }),
     });
     if (response.ok) {
       return await response.json();
