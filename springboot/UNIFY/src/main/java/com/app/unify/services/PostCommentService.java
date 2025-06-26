@@ -11,9 +11,11 @@ import com.app.unify.dto.global.CommentDTO;
 import com.app.unify.entities.Avatar;
 import com.app.unify.entities.Post;
 import com.app.unify.entities.PostComment;
+import com.app.unify.entities.Report;
 import com.app.unify.entities.User;
 import com.app.unify.repositories.PostCommentRepository;
 import com.app.unify.repositories.PostRepository;
+import com.app.unify.repositories.ReportRepository;
 import com.app.unify.repositories.UserRepository;
 
 import jakarta.transaction.Transactional;
@@ -28,6 +30,7 @@ public class PostCommentService {
     private final PostCommentRepository postCommentRepository;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private final ReportRepository reportRepository;
 
     /**
      * Thêm một comment vào bài post
@@ -73,7 +76,8 @@ public class PostCommentService {
     }
 
     /**
-     * Lấy danh sách bình luận cấp 1 của bài post, chỉ lấy bình luận hiển thị (status = 0)
+     * Lấy danh sách bình luận cấp 1 của bài post, chỉ lấy bình luận hiển thị
+     * (status = 0)
      */
     public List<CommentDTO> getCommentsByPostId(String postId) {
         Post post = postRepository.findById(postId)
@@ -136,10 +140,23 @@ public class PostCommentService {
     public void deleteCommentById(String commentId) {
         PostComment comment = postCommentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy bình luận"));
+
         if (comment.getStatus() == 2) {
             logger.warn("Deleting hidden comment with ID: {}", commentId);
         }
+
+        // Delete all reports associated with this comment
+        List<Report> associatedReports = reportRepository.findByReportedId(commentId);
+        if (!associatedReports.isEmpty()) {
+            logger.info("Found {} reports associated with comment ID: {}", associatedReports.size(), commentId);
+            reportRepository.deleteAll(associatedReports);
+            logger.info("Successfully deleted {} reports associated with comment ID: {}", associatedReports.size(), commentId);
+        } else {
+            logger.info("No reports found for comment ID: {}", commentId);
+        }
+
+        // Delete the comment
         postCommentRepository.delete(comment);
-        logger.info("Deleted comment with ID: {}", commentId);
+        logger.info("Successfully deleted comment with ID: {}", commentId);
     }
 }

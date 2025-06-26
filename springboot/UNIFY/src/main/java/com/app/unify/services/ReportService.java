@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import com.app.unify.dto.global.ReportDTO;
 import com.app.unify.entities.Post;
@@ -164,14 +165,6 @@ public class ReportService {
                 .collect(Collectors.toList());
     }
 
-    private void validateStatuses(List<Integer> statuses) {
-        for (int status : statuses) {
-            if (status < PENDING || status > CANCELED) {
-                throw new ReportException("Invalid report status: " + status);
-            }
-        }
-    }
-
     public ReportDTO updateReportStatus(String reportId, Integer status) {
         Report report = reportRepository.findById(reportId)
                 .orElseThrow(() -> new ReportException("Report not found!"));
@@ -223,5 +216,45 @@ public class ReportService {
         Report report = reportRepository.findById(reportId)
                 .orElseThrow(() -> new ReportException("Report not found!"));
         reportRepository.delete(report);
+    }
+
+    // Lấy các bài viết mà người đăng nhập đã gửi báo cáo
+    public List<ReportDTO> getDetailedReportsByUsername(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+
+        List<Report> reports = reportRepository.findByUserId(user.getId());
+
+        if (reports.isEmpty()) {
+            throw new IllegalArgumentException("No reports found for user with ID: " + user.getId());
+        }
+
+        return reports.stream().map(report -> {
+            ReportDTO reportDTO = reportMapper.toReportDTO(report);
+            reportDTO.setReportedEntity(getReportedEntity(report.getReportedId(), report.getEntityType()));
+            return reportDTO;
+        }).collect(Collectors.toList());
+    }
+
+    // Lấy bài viết của người đăng nhập bị người khác báo cáo
+    public List<ReportDTO> getReportsOfUserPosts(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+
+        List<Report> reports = reportRepository.findReportsOfPostsOwnedByUser(EntityType.POST, user.getId());
+
+        return reports.stream().map(report -> {
+            ReportDTO reportDTO = reportMapper.toReportDTO(report);
+            reportDTO.setReportedEntity(getReportedEntity(report.getReportedId(), report.getEntityType()));
+            return reportDTO;
+        }).collect(Collectors.toList());
+    }
+
+    private void validateStatuses(List<Integer> statuses) {
+        for (int status : statuses) {
+            if (status < PENDING || status > CANCELED) {
+                throw new ReportException("Invalid report status: " + status);
+            }
+        }
     }
 }

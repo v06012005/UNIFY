@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useEffect } from "react";
 import Link from "next/link";
@@ -36,16 +36,16 @@ const AdminSidebar = () => {
       try {
         setLoading(true);
         const account = await getUser();
-        console.log("Admin " + account.username)
+        console.log("Admin " + account.username);
         setAdmin(account);
       } catch (error) {
-        console.log("Encountered an error when fetching admin info. " + error)
+        console.log("Encountered an error when fetching admin info. " + error);
       } finally {
         setLoading(false);
       }
     };
     fetchAdminAccount();
-  }, [])
+  }, []);
 
   return (
     <div className="relative flex flex-row ">
@@ -58,25 +58,35 @@ const AdminSidebar = () => {
               src: `${user?.avatar?.url || defaultAvatar}`,
             }}
             description={`Admin`}
-            name={`${user?.firstName || ""} ${user?.lastName || ""}`} className="my-3 justify-start"
+            name={`${user?.firstName || ""} ${user?.lastName || ""}`}
+            className="my-3 justify-start"
           />
-          <div>
-            {/* <Avatar src={account?.avatar?.url} /> */}
-          </div>
-          <Link href={""} className="my-auto text-xl text-zinc-500 hover:text-red-500" onClick={logoutUser}><i className="fa-solid fa-right-from-bracket"></i></Link>
+          <div>{/* <Avatar src={account?.avatar?.url} /> */}</div>
+          <Link
+            href={""}
+            className="my-auto text-xl text-zinc-500 hover:text-red-500"
+            onClick={logoutUser}
+          >
+            <i className="fa-solid fa-right-from-bracket"></i>
+          </Link>
         </div>
         <Divider className="mt-2" />
         <div className="flex flex-col grow w-60 overflow-y-auto no-scrollbar">
           <Accordion variant="light" className="w-full">
-            <AccordionItem className="font-bold" key="1" aria-label="Users" title="USERS" startContent={<i className="fa-solid fa-users"></i>}>
+            <AccordionItem
+              className="font-bold"
+              key="1"
+              aria-label="Users"
+              title="USERS"
+              startContent={<i className="fa-solid fa-users"></i>}
+            >
               <div className="pl-5 font-light">
                 <ul>
                   <li>
                     <NavButton
                       iconClass="fa-solid fa-user-xmark"
                       text="Reported Users"
-                       href="/manage/users/reports"
-                      
+                      href="/manage/users/reports"
                     />
                   </li>
                   <li>
@@ -89,7 +99,13 @@ const AdminSidebar = () => {
                 </ul>
               </div>
             </AccordionItem>
-            <AccordionItem key="2" className="font-bold" aria-label="" title="POSTS" startContent={<i className="fa-solid fa-blog"></i>}>
+            <AccordionItem
+              key="2"
+              className="font-bold"
+              aria-label=""
+              title="POSTS"
+              startContent={<i className="fa-solid fa-blog"></i>}
+            >
               <div className="pl-5 font-light">
                 <ul>
                   <li>
@@ -97,6 +113,25 @@ const AdminSidebar = () => {
                       iconClass="fa-solid fa-triangle-exclamation"
                       text="Reported Posts"
                       href="/manage/posts/list"
+                    />
+                  </li>
+                </ul>
+              </div>
+            </AccordionItem>
+            <AccordionItem
+              key="3"
+              className="font-bold"
+              aria-label=""
+              title="COMMENTS"
+              startContent={<i className="fa-solid fa-comment"></i>}
+            >
+              <div className="font-light">
+                <ul>
+                  <li>
+                    <NavButton
+                      iconClass="fa-solid fa-comment-slash"
+                      text="Reported Comments"
+                      href="/manage/comments/list"
                     />
                   </li>
                 </ul>

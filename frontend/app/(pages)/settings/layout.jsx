@@ -50,7 +50,8 @@ const layout = ({ children }) => {
                 <ul className="space-y-2">
                   <li className="h-12">
                     <NavButton
-                      href="/settings/edit-profile"
+                     // href="/settings/edit-profile"
+                      href={user ? `/settings/edit-profile/${user.username}` : "/login"}
                       iconClass="fa-solid fa-address-card"
                       content="Edit Profile"
                     />
@@ -83,7 +84,7 @@ const layout = ({ children }) => {
                   </li>
                   <li className="h-12">
                     <NavButton
-                      href="/settings/support"
+                      href={user ? `/settings/support/${user.username}` : "/login"}
                       iconClass="fa-solid fa-info-circle"
                       content="Support"
                     />

@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,13 +33,13 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/reports")
 public class ReportController {
 
-	@Autowired
-	private final ReportService reportService;
-	private final UserRepository userRepository;
-	private final ReportRepository reportRepository;
+    @Autowired
+    private final ReportService reportService;
+    private final UserRepository userRepository;
+    private final ReportRepository reportRepository;
 
-	@Autowired
-	private ReportMapper mapper;
+    @Autowired
+    private ReportMapper mapper;
 
 //	@GetMapping("/status")
 //	public ResponseEntity<?> getReportsByStatuses(@RequestParam List<Integer> statuses) {
@@ -51,77 +52,101 @@ public class ReportController {
 //			return ResponseEntity.badRequest().body(errorResponse);
 //		}
 //	}
-	@GetMapping("/reportUser/status")
-	public ResponseEntity<?> findFilteredReportsByStatusesAndType(
-	        @RequestParam List<Integer> statuses,
-	        @RequestParam EntityType entityType) {
-	    try {
-	        List<ReportDTO> reports = reportService.getReportsByStatuses(statuses, entityType);
-	        return ResponseEntity.ok(reports);
-	    } catch (IllegalArgumentException e) {
-	        Map<String, String> errorResponse = new HashMap<>();
-	        errorResponse.put("error", e.getMessage());
-	        return ResponseEntity.badRequest().body(errorResponse);
-	    }
-	}
+    @GetMapping("/reportUser/status")
+    public ResponseEntity<?> findFilteredReportsByStatusesAndType(@RequestParam List<Integer> statuses,
+            @RequestParam EntityType entityType) {
+        try {
+            List<ReportDTO> reports = reportService.getReportsByStatuses(statuses, entityType);
+            return ResponseEntity.ok(reports);
+        } catch (IllegalArgumentException e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+    }
 
+    @GetMapping("/reportUser/user-reports")
+    public ResponseEntity<?> findReportsByUsername(@RequestParam String username) {
+        try {
+            List<ReportDTO> reports = reportService.getDetailedReportsByUsername(username);
+            return ResponseEntity.ok(reports);
+        } catch (UsernameNotFoundException | IllegalArgumentException e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+    }
 
-	@GetMapping("/allPosts")
-	public List<ReportDTO> findAllReportedPosts() {
-		return reportRepository.findByEntityType(EntityType.POST).stream().map(mapper::toReportDTO).collect(Collectors.toList());
-	}
-	   @GetMapping("/allComments")
-	    public List<ReportDTO> findAllReportedComments() {
-	        return reportRepository.findByEntityType(EntityType.COMMENT).stream()
-	                .map(mapper::toReportDTO)
-	                .collect(Collectors.toList());
-	    }
-	
-	@GetMapping("/filter/{status}")
-	public List<ReportDTO> findFilteredReportedPosts(@PathVariable Integer status) {
-		return reportRepository.findByStatusAndEntityType(status, EntityType.POST).stream().map(mapper::toReportDTO).collect(Collectors.toList());
-	}
-	
-	   @GetMapping("/filterComments/{status}")
-	    public List<ReportDTO> findFilteredReportedComments(@PathVariable Integer status) {
-	        return reportRepository.findByStatusAndEntityType(status, EntityType.COMMENT).stream()
-	                .map(mapper::toReportDTO)
-	                .collect(Collectors.toList());
-	    }
+    @GetMapping("/reportUser/reported-my-posts")
+    public ResponseEntity<?> findReportsOfMyPosts(@RequestParam String username) {
+        try {
+            List<ReportDTO> reports = reportService.getReportsOfUserPosts(username);
+            return ResponseEntity.ok(reports);
+        } catch (UsernameNotFoundException | IllegalArgumentException e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+    }
 
-	@GetMapping("/{id}")
-	public ReportDTO getReport(@PathVariable String id) {
-		return reportService.findById(id);
+    @GetMapping("/allPosts")
+    public List<ReportDTO> findAllReportedPosts() {
+        return reportRepository.findByEntityType(EntityType.POST).stream().map(mapper::toReportDTO)
+                .collect(Collectors.toList());
+    }
 
-	}
+    @GetMapping("/allComments")
+    public List<ReportDTO> findAllReportedComments() {
+        List<Integer> allStatuses = List.of(0, 1, 2, 3, 4);
+        return reportService.getReportsByStatuses(allStatuses, EntityType.COMMENT);
+    }
 
-	@PostMapping("/post")
-	public ResponseEntity<ReportDTO> createPostReport(@RequestParam String reportedId, String reason) {
-		ReportDTO reportDTO = reportService.createPostReport(reportedId, reason);
-		return ResponseEntity.status(HttpStatus.CREATED).body(reportDTO);
-	}
+    @GetMapping("/filter/{status}")
+    public List<ReportDTO> findFilteredReportedPosts(@PathVariable Integer status) {
+        return reportRepository.findByStatusAndEntityType(status, EntityType.POST).stream().map(mapper::toReportDTO)
+                .collect(Collectors.toList());
+    }
 
-	@PostMapping("/user")
-	public ResponseEntity<ReportDTO> createUserReport(@RequestParam String reportedId, String reason) {
-		ReportDTO reportDTO = reportService.createUserReport(reportedId, reason);
-		return ResponseEntity.status(HttpStatus.CREATED).body(reportDTO);
-	}
-	
-	  @PostMapping("/comment")
-	    public ResponseEntity<ReportDTO> createCommentReport(@RequestParam String reportedId, @RequestParam String reason) {
-	        ReportDTO reportDTO = reportService.createCommentReport(reportedId, reason);
-	        return ResponseEntity.status(HttpStatus.CREATED).body(reportDTO);
-	    }
+    @GetMapping("/filterComments/{status}")
+    public List<ReportDTO> findFilteredReportedComments(@PathVariable Integer status) {
+        return reportRepository.findByStatusAndEntityType(status, EntityType.COMMENT).stream()
+                .map(mapper::toReportDTO)
+                .collect(Collectors.toList());
+    }
 
-	@PutMapping("/{id}/status")
-	public ResponseEntity<ReportDTO> updateReportStatus(@PathVariable String id, @RequestParam Integer status) {
-		ReportDTO updatedReport = reportService.updateReportStatus(id, status);
-		return ResponseEntity.ok(updatedReport);
-	}
+    @GetMapping("/{id}")
+    public ReportDTO getReport(@PathVariable String id) {
+        return reportService.findById(id);
 
-	@DeleteMapping("/{id}")
-	public ResponseEntity<String> removeReport(@PathVariable String id) {
-		reportService.removeReport(id);
-		return ResponseEntity.ok("Remove Report Successfully !");
-	}
+    }
+
+    @PostMapping("/post")
+    public ResponseEntity<ReportDTO> createPostReport(@RequestParam String reportedId, String reason) {
+        ReportDTO reportDTO = reportService.createPostReport(reportedId, reason);
+        return ResponseEntity.status(HttpStatus.CREATED).body(reportDTO);
+    }
+
+    @PostMapping("/user")
+    public ResponseEntity<ReportDTO> createUserReport(@RequestParam String reportedId, String reason) {
+        ReportDTO reportDTO = reportService.createUserReport(reportedId, reason);
+        return ResponseEntity.status(HttpStatus.CREATED).body(reportDTO);
+    }
+
+    @PostMapping("/comment")
+    public ResponseEntity<ReportDTO> createCommentReport(@RequestParam String reportedId, @RequestParam String reason) {
+        ReportDTO reportDTO = reportService.createCommentReport(reportedId, reason);
+        return ResponseEntity.status(HttpStatus.CREATED).body(reportDTO);
+    }
+
+    @PutMapping("/{id}/status")
+    public ResponseEntity<ReportDTO> updateReportStatus(@PathVariable String id, @RequestParam Integer status) {
+        ReportDTO updatedReport = reportService.updateReportStatus(id, status);
+        return ResponseEntity.ok(updatedReport);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> removeReport(@PathVariable String id) {
+        reportService.removeReport(id);
+        return ResponseEntity.ok("Remove Report Successfully !");
+    }
 }
