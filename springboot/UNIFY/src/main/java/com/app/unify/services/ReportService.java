@@ -177,9 +177,9 @@ public class ReportService {
 		report.setReportedAt(LocalDateTime.now());
 		report.setStatus(PENDING);
 
-    public ReportDTO updateReportStatus(String reportId, Integer status, String adminReason) {
-        Report report = reportRepository.findById(reportId)
-                .orElseThrow(() -> new ReportException("Report not found!"));
+		Report savedReport = reportRepository.save(report);
+		return reportMapper.toReportDTO(savedReport);
+	}
 
 	public ReportDTO findById(String id) {
 		Report report = reportRepository.findById(id)
@@ -192,8 +192,7 @@ public class ReportService {
 	public List<ReportDTO> getReportsByStatuses(List<Integer> statuses, EntityType entityType) {
 		validateStatuses(statuses);
 
-        report.setStatus(status);
-        report.setAdminReason(adminReason);
+		List<Report> reports = reportRepository.findByStatusInAndEntityType(statuses, entityType);
 
 		return reports.stream().map(report -> {
 			ReportDTO reportDTO = reportMapper.toReportDTO(report);
@@ -210,8 +209,47 @@ public class ReportService {
 		}
 	}
 
+	public ReportDTO updateReportStatus(String reportId, Integer status, String adminReason) {
+		Report report = reportRepository.findById(reportId)
+				.orElseThrow(() -> new ReportException("Report not found!"));
+
+		if (status < PENDING || status > CANCELED) {
+			throw new ReportException("Invalid status value: " + status);
+		}
+
+		report.setStatus(status);
+		report.setAdminReason(adminReason);
+
+		if (status == APPROVED && report.getEntityType() == EntityType.POST) {
+			Post post = postRepository.findById(report.getReportedId())
+					.orElseThrow(() -> new ReportException("Post not found!"));
+
+			post.setStatus(2);
+
+			postRepository.save(post);
+		}
+		if (status == APPROVED && report.getEntityType() == EntityType.USER) {
+			User user = userRepository.findById(report.getReportedId())
+					.orElseThrow(() -> new ReportException("User not found!"));
+
+			user.setReportApprovalCount(user.getReportApprovalCount() + 1);
+
+			if (user.getReportApprovalCount() >= 5) {
+				user.setStatus(2);
+			} else if (user.getReportApprovalCount() >= 3 && user.getStatus() != 2) {
+				user.setStatus(1); // Khóa tạm thời
+			}
+
+			userRepository.save(user);
+		}
+
+		Report updatedReport = reportRepository.save(report);
+		return reportMapper.toReportDTO(updatedReport);
+	}
+
 	public ReportDTO updateReportStatus(String reportId, Integer status) {
-		Report report = reportRepository.findById(reportId).orElseThrow(() -> new ReportException("Report not found!"));
+		Report report = reportRepository.findById(reportId)
+				.orElseThrow(() -> new ReportException("Report not found!"));
 
 		if (status < PENDING || status > CANCELED) {
 			throw new ReportException("Invalid status value: " + status);
