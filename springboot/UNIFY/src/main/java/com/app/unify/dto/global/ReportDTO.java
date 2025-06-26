@@ -2,7 +2,6 @@ package com.app.unify.dto.global;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
@@ -18,6 +17,7 @@ public class ReportDTO implements Serializable {
 	private LocalDateTime reportedAt;
 	private Integer status;
 	private String reason;
+	private String adminReason;
 	private Object reportedEntity;
 
 }

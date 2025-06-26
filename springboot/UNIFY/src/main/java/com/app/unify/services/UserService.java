@@ -37,12 +37,13 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserService {
 
-	private UserRepository userRepository;
-	private RoleRepository roleRepository;
-	private UserMapper userMapper;
-	private PasswordEncoder passwordEncoder;
-	private AvatarMapper avatarMapper;
-	private FollowRepository followRepository;
+	@Autowired
+    private UserRepository userRepository;
+    private RoleRepository roleRepository;
+    private UserMapper userMapper;
+    private PasswordEncoder passwordEncoder;
+    private AvatarMapper avatarMapper;
+    private FollowRepository followRepository;
 
 	@Autowired
 	public UserService(UserRepository userRepository, RoleRepository roleRepository, UserMapper userMapper,
