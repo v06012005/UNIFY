@@ -1,145 +1,38 @@
 import { Input } from "@/components/ui/input";
-import avartar from "@/public/images/avatar.png";
-import { Search } from "lucide-react";
-import UserHistorySearch from "@/components/global/UserHistorySearch";
-import TextSearchHistory from "@/components/global/TextSearchHistory";
-import { useState, useCallback, useEffect } from "react";
-import axios from "axios";
-import Cookies from "js-cookie";
-import { API_URL } from "@/config/api";
+import { Search, AlertCircle, Clock, X, Trash2 } from "lucide-react";
+import { useSearch } from "@/hooks/useSearch";
 import Link from "next/link";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const SearchHorizontalToggle = ({ children, isOpen, searchComponentRef }) => {
-  const [search, setSearch] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [searchHistory, setSearchHistory] = useState([]);
+  const router = useRouter();
+  const {
+    searchQuery,
+    setSearchQuery,
+    searchResults,
+    isLoading,
+    error,
+    searchHistory,
+    clearSearchHistory,
+    removeFromHistory,
+  } = useSearch();
 
-  // Load search history from localStorage on component mount
-  useEffect(() => {
-    const savedHistory = localStorage.getItem('searchHistory');
-    if (savedHistory) {
-      setSearchHistory(JSON.parse(savedHistory));
-    }
-  }, []);
-
-  // Save search history to localStorage whenever it changes
-  useEffect(() => {
-    localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
-  }, [searchHistory]);
-
-  // Debounce function to prevent too many API calls
-  const debounce = (func, wait) => {
-    let timeout;
-    return (...args) => {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => func(...args), wait);
-    };
+  const handleUserClick = (username) => {
+    router.push(`/othersProfile/${username}`);
   };
 
-  const handleSearch = useCallback(async (value) => {
-    // Input validation
-    if (!value || value.trim().length === 0) {
-      setSearch([]);
-      setError(null);
-      return;
-    }
-
-    // Trim and validate search term
-    const trimmedValue = value.trim();
-    if (trimmedValue.length < 2) {
-      setError("Please enter at least 2 characters");
-      setSearch([]);
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      // Check if token exists
-      const token = Cookies.get("token");
-      if (!token) {
-        throw new Error("Authentication required");
-      }
-
-      const response = await axios.get(`${API_URL}/users/search`, {
-        params: {
-          username: trimmedValue,
-        },
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        timeout: 5000, // 5 second timeout
-      });
-
-      // Validate response data
-      if (!Array.isArray(response.data)) {
-        throw new Error("Invalid response format");
-      }
-
-      setSearch(response.data);
-      
-      // Add to search history if not already present
-      if (response.data.length > 0) {
-        setSearchHistory(prev => {
-          const newHistory = [trimmedValue, ...prev.filter(term => term !== trimmedValue)].slice(0, 10);
-          return newHistory;
-        });
-      }
-    } catch (error) {
-      if (error.code === 'ECONNABORTED') {
-        setError("Request timed out. Please try again.");
-      } else if (error.response) {
-        // Handle different HTTP status codes
-        switch (error.response.status) {
-          case 401:
-            setError("Please log in to continue");
-            break;
-          case 403:
-            setError("You don't have permission to perform this action");
-            break;
-          case 404:
-            setError("No users found");
-            break;
-          case 429:
-            setError("Too many requests. Please try again later");
-            break;
-          default:
-            setError(error.response?.data?.message || "An error occurred while searching");
-        }
-      } else if (error.request) {
-        setError("Network error. Please check your connection");
-      } else {
-        setError(error.message || "An unexpected error occurred");
-      }
-      setSearch([]);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  // Create debounced search function
-  const debouncedSearch = useCallback(
-    debounce((value) => handleSearch(value), 300),
-    [handleSearch]
-  );
-
-  const handleInputChange = (e) => {
-    const value = e.target.value;
-    setSearchTerm(value);
-    debouncedSearch(value);
+  const handleHistoryClick = (query) => {
+    setSearchQuery(query);
   };
 
-  const handleHistoryClick = (term) => {
-    setSearchTerm(term);
-    handleSearch(term);
+  const handleClearHistory = () => {
+    clearSearchHistory();
   };
 
-  const clearSearchHistory = () => {
-    setSearchHistory([]);
-    localStorage.removeItem('searchHistory');
+  const handleRemoveFromHistory = (e, query) => {
+    e.stopPropagation();
+    removeFromHistory(query);
   };
 
   return (
@@ -161,10 +54,9 @@ const SearchHorizontalToggle = ({ children, isOpen, searchComponentRef }) => {
               <Input
                 type={`search`}
                 className={`mt-3 py-5 relative border-gray-300 text-black dark:text-white placeholder-black pl-10 dark:border-neutral-500`}
-                placeholder={"Search by username"} 
-                value={searchTerm}
-                onChange={handleInputChange}
-                disabled={loading}
+                placeholder={"Search users..."}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
               <Search
                 className={`absolute top-1/2 -translate-y-1/2 left-2`}
@@ -173,45 +65,98 @@ const SearchHorizontalToggle = ({ children, isOpen, searchComponentRef }) => {
             </div>
           </div>
           <hr className="border-t-1 dark:border-neutral-500 border-gray-300" />
-          <div className={`mb-3 mt-8 mx-5 grid gap-7`}>
-            {loading && <div className={`text-center`}>Loading...</div>}
-            {error && <div className={`text-center text-red-500`}>{error}</div>}
-            {!loading && !error && search.length === 0 && searchTerm.length >= 2 && (
-              <div className={`text-center`}>No users found</div>
-            )}
-            {search.length > 0 && search.map((userSearch) => (
-              <Link 
-                href={`/othersProfile/${userSearch.username}`} 
-                className="w-full" 
-                key={userSearch.id}
-              >
-                <UserHistorySearch
-                  key={userSearch.id}
-                  avatar={userSearch.avatar?.url || avartar}
-                  username={userSearch.username}
-                  profile={`${userSearch.firstName || ''} ${userSearch.lastName || ''}`.trim() || 'No name provided'}
-                />
-              </Link>
-              
-            ))}
-            {searchHistory.length > 0 && (
-              <div className="mt-4">
-                <div className="flex justify-between items-center mb-2">
-                  <h3 className="font-semibold">Recent Searches</h3>
-                  <button 
-                    onClick={clearSearchHistory}
-                    className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-                  >
-                    Clear History
-                  </button>
+          
+          <div className="overflow-y-auto h-[calc(100vh-120px)]">
+            {isLoading ? (
+              <div className="flex justify-center items-center h-32">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-white"></div>
+              </div>
+            ) : error ? (
+              <div className="flex flex-col items-center justify-center h-32 text-red-500">
+                <AlertCircle className="w-8 h-8 mb-2" />
+                <p>{error}</p>
+              </div>
+            ) : searchQuery ? (
+              // Search Results
+              <>
+                {searchResults.length > 0 ? (
+                  <div className="mb-3 mt-8 mx-5">
+                    <h2 className="text-lg font-semibold mb-4">Search Results</h2>
+                    <div className="grid gap-4">
+                      {searchResults.map((user) => (
+                        <div
+                          key={user.id}
+                          className="flex items-center gap-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-neutral-800 p-2 rounded-lg"
+                          onClick={() => handleUserClick(user.username)}
+                        >
+                          <div className="w-12 h-12 rounded-full overflow-hidden">
+                            <Image
+                              src={user.avatar?.url || "/images/unify_icon_2.svg"}
+                              alt={user.username}
+                              width={48}
+                              height={48}
+                              className="object-cover w-full h-full"
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <p className="font-semibold">{user.username}</p>
+                            <p className="text-sm text-gray-500">{`${user.firstName} ${user.lastName}`}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex justify-center items-center h-32 text-gray-500">
+                    No users found
+                  </div>
+                )}
+              </>
+            ) : (
+              // Search History
+              <div className="mb-3 mt-8 mx-5">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-lg font-semibold flex items-center gap-2">
+                    <Clock className="w-5 h-5" />
+                    Recent Searches
+                  </h2>
+                  {searchHistory.length > 0 && (
+                    <button
+                      onClick={handleClearHistory}
+                      className="text-sm text-gray-500 hover:text-red-500 flex items-center gap-1"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Clear
+                    </button>
+                  )}
                 </div>
-                {searchHistory.map((term, index) => (
-                  <TextSearchHistory 
-                    key={index} 
-                    text={term} 
-                    onClick={() => handleHistoryClick(term)}
-                  />
-                ))}
+                
+                {searchHistory.length > 0 ? (
+                  <div className="grid gap-2">
+                    {searchHistory.map((query, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-800 cursor-pointer"
+                        onClick={() => handleHistoryClick(query)}
+                      >
+                        <div className="flex items-center gap-2">
+                          <Clock className="w-4 h-4 text-gray-400" />
+                          <span className="text-sm">{query}</span>
+                        </div>
+                        <button
+                          onClick={(e) => handleRemoveFromHistory(e, query)}
+                          className="text-gray-400 hover:text-red-500"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center text-gray-500 text-sm">
+                    No recent searches
+                  </div>
+                )}
               </div>
             )}
           </div>

@@ -142,9 +142,6 @@ public interface UserRepository extends JpaRepository<User, String> {
 			""")
 	List<UserReportCountDTO> findAllUserAndCountReportByRole();
 
-	@Query("""
-			SELECT u FROM User u
-			WHERE LOWER(u.username) LIKE LOWER(CONCAT('%', :username, '%'))
-			""")
-	List<User> findByUsernameContainingIgnoreCase(@Param("username") String username);
+    List<User> findByUsernameContainingIgnoreCaseOrFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(String username, String firstName, String lastName);
+
 }
