@@ -3,13 +3,10 @@ package com.app.unify.services;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
 import com.app.unify.dto.global.ReportDTO;
-import com.app.unify.dto.global.UserDTO;
 import com.app.unify.entities.Post;
 import com.app.unify.entities.PostComment;
 import com.app.unify.entities.Report;
@@ -24,271 +21,283 @@ import com.app.unify.repositories.PostRepository;
 import com.app.unify.repositories.ReportRepository;
 import com.app.unify.repositories.UserRepository;
 import com.app.unify.types.EntityType;
-
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class ReportService {
-	private final ReportRepository reportRepository;
-	private final UserRepository userRepository;
-	private final ReportMapper reportMapper;
-	private final UserMapper userMapper;
-	private final PostRepository postRepository;
-	private final PostCommentRepository commentRepository;
-	private final PostMapper postMapper;
-	private final UserService userService;
-	private final CommentMapper commentMapper;
-	public static final int PENDING = 0; // chờ duyệt
-	public static final int APPROVED = 1;// duyệt
-	public static final int REJECTED = 2;// từ chối
-	public static final int RESOLVED = 3;// đã xử lí
-	public static final int CANCELED = 4;// người dùng hủy
 
-	public ReportDTO getDetailedReportById(String reportId) {
-		Report report = reportRepository.findById(reportId)
-				.orElseThrow(() -> new IllegalArgumentException("Report not found with ID: " + reportId));
-		ReportDTO reportDTO = reportMapper.toReportDTO(report);
-		reportDTO.setReportedEntity(getReportedEntity(report.getReportedId(), report.getEntityType()));
-		return reportDTO;
-	}
+    private final ReportRepository reportRepository;
+    private final UserRepository userRepository;
+    private final ReportMapper reportMapper;
+    private final UserMapper userMapper;
+    private final PostRepository postRepository;
+    private final PostCommentRepository commentRepository;
+    private final PostMapper postMapper;
+    private final UserService userService;
+    private final CommentMapper commentMapper;
 
-	// Lấy các bài viết mà người đăng nhập đã gửi báo cáo
-	public List<ReportDTO> getDetailedReportsByUsername(String username) {
-		User user = userRepository.findByUsername(username)
-				.orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+    public static final int PENDING = 0; // chờ duyệt
+    public static final int APPROVED = 1; // duyệt
+    public static final int REJECTED = 2; // từ chối
+    public static final int RESOLVED = 3; // đã xử lý
+    public static final int CANCELED = 4; // người dùng hủy
 
-		List<Report> reports = reportRepository.findByUserId(user.getId());
+    public ReportDTO getDetailedReportById(String reportId) {
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new IllegalArgumentException("Report not found with ID: " + reportId));
+        ReportDTO reportDTO = reportMapper.toReportDTO(report);
+        reportDTO.setReportedEntity(getReportedEntity(report.getReportedId(), report.getEntityType()));
+        return reportDTO;
+    }
 
-		if (reports.isEmpty()) {
-			throw new IllegalArgumentException("No reports found for user with ID: " + user.getId());
-		}
+    private Object getReportedEntity(String reportedId, EntityType entityType) {
+        if (entityType == null) {
+            throw new IllegalArgumentException("EntityType cannot be null");
+        }
+        if (reportedId == null) {
+            System.out.println("Warning: Reported ID is null for entityType: " + entityType);
+            return null;
+        }
+        switch (entityType) {
+            case POST:
+                Post post = postRepository.findById(reportedId)
+                        .orElseThrow(() -> new IllegalArgumentException("Post not found with ID: " + reportedId));
+                return postMapper.toPostDTO(post);
+            case USER:
+                User user = userRepository.findById(reportedId)
+                        .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + reportedId));
+                return userMapper.toUserDTO(user);
+            case COMMENT:
+                PostComment comment = commentRepository.findById(reportedId)
+                        .orElseThrow(() -> new IllegalArgumentException("Comment not found with ID: " + reportedId));
+                return commentMapper.toCommentDTO(comment);
+            default:
+                throw new IllegalStateException("Unsupported entity type: " + entityType);
+        }
+    }
 
-		return reports.stream().map(report -> {
-			ReportDTO reportDTO = reportMapper.toReportDTO(report);
-			reportDTO.setReportedEntity(getReportedEntity(report.getReportedId(), report.getEntityType()));
-			return reportDTO;
-		}).collect(Collectors.toList());
-	}
+    public ReportDTO createPostReport(String reportedId, String reason) {
+        postRepository.findById(reportedId)
+                .orElseThrow(() -> new IllegalArgumentException("Post not found with ID: " + reportedId));
+        ReportDTO reportDTO = new ReportDTO();
+        reportDTO.setReportedId(reportedId);
+        reportDTO.setReason(reason);
+        reportDTO.setStatus(PENDING);
+        return createReport(reportDTO, EntityType.POST);
+    }
 
-	// Lấy bài viết của người dang đăng nhập bị người khác báo cáo
-	public List<ReportDTO> getReportsOfUserPosts(String username) {
-		User user = userRepository.findByUsername(username)
-				.orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+    public ReportDTO createUserReport(String reportedId, String reason) {
+        userRepository.findById(reportedId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + reportedId));
+        ReportDTO reportDTO = new ReportDTO();
+        reportDTO.setReportedId(reportedId);
+        reportDTO.setReason(reason);
+        reportDTO.setStatus(PENDING);
+        return createReport(reportDTO, EntityType.USER);
+    }
 
-		List<Report> reports = reportRepository.findReportsOfPostsOwnedByUser(EntityType.POST, user.getId());
+    public ReportDTO createCommentReport(String reportedId, String reason) {
+        commentRepository.findById(reportedId)
+                .orElseThrow(() -> new IllegalArgumentException("Comment not found with ID: " + reportedId));
+        ReportDTO reportDTO = new ReportDTO();
+        reportDTO.setReportedId(reportedId);
+        reportDTO.setReason(reason);
+        reportDTO.setStatus(PENDING);
+        return createReport(reportDTO, EntityType.COMMENT);
+    }
 
-		return reports.stream().map(report -> {
-			ReportDTO reportDTO = reportMapper.toReportDTO(report);
-			reportDTO.setReportedEntity(getReportedEntity(report.getReportedId(), report.getEntityType()));
-			return reportDTO;
-		}).collect(Collectors.toList());
-	}
+    private boolean isSelfReport(String userId, String reportedId, EntityType entityType) {
+        switch (entityType) {
+            case POST:
+                return postRepository.findById(reportedId)
+                        .map(post -> post.getUser().getId())
+                        .filter(ownerId -> ownerId.equals(userId))
+                        .isPresent();
+            case COMMENT:
+                return commentRepository.findById(reportedId)
+                        .map(comment -> comment.getUser().getId())
+                        .filter(ownerId -> ownerId.equals(userId))
+                        .isPresent();
+            case USER:
+                return userId.equals(reportedId);
+            default:
+                return false;
+        }
+    }
 
-	private Object getReportedEntity(String reportedId, EntityType entityType) {
-		if (entityType == null) {
-			throw new IllegalArgumentException("EntityType cannot be null");
-		}
-		if (reportedId == null) {
-			System.out.println("Warning: Reported ID is null for entityType: " + entityType);
-			return null;
-		}
-		switch (entityType) {
-		case POST:
-			Post post = postRepository.findById(reportedId)
-					.orElseThrow(() -> new IllegalArgumentException("Post not found with ID: " + reportedId));
-			return postMapper.toPostDTO(post);
-		case USER:
-			User user = userRepository.findById(reportedId)
-					.orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + reportedId));
-			return userMapper.toUserDTO(user);
-		case COMMENT:
-			PostComment comment = commentRepository.findById(reportedId)
-					.orElseThrow(() -> new IllegalArgumentException("Comment not found with ID: " + reportedId));
-			return commentMapper.toCommentDTO(comment);
-		default:
-			throw new IllegalStateException("Unsupported entity type: " + entityType);
-		}
-	}
+    public ReportDTO createReport(ReportDTO reportDTO, EntityType entityType) {
+        String userId = userService.getMyInfo().getId();
+        String reportedId = reportDTO.getReportedId();
+        String reason = reportDTO.getReason();
+        if (reason == null || reason.trim().isEmpty()) {
+            throw new IllegalArgumentException("Reason for report cannot be empty.");
+        }
+        if (isSelfReport(userId, reportedId, entityType)) {
+            throw new IllegalArgumentException("You cannot self-report.");
+        }
+        if (reportRepository.existsByUserIdAndReportedIdAndEntityType(userId, reportedId, entityType)) {
+            throw new ReportException("You have reported this content before.");
+        }
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ReportException("User not found."));
+        Report report = reportMapper.toReport(reportDTO);
+        report.setUser(user);
+        report.setEntityType(entityType);
+        report.setReportedAt(LocalDateTime.now());
+        report.setStatus(PENDING);
+        Report savedReport = reportRepository.save(report);
+        return reportMapper.toReportDTO(savedReport);
+    }
 
-	public ReportDTO createPostReport(String reportedId, String reason) {
-		String userId = userService.getMyInfo().getId();
-		UserDTO userDTO = new UserDTO();
-		userDTO.setId(userId);
+    public ReportDTO findById(String id) {
+        Report report = reportRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Report not found: " + id));
+        ReportDTO reportDTO = reportMapper.toReportDTO(report);
+        reportDTO.setReportedEntity(getReportedEntity(report.getReportedId(), report.getEntityType()));
+        return reportDTO;
+    }
 
-		ReportDTO reportDTO = new ReportDTO();
-		// reportDTO.setUserId(userId);
-		reportDTO.setReportedId(reportedId);
-		reportDTO.setReason(reason);
-		reportDTO.setStatus(PENDING);
-		return createReport(reportDTO, EntityType.POST);
-	}
+    public List<ReportDTO> getReportsByStatuses(List<Integer> statuses, EntityType entityType) {
+        validateStatuses(statuses);
+        List<Report> reports = reportRepository.findByStatusInAndEntityType(statuses, entityType);
+        return reports.stream()
+                .map(report -> {
+                    ReportDTO reportDTO = reportMapper.toReportDTO(report);
+                    reportDTO.setReportedEntity(getReportedEntity(report.getReportedId(), report.getEntityType()));
+                    return reportDTO;
+                })
+                .collect(Collectors.toList());
+    }
 
-	public ReportDTO createUserReport(String reportedId, String reason) {
-		String userId = userService.getMyInfo().getId();
-		UserDTO userDTO = new UserDTO();
-		userDTO.setId(userId);
+    public ReportDTO updateReportStatus(String reportId, Integer status, String adminReason) {
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new ReportException("Report not found!"));
+        if (status < PENDING || status > CANCELED) {
+            throw new ReportException("Invalid status value: " + status);
+        }
+        report.setStatus(status);
+        report.setAdminReason(adminReason);
+        if (status == APPROVED) {
+            switch (report.getEntityType()) {
+                case POST:
+                    Post post = postRepository.findById(report.getReportedId())
+                            .orElseThrow(() -> new ReportException("Post not found!"));
+                    post.setStatus(2); // Ẩn bài viết
+                    postRepository.save(post);
+                    break;
+                case USER:
+                    User user = userRepository.findById(report.getReportedId())
+                            .orElseThrow(() -> new ReportException("User not found!"));
+                    user.setReportApprovalCount(user.getReportApprovalCount() + 1);
+                    if (user.getReportApprovalCount() >= 5) {
+                        user.setStatus(2); // Khóa vĩnh viễn
+                    } else if (user.getReportApprovalCount() >= 3 && user.getStatus() != 2) {
+                        user.setStatus(1); // Khóa tạm thời
+                    }
+                    userRepository.save(user);
+                    break;
+                case COMMENT:
+                    PostComment comment = commentRepository.findById(report.getReportedId())
+                            .orElseThrow(() -> new ReportException("Comment not found!"));
+                    comment.setStatus(2); // Ẩn bình luận
+                    List<PostComment> replies = commentRepository.findByParentId-researcher(comment.getId());
+                    replies.forEach(reply -> {
+                        reply.setStatus(2);
+                        commentRepository.save(reply);
+                    });
+                    commentRepository.save(comment);
+                    break;
+                default:
+                    throw new ReportException("Unsupported entity type: " + report.getEntityType());
+            }
+        }
+        Report updatedReport = reportRepository.save(report);
+        return reportMapper.toReportDTO(updatedReport);
+    }
 
-		ReportDTO reportDTO = new ReportDTO();
-		// reportDTO.setUserId(userId);
-		reportDTO.setReportedId(reportedId);
-		reportDTO.setReason(reason);
-		reportDTO.setStatus(PENDING);
-		return createReport(reportDTO, EntityType.USER);
-	}
+    public ReportDTO updateReportStatus(String reportId, Integer status) {
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new ReportException("Report not found!"));
+        if (status < PENDING || status > CANCELED) {
+            throw new ReportException("Invalid status value: " + status);
+        }
+        report.setStatus(status);
+        if (status == APPROVED) {
+            switch (report.getEntityType()) {
+                case POST:
+                    Post post = postRepository.findById(report.getReportedId())
+                            .orElseThrow(() -> new ReportException("Post not found!"));
+                    post.setStatus(2); // Ẩn bài viết
+                    postRepository.save(post);
+                    break;
+                case USER:
+                    User user = userRepository.findById(report.getReportedId())
+                            .orElseThrow(() -> new ReportException("User not found!"));
+                    user.setReportApprovalCount(user.getReportApprovalCount() + 1);
+                    if (user.getReportApprovalCount() >= 5) {
+                        user.setStatus(2); // Khóa vĩnh viễn
+                    } else if (user.getReportApprovalCount() >= 3 && user.getStatus() != 2) {
+                        user.setStatus(1); // Khóa tạm thời
+                    }
+                    userRepository.save(user);
+                    break;
+                case COMMENT:
+                    PostComment comment = commentRepository.findById(report.getReportedId())
+                            .orElseThrow(() -> new ReportException("Comment not found!"));
+                    comment.setStatus(2); // Ẩn bình luận
+                    List<PostComment> replies = commentRepository.findByParentId(comment.getId());
+                    replies.forEach(reply -> {
+                        reply.setStatus(2);
+                        commentRepository.save(reply);
+                    });
+                    commentRepository.save(comment);
+                    break;
+                default:
+                    throw new ReportException("Unsupported entity type: " + report.getEntityType());
+            }
+        }
+        Report updatedReport = reportRepository.save(report);
+        return reportMapper.toReportDTO(updatedReport);
+    }
 
-	private boolean isSelfReport(String userId, String reportedId, EntityType entityType) {
-		switch (entityType) {
-		case POST:
-			return postRepository.findById(reportedId).map(Post::getUser).filter(ownerId -> ownerId.equals(userId))
-					.isPresent();
-		case COMMENT:
-			return commentRepository.findById(reportedId).map(PostComment::getUser)
-					.filter(ownerId -> ownerId.equals(userId)).isPresent();
-		case USER:
-			return userId.equals(reportedId);
-		default:
-			return false;
-		}
-	}
+    @PreAuthorize("hasRole('ADMIN')")
+    public void removeReport(String reportId) {
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new ReportException("Report not found!"));
+        reportRepository.delete(report);
+    }
 
-	public ReportDTO createReport(ReportDTO reportDTO, EntityType entityType) {
-		// String userId = reportDTO.getUserId();
-		String userId = userService.getMyInfo().getId();
+    public List<ReportDTO> getDetailedReportsByUsername(String username) {
+        User user手术 userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+        List<Report> reports = reportRepository.findByUserId(user.getId());
+        if (reports.isEmpty()) {
+            throw new IllegalArgumentException("No reports found for user with ID: " + user.getId());
+        }
+        return reports.stream().map(report -> {
+            ReportDTO reportDTO = reportMapper.toReportDTO(report);
+            reportDTO.setReportedEntity(getReportedEntity(report.getReportedId(), report.getEntityType()));
+            return reportDTO;
+        }).collect(Collectors.toList());
+    }
 
-		String reportedId = reportDTO.getReportedId();
-		String reason = reportDTO.getReason();
-		if (reason == null || reason.trim().isEmpty()) {
-			throw new IllegalArgumentException("Reason for report cannot be empty.");
-		}
-		if (isSelfReport(userId, reportedId, entityType)) {
-			throw new IllegalArgumentException("You cannot self-report.");
-		}
+    public List<ReportDTO> getReportsOfUserPosts(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+        List<Report> reports = reportRepository.findReportsOfPostsOwnedByUser(EntityType.POST, user.getId());
+        return reports.stream().map(report -> {
+            ReportDTO reportDTO = reportMapper.toReportDTO(report);
+            reportDTO.setReportedEntity(getReportedEntity(report.getReportedId(), report.getEntityType()));
+            return reportDTO;
+        }).collect(Collectors.toList());
+    }
 
-		if (reportRepository.existsByUserIdAndReportedIdAndEntityType(userId, reportedId, entityType)) {
-			throw new ReportException("You have reported this content before.");
-		}
-
-		User user = userRepository.findById(userId).orElseThrow(() -> new ReportException("User not found."));
-
-		Report report = reportMapper.toReport(reportDTO);
-		report.setUser(user);
-		report.setEntityType(entityType);
-		report.setReportedAt(LocalDateTime.now());
-		report.setStatus(PENDING);
-
-		Report savedReport = reportRepository.save(report);
-		return reportMapper.toReportDTO(savedReport);
-	}
-
-	public ReportDTO findById(String id) {
-		Report report = reportRepository.findById(id)
-				.orElseThrow(() -> new IllegalArgumentException("Report not found: " + id));
-		ReportDTO reportDTO = reportMapper.toReportDTO(report);
-		reportDTO.setReportedEntity(getReportedEntity(report.getReportedId(), report.getEntityType()));
-		return reportDTO;
-	}
-
-	public List<ReportDTO> getReportsByStatuses(List<Integer> statuses, EntityType entityType) {
-		validateStatuses(statuses);
-
-		List<Report> reports = reportRepository.findByStatusInAndEntityType(statuses, entityType);
-
-		return reports.stream().map(report -> {
-			ReportDTO reportDTO = reportMapper.toReportDTO(report);
-			reportDTO.setReportedEntity(getReportedEntity(report.getReportedId(), report.getEntityType()));
-			return reportDTO;
-		}).collect(Collectors.toList());
-	}
-
-	private void validateStatuses(List<Integer> statuses) {
-		for (int status : statuses) {
-			if (status < PENDING || status > CANCELED) {
-				throw new ReportException("Invalid report status: " + status);
-			}
-		}
-	}
-
-	public ReportDTO updateReportStatus(String reportId, Integer status, String adminReason) {
-		Report report = reportRepository.findById(reportId)
-				.orElseThrow(() -> new ReportException("Report not found!"));
-
-		if (status < PENDING || status > CANCELED) {
-			throw new ReportException("Invalid status value: " + status);
-		}
-
-		report.setStatus(status);
-		report.setAdminReason(adminReason);
-
-		if (status == APPROVED && report.getEntityType() == EntityType.POST) {
-			Post post = postRepository.findById(report.getReportedId())
-					.orElseThrow(() -> new ReportException("Post not found!"));
-
-			post.setStatus(2);
-
-			postRepository.save(post);
-		}
-		if (status == APPROVED && report.getEntityType() == EntityType.USER) {
-			User user = userRepository.findById(report.getReportedId())
-					.orElseThrow(() -> new ReportException("User not found!"));
-
-			user.setReportApprovalCount(user.getReportApprovalCount() + 1);
-
-			if (user.getReportApprovalCount() >= 5) {
-				user.setStatus(2);
-			} else if (user.getReportApprovalCount() >= 3 && user.getStatus() != 2) {
-				user.setStatus(1); // Khóa tạm thời
-			}
-
-			userRepository.save(user);
-		}
-
-		Report updatedReport = reportRepository.save(report);
-		return reportMapper.toReportDTO(updatedReport);
-	}
-
-	public ReportDTO updateReportStatus(String reportId, Integer status) {
-		Report report = reportRepository.findById(reportId)
-				.orElseThrow(() -> new ReportException("Report not found!"));
-
-		if (status < PENDING || status > CANCELED) {
-			throw new ReportException("Invalid status value: " + status);
-		}
-
-		report.setStatus(status);
-
-		if (status == APPROVED && report.getEntityType() == EntityType.POST) {
-			Post post = postRepository.findById(report.getReportedId())
-					.orElseThrow(() -> new ReportException("Post not found!"));
-
-			post.setStatus(2);
-
-			postRepository.save(post);
-		}
-		if (status == APPROVED && report.getEntityType() == EntityType.USER) {
-			User user = userRepository.findById(report.getReportedId())
-					.orElseThrow(() -> new ReportException("User not found!"));
-
-			user.setReportApprovalCount(user.getReportApprovalCount() + 1);
-
-			if (user.getReportApprovalCount() >= 5) {
-				user.setStatus(2);
-			} else if (user.getReportApprovalCount() >= 3 && user.getStatus() != 2) {
-				user.setStatus(1); // Khóa tạm thời
-			}
-
-			userRepository.save(user);
-		}
-
-		Report updatedReport = reportRepository.save(report);
-		return reportMapper.toReportDTO(updatedReport);
-	}
-
-	@PreAuthorize("hasRole('ADMIN')")
-	public void removeReport(String reportId) {
-		Report report = reportRepository.findById(reportId).orElseThrow(() -> new ReportException("Report not found!"));
-
-		reportRepository.delete(report);
-	}
-
+    private void validateStatuses(List<Integer> statuses) {
+        for (int status : statuses) {
+            if (status < PENDING || status > CANCELED) {
+                throw new ReportException("Invalid report status: " + status);
+            }
+        }
+    }
 }

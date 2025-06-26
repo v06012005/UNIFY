@@ -100,3 +100,137 @@ export const postComment = async (userId, postId, content, token, parentId = nul
     throw error;
   }
 };
+
+/**
+ * Fetch all reported comments (for admin)
+ */
+export const fetchReportedComments = async (token) => {
+  try {
+    const response = await fetch(`${API_URL}/reports/allComments`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (response.ok) {
+      return await response.json();
+    } else {
+      const errorText = await response.text();
+      console.error("Server response:", errorText);
+      return [];
+    }
+  } catch (error) {
+    console.error("Error fetching reported comments:", error);
+    return [];
+  }
+};
+
+/**
+ * Update the status of a report (approve/reject)
+ * @param {string} reportId
+ * @param {number} status (e.g., 1 = approved, 2 = rejected)
+ * @param {string} token
+ */
+export const updateReportStatus = async (reportId, status, token) => {
+  try {
+    const response = await fetch(`${API_URL}/reports/${reportId}/status?status=${status}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (response.ok) {
+      return await response.json();
+    } else {
+      const errorText = await response.text();
+      throw new Error(errorText);
+    }
+  } catch (error) {
+    console.error("Error updating report status:", error);
+    throw error;
+  }
+};
+
+/**
+ * Fetch post details by postId
+ * @param {string} postId
+ * @param {string} token
+ */
+export const fetchPostDetails = async (postId, token) => {
+  try {
+    const response = await fetch(`${API_URL}/posts/post_detail/${postId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (response.ok) {
+      return await response.json();
+    } else {
+      const errorText = await response.text();
+      console.error("Server response:", errorText);
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching post details:", error);
+    return null;
+  }
+};
+
+/**
+ * Report a comment
+ * @param {string} commentId - The ID of the comment to report
+ * @param {string} reason - The reason for reporting
+ * @param {string} token - Authentication token
+ */
+export const createCommentReport = async (commentId, reason, token) => {
+  try {
+    const response = await fetch(`${API_URL}/reports/comment?reportedId=${commentId}&reason=${encodeURIComponent(reason)}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    
+    if (response.ok) {
+      return await response.json();
+    } else {
+      const errorText = await response.text();
+      return { error: errorText };
+    }
+  } catch (error) {
+    console.error("Error reporting comment:", error);
+    return { error: error.message };
+  }
+};
+
+/**
+ * Delete a comment
+ * @param {string} commentId - The ID of the comment to delete
+ * @param {string} token - Authentication token
+ */
+export const deleteComment = async (commentId, token) => {
+  try {
+    const response = await fetch(`${API_URL}/comments/${commentId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    
+    if (response.ok) {
+      return { success: true };
+    } else {
+      const errorText = await response.text();
+      return { error: errorText };
+    }
+  } catch (error) {
+    console.error("Error deleting comment:", error);
+    return { error: error.message };
+  }
+};
