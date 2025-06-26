@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.ArrayList;
 
 import com.app.unify.dto.global.PostFeedResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -202,21 +203,45 @@ public class PostServiceImp implements PostService {
 
 
 
-    @Cacheable(value = "personalizedFeedCache", key = "#pageable.pageNumber + '-' + #pageable.pageSize")
     @Override
-    public PostFeedResponse getPersonalizedFeed(Pageable pageable) {
-        Page<PersonalizedPostDTO> posts = postRepository.findPersonalizedPosts(pageable);
-        Page<PostDTO> postDTOS =  posts.map(dto -> {
-            PostDTO postDTO = mapper.toPostDTO(dto.getPost());
-            postDTO.setCommentCount(dto.getCommentCount());
-            return postDTO;
-        });
-       return PostFeedResponse.builder()
-               .posts(postDTOS.getContent())
-               .hasNextPage(postDTOS.hasNext())
-               .currentPage(postDTOS.getNumber())
-               .build();
-
+    public PostFeedResponse getPersonalizedFeed(String userId, Pageable pageable) {
+        System.out.println("=== Personalized Feed Debug ===");
+        System.out.println("User ID: " + userId);
+        System.out.println("Requested Page: " + pageable.getPageNumber());
+        System.out.println("Requested Size: " + pageable.getPageSize());
+        
+        try {
+            // Use the simpler query first to test basic pagination
+            Page<PersonalizedPostDTO> personalizedPosts = postRepository.findPersonalizedPostsSimple(userId, pageable);
+            
+            System.out.println("Total posts found: " + personalizedPosts.getTotalElements());
+            System.out.println("Posts in this page: " + personalizedPosts.getContent().size());
+            System.out.println("Has next page: " + personalizedPosts.hasNext());
+            System.out.println("Current page: " + personalizedPosts.getNumber());
+            System.out.println("Total pages: " + personalizedPosts.getTotalPages());
+            
+            // Convert to PostDTO
+            List<PostDTO> postDTOs = personalizedPosts.getContent().stream()
+                .map(dto -> {
+                    PostDTO postDTO = mapper.toPostDTO(dto.getPost());
+                    postDTO.setCommentCount(dto.getCommentCount());
+                    return postDTO;
+                })
+                .collect(Collectors.toList());
+            
+            System.out.println("Converted to " + postDTOs.size() + " PostDTOs");
+            System.out.println("=== End Debug ===");
+            
+            return PostFeedResponse.builder()
+                    .posts(postDTOs)
+                    .hasNextPage(personalizedPosts.hasNext())
+                    .currentPage(pageable.getPageNumber())
+                    .build();
+        } catch (Exception e) {
+            System.err.println("Error in getPersonalizedFeed: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
     }
     
     @Override

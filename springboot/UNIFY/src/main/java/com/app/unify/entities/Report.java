@@ -56,4 +56,7 @@ public class Report implements Serializable {
 
 	@Column(name = "reason", nullable = false)
 	String reason;
+
+	@Column(name = "admin_reason")
+	String adminReason;
 }

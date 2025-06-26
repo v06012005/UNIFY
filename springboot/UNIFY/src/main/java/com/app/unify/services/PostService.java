@@ -45,7 +45,7 @@ public interface PostService {
 	List<PostDTO> getRecommendedPostsForExplore(String userId);
 
 
-    PostFeedResponse getPersonalizedFeed (Pageable pageable);
+    PostFeedResponse getPersonalizedFeed(String userId, Pageable pageable);
     
     Page<PostDTO> getReelsPosts(int page, int size);
 

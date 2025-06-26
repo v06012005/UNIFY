@@ -8,9 +8,8 @@ import {
 } from "@/components/provider/ReportProvider";
 import ModalPost from "@/components/global/Report/ModalPost";
 import ModalUser from "@/components/global/Report/ModalUser";
+import AdminReasonModal from "@/components/global/Report/AdminReasonModal";
 import { addToast, ToastProvider } from "@heroui/toast";
-import { motion } from "framer-motion";
-import { Info, AlertCircle } from "lucide-react";
 
 const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   return (
@@ -25,18 +24,21 @@ const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
   );
 };
 
-const updateReportStatus = async (id, status, reason) => {
+const updateReportStatus = async (id, status, adminReason) => {
   try {
     const token = Cookies.get("token");
     const response = await fetch(
-      `http://localhost:8080/reports/${id}/status?status=${status}`,
+      `http://localhost:8080/reports/${id}/status`,
       {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ reason }),
+        body: JSON.stringify({
+          status: status,
+          adminReason: adminReason
+        }),
       }
     );
 
@@ -46,10 +48,11 @@ const updateReportStatus = async (id, status, reason) => {
 
     const data = await response.json();
 
+    const actionText = status === 1 ? "approved" : "rejected";
     addToast({
       title: "Success",
-      description: "Report status updated successfully.",
-      timeout: 3000,
+      description: `Report ${actionText} successfully.`,
+      timeout: 5000,
       shouldShowTimeoutProgess: true,
       color: "success",
     });
@@ -139,6 +142,10 @@ const VerifyReportUser = () => {
   const itemsPerPage = 20;
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [dateFilter, setDateFilter] = useState("all");
+  const [isAdminReasonOpen, setIsAdminReasonOpen] = useState(false);
+  const [adminReasonAction, setAdminReasonAction] = useState(null);
+  const [selectedReportId, setSelectedReportId] = useState(null);
+  const [isButtonLoading, setIsButtonLoading] = useState(false);
 
   useEffect(() => {
     let updatedReports = [...pendingReports];
@@ -174,10 +181,33 @@ const VerifyReportUser = () => {
 
   const handleUpdateStatus = async (reportId, status, reason) => {
     try {
-      await updateReportStatus(reportId, status, reason);
+      setIsButtonLoading(true);
+      await updateReportStatus(reportId, status, "");
       await fetchPendingReports();
     } catch (error) {
       console.error("Failed to update status:", error);
+    } finally {
+      setIsButtonLoading(false);
+    }
+  };
+
+  const openAdminReasonModal = (reportId, action) => {
+    setSelectedReportId(reportId);
+    setAdminReasonAction(action);
+    setIsAdminReasonOpen(true);
+  };
+
+  const handleAdminReasonConfirm = async (reason) => {
+    try {
+      setIsButtonLoading(true);
+      const status = adminReasonAction === "approve" ? 1 : 2;
+      await updateReportStatus(selectedReportId, status, reason);
+      await fetchPendingReports();
+    } catch (error) {
+      console.error("Failed to update status:", error);
+    } finally {
+      setIsButtonLoading(false);
+      setIsAdminReasonOpen(false);
     }
   };
 
@@ -293,20 +323,22 @@ const VerifyReportUser = () => {
 
                       <td className="py-2 text-center rounded-r-xl">
                         <button
-                          className="border border-green-500 text-green-500 px-3 py-1 rounded-md mr-2 hover:bg-green-500 hover:text-white transition-colors"
+                          className="border border-green-500 text-green-500 px-3 py-1 rounded-md mr-2 hover:bg-green-500 hover:text-white"
                           onClick={(e) => {
                             e.stopPropagation();
-                            openConfirmModal(report.id, "approve");
+                            openAdminReasonModal(report.id, "approve");
                           }}
+                          disabled={isButtonLoading}
                         >
                           Approve
                         </button>
                         <button
-                          className="border border-red-500 text-red-500 px-3 py-1 rounded-md hover:bg-red-500 hover:text-white transition-colors"
+                          className="border border-red-500 text-red-500 px-3 py-1 rounded-md hover:bg-red-500 hover:text-white "
                           onClick={(e) => {
                             e.stopPropagation();
-                            openConfirmModal(report.id, "reject");
+                            openAdminReasonModal(report.id, "reject");
                           }}
+                          disabled={isButtonLoading}
                         >
                           Reject
                         </button>
@@ -333,11 +365,20 @@ const VerifyReportUser = () => {
           />
         ) : null}
 
+<<<<<<< HEAD
         <ConfirmModal
           isOpen={isConfirmModalOpen}
           onClose={closeConfirmModal}
           onConfirm={handleConfirmAction}
           action={confirmAction}
+=======
+        <AdminReasonModal
+          isOpen={isAdminReasonOpen}
+          onClose={() => setIsAdminReasonOpen(false)}
+          onConfirm={handleAdminReasonConfirm}
+          action={adminReasonAction}
+          isLoading={isButtonLoading}
+>>>>>>> 60eb66d (add admin reason)
         />
       </div>
     </>

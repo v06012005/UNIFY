@@ -14,11 +14,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.unify.dto.global.ReportDTO;
+import com.app.unify.dto.request.AdminReportActionDTO;
 import com.app.unify.mapper.PostMapper;
 import com.app.unify.mapper.ReportMapper;
 import com.app.unify.repositories.ReportRepository;
@@ -120,8 +122,8 @@ public class ReportController {
 	}
 
 	@PutMapping("/{id}/status")
-	public ResponseEntity<ReportDTO> updateReportStatus(@PathVariable String id, @RequestParam Integer status) {
-		ReportDTO updatedReport = reportService.updateReportStatus(id, status);
+	public ResponseEntity<ReportDTO> updateReportStatus(@PathVariable String id, @RequestBody AdminReportActionDTO actionDTO) {
+		ReportDTO updatedReport = reportService.updateReportStatus(id, actionDTO.getStatus(), actionDTO.getAdminReason());
 		return ResponseEntity.ok(updatedReport);
 	}
 

@@ -177,9 +177,9 @@ public class ReportService {
 		report.setReportedAt(LocalDateTime.now());
 		report.setStatus(PENDING);
 
-		Report savedReport = reportRepository.save(report);
-		return reportMapper.toReportDTO(savedReport);
-	}
+    public ReportDTO updateReportStatus(String reportId, Integer status, String adminReason) {
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new ReportException("Report not found!"));
 
 	public ReportDTO findById(String id) {
 		Report report = reportRepository.findById(id)
@@ -192,7 +192,8 @@ public class ReportService {
 	public List<ReportDTO> getReportsByStatuses(List<Integer> statuses, EntityType entityType) {
 		validateStatuses(statuses);
 
-		List<Report> reports = reportRepository.findByStatusInAndEntityType(statuses, entityType);
+        report.setStatus(status);
+        report.setAdminReason(adminReason);
 
 		return reports.stream().map(report -> {
 			ReportDTO reportDTO = reportMapper.toReportDTO(report);
