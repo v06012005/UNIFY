@@ -264,7 +264,7 @@ const AdminCommentsList = () => {
     setLoading(true);
     try {
       const token = Cookies.get("token");
-      await updateReportStatus(selectedReport.id, 1, token);
+      await updateReportStatus(selectedReport.id, 1, token, "");
       setReports((prev) =>
         prev.map((r) => (r.id === selectedReport.id ? { ...r, status: 1 } : r))
       );
@@ -281,7 +281,7 @@ const AdminCommentsList = () => {
     setLoading(true);
     try {
       const token = Cookies.get("token");
-      await updateReportStatus(selectedReport.id, 2, token);
+      await updateReportStatus(selectedReport.id, 2, token, "");
       setReports((prev) =>
         prev.map((r) => (r.id === selectedReport.id ? { ...r, status: 2 } : r))
       );
@@ -364,7 +364,11 @@ const AdminCommentsList = () => {
                   <td className="py-3 px-2">
                     {new Date(report.reportedAt).toLocaleString()}
                   </td>
-                  <td className={`py-3 px-2 text-center ${STATUS_CLASSES[report.status]}`}>
+                  <td
+                    className={`py-3 px-2 text-center ${
+                      STATUS_CLASSES[report.status]
+                    }`}
+                  >
                     {STATUS_LABELS[report.status] || report.status}
                   </td>
 

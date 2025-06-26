@@ -201,51 +201,6 @@ public class ReportService {
                     PostComment comment = commentRepository.findById(report.getReportedId())
                             .orElseThrow(() -> new ReportException("Comment not found!"));
                     comment.setStatus(2); // Ẩn bình luận
-                    List<PostComment> replies = commentRepository.findByParentId-researcher(comment.getId());
-                    replies.forEach(reply -> {
-                        reply.setStatus(2);
-                        commentRepository.save(reply);
-                    });
-                    commentRepository.save(comment);
-                    break;
-                default:
-                    throw new ReportException("Unsupported entity type: " + report.getEntityType());
-            }
-        }
-        Report updatedReport = reportRepository.save(report);
-        return reportMapper.toReportDTO(updatedReport);
-    }
-
-    public ReportDTO updateReportStatus(String reportId, Integer status) {
-        Report report = reportRepository.findById(reportId)
-                .orElseThrow(() -> new ReportException("Report not found!"));
-        if (status < PENDING || status > CANCELED) {
-            throw new ReportException("Invalid status value: " + status);
-        }
-        report.setStatus(status);
-        if (status == APPROVED) {
-            switch (report.getEntityType()) {
-                case POST:
-                    Post post = postRepository.findById(report.getReportedId())
-                            .orElseThrow(() -> new ReportException("Post not found!"));
-                    post.setStatus(2); // Ẩn bài viết
-                    postRepository.save(post);
-                    break;
-                case USER:
-                    User user = userRepository.findById(report.getReportedId())
-                            .orElseThrow(() -> new ReportException("User not found!"));
-                    user.setReportApprovalCount(user.getReportApprovalCount() + 1);
-                    if (user.getReportApprovalCount() >= 5) {
-                        user.setStatus(2); // Khóa vĩnh viễn
-                    } else if (user.getReportApprovalCount() >= 3 && user.getStatus() != 2) {
-                        user.setStatus(1); // Khóa tạm thời
-                    }
-                    userRepository.save(user);
-                    break;
-                case COMMENT:
-                    PostComment comment = commentRepository.findById(report.getReportedId())
-                            .orElseThrow(() -> new ReportException("Comment not found!"));
-                    comment.setStatus(2); // Ẩn bình luận
                     List<PostComment> replies = commentRepository.findByParentId(comment.getId());
                     replies.forEach(reply -> {
                         reply.setStatus(2);
@@ -261,6 +216,8 @@ public class ReportService {
         return reportMapper.toReportDTO(updatedReport);
     }
 
+    
+
     @PreAuthorize("hasRole('ADMIN')")
     public void removeReport(String reportId) {
         Report report = reportRepository.findById(reportId)
@@ -269,7 +226,7 @@ public class ReportService {
     }
 
     public List<ReportDTO> getDetailedReportsByUsername(String username) {
-        User user手术 userRepository.findByUsername(username)
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
         List<Report> reports = reportRepository.findByUserId(user.getId());
         if (reports.isEmpty()) {

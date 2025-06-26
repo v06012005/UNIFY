@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Cookies from "js-cookie";
+import { motion } from "framer-motion";
+import { Info } from "lucide-react";
 import {
   ReportProvider,
   useReports,
@@ -27,20 +29,17 @@ const NavButton = ({ iconClass, href = "", content = "", onClick }) => {
 const updateReportStatus = async (id, status, adminReason) => {
   try {
     const token = Cookies.get("token");
-    const response = await fetch(
-      `http://localhost:8080/reports/${id}/status`,
-      {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          status: status,
-          adminReason: adminReason
-        }),
-      }
-    );
+    const response = await fetch(`http://localhost:8080/reports/${id}/status`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        status: status,
+        adminReason: adminReason,
+      }),
+    });
 
     if (!response.ok) {
       throw new Error(`Failed to update report status: ${response.statusText}`);
@@ -96,7 +95,8 @@ const ConfirmModal = ({ isOpen, onClose, onConfirm, action, report }) => {
           {action === "approve" ? "Approve Report" : "Reject Report"}
         </h2>
         <p className="text-gray-600 dark:text-gray-300 mb-4">
-          Please provide a reason for {action === "approve" ? "approving" : "rejecting"} this report.
+          Please provide a reason for{" "}
+          {action === "approve" ? "approving" : "rejecting"} this report.
         </p>
         <textarea
           className="w-full p-3 border rounded-md dark:bg-neutral-700 dark:text-white mb-4"
@@ -138,7 +138,6 @@ const VerifyReportUser = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [confirmAction, setConfirmAction] = useState(null);
-  const [selectedReportId, setSelectedReportId] = useState(null);
   const itemsPerPage = 20;
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [dateFilter, setDateFilter] = useState("all");
@@ -292,7 +291,9 @@ const VerifyReportUser = () => {
                       onClick={() => openModal(report)}
                       key={report.id}
                       className={`cursor-pointer transition-colors ${
-                        index % 2 === 0 ? "bg-white dark:bg-black" : "bg-gray-100 dark:bg-neutral-800"
+                        index % 2 === 0
+                          ? "bg-white dark:bg-black"
+                          : "bg-gray-100 dark:bg-neutral-800"
                       }`}
                     >
                       <td className="py-3 pl-5 rounded-l-xl">
@@ -365,20 +366,12 @@ const VerifyReportUser = () => {
           />
         ) : null}
 
-<<<<<<< HEAD
-        <ConfirmModal
-          isOpen={isConfirmModalOpen}
-          onClose={closeConfirmModal}
-          onConfirm={handleConfirmAction}
-          action={confirmAction}
-=======
         <AdminReasonModal
           isOpen={isAdminReasonOpen}
           onClose={() => setIsAdminReasonOpen(false)}
           onConfirm={handleAdminReasonConfirm}
           action={adminReasonAction}
           isLoading={isButtonLoading}
->>>>>>> 60eb66d (add admin reason)
         />
       </div>
     </>
