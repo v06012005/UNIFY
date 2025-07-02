@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.app.unify.types.GroupMemberRole;
 
 @Entity
 @Table(name = "GroupMembers")
@@ -29,4 +30,7 @@ public class GroupMember {
     private User user;
 
     private LocalDateTime joinedAt;
+    
+    @Enumerated(EnumType.STRING)
+    private GroupMemberRole role;
 }
