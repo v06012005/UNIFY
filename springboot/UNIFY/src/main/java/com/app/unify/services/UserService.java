@@ -249,12 +249,21 @@ public class UserService {
 	}
 
 	public List<UserDTO> getFriends(String currentUserId) {
-		// TODO: Implement actual logic in UserRepository
-		return Collections.emptyList();
+		UserDTO userDTO = findById(currentUserId);
+		if (userDTO == null) {
+			return Collections.emptyList();
+		}
+		return userRepository.findFriendsByUserId(userDTO.getId()).stream().map(userMapper::toUserDTO)
+				.collect(Collectors.toList());
 	}
 
-	public List<ShareAbleUserDTO> getMutualFollowers(String userId) {
-		// TODO: Implement actual logic in UserRepository
-		return Collections.emptyList();
+	public List<ShareAbleUserDTO> getMutualFollowers(String myId) {
+		List<User> mutualUsers = followRepository.findMutualFollowingUsers(myId);
+		return mutualUsers.stream().map(user -> {
+			Avatar latestAvatar = user.getLatestAvatar();
+			return new ShareAbleUserDTO(user.getId(), user.getUsername(),
+					user.getFirstName() + " " + user.getLastName(),
+					latestAvatar != null ? String.valueOf(avatarMapper.toAvatarDTO(latestAvatar)) : null);
+		}).toList();
 	}
 }

@@ -22,7 +22,6 @@ public interface PostService {
 
 	List<PostDTO> getPostsTrending();
 
-
     void deletePostById(String id);
 
     void archivePostById(String id);

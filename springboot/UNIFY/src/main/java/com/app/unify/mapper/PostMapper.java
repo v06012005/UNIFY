@@ -13,7 +13,7 @@ import org.mapstruct.Mapping;
 public interface PostMapper {
 
     Post toPost(PostDTO postDTO);
-
+    
     PostsDataResponse toPostsDataResponse(Post post);
 
     PostDTO toPostDTO(Post post);
