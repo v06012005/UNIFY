@@ -8,7 +8,7 @@ import com.app.unify.entities.PostComment;
 
 @Mapper(componentModel = "spring")
 public interface CommentMapper {
-
+    
     PostComment toComment(CommentDTO commentDTO);
 
     @Mapping(source = "user.id", target = "userId")

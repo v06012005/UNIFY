@@ -1,13 +1,11 @@
 package com.app.unify.services;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.app.unify.dto.global.ListChatDTO;
 import com.app.unify.dto.global.UserDTO;
-import com.app.unify.entities.User;
+import com.app.unify.entities.Message;
+import com.app.unify.repositories.MessageRepository;
 import com.app.unify.repositories.projections.ChatPreviewProjection;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -19,10 +17,9 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
-import com.app.unify.entities.Message;
-import com.app.unify.repositories.MessageRepository;
-
-import lombok.RequiredArgsConstructor;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -42,13 +39,15 @@ public class MessageService {
     @Cacheable(value = "messages", key = "#sender + '-' + #receiver")
     public List<Message> getMessagesBySenderAndReceiver(String sender, String receiver) {
         Query query = new Query();
-        query.addCriteria(new Criteria().orOperator(Criteria.where("sender").is(sender).and("receiver").is(receiver), Criteria.where("sender").is(receiver).and("receiver").is(sender)));
+        query.addCriteria(new Criteria()
+                .orOperator(Criteria.where("sender").is(sender).and("receiver").is(receiver),
+                        Criteria.where("sender").is(receiver).and("receiver").is(sender)));
         query.collation(Collation.of("en"));
         query.with(Sort.by(Sort.Direction.ASC, "timestamp"));
         return mongoTemplate.find(query, Message.class);
     }
 
-    @Cacheable(value = "chatLists", key = "#userId")
+    @Cacheable(value = "chatLists", key = "#user.id")
     public List<ListChatDTO> getChatList(String userId) {
         List<ChatPreviewProjection> rawList = messageRepository.findChatList(userId);
         return rawList.stream()
@@ -74,6 +73,10 @@ public class MessageService {
             @CacheEvict(value = "chatLists", key = "#message.receiver")
     })
     public Message saveMessage(Message message) {
+        System.out.println("[DEBUG] Save message: " + message);
+        if (message.getReceiver() == null) {
+            throw new IllegalArgumentException("Receiver must not be null");
+        }
         return messageRepository.save(message);
     }
 }
