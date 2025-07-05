@@ -13,6 +13,8 @@ import com.app.unify.types.GroupMemberRole;
 import com.app.unify.types.PrivacyType;
 import com.app.unify.types.GroupStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
@@ -131,5 +133,23 @@ public class GroupServiceImpl implements GroupService {
         group.setUpdatedAt(LocalDateTime.now());
         group = groupRepository.save(group);
         return groupMapper.toGroupDTO(group);
+    }
+    
+    @Override
+    public List<GroupDTO> getGroupsByCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new RuntimeException("User not authenticated");
+        }
+        
+        String userEmail = authentication.getName();
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        
+        List<GroupMember> groupMembers = groupMemberRepository.findActiveGroupsByUserId(user.getId());
+        
+        return groupMembers.stream()
+                .map(groupMember -> groupMapper.toGroupDTO(groupMember.getGroup()))
+                .collect(Collectors.toList());
     }
 } 

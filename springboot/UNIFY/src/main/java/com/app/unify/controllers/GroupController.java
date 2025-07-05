@@ -42,4 +42,9 @@ public class GroupController {
     public GroupMemberDTO joinGroup(@PathVariable String groupId, @RequestParam String userId) {
         return groupService.joinGroup(groupId, userId);
     }
+    
+    @GetMapping("/my-groups")
+    public List<GroupDTO> getMyGroups() {
+        return groupService.getGroupsByCurrentUser();
+    }
 } 

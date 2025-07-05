@@ -19,4 +19,7 @@ public interface GroupService {
     List<GroupDTO> getGroupsByStatus(GroupStatus status);
     GroupDTO updateGroupStatus(String groupId, GroupStatus status);
     GroupDTO updateGroupPrivacy(String groupId, PrivacyType privacyType);
+    
+    // Method to get groups where current user is a member
+    List<GroupDTO> getGroupsByCurrentUser();
 } 
