@@ -23,4 +23,10 @@ public class GroupMemberDTO {
     private String userId;
     private LocalDateTime joinedAt;
     private GroupMemberRole role;
-} 
+    
+    // Add user information
+    private String username;
+    private String firstName;
+    private String lastName;
+    private String avatarUrl;
+}
